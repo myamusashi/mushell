@@ -13,8 +13,9 @@ RowLayout {
     Rectangle {
         id: workspaceBar
         Layout.preferredWidth: Math.max(50, Workspaces.maxWorkspace * 25)
-        Layout.fillHeight: true
-        radius: 7
+		Layout.fillHeight: true
+		border.color: Appearance.colors.on_background
+		radius: Appearance.rounding.small
         color: Appearance.colors.background
 
         Row {
@@ -34,9 +35,9 @@ RowLayout {
                     Text {
                         id: workspaceText
                         text: (index + 1).toString()
-                        color: "white"
+                        color: Appearance.colors.on_background
                         font.pixelSize: 15
-                        font.bold: focused
+						font.bold: focused
                     }
 
                     Rectangle {
@@ -48,7 +49,7 @@ RowLayout {
                             topMargin: -3
                         }
                         height: 2
-                        color: "white"
+                        color: Appearance.colors.on_background
                     }
 
                     MouseArea {

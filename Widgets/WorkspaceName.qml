@@ -18,8 +18,9 @@ Rectangle {
 
 	Behavior on implicitWidth {
 		NumberAnimation {
-			duration: 100
-			easing.type: Easing.InOutQuad
+			duration: Appearance.animations.durations.small
+			easing.type: Easing.BezierSpline
+			easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
 		}
 	}
 
