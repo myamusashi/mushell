@@ -13,7 +13,13 @@ Scope {
 		path: Qt.resolvedUrl(Quickshell.env("HOME") + "/.cache/wall/path.txt")
 
 		watchChanges: true
-		onFileChanged: this.reload()
+		onFileChanged: {
+			this.reload()
+			Quickshell.execDetached({
+				// What the fuck is this
+				command: ["sh", "-c", `${Quickshell.shellDir}/Assets/generate_colors.sh ${Quickshell.shellDir}/Data/Appearance.qml && ${Quickshell.shellDir}/Assets/generate_colors.sh ${Quickshell.shellDir}/Data/Appearance.qml`]
+			})
+		}
 		onAdapterUpdated: writeAdapter()
 	}
 
@@ -68,7 +74,7 @@ Scope {
 			});
 		}
 		function get(): string {
-			return root.wallSrc;
+			return root.wallSrc.trim();
 		}
 	}
 }
