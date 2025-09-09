@@ -53,7 +53,7 @@ Scope {
 					Repeater {
 						model: [
 							{
-								name: "screenshot window apps",
+								name: "Screenshot window apps",
 								icon: "select_window_2",
 								action: () => {
 									Quickshell.execDetached({
@@ -62,7 +62,7 @@ Scope {
 								}
 							},
 							{
-								name: "screenshot selection",
+								name: "Screenshot selection",
 								icon: "select",
 								action: () => {
 									Quickshell.execDetached({
@@ -71,7 +71,7 @@ Scope {
 								}
 							},
 							{
-								name: "screenshot eDP-1",
+								name: "Screenshot eDP-1",
 								icon: "monitor",
 								action: () => {
 									Quickshell.execDetached({
@@ -80,7 +80,7 @@ Scope {
 								}
 							},
 							{
-								name: "screenshot HDMI-A-2",
+								name: "Screenshot HDMI-A-2",
 								icon: "monitor",
 								action: () => {
 									Quickshell.execDetached({
@@ -89,7 +89,7 @@ Scope {
 								}
 							},
 							{
-								name: "screenshot both screen",
+								name: "creenshot both screen",
 								icon: "dual_screen",
 								action: () => {
 									Quickshell.execDetached({
@@ -114,14 +114,21 @@ Scope {
 								spacing: Appearance.spacing.normal
 
 								focus: iconDelegate.index === screencapture.currentIndex
-								Keys.onEnterPressed: iconDelegate.modelData.action()
-								Keys.onReturnPressed: iconDelegate.modelData.action()
+								Keys.onEnterPressed: {
+									iconDelegate.modelData.action();
+									screencapture.isScreencaptureOpen = false;
+								}
+								Keys.onReturnPressed: {
+									iconDelegate.modelData.action();
+									screencapture.isScreencaptureOpen = false;
+								}
 								Keys.onUpPressed: screencapture.currentIndex > 0 ? screencapture.currentIndex-- : ""
 								Keys.onDownPressed: screencapture.currentIndex < 4 ? screencapture.currentIndex++ : ""
 								Keys.onEscapePressed: screencapture.isScreencaptureOpen = !screencapture.isScreencaptureOpen
 
 								transform: Scale {
 									id: scaleTransform
+
 									origin.x: rowIndex.width / 2
 									origin.y: rowIndex.height / 2
 									xScale: iconDelegate.index === screencapture.currentIndex ? 1.05 : 1.0
@@ -145,9 +152,8 @@ Scope {
 
 								MatIcon {
 									id: icon
-									
+
 									icon: iconDelegate.modelData.icon
-									fill: rowIndex.focus || mArea.containsMouse
 									color: iconDelegate.index === screencapture.currentIndex ? Appearance.colors.primary : Appearance.colors.outline
 									font.pixelSize: Appearance.fonts.large * 1.1
 									Layout.margins: Appearance.spacing.small
@@ -164,7 +170,7 @@ Scope {
 
 								Text {
 									id: name
-									
+
 									color: iconDelegate.index === screencapture.currentIndex ? Appearance.colors.primary : Appearance.colors.outline
 									font.pixelSize: Appearance.fonts.large * 1.1
 									Layout.margins: Appearance.spacing.small
