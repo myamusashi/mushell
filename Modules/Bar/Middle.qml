@@ -5,18 +5,16 @@ import qs.Data
 
 // Middle.qml
 Item {
-    RowLayout {
-        anchors.centerIn: parent
-        spacing: Appearance.spacing.small
-        
-        Mpris {
-            Layout.alignment: Qt.AlignCenter
-            
+	RowLayout {
+		anchors.centerIn: parent
+		spacing: Appearance.spacing.small
+
+		Mpris {
+			Layout.alignment: Qt.AlignCenter
 		}
 
 		Item {
 			Layout.preferredWidth: 250
 		}
-        
-    }
+	}
 }

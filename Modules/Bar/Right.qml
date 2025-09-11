@@ -2,9 +2,7 @@ import qs.Widgets
 import qs.Data
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
-import Quickshell.Services.SystemTray
 
 Item {
 	RowLayout {
@@ -12,7 +10,7 @@ Item {
 		anchors.rightMargin: 8
 		layoutDirection: Qt.RightToLeft
 		spacing: Appearance.spacing.small
-		
+
 		Clock {
 			Layout.alignment: Qt.AlignVCenter
 			Layout.maximumWidth: implicitWidth
@@ -39,7 +37,7 @@ Item {
 			Layout.alignment: Qt.AlignVCenter
 			Layout.maximumWidth: implicitWidth
 		}
-		
+
 		// Item {
 		// 	Layout.fillWidth: true
 		// }

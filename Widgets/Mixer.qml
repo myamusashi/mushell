@@ -4,9 +4,11 @@ import QtQuick.Controls
 import Quickshell.Services.Pipewire
 
 ColumnLayout {
-	required property PwNode node;
+	required property PwNode node
 
-	PwObjectTracker { objects: [ node ] }
+	PwObjectTracker {
+		objects: [node]
+	}
 
 	RowLayout {
 		Image {

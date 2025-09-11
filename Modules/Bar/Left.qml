@@ -9,7 +9,7 @@ Item {
 		anchors.fill: parent
 		anchors.leftMargin: 8
 		spacing: Appearance.spacing.small
-		
+
 		OsText {
 			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 		}
@@ -17,7 +17,7 @@ Item {
 		Workspaces {
 			Layout.alignment: Qt.AlignCenter
 		}
-		
+
 		WorkspaceName {
 			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 		}

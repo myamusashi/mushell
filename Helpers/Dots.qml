@@ -1,46 +1,44 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Wayland
 
 import qs.Data
 
 RowLayout {
-  id: root
+	id: root
 
-  property alias icon: icon
-  property alias text: text
+	property alias icon: icon
+	property alias text: text
 
-  anchors.centerIn: parent
-  height: parent.height ? parent.height : 1
+	anchors.centerIn: parent
+	height: parent.height ? parent.height : 1
 
-  Item {
-    id: iconContainer
+	Item {
+		id: iconContainer
 
-    Layout.fillHeight: true
-    implicitWidth: icon.width
+		Layout.fillHeight: true
+		implicitWidth: icon.width
 
-    Text {
-      id: icon
+		Text {
+			id: icon
 
-      anchors.centerIn: parent
-      font.family: Appearance.fonts.family_Material
-      font.pixelSize: Appearance.fonts.medium
-    }
-  }
+			anchors.centerIn: parent
+			font.family: Appearance.fonts.family_Material
+			font.pixelSize: Appearance.fonts.medium
+		}
+	}
 
-  Item {
-    id: textContainer
+	Item {
+		id: textContainer
 
-    Layout.fillHeight: true
-    implicitWidth: text.width
+		Layout.fillHeight: true
+		implicitWidth: text.width
 
-    Text {
-      id: text
+		Text {
+			id: text
 
-      anchors.centerIn: parent
-      font.family: Appearance.fonts.family_Mono
-      font.pixelSize: Appearance.fonts.small
-    }
-  }
+			anchors.centerIn: parent
+			font.family: Appearance.fonts.family_Mono
+			font.pixelSize: Appearance.fonts.small
+		}
+	}
 }

@@ -19,7 +19,8 @@ Rectangle {
 	property int padding: 16
 
 	Layout.fillHeight: true
-	color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
+	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
+	color: "transparent"
 	implicitWidth: container.width + padding
 	radius: 5
 
@@ -32,7 +33,7 @@ Rectangle {
 			color: Appearance.colors.tertiary
 			font.family: Appearance.fonts.family_Mono
 			font.pixelSize: Appearance.fonts.medium * 1.4
-			text: (batCharging) ? root.chargeIcon : root.batIcon
+			text: (root.batCharging) ? root.chargeIcon : root.batIcon
 		}
 
 		text {
