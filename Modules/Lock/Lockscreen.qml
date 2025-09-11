@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 
-import qs.Data
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -14,16 +13,16 @@ Scope {
 
 		signal unlock
 
-		LockSurface {
+		Surface {
 			id: surface
 
 			lock: lock
-			pam: pamInstance
+			pam: pam
 		}
 	}
 
 	Pam {
-		id: pamInstance
+		id: pam
 
 		lock: lock
 	}

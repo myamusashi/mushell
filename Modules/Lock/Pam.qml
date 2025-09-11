@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import qs.Data
 
 import QtQuick
