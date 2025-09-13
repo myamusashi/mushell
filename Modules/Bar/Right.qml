@@ -17,8 +17,6 @@ Item {
 		}
 		Tray {
 			Layout.alignment: Qt.AlignVCenter
-			parentWindow: root
-			parentScreen: root.modelData
 		}
 		PowerProfiles {
 			Layout.alignment: Qt.AlignVCenter

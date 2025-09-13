@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -7,8 +9,9 @@ import qs.Data
 
 Rectangle {
 	id: root
-	property var parentWindow: null
-	property var parentScreen: null
+
+	readonly property var parentWindow: bar
+	readonly property var parentScreen: bar.modelData
 	property real widgetHeight: 25
 	readonly property real horizontalPadding: Appearance.spacing.normal
 
@@ -33,14 +36,16 @@ Rectangle {
 	Row {
 		id: systemTrayRow
 		anchors.centerIn: parent
-		spacing: 5
+		spacing: Appearance.spacing.small
 
 		Repeater {
 			model: SystemTray.items.values
 			delegate: Item {
-				property var trayItem: modelData
+				id: delegateTray
+
+				required property SystemTrayItem modelData
 				property string iconSource: {
-					let icon = trayItem && trayItem.icon;
+					let icon = modelData && modelData.icon;
 					if (typeof icon === 'string' || icon instanceof String) {
 						if (icon.includes("?path=")) {
 							const split = icon.split("?path=");
@@ -92,15 +97,15 @@ Rectangle {
 					cursorShape: Qt.PointingHandCursor
 
 					onClicked: mouse => {
-						if (!trayItem)
+						if (!delegateTray.modelData)
 							return;
 
-						if (mouse.button === Qt.LeftButton && !trayItem.onlyMenu) {
-							trayItem.activate();
+						if (mouse.button === Qt.LeftButton && !delegateTray.modelData.onlyMenu) {
+							delegateTray.modelData.activate();
 							return;
 						}
 
-						if (trayItem.hasMenu) {
+						if (delegateTray.modelData.hasMenu) {
 							var validWindow = root.parentWindow;
 							if (!validWindow) {
 								var item = root.parent;
@@ -119,7 +124,7 @@ Rectangle {
 								var screenX = currentScreen ? currentScreen.x : 0;
 								var relativeX = globalPos.x - screenX;
 
-								menuAnchor.menu = trayItem.menu;
+								menuAnchor.menu = delegateTray.modelData?.menu;
 								menuAnchor.anchor.window = validWindow;
 								menuAnchor.anchor.rect = Qt.rect(relativeX, 35 + Appearance.spacing.small, parent.width, 1);
 								menuAnchor.open();
