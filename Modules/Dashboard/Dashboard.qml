@@ -9,7 +9,9 @@ import Quickshell.Io
 import Quickshell.Wayland
 
 import qs.Data
+import qs.Components
 import "Inbox" as Inbox
+import "Quicksettings" as QS
 
 Scope {
 	id: root
@@ -27,86 +29,133 @@ Scope {
 		isDashboardOpen = !isDashboardOpen;
 	}
 
-	PanelWindow {
-		id: dashboard
+	Loader {
+		id: dashboardLoader
+		active: root.isDashboardOpen
+		asynchronous: true
 
-		property ShellScreen modelData
+		sourceComponent: PanelWindow {
+			id: dashboard
 
-		anchors {
-			top: true
-			bottom: true
-			right: true
-			left: true
-		}
+			property ShellScreen modelData
 
-		WlrLayershell.namespace: "shell"
-		visible: root.isDashboardOpen
-		focusable: true
-		color: "transparent"
-		screen: modelData
-		exclusiveZone: 0
-		implicitWidth: root.baseWidth
-		implicitHeight: root.baseHeight
+			anchors {
+				top: true
+				bottom: true
+				right: true
+				left: true
+			}
 
-		Rectangle {
-			anchors.fill: parent
-			anchors.margins: 20
+			WlrLayershell.namespace: "shell:dashboard"
+			visible: true
+			focusable: true
 			color: "transparent"
+			screen: modelData
+			exclusiveZone: 0
+			implicitWidth: root.baseWidth
+			implicitHeight: root.baseHeight
 
-			Item {
+			Rectangle {
 				anchors.fill: parent
-				focus: true
-				Keys.onEscapePressed: root.toggleDashboard()
+				anchors.margins: 20
+				color: "transparent"
 
-				RowLayout {
+				Item {
 					anchors.fill: parent
-					spacing: Appearance.spacing.large
+					focus: true
+					Keys.onEscapePressed: root.toggleDashboard()
 
-					ColumnLayout {
-						id: notifsAndWeatherLayout
+					RowLayout {
+						anchors.fill: parent
+						spacing: Appearance.spacing.large
 
-						Layout.fillWidth: true
-						Layout.alignment: Qt.AlignTop
-						Layout.maximumHeight: parent.height
-						Layout.preferredWidth: root.baseWidth / 3
-						Layout.minimumWidth: 400
+						ColumnLayout {
+							id: notifsAndWeatherLayout
 
-						Inbox.Header {}
-
-						Inbox.Notification {}
-
-						WeatherWidget {
 							Layout.fillWidth: true
-							Layout.preferredHeight: 350
-							Layout.topMargin: 8
+							Layout.alignment: Qt.AlignTop
+							Layout.maximumHeight: parent.height
+							Layout.preferredWidth: root.baseWidth / 3
+							Layout.minimumWidth: 400
+
+							Inbox.Header {}
+
+							Inbox.Notification {}
+
+							Loader {
+								id: weatherLoader
+
+								Layout.fillWidth: true
+								Layout.preferredHeight: 350
+								Layout.topMargin: 8
+								active: root.isDashboardOpen
+								asynchronous: true
+								sourceComponent: WeatherWidget {
+									Layout.fillWidth: true
+									Layout.preferredHeight: 350
+									Layout.topMargin: 8
+								}
+							}
 						}
-					}
-					ColumnLayout {
-						id: performanceLayout
 
-						Layout.fillWidth: true
-						Layout.fillHeight: true
+						ColumnLayout {
+							id: performanceLayout
 
-						Layout.preferredWidth: root.baseWidth / 3
-						Layout.minimumWidth: 400
-
-						Rectangle {
 							Layout.fillWidth: true
 							Layout.fillHeight: true
-							radius: 8
-							color: "transparent"
+							Layout.preferredWidth: root.baseWidth / 3
+							Layout.minimumWidth: 400
+
+							Loader {
+								id: performanceLoader
+
+								Layout.fillWidth: true
+								Layout.fillHeight: true
+								active: root.isDashboardOpen
+								sourceComponent: Performance {}
+							}
+
+							Loader {
+								id: audioLoader
+
+								Layout.fillWidth: true
+								Layout.fillHeight: true
+								active: root.isDashboardOpen
+								sourceComponent: QS.Quicksettings {}
+							}
 						}
-					}
 
-					ColumnLayout {
-						id: mprisLayout
+						ColumnLayout {
+							id: mprisLayout
 
-						Layout.fillWidth: true
-						Layout.fillHeight: true
-						Layout.preferredWidth: root.baseWidth / 3
-						Layout.minimumWidth: 400
+							Layout.fillWidth: true
+							Layout.fillHeight: true
+							Layout.preferredWidth: root.baseWidth / 3
+							Layout.minimumWidth: 400
 
-						MediaPlayer {}
+							Loader {
+								id: mediaPlayerLoader
+
+								Layout.fillWidth: true
+								Layout.fillHeight: true
+								active: root.isDashboardOpen
+								asynchronous: true
+								sourceComponent: MediaPlayer {}
+							}
+
+							Loader {
+								id: calendarLoader
+
+								Layout.fillWidth: true
+								Layout.preferredHeight: 370
+								active: root.isDashboardOpen
+								asynchronous: true
+								sourceComponent: Calendar {
+									Layout.fillWidth: true
+									Layout.preferredHeight: 370
+								}
+							}
+						}
 					}
 				}
 			}

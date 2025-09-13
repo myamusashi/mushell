@@ -1,9 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Services.Mpris
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
-import QtQuick.Controls
 
 import qs.Data
 import qs.Helpers
@@ -12,12 +13,65 @@ import qs.Components
 Rectangle {
 	id: root
 
+	property int index
+	readonly property MprisPlayer player: Mpris.players.values[index]
+
 	Layout.fillWidth: true
 	Layout.fillHeight: true
-	radius: Appearance.rounding.normal
 	color: Appearance.colors.withAlpha(Appearance.colors.surface, 0.7)
+	radius: Appearance.rounding.normal
 	border.color: Appearance.colors.outline
 	border.width: 2
+	clip: true
+
+	Rectangle {
+		id: wallCover
+
+		anchors.fill: parent
+		color: "transparent"
+		z: -1
+
+		Image {
+			id: coverSource
+
+			anchors.fill: parent
+
+			visible: false
+			source: root.player.trackArtUrl
+			fillMode: Image.PreserveAspectCrop
+		}
+
+		MultiEffect {
+			blurEnabled: true
+			blurMax: 30
+			blur: 1.0
+
+			source: coverSource
+			anchors.fill: parent
+			maskEnabled: true
+			maskSource: maskWallCover
+		}
+
+		Item {
+			id: maskWallCover
+
+			anchors.fill: parent
+			layer.enabled: true
+			visible: false
+			Rectangle {
+				width: wallCover.width
+				height: wallCover.height
+				radius: root.radius
+			}
+		}
+
+		// Make title readable
+		Rectangle {
+			anchors.fill: parent
+
+			color: root.player.trackArtUrl.length > 0 ? Appearance.colors.withAlpha(Appearance.colors.shadow, 0.1) : "transparent"
+		}
+	}
 
 	function formatTime(seconds) {
 		const hours = Math.floor(seconds / 3600);
@@ -36,10 +90,8 @@ Rectangle {
 		Item {
 			id: mprisControll
 
-			anchors.fill: parent
-
-			required property int index
-			readonly property MprisPlayer player: Mpris.players.values[index]
+			Layout.fillWidth: true
+			Layout.fillHeight: true
 
 			Rectangle {
 				anchors.fill: parent
@@ -55,8 +107,8 @@ Rectangle {
 						id: coverContainer
 
 						anchors.horizontalCenter: parent.horizontalCenter
-						width: 250
-						height: 250
+						width: 100
+						height: 100
 
 						Image {
 							id: cover
@@ -66,14 +118,8 @@ Rectangle {
 							property string notFoundImage: Qt.resolvedUrl(Quickshell.shellDir + "/Assets/image_not_found.svg")
 
 							visible: false
-							source: notFoundImage
+							source: root.player.trackArtUrl.length > 0 ? root.player.trackArtUrl : notFoundImage
 							fillMode: Image.PreserveAspectCrop
-							mipmap: true
-
-							onStatusChanged: {
-								if (mprisControll.player.trackArtUrl || mprisControll.player.trackArtUrl !== "")
-									source = mprisControll.player.trackArtUrl;
-							}
 						}
 
 						MultiEffect {
@@ -100,26 +146,26 @@ Rectangle {
 						anchors.horizontalCenter: parent.horizontalCenter
 						spacing: 8
 
-						Text {
+						StyledText {
 							id: titleText
 
 							anchors.horizontalCenter: parent.horizontalCenter
-							text: mprisControll.player.trackTitle !== "" ? mprisControll.player.trackTitle : "null"
+							text: root.player.trackTitle.length > 0 ? root.player.trackTitle : "null"
 							color: Appearance.colors.on_background
-							font.pixelSize: Appearance.fonts.extraLarge
+							font.pixelSize: Appearance.fonts.medium * 1.5
 							font.bold: true
 							horizontalAlignment: Text.AlignHCenter
 							wrapMode: Text.WordWrap
 							width: Math.min(implicitWidth, 300)
 						}
 
-						Text {
+						StyledText {
 							id: artistText
 
 							anchors.horizontalCenter: parent.horizontalCenter
-							text: mprisControll.player.trackArtist !== "" ? mprisControll.player.trackArtist : "null"
+							text: root.player.trackArtist.length > 0 ? root.player.trackArtist : "null"
 							color: Appearance.colors.on_background
-							font.pixelSize: Appearance.fonts.large
+							font.pixelSize: Appearance.fonts.medium * 1.1
 							opacity: 0.8
 							horizontalAlignment: Text.AlignHCenter
 							wrapMode: Text.WordWrap
@@ -136,23 +182,23 @@ Rectangle {
 								{
 									icon: "skip_previous",
 									action: () => {
-										if (!mprisControll.player.canGoPrevious) {
+										if (!root.player.canGoPrevious) {
 											console.log("Can't go back");
 											return;
 										}
-										mprisControll.player?.previous();
+										root.player.previous();
 									}
 								},
 								{
-									icon: mprisControll.player.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle",
+									icon: root.player.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle",
 									action: () => {
-										mprisControll.player.togglePlaying();
+										root.player.togglePlaying();
 									}
 								},
 								{
 									icon: "skip_next",
 									action: () => {
-										mprisControll.player.next();
+										root.player.next();
 									}
 								}
 							]
@@ -161,11 +207,12 @@ Rectangle {
 								id: delegateController
 
 								required property var modelData
-								width: 56
-								height: 56
+								width: 44
+								height: 44
 
 								Rectangle {
 									id: bgCon
+
 									anchors.fill: parent
 									anchors.margins: 4
 									color: Appearance.colors.primary
@@ -209,86 +256,30 @@ Rectangle {
 						anchors.horizontalCenter: parent.horizontalCenter
 						spacing: 8
 
-						Text {
+						StyledText {
 							id: timeTrack
 
 							anchors.horizontalCenter: parent.horizontalCenter
-							text: root.formatTime(mprisControll.player.position)
+							text: root.player.position > 0 ? root.formatTime(root.player.position) : "00:00"
 							color: Appearance.colors.on_background
 
 							Timer {
-								running: mprisControll.player.playbackState == MprisPlaybackState.Playing
+								running: root.player.playbackState == MprisPlaybackState.Playing
 								interval: 100
 								repeat: true
-								onTriggered: mprisControll.player.positionChanged()
+								onTriggered: root.player.positionChanged()
 							}
 						}
 
-						Slider {
-							id: trackProgress
+						StyledSlide {
+							value: root.player.length > 0 ? root.player.position / root.player.length : 0
 
-							hoverEnabled: true
-							Layout.alignment: Qt.AlignHCenter
-
-							background: Item {
-								implicitWidth: 300
-								implicitHeight: 10
-								width: trackProgress.availableWidth
-								x: trackProgress.leftPadding
-								y: trackProgress.topPadding + trackProgress.availableHeight / 2 - height / 2
-
-								Rectangle {
-									id: unprogressBackground
-
-									anchors.fill: parent
-									color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.1)
-									radius: Appearance.rounding.small
-								}
-
-								Rectangle {
-									id: progressBackground
-
-									width: parent.width * trackProgress.visualPosition
-									height: parent.height
-									color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.8)
-									radius: Appearance.rounding.small
-								}
+							FrameAnimation {
+								running: root.player.playbackState == MprisPlaybackState.Playing
+								onTriggered: root.player.positionChanged()
 							}
 
-							value: mprisControll.player.length > 0 ? mprisControll.player.position / mprisControll.player.length : 0
-
-							Timer {
-								running: mprisControll.player.playbackState == MprisPlaybackState.Playing
-								repeat: true
-								interval: 100
-								onTriggered: mprisControll.player.positionChanged()
-							}
-
-							handle: Rectangle {
-								id: sliderHandle
-
-								x: trackProgress.leftPadding + trackProgress.visualPosition * (trackProgress.availableWidth - width)
-								y: trackProgress.topPadding + trackProgress.availableHeight / 2 - height / 2
-								implicitWidth: 15
-								implicitHeight: 15
-								radius: width / 2
-								color: trackProgress.pressed ? Appearance.colors.primary : Appearance.colors.on_surface
-
-								Rectangle {
-									anchors.centerIn: parent
-									width: trackProgress.pressed ? 28 : (trackProgress.hovered ? 24 : 0)
-									height: width
-									radius: width / 2
-									color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.12)
-									visible: trackProgress.pressed || trackProgress.hovered
-
-									Behavior on width {
-										NumbAnim {}
-									}
-								}
-							}
-
-							onMoved: mprisControll.player.position = value * mprisControll.player.length
+							onMoved: root.player.position = value * root.player.length
 						}
 					}
 				}
