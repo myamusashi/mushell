@@ -28,7 +28,7 @@ Loader {
 		color: "transparent"
 
 		implicitWidth: 400
-		implicitHeight: Math.min(300, notifListView.contentHeight + 20)
+		implicitHeight: Math.min(700, notifListView.contentHeight + 20)
 		visible: {
 			if (!Notifs.notifications.isDnDDisabled && Notifs.notifications.popupNotifications.length > 0)
 				return true;
@@ -43,9 +43,8 @@ Loader {
 			anchors.top: parent.top
 			anchors.fill: parent
 			anchors.margins: 10
-			// Layout.preferredHeight: 400
 			spacing: Appearance.spacing.normal
-			clip: false
+			clip: true
 			model: ScriptModel {
 				values: [...Notifs.notifications.popupNotifications.map(a => a)].reverse()
 			}
