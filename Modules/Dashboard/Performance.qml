@@ -8,7 +8,7 @@ Rectangle {
 	id: root
 
 	readonly property int diskProp: SysUsage.diskUsed / 1048576
-	readonly property int ramProp: SysUsage.memUsed / 1048576
+	readonly property int memProp: SysUsage.memUsed / 1048576
 
 	anchors.centerIn: parent
 	radius: Appearance.rounding.normal
@@ -22,7 +22,7 @@ Rectangle {
 		rowSpacing: Appearance.spacing.large * 2
 
 		Item {
-			id: ramItem
+			id: memItem
 
 			Layout.alignment: Qt.AlignCenter
 			Layout.preferredWidth: childrenRect.width
@@ -33,7 +33,7 @@ Rectangle {
 				spacing: Appearance.spacing.normal
 
 				Circular {
-					id: ram
+					id: mem
 
 					value: Math.round(SysUsage.memUsed / SysUsage.memTotal * 100)
 					size: 0
@@ -41,10 +41,10 @@ Rectangle {
 				}
 
 				StyledText {
-					id: ramText
+					id: memText
 
 					Layout.alignment: Qt.AlignHCenter
-					text: "RAM usage" + "\n" + root.ramProp + " GB"
+					text: "RAM usage" + "\n" + root.memProp + " GB"
 					color: Appearance.colors.on_surface
 				}
 			}
