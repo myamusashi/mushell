@@ -16,7 +16,6 @@ Scope {
 			id: root
 
 			required property ShellScreen modelData
-			property var date: new Date()
 
 			anchors {
 				top: true
@@ -47,16 +46,13 @@ Scope {
 						id: hours
 
 						Layout.alignment: Qt.AlignCenter
-						text: {
-							const hours = root.date.getHours().toString().padStart(2, '0');
-							const minutes = root.date.getMinutes().toString().padStart(2, '0');
-							return `${hours}:${minutes}`;
-						}
+						text: Qt.formatDateTime(Time?.date, "h:mm AP")
 						font.pixelSize: Appearance.fonts.extraLarge * 2.5
 						font.family: "Audiowide"
 						font.italic: true
 						font.bold: true
-						color: Appearance.colors.surface
+						antialiasing: false
+						color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
 					}
 
 					RowLayout {
@@ -65,32 +61,35 @@ Scope {
 						StyledText {
 							id: day
 
-							text: Qt.formatDate(root.date, "ddd")
+							text: Qt.formatDateTime(Time?.date, "dddd")
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 
 						StyledText {
 							id: month
 
-							text: root.date.getMonth()
+							text: Qt.formatDateTime(Time?.date, "MMMM")
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 
 						StyledText {
 							id: year
 
-							text: root.date.getFullYear()
+							text: Qt.formatDateTime(Time?.date, "yyyy")
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 
 						IconImage {
 							id: weatherIcon
 
 							Layout.alignment: Qt.AlignHCenter
-							implicitSize: 24
+							implicitSize: 37
 							source: Qt.resolvedUrl("https://openweathermap.org/img/wn/" + Weather.weatherIconData + "@4x.png")
 							asynchronous: true
 							smooth: true
@@ -101,7 +100,8 @@ Scope {
 
 							text: Weather.tempData + "°"
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 
 						MatIcon {
@@ -109,7 +109,8 @@ Scope {
 
 							icon: "humidity_low"
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 
 						StyledText {
@@ -117,7 +118,8 @@ Scope {
 
 							text: Weather.humidityData + "%"
 							font.pixelSize: Appearance.fonts.large
-							color: Appearance.colors.surface
+							color: Appearance.colors.withAlpha(Appearance.colors.on_primary_container, 0.2)
+							antialiasing: false
 						}
 					}
 				}
