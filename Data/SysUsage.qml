@@ -14,8 +14,8 @@ Singleton {
 	property real diskTotal
 
 	// Networking
-	readonly property string wiredInterface: "enp0s31f6"
-	readonly property string wirelessInterface: "wlp3s0"
+	property string wiredInterface
+	property string wirelessInterface
 
 	property var previousData: ({})
 	property var lastUpdateTime: 0
@@ -50,6 +50,45 @@ Singleton {
 		}
 	}
 
+	Process {
+		id: networkWiredInterfacesState
+
+		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':ethernet:' | head -1"]
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const data = text.trim();
+				root.wiredInterface = root.parseInterfaceState(data, "ethernet");
+			}
+		}
+	}
+
+	Process {
+		id: networkWirelessInterfacesState
+
+		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':wifi:' | head -1"]
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const data = text.trim();
+				root.wirelessInterface = root.parseInterfaceState(data, "wifi");
+			}
+		}
+	}
+
+	function parseInterfaceState(data, expectedType) {
+		if (!data) {
+			return `No ${expectedType} interface found`;
+		}
+
+		const [device, type, state] = data.split(':');
+
+		if (type !== expectedType) {
+			return `No ${expectedType} interface found`;
+		}
+
+		const status = (state === "connected") ? "ONLINE" : "OFFLINE";
+		return `${device} [${status}]`;
+	}
+
 	function parseNetworkData(data) {
 		const lines = data.split('\n');
 		const interfaces = {};
@@ -76,6 +115,7 @@ Singleton {
 		return interfaces;
 	}
 
+	// Thx claude
 	function calculateNetworkStats(data) {
 		const currentTime = Date.now();
 		const currentData = parseNetworkData(data);
@@ -91,7 +131,7 @@ Singleton {
 		}
 
 		if (previousData && Object.keys(previousData).length > 0 && lastUpdateTime > 0) {
-			const timeDiff = (currentTime - lastUpdateTime) / 1000; // dalam detik
+			const timeDiff = (currentTime - lastUpdateTime) / 1000;
 
 			if (timeDiff > 0) {
 				if (currentData[wirelessInterface] && previousData[wirelessInterface]) {
@@ -234,6 +274,8 @@ Singleton {
 			meminfo.reload();
 			networkInfo.reload();
 			diskinfo.running = true;
+			networkWiredInterfacesState.running = true;
+			networkWirelessInterfacesState.running = true;
 		}
 	}
 }
