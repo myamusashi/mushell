@@ -1,4 +1,5 @@
 //@ pragma UseQApplication
+//@ pragma IconTheme Papirus
 import qs.Modules.Lock
 import qs.Modules.Bar
 import qs.Modules.Wallpaper
