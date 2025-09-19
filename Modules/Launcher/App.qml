@@ -80,8 +80,12 @@ Scope {
 
 						Layout.fillWidth: true
 						Layout.preferredHeight: 60
+						placeholderText: "  Search"
+						font.family: Appearance.fonts.family_Sans
 						focus: true
-						placeholderText: " Search"
+						font.pixelSize: Appearance.fonts.large * 1.2
+						color: Appearance.colors.on_surface
+						placeholderTextColor: Appearance.colors.on_surface_variant
 
 						background: Rectangle {
 							radius: Appearance.rounding.small
