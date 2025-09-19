@@ -12,12 +12,11 @@ Rectangle {
 
 	property string icon: Audio.getIcon(root.node)
 	property PwNode node: Pipewire.defaultAudioSink
-	property int padding: 20
 
 	Layout.fillHeight: true
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
 	color: "transparent"
-	implicitWidth: container.width + padding
+	implicitWidth: container.width
 	radius: 5
 
 	Behavior on implicitWidth {

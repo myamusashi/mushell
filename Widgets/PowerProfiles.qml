@@ -14,7 +14,7 @@ Rectangle {
 	color: "transparent"
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
 	implicitWidth: container.width
-	radius: 5
+	radius: Appearance.rounding.small
 
 	Behavior on implicitWidth {
 		NumbAnim {}

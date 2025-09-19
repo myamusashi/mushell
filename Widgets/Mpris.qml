@@ -63,10 +63,35 @@ Rectangle {
 							icon: mediaContainer.player.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
 						}
 
-						StyledText {
-							font.pixelSize: Appearance.fonts.medium
-							text: mediaContainer.player.trackArtist > 25 ? mediaContainer.player.trackArtist.substring(0, 25 - 3) + "..." : (mediaContainer.player.trackArtist || "")
-							color: Appearance.colors.on_background
+						ColumnLayout {
+							Layout.fillWidth: parent
+							Layout.fillHeight: parent
+
+							StyledText {
+								font.pixelSize: Appearance.fonts.medium
+								text: mediaContainer.player.trackArtist > 25 ? mediaContainer.player.trackArtist.substring(0, 25 - 3) + "..." : (mediaContainer.player.trackArtist || "")
+								color: Appearance.colors.on_background
+							}
+
+							StyledSlide {
+								onPositionChanged: {
+									console.log("Position:", mediaContainer.player.position, "Length:", mediaContainer.player.length);
+								}
+								value: mediaContainer.player.length > 0 ? mediaContainer.player.position / mediaContainer.player.length : 0
+
+								handleHeight: 0
+								handleWidth: 0
+								Layout.preferredWidth: parent.width
+								Layout.preferredHeight: 5
+
+								FrameAnimation {
+									running: mediaContainer.player.playbackState === MprisPlaybackState.Playing
+									onTriggered: mediaContainer.player.positionChanged()
+								}
+
+								onMoved: mediaContainer.player.position = value * mediaContainer.player.length
+
+							}
 						}
 					}
 

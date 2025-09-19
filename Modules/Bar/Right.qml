@@ -7,9 +7,9 @@ import Quickshell.Services.Pipewire
 Item {
 	RowLayout {
 		anchors.fill: parent
-		anchors.rightMargin: 8
+		anchors.rightMargin: Appearance.margin.small
 		layoutDirection: Qt.RightToLeft
-		spacing: Appearance.spacing.small
+		spacing: Appearance.spacing.normal
 
 		Clock {
 			Layout.alignment: Qt.AlignVCenter

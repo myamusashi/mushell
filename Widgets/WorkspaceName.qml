@@ -8,15 +8,12 @@ import qs.Components
 Rectangle {
 	id: root
 
-	property int maximumWidth: 184
-	property int padding: 16
 
 	Layout.fillHeight: true
-	Layout.maximumWidth: maximumWidth + padding
 	clip: true
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
 	color: "transparent"
-	implicitWidth: windowNameText.contentWidth + padding
+	implicitWidth: windowNameText.contentWidth
 	radius: 5
 
 	Behavior on implicitWidth {
@@ -38,6 +35,5 @@ Rectangle {
 		font.pixelSize: Appearance.fonts.medium
 		horizontalAlignment: Text.AlignHCenter
 		text: actWinName.toUpperCase()
-		width: root.maximumWidth
 	}
 }

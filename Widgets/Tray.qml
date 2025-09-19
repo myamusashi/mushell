@@ -17,8 +17,8 @@ Rectangle {
 	property real widgetHeight: 25
 	readonly property real horizontalPadding: Appearance.spacing.normal
 
-	Layout.preferredWidth: systemTrayRow.width + horizontalPadding * 2
-	Layout.minimumWidth: visible ? horizontalPadding * 2 : 0
+	Layout.preferredWidth: systemTrayRow.width + horizontalPadding * 1.2
+	Layout.minimumWidth: visible ? horizontalPadding * 1.2 : 0
 
 	// width: calculatedWidth
 	height: widgetHeight

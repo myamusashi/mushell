@@ -6,7 +6,6 @@ import qs.Data
 Item {
 	RowLayout {
 		anchors.centerIn: parent
-		spacing: Appearance.spacing.small
 
 		Mpris {
 			Layout.alignment: Qt.AlignCenter

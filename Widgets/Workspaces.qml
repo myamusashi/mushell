@@ -40,14 +40,25 @@ RowLayout {
 					StyledText {
 						id: workspaceText
 						text: (wsItem.index + 1).toString()
-						color: wsItem.focused ? Appearance.colors.primary : Appearance.colors.on_background
+						color: {
+							if (workspaceMArea.containsMouse)
+								return Appearance.colors.withAlpha(Appearance.colors.primary, 0.5);
+
+							if (wsItem.focused)
+								return Appearance.colors.primary;
+							else
+								return Appearance.colors.on_background;
+						}
 						font.pixelSize: Appearance.fonts.medium * 1.3
 						font.bold: wsItem.focused
 					}
 
 					MouseArea {
+						id: workspaceMArea
+
 						anchors.fill: parent
 						hoverEnabled: true
+						cursorShape: Qt.PointingHandCursor
 						onClicked: Workspaces.switchWorkspace(wsItem.index + 1)
 					}
 				}

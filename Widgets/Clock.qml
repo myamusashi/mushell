@@ -6,12 +6,10 @@ import qs.Components
 import qs.Helpers
 
 Rectangle {
-	property int padding: 16
-
 	Layout.fillHeight: true
 	color: "transparent"
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
-	implicitWidth: timeContainer.width + padding
+	implicitWidth: timeContainer.width + 15
 	radius: Appearance.rounding.small
 
 	Dots {

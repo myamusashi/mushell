@@ -7,8 +7,8 @@ import qs.Widgets
 Item {
 	RowLayout {
 		anchors.fill: parent
-		anchors.leftMargin: 8
-		spacing: Appearance.spacing.small
+		anchors.leftMargin: Appearance.margin.small
+		spacing: Appearance.spacing.normal
 
 		OsText {
 			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter

@@ -17,13 +17,12 @@ Rectangle {
 	readonly property real batPercentage: UPower.displayDevice.percentage
 	readonly property string chargeIcon: batIcons[10 - chargeIconIndex]
 	property int chargeIconIndex: 0
-	property int padding: 16
 
 	Layout.fillHeight: true
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
 	color: "transparent"
-	implicitWidth: container.width + padding
-	radius: 5
+	implicitWidth: container.width
+	radius: Appearance.rounding.small
 
 	Dots {
 		id: container

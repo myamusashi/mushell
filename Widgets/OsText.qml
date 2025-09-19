@@ -5,12 +5,10 @@ import qs.Data
 import qs.Helpers
 
 Rectangle {
-	property int padding: 16
-
 	Layout.fillHeight: true
 	color: "transparent"
 	// color: Appearance.colors.withAlpha(Appearance.colors.background, 0.79)
-	implicitWidth: container.width + padding
+	implicitWidth: container.width
 	radius: 5
 
 	Dots {
