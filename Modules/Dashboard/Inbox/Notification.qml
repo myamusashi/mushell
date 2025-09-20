@@ -244,6 +244,9 @@ Rectangle {
 
 										onClicked: {
 											actionButton.modelData.invoke();
+											Notifs.notifications.removePopupNotification(rectDelegate.modelData);
+											Notifs.notifications.removeListNotification(rectDelegate.modelData);
+											rectDelegate.modelData.dismiss();
 										}
 
 										Rectangle {

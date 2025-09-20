@@ -281,8 +281,10 @@ Loader {
 										cursorShape: Qt.PointingHandCursor
 
 										onClicked: {
-											console.log("Action clicked:", actionButton.modelData.text);
 											actionButton.modelData.invoke();
+											Notifs.notifications.removePopupNotification(delegateNotif.modelData);
+											Notifs.notifications.removeListNotification(delegateNotif.modelData);
+											delegateNotif.modelData.dismiss();
 										}
 
 										Rectangle {
