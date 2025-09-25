@@ -59,7 +59,7 @@ case "$1" in
 		sleep 1
 		goto_link
 	else
-		notify-send -u critical -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
 	;;
 "--screenshot-selection")
@@ -69,7 +69,7 @@ case "$1" in
 		sleep 1
 		goto_link
 	else
-		notify-send -u critical -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
 	;;
 "--screenshot-eDP-1")
@@ -79,7 +79,7 @@ case "$1" in
 		wl-copy <"$IMG"
 		goto_link
 	else
-		notify-send -u critical -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on eDP-1."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on eDP-1."
 	fi
 	;;
 "--screenshot-HDMI-A-2")
@@ -89,7 +89,7 @@ case "$1" in
 		wl-copy <"$IMG"
 		goto_link
 	else
-		notify-send -u critical -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on HDMI-A-2."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on HDMI-A-2."
 	fi
 	;;
 "--screenshot-both-screens")
@@ -105,7 +105,7 @@ case "$1" in
 		rm "${IMG//.png/-eDP-1.png}" "${IMG//.png/-HDMI-A-2.png}"
 		goto_link
 	else
-		notify-send -u critical -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on both screens."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on both screens."
 	fi
 	;;
 *)
