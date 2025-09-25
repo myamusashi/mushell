@@ -12,11 +12,11 @@ Singleton {
 	}
 
 	function getSinkIcon(node: PwNode): string {
-		return (node.audio.muted) ? "󰝟" : (node.audio.volume > 0.5) ? "󰕾" : (node.audio.volume > 0.01) ? "󰖀" : "󰕿";
+		return (node.audio.muted) ? "volume_off" : (node.audio.volume > 0.5) ? "volume_up" : (node.audio.volume > 0.01) ? "volume_down" : "volume_mute";
 	}
 
 	function getSourceIcon(node: PwNode): string {
-		return (node.audio.muted) ? "󰍭" : "󰍬";
+		return (node.audio.muted) ? "mic_off" : "mic";
 	}
 
 	function toggleMute(node: PwNode) {
