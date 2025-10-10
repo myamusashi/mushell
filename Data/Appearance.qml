@@ -7,55 +7,55 @@ Singleton {
 	id: root
 
 	component ColorsComponent: QtObject {
-		readonly property color background: "#1a1111"
+		readonly property color background: "#111418"
 		readonly property color error: "#ffb4ab"
 		readonly property color error_container: "#93000a"
-		readonly property color inverse_on_surface: "#382e2e"
-		readonly property color inverse_primary: "#8f4a4e"
-		readonly property color inverse_surface: "#f0dede"
-		readonly property color on_background: "#f0dede"
+		readonly property color inverse_on_surface: "#2e3135"
+		readonly property color inverse_primary: "#37618e"
+		readonly property color inverse_surface: "#e1e2e8"
+		readonly property color on_background: "#e1e2e8"
 		readonly property color on_error: "#690005"
 		readonly property color on_error_container: "#ffdad6"
-		readonly property color on_primary: "#561d23"
-		readonly property color on_primary_container: "#ffdada"
-		readonly property color on_primary_fixed: "#3b080f"
-		readonly property color on_primary_fixed_variant: "#723338"
-		readonly property color on_secondary: "#44292a"
-		readonly property color on_secondary_container: "#ffdada"
-		readonly property color on_secondary_fixed: "#2c1516"
-		readonly property color on_secondary_fixed_variant: "#5d3f40"
-		readonly property color on_surface: "#f0dede"
-		readonly property color on_surface_variant: "#d7c1c1"
-		readonly property color on_tertiary: "#432c06"
-		readonly property color on_tertiary_container: "#ffddb2"
-		readonly property color on_tertiary_fixed: "#291800"
-		readonly property color on_tertiary_fixed_variant: "#5c421a"
-		readonly property color outline: "#9f8c8c"
-		readonly property color outline_variant: "#524343"
-		readonly property color primary: "#ffb3b6"
-		readonly property color primary_container: "#723338"
-		readonly property color primary_fixed: "#ffdada"
-		readonly property color primary_fixed_dim: "#ffb3b6"
+		readonly property color on_primary: "#003259"
+		readonly property color on_primary_container: "#d2e4ff"
+		readonly property color on_primary_fixed: "#001c37"
+		readonly property color on_primary_fixed_variant: "#1b4975"
+		readonly property color on_secondary: "#253141"
+		readonly property color on_secondary_container: "#d7e3f8"
+		readonly property color on_secondary_fixed: "#101c2b"
+		readonly property color on_secondary_fixed_variant: "#3c4858"
+		readonly property color on_surface: "#e1e2e8"
+		readonly property color on_surface_variant: "#c3c6cf"
+		readonly property color on_tertiary: "#3b2947"
+		readonly property color on_tertiary_container: "#f3daff"
+		readonly property color on_tertiary_fixed: "#251431"
+		readonly property color on_tertiary_fixed_variant: "#533f5f"
+		readonly property color outline: "#8d9199"
+		readonly property color outline_variant: "#43474e"
+		readonly property color primary: "#a1c9fd"
+		readonly property color primary_container: "#1b4975"
+		readonly property color primary_fixed: "#d2e4ff"
+		readonly property color primary_fixed_dim: "#a1c9fd"
 		readonly property color scrim: "#000000"
-		readonly property color secondary: "#e6bdbd"
-		readonly property color secondary_container: "#5d3f40"
-		readonly property color secondary_fixed: "#ffdada"
-		readonly property color secondary_fixed_dim: "#e6bdbd"
+		readonly property color secondary: "#bbc7db"
+		readonly property color secondary_container: "#3c4858"
+		readonly property color secondary_fixed: "#d7e3f8"
+		readonly property color secondary_fixed_dim: "#bbc7db"
 		readonly property color shadow: "#000000"
-		readonly property color surface: "#1a1111"
-		readonly property color surface_bright: "#413737"
-		readonly property color surface_container: "#271d1e"
-		readonly property color surface_container_high: "#322828"
-		readonly property color surface_container_highest: "#3d3232"
-		readonly property color surface_container_low: "#22191a"
-		readonly property color surface_container_lowest: "#140c0c"
-		readonly property color surface_dim: "#1a1111"
-		readonly property color surface_tint: "#ffb3b6"
-		readonly property color surface_variant: "#524343"
-		readonly property color tertiary: "#e6c08d"
-		readonly property color tertiary_container: "#5c421a"
-		readonly property color tertiary_fixed: "#ffddb2"
-		readonly property color tertiary_fixed_dim: "#e6c08d"
+		readonly property color surface: "#111418"
+		readonly property color surface_bright: "#36393e"
+		readonly property color surface_container: "#1d2024"
+		readonly property color surface_container_high: "#272a2f"
+		readonly property color surface_container_highest: "#32353a"
+		readonly property color surface_container_low: "#191c20"
+		readonly property color surface_container_lowest: "#0b0e13"
+		readonly property color surface_dim: "#111418"
+		readonly property color surface_tint: "#a1c9fd"
+		readonly property color surface_variant: "#43474e"
+		readonly property color tertiary: "#d7bee4"
+		readonly property color tertiary_container: "#533f5f"
+		readonly property color tertiary_fixed: "#f3daff"
+		readonly property color tertiary_fixed_dim: "#d7bee4"
 
 		function withAlpha(color, alpha) {
 			return Qt.rgba(color.r, color.g, color.b, alpha);
@@ -63,18 +63,16 @@ Singleton {
 	}
 
 	component FontsComponent: QtObject {
-		readonly property string family_Material: "Material Symbols Outlined"
-		readonly property string family_Mono: "Hack"
-		readonly property string family_Sans: "Inter"
+		readonly property string family_Material: "Material Symbols Rounded"
+		readonly property string family_Mono: "Liga SFMono Nerd Font"
+		readonly property string family_Sans: "SF Pro Display"
 
-		readonly property real fontScale: 1.0
-
-		readonly property real small: 11 * fontScale
-		readonly property real medium: 12 * fontScale
-		readonly property real normal: 13 * fontScale
-		readonly property real large: 15 * fontScale
-		readonly property real larger: 17 * fontScale
-		readonly property real extraLarge: 28 * fontScale
+		readonly property real small: 12
+		readonly property real medium: 13
+		readonly property real normal: 14
+		readonly property real large: 16
+		readonly property real larger: 18
+		readonly property real extraLarge: 30
 	}
 
 	component AnimationCurvesComponent: QtObject {
@@ -90,14 +88,13 @@ Singleton {
 	}
 
 	component AnimationDurationsComponent: QtObject {
-		property real scale: 1.0
-		property int expressiveDefaultSpatial: 500 * scale
-		property int expressiveEffects: 200 * scale
-		property int expressiveFastSpatial: 350 * scale
-		property int extraLarge: 1000 * scale
-		property int large: 600 * scale
-		property int normal: 400 * scale
-		property int small: 200 * scale
+		property int expressiveDefaultSpatial: 500
+		property int expressiveEffects: 200
+		property int expressiveFastSpatial: 350
+		property int extraLarge: 1000
+		property int large: 600
+		property int normal: 400
+		property int small: 200
 	}
 
 	component AnimationsComponent: QtObject {
@@ -106,38 +103,34 @@ Singleton {
 	}
 
 	component RoundingComponent: QtObject {
-		property real scale: 1
-		property int small: 12 * scale
-		property int normal: 17 * scale
-		property int large: 25 * scale
-		property int full: 1000 * scale
+		property int small: 12
+		property int normal: 17
+		property int large: 25
+		property int full: 1000
 	}
 
 	component SpacingComponent: QtObject {
-		property real scale: 1
-		property int small: 7 * scale
-		property int smaller: 10 * scale
-		property int normal: 12 * scale
-		property int larger: 15 * scale
-		property int large: 20 * scale
+		property int small: 7
+		property int smaller: 10
+		property int normal: 12
+		property int larger: 15
+		property int large: 20
 	}
 
 	component PaddingComponent: QtObject {
-		property real scale: 1
-		property int small: 5 * scale
-		property int smaller: 7 * scale
-		property int normal: 10 * scale
-		property int larger: 12 * scale
-		property int large: 15 * scale
+		property int small: 5
+		property int smaller: 7
+		property int normal: 10
+		property int larger: 12
+		property int large: 15
 	}
 
 	component MarginComponent: QtObject {
-		property real scale: 1
-		property int small: 5 * scale
-		property int smaller: 7 * scale
-		property int normal: 10 * scale
-		property int larger: 12 * scale
-		property int large: 15 * scale
+		property int small: 5
+		property int smaller: 7
+		property int normal: 10
+		property int larger: 12
+		property int large: 15
 	}
 
 	readonly property ColorsComponent colors: ColorsComponent {}
