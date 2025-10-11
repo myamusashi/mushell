@@ -10,19 +10,29 @@ Slider {
 	hoverEnabled: true
 	property int handleHeight: 15
 	property int handleWidth: 15
+	required property int valueWidth
+	required property int valueHeight
+	property int sliderOrientation: Qt.Horizontal // Ganti nama property
 	Layout.alignment: Qt.AlignHCenter
 
+	// Set orientation bawaan QML Slider
+	orientation: sliderOrientation
+
 	background: Item {
-		implicitWidth: 300
-		implicitHeight: 10
+		implicitWidth: root.valueWidth
+		implicitHeight: root.valueHeight
 		width: root.availableWidth
+		height: root.availableHeight
 		x: root.leftPadding
-		y: root.topPadding + root.availableHeight / 2 - height / 2
+		y: root.topPadding
 
 		Rectangle {
 			id: unprogressBackground
 
-			anchors.fill: parent
+			width: root.sliderOrientation === Qt.Horizontal ? parent.width : parent.height
+			height: root.sliderOrientation === Qt.Horizontal ? parent.height : parent.width
+			x: root.sliderOrientation === Qt.Horizontal ? 0 : (parent.width - width) / 2
+			y: root.sliderOrientation === Qt.Horizontal ? (parent.height - height) / 2 : 0
 			color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.1)
 			radius: Appearance.rounding.small
 		}
@@ -30,8 +40,10 @@ Slider {
 		Rectangle {
 			id: progressBackground
 
-			width: parent.width * root.visualPosition
-			height: parent.height
+			width: root.sliderOrientation === Qt.Horizontal ? parent.width * root.visualPosition : unprogressBackground.width
+			height: root.sliderOrientation === Qt.Horizontal ? unprogressBackground.height : parent.height * root.visualPosition
+			x: root.sliderOrientation === Qt.Horizontal ? 0 : (parent.width - width) / 2
+			y: root.sliderOrientation === Qt.Horizontal ? (parent.height - height) / 2 : parent.height - height
 			color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.8)
 			radius: Appearance.rounding.small
 		}
@@ -40,10 +52,10 @@ Slider {
 	handle: Rectangle {
 		id: sliderHandle
 
-		x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
-		y: root.topPadding + root.availableHeight / 2 - height / 2
-		implicitWidth: root.handleHeight
-		implicitHeight: root.handleWidth
+		x: root.sliderOrientation === Qt.Horizontal ? root.leftPadding + root.visualPosition * (root.availableWidth - width) : root.leftPadding + root.availableWidth / 2 - width / 2
+		y: root.sliderOrientation === Qt.Horizontal ? root.topPadding + root.availableHeight / 2 - height / 2 : root.topPadding + (1 - root.visualPosition) * (root.availableHeight - height)
+		implicitWidth: root.handleWidth
+		implicitHeight: root.handleHeight
 		radius: width / 2
 		color: root.pressed ? Appearance.colors.primary : Appearance.colors.on_surface
 
