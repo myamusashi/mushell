@@ -11,9 +11,36 @@ Rectangle {
 
 	readonly property bool batCharging: UPower.displayDevice.state == UPowerDeviceState.Charging
 	readonly property string batIcon: {
-		(batPercentage > 0.98) ? batIcons[0] : (batPercentage > 0.90) ? batIcons[1] : (batPercentage > 0.80) ? batIcons[2] : (batPercentage > 0.70) ? batIcons[3] : (batPercentage > 0.60) ? batIcons[4] : (batPercentage > 0.50) ? batIcons[5] : (batPercentage > 0.40) ? batIcons[6] : (batPercentage > 0.30) ? batIcons[7] : (batPercentage > 0.20) ? batIcons[8] : (batPercentage > 0.10) ? batIcons[9] : batIcons[10];
+		if (batPercentage > 0.95)
+			return "battery_android_full";
+		if (batPercentage > 0.85)
+			return "battery_android_6";
+		if (batPercentage > 0.65)
+			return "battery_android_5";
+		if (batPercentage > 0.55)
+			return "battery_android_4";
+		if (batPercentage > 0.45)
+			return "battery_android_3";
+		if (batPercentage > 0.35)
+			return "battery_android_2";
+		if (batPercentage > 0.15)
+			return "battery_android_1";
+		if (batPercentage > 0.05)
+			return "battery_android_0";
+		return "battery_android_0";
 	}
-	readonly property list<string> batIcons: ["battery_android_full", "battery_android_full", "battery_android_6", "battery_android_5", "battery_android_4", "battery_android_3", "battery_android_2", "battery_android_1", "battery_android_0", "battery_android_0", "battery_android_alert"]
+	readonly property list<string> batIcons: ["battery_android_full"    // 96-100%
+		, "battery_android_6"       // 86-95%
+		, "battery_android_5"       // 66-85%
+		, "battery_android_4"       // 56-65%
+		, "battery_android_3"       // 46-55%
+		, "battery_android_2"       // 36-45%
+		, "battery_android_1"       // 16-35%
+		, "battery_android_0"       // 6-15%
+		, "battery_android_0"       // 6-15%
+		, "battery_android_0"       // 6-15%
+		, "battery_android_alert"    // 0-5% (only when not charging)
+	]
 	readonly property real batPercentage: UPower.displayDevice.percentage
 	readonly property string chargeIcon: batIcons[10 - chargeIconIndex]
 	property int chargeIconIndex: 0
