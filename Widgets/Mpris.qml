@@ -8,14 +8,32 @@ import qs.Data
 import qs.Helpers
 import qs.Components
 
-Rectangle {
+Loader { 
+	active: root.isBarOpen
+	asynchronous: true
+
+	anchors.centerIn: parent
+	
+	sourceComponent: Rectangle {
 	id: root
 
 	anchors.centerIn: parent
 
 	color: "transparent"
 
+	readonly property int index: 0
 	property bool playerControlShow: false
+
+	function formatTime(seconds) {
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
+		const secs = Math.floor(seconds % 60);
+
+		if (hours > 0)
+			return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+		return `${minutes}:${secs.toString().padStart(2, '0')}`;
+	}
 
 	RowLayout {
 		id: mediaInfo
@@ -24,15 +42,35 @@ Rectangle {
 		spacing: Appearance.spacing.small
 
 		MatIcon {
-			icon: Player.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
+			icon: Player.active === null ? "question_mark" : Player.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
 			font.pixelSize: Appearance.fonts.medium * 1.8
 			color: Appearance.colors.on_background
 		}
 
-		RowLayout {
+		ColumnLayout {
 			StyledText {
-				text: Player.active.trackArtist
+				text: Player.active === null ? "null" : Player.active.trackArtist
 				color: Appearance.colors.on_background
+			}
+
+			StyledSlide {
+				id: barSlider
+
+				value: Player.active.length > 0 ? Player.active.position / Player.active.length : 0
+
+				valueWidth: parent.width
+				valueHeight: 5
+
+				Timer {
+					running: Player.active.playbackState == MprisPlaybackState.Playing
+					repeat: true
+					onTriggered: Player.active.positionChanged()
+				}
+
+				handleHeight: 0
+				handleWidth: 0
+				Layout.preferredWidth: parent.width
+				Layout.preferredHeight: 5
 			}
 		}
 	}
@@ -56,13 +94,16 @@ Rectangle {
 		visible: opacity > 0
 
 		Behavior on opacity {
-			NumbAnim {}
+			NumbAnim {
+				duration: 800
+				easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
+			}
 		}
 
 		Repeater {
 			model: [
 				{
-					icon: "skip_previous",
+					icon: Player.active === null ? "question_mark" : "skip_previous",
 					action: () => {
 						if (!Player.active.canGoPrevious) {
 							console.log("Can't go back");
@@ -72,13 +113,13 @@ Rectangle {
 					}
 				},
 				{
-					icon: Player.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle",
+					icon: Player.active === null ? "question_mark" : Player.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle",
 					action: () => {
 						Player.active.togglePlaying();
 					}
 				},
 				{
-					icon: "skip_next",
+					icon: Player.active === null ? "question_mark" : "skip_next",
 					action: () => {
 						Player.active.next();
 					}
@@ -97,11 +138,15 @@ Rectangle {
 				scale: root.playerControlShow ? 1 : 0.8
 
 				Behavior on opacity {
-					NumbAnim {}
+					NumbAnim {
+						duration: 200 + (root.index * 50)
+					}
 				}
 
 				Behavior on scale {
-					NumbAnim {}
+					NumbAnim {
+						duration: 200 + (root.index * 50)
+					}
 				}
 
 				Rectangle {
@@ -139,4 +184,5 @@ Rectangle {
 			}
 		}
 	}
+}
 }

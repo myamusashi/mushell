@@ -12,7 +12,11 @@ import qs.Data
 import qs.Components
 import qs.Helpers
 
-Scope {
+Loader {
+	active: root.isLauncherOpen
+	asynchronous: true
+
+	sourceComponent: Scope {
 	id: root
 
 	property int currentIndex: 0
@@ -32,13 +36,12 @@ Scope {
 			});
 	}
 
-	Loader {
+	LazyLoader {
 		id: appLoader
 
-		active: root.isLauncherOpen
-		asynchronous: true
+		activeAsync: root.isLauncherOpen
 
-		sourceComponent: PanelWindow {
+		component: PanelWindow {
 			id: launcher
 
 			property ShellScreen modelData
@@ -221,7 +224,14 @@ Scope {
 									anchors.margins: Appearance.padding.small
 									spacing: Appearance.spacing.normal
 
-									IconImage {
+									Loader { 
+										active: root.isLauncherOpen
+										asynchronous: true
+
+										Layout.preferredWidth: 40
+										Layout.preferredHeight: 40
+
+										sourceComponent: IconImage {
 										Layout.alignment: Qt.AlignVCenter
 										Layout.preferredWidth: 40
 										Layout.preferredHeight: 40
@@ -236,6 +246,7 @@ Scope {
 											NumbAnim {}
 										}
 									}
+								}
 
 									StyledText {
 										Layout.fillWidth: true
@@ -287,4 +298,5 @@ Scope {
 			root.isLauncherOpen = !root.isLauncherOpen;
 		}
 	}
+}
 }

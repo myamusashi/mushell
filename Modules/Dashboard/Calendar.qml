@@ -8,7 +8,13 @@ import qs.Data
 import qs.Helpers
 import qs.Components
 
-Rectangle {
+Loader {
+	active: dashboardLoader.activeAsync
+	asynchronous: true
+
+	anchors.fill: parent
+
+	sourceComponent: Rectangle {
 	anchors.fill: parent
 	color: Appearance.colors.background
 	radius: Appearance.rounding.normal
@@ -220,4 +226,5 @@ Rectangle {
 			}
 		}
 	}
+}
 }

@@ -37,34 +37,41 @@ Scope {
 			margins.right: 2
 			visible: root.isBarOpen
 
-			Rectangle {
-				id: base
+			Loader {
+				active: root.isBarOpen
+				asynchronous: true
 
-				color: Appearance.colors.background
-				radius: Appearance.rounding.large
 				anchors.fill: parent
-				anchors.margins: 4
 
-				RowLayout {
-					width: parent.width
+				sourceComponent: Rectangle {
+					id: base
+
+					color: Appearance.colors.background
+					radius: Appearance.rounding.large
 					anchors.fill: parent
+					anchors.margins: 4
 
-					Left {
-						Layout.fillHeight: true
-						Layout.preferredWidth: parent.width / 6
-						Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-					}
+					RowLayout {
+						width: parent.width
+						anchors.fill: parent
 
-					Middle {
-						Layout.fillHeight: true
-						Layout.preferredWidth: parent.width / 6
-						Layout.alignment: Qt.AlignCenter
-					}
+						Left {
+							Layout.fillHeight: true
+							Layout.preferredWidth: parent.width / 6
+							Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+						}
 
-					Right {
-						Layout.fillHeight: true
-						Layout.preferredWidth: parent.width / 6
-						Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+						Middle {
+							Layout.fillHeight: true
+							Layout.preferredWidth: parent.width / 6
+							Layout.alignment: Qt.AlignCenter
+						}
+
+						Right {
+							Layout.fillHeight: true
+							Layout.preferredWidth: parent.width / 6
+							Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+						}
 					}
 				}
 			}

@@ -39,71 +39,67 @@ Scope {
 		onTriggered: root.isVolumeOSDShow = false
 	}
 
-	Loader {
+	LazyLoader {
 		id: osdLoader
 
-		active: root.isVolumeOSDShow
-		sourceComponent: Variants {
-			model: Quickshell.screens
+		activeAsync: root.isVolumeOSDShow
 
-			delegate: PanelWindow {
+		component: PanelWindow {
+			required property ShellScreen screen
 
-				required property ShellScreen screen
+			anchors {
+				bottom: true
+			}
 
-				anchors {
-					bottom: true
-				}
+			WlrLayershell.namespace: "shell:osd"
+			screen: screen
+			color: "transparent"
+			exclusionMode: ExclusionMode.Ignore
+			focusable: false
+			implicitWidth: 350
+			implicitHeight: 50
+			exclusiveZone: 0
+			margins.bottom: 30
 
-				WlrLayershell.namespace: "shell:osd"
-				screen: screen
-				color: "transparent"
-				exclusionMode: ExclusionMode.Ignore
-				focusable: false
-				implicitWidth: 350
-				implicitHeight: 50
-				exclusiveZone: 0
-				margins.bottom: 30
+			mask: Region {}
 
-				mask: Region {}
+			Rectangle {
+				anchors.fill: parent
+				radius: height / 2
+				color: Appearance.colors.background
 
-				Rectangle {
-					anchors.fill: parent
-					radius: height / 2
-					color: Appearance.colors.background
+				RowLayout {
+					anchors {
+						fill: parent
+						leftMargin: 10
+						rightMargin: 15
+					}
 
-					RowLayout {
-						anchors {
-							fill: parent
-							leftMargin: 10
-							rightMargin: 15
-						}
+					MatIcon {
+						color: Appearance.colors.on_background
+						icon: root.icon
+						Layout.alignment: Qt.AlignVCenter
+						font.pixelSize: Appearance.fonts.extraLarge * 1.2
+					}
 
-						MatIcon {
-							color: Appearance.colors.on_background
-							icon: root.icon
-							Layout.alignment: Qt.AlignVCenter
-							font.pixelSize: Appearance.fonts.extraLarge * 1.2
-						}
+					Rectangle {
+						Layout.fillWidth: true
+
+						implicitHeight: 10
+						radius: 20
+						color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.3)
 
 						Rectangle {
-							Layout.fillWidth: true
-
-							implicitHeight: 10
-							radius: 20
-							color: Appearance.colors.withAlpha(Appearance.colors.primary, 0.3)
-
-							Rectangle {
-								anchors {
-									left: parent.left
-									top: parent.top
-									bottom: parent.bottom
-								}
-
-								color: Appearance.colors.primary
-
-								implicitWidth: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
-								radius: parent.radius
+							anchors {
+								left: parent.left
+								top: parent.top
+								bottom: parent.bottom
 							}
+
+							color: Appearance.colors.primary
+
+							implicitWidth: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+							radius: parent.radius
 						}
 					}
 				}

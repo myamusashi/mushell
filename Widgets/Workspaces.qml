@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
@@ -6,60 +8,64 @@ import qs.Data
 import qs.Components
 import qs.Helpers
 
-RowLayout {
-	id: root
+Loader {
+	active: root.isBarOpen
 
-	property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
+	sourceComponent: RowLayout {
+		id: root
 
-	Rectangle {
-		id: workspaceBar
+		property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
 
-		Layout.preferredWidth: Math.max(50, Workspaces.maxWorkspace * 25)
-		implicitHeight: 25
-		// border.color: Appearance.colors.on_background
-		// radius: Appearance.rounding.small
-		// color: Appearance.colors.background
-		color: "transparent"
+		Rectangle {
+			id: workspaceBar
 
-		Row {
-			anchors.centerIn: parent
-			spacing: 15
+			Layout.preferredWidth: Math.max(50, Workspaces.maxWorkspace * 25)
+			implicitHeight: 25
+			// border.color: Appearance.colors.on_background
+			// radius: Appearance.rounding.small
+			// color: Appearance.colors.background
+			color: "transparent"
 
-			Repeater {
-				model: Workspaces.maxWorkspace || 1
+			Row {
+				anchors.centerIn: parent
+				spacing: 15
 
-				Item {
-					id: wsItem
+				Repeater {
+					model: Workspaces.maxWorkspace || 1
 
-					required property int index
-					property bool focused: Hyprland.focusedMonitor?.activeWorkspace?.id === (index + 1)
+					Item {
+						id: wsItem
 
-					width: workspaceText.width
-					height: workspaceText.height
+						required property int index
+						property bool focused: Hyprland.focusedMonitor?.activeWorkspace?.id === (index + 1)
 
-					StyledText {
-						id: workspaceText
-						text: (wsItem.index + 1).toString()
-						color: {
-							if (workspaceMArea.containsMouse)
-								return Appearance.colors.withAlpha(Appearance.colors.primary, 0.5);
+						width: workspaceText.width
+						height: workspaceText.height
 
-							if (wsItem.focused)
-								return Appearance.colors.primary;
-							else
-								return Appearance.colors.on_background;
+						StyledText {
+							id: workspaceText
+							text: (wsItem.index + 1).toString()
+							color: {
+								if (workspaceMArea.containsMouse)
+									return Appearance.colors.withAlpha(Appearance.colors.primary, 0.5);
+
+								if (wsItem.focused)
+									return Appearance.colors.primary;
+								else
+									return Appearance.colors.on_background;
+							}
+							font.pixelSize: Appearance.fonts.medium * 1.3
+							font.bold: wsItem.focused
 						}
-						font.pixelSize: Appearance.fonts.medium * 1.3
-						font.bold: wsItem.focused
-					}
 
-					MouseArea {
-						id: workspaceMArea
+						MouseArea {
+							id: workspaceMArea
 
-						anchors.fill: parent
-						hoverEnabled: true
-						cursorShape: Qt.PointingHandCursor
-						onClicked: Workspaces.switchWorkspace(wsItem.index + 1)
+							anchors.fill: parent
+							hoverEnabled: true
+							cursorShape: Qt.PointingHandCursor
+							onClicked: Workspaces.switchWorkspace(wsItem.index + 1)
+						}
 					}
 				}
 			}

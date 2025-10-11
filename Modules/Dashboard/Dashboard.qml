@@ -10,7 +10,6 @@ import Quickshell.Wayland
 
 import qs.Data
 import "Inbox" as Inbox
-import "Quicksettings" as QS
 
 Scope {
 	id: root
@@ -28,13 +27,12 @@ Scope {
 		isDashboardOpen = !isDashboardOpen;
 	}
 
-	Loader {
+	LazyLoader {
 		id: dashboardLoader
 
-		active: root.isDashboardOpen
-		asynchronous: true
+		activeAsync: root.isDashboardOpen
 
-		sourceComponent: PanelWindow {
+		component: PanelWindow {
 			id: dashboard
 
 			property ShellScreen modelData
@@ -71,16 +69,27 @@ Scope {
 
 						ColumnLayout {
 							id: notifsAndWeatherLayout
-
 							Layout.fillWidth: true
 							Layout.alignment: Qt.AlignTop
 							Layout.maximumHeight: parent.height
 							Layout.preferredWidth: root.baseWidth / 3
 							Layout.minimumWidth: 400
 
-							Inbox.Header {}
+							Loader {
+								Layout.fillWidth: true
+								Layout.preferredHeight: parent.height * 0.06
+								active: root.isDashboardOpen
+								asynchronous: true
+								sourceComponent: Inbox.Header {}
+							}
 
-							Inbox.Notification {}
+							Loader {
+								Layout.fillWidth: true
+								Layout.preferredHeight: parent.height - 70
+								active: root.isDashboardOpen
+								asynchronous: true
+								sourceComponent: Inbox.Notification {}
+							}
 						}
 
 						ColumnLayout {

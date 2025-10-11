@@ -17,11 +17,10 @@ Scope {
 	property bool isScreencaptureOpen: false
 	property string scriptPath: `${Quickshell.shellDir}/Assets/screen-capture.sh`
 
-	Loader {
-		id: dashboardLoader
-		active: screencapture.isScreencaptureOpen
-		asynchronous: true
-		sourceComponent: PanelWindow {
+	LazyLoader {
+		activeAsync: screencapture.isScreencaptureOpen
+
+		component: PanelWindow {
 			id: captureWindow
 
 			visible: screencapture.isScreencaptureOpen
@@ -108,6 +107,7 @@ Scope {
 
 							delegate: Rectangle {
 								id: iconDelegate
+
 								required property var modelData
 								required property int index
 
@@ -180,6 +180,7 @@ Scope {
 
 									MouseArea {
 										id: mArea
+
 										cursorShape: Qt.PointingHandCursor
 										hoverEnabled: true
 										onClicked: {

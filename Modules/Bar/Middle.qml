@@ -2,8 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Widgets
 
-Item {
-	RowLayout {
+Loader {
+	active: root.isBarOpen
+	asynchronous: true
+
+	sourceComponent: RowLayout {
 		anchors.centerIn: parent
 
 		Mpris {

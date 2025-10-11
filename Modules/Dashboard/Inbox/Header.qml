@@ -1,11 +1,18 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 
 import qs.Data
 import qs.Helpers
 import qs.Components
 
-Rectangle {
+Loader {
+	active: dashboardLoader.activeAsync
+	asynchronous: true
+
+	anchors.fill: parent
+
+	sourceComponent: Rectangle {
 	Layout.fillWidth: true
 	Layout.preferredHeight: 60
 	color: Appearance.colors.background
@@ -69,4 +76,5 @@ Rectangle {
 			}
 		}
 	}
+}
 }

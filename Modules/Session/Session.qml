@@ -16,11 +16,10 @@ Scope {
 	property int currentIndex: 0
 	property bool isSessionOpen: false
 
-	Loader {
-		active: session.isSessionOpen
-		asynchronous: true
+	LazyLoader {
+		activeAsync: session.isSessionOpen
 
-		sourceComponent: PanelWindow {
+		component: PanelWindow {
 			id: sessionWindow
 			visible: session.isSessionOpen
 			focusable: true
@@ -65,6 +64,14 @@ Scope {
 									}
 								},
 								{
+									icon: "sleep",
+									action: () => {
+										Quickshell.execDetached({
+											command: ["sh", "-c", "systemctl suspend"]
+										});
+									}
+								},
+								{
 									icon: "door_open",
 									action: () => {
 										Quickshell.execDetached({
@@ -104,7 +111,6 @@ Scope {
 									id: iconDelegate
 
 									color: Appearance.colors.primary
-									font.family: "Material Symbols Rounded"
 									font.pixelSize: Appearance.fonts.large * 4
 									icon: rectDelegate.modelData.icon
 
@@ -119,7 +125,7 @@ Scope {
 										session.isSessionOpen = !session.isSessionOpen;
 									}
 									Keys.onUpPressed: session.currentIndex > 0 ? session.currentIndex-- : ""
-									Keys.onDownPressed: session.currentIndex < 3 ? session.currentIndex++ : ""
+									Keys.onDownPressed: session.currentIndex < 4 ? session.currentIndex++ : ""
 									Keys.onEscapePressed: session.isSessionOpen = !session.isSessionOpen
 
 									scale: mouseArea.pressed ? 0.95 : 1.0

@@ -4,258 +4,231 @@ import QtQuick.Layouts
 import qs.Data
 import qs.Components
 
-Rectangle {
-	id: root
-
-	readonly property int diskProp: SysUsage.diskUsed / 1048576
-	readonly property int memProp: SysUsage.memUsed / 1048576
+Loader {
+	active: dashboardLoader.activeAsync
+	asynchronous: true
 
 	anchors.centerIn: parent
-	radius: Appearance.rounding.normal
-	color: Appearance.colors.background
-	border.color: Appearance.colors.outline
-	border.width: 2
 
-	GridLayout {
+	sourceComponent: Rectangle {
+		id: root
+
+		readonly property int diskProp: SysUsage.diskUsed / 1048576
+		readonly property int memProp: SysUsage.memUsed / 1048576
+
 		anchors.centerIn: parent
-		columns: 3
-		rowSpacing: Appearance.spacing.large * 2
+		radius: Appearance.rounding.normal
+		color: Appearance.colors.background
+		border.color: Appearance.colors.outline
+		border.width: 2
 
-		Item {
-			id: memItem
+		GridLayout {
+			anchors.centerIn: parent
+			columns: 3
+			rowSpacing: Appearance.spacing.large * 2
 
-			Layout.alignment: Qt.AlignCenter
-			Layout.preferredWidth: childrenRect.width
-			Layout.preferredHeight: childrenRect.height
+			Item {
+				id: memItem
 
-			ColumnLayout {
-				anchors.centerIn: parent
-				spacing: Appearance.spacing.normal
+				Layout.alignment: Qt.AlignCenter
+				Layout.preferredWidth: childrenRect.width
+				Layout.preferredHeight: childrenRect.height
 
-				Circular {
-					id: mem
+				ColumnLayout {
+					anchors.centerIn: parent
+					spacing: Appearance.spacing.normal
 
-					value: Math.round(SysUsage.memUsed / SysUsage.memTotal * 100)
-					size: 0
-					text: value + "%"
-				}
+					Circular {
+						id: mem
 
-				StyledText {
-					id: memText
+						value: Math.round(SysUsage.memUsed / SysUsage.memTotal * 100)
+						size: 0
+						text: value + "%"
+					}
 
-					Layout.alignment: Qt.AlignHCenter
-					text: "RAM usage" + "\n" + root.memProp + " GB"
-					color: Appearance.colors.on_surface
-				}
-			}
-		}
+					StyledText {
+						id: memText
 
-		Item {
-			id: cpuItem
-
-			Layout.alignment: Qt.AlignVCenter
-			Layout.preferredWidth: childrenRect.width
-			Layout.preferredHeight: childrenRect.height
-
-			ColumnLayout {
-				anchors.centerIn: parent
-				spacing: Appearance.spacing.normal
-
-				Circular {
-					id: cpu
-
-					Layout.alignment: Qt.AlignHCenter
-					value: SysUsage.cpuPerc
-					size: 40
-					text: value + "%"
-				}
-
-				StyledText {
-					id: cpuText
-
-					Layout.alignment: Qt.AlignHCenter
-					text: "CPU usage"
-					color: Appearance.colors.on_surface
+						Layout.alignment: Qt.AlignHCenter
+						text: "RAM usage" + "\n" + root.memProp + " GB"
+						color: Appearance.colors.on_surface
+					}
 				}
 			}
-		}
 
-		Item {
-			id: diskItem
+			Item {
+				id: cpuItem
 
-			Layout.alignment: Qt.AlignCenter
-			Layout.preferredWidth: childrenRect.width
-			Layout.preferredHeight: childrenRect.height
+				Layout.alignment: Qt.AlignVCenter
+				Layout.preferredWidth: childrenRect.width
+				Layout.preferredHeight: childrenRect.height
 
-			ColumnLayout {
-				anchors.centerIn: parent
-				spacing: Appearance.spacing.normal
+				ColumnLayout {
+					anchors.centerIn: parent
+					spacing: Appearance.spacing.normal
 
-				Circular {
-					id: disk
+					Circular {
+						id: cpu
 
-					value: Math.round(SysUsage.diskUsed / SysUsage.diskTotal * 100)
-					text: value + "%"
-					size: 0
-				}
+						Layout.alignment: Qt.AlignHCenter
+						value: SysUsage.cpuPerc
+						size: 40
+						text: value + "%"
+					}
 
-				StyledText {
-					id: diskText
+					StyledText {
+						id: cpuText
 
-					Layout.alignment: Qt.AlignHCenter
-					text: "Disk usage" + "\n" + root.diskProp + " GB"
-					color: Appearance.colors.on_surface
-				}
-			}
-		}
-
-		Item {
-			id: networkSpeedItem
-
-			Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-			Layout.preferredWidth: 160
-			Layout.preferredHeight: childrenRect.height
-
-			ColumnLayout {
-				anchors.top: parent.top
-				anchors.horizontalCenter: parent.horizontalCenter
-				spacing: Appearance.spacing.small
-				width: parent.width
-
-				StyledText {
-					id: wiredDownloadSpeed
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wired Download:\n" + SysUsage.formatSpeed(SysUsage.wiredDownloadSpeed)
-					color: Appearance.colors.on_surface
-
-					// Timer {
-					// 	running: true
-					// 	repeat: true
-					// 	interval: 2000
-					// }
-				}
-
-				StyledText {
-					id: wiredUploadSpeed
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wired Upload:\n" + SysUsage.formatSpeed(SysUsage.wiredUploadSpeed)
-					color: Appearance.colors.on_surface
-				}
-
-				StyledText {
-					id: wirelessDownloadSpeed
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wireless Download:\n" + SysUsage.formatSpeed(SysUsage.wirelessDownloadSpeed)
-					color: Appearance.colors.on_surface
-				}
-
-				StyledText {
-					id: wirelessUploadSpeed
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wireless Upload:\n" + SysUsage.formatSpeed(SysUsage.wirelessUploadSpeed)
-					color: Appearance.colors.on_surface
+						Layout.alignment: Qt.AlignHCenter
+						text: "CPU usage"
+						color: Appearance.colors.on_surface
+					}
 				}
 			}
-		}
 
-		Item {
-			id: networkUsageItem
+			Item {
+				Layout.alignment: Qt.AlignCenter
+				Layout.preferredWidth: childrenRect.width
+				Layout.preferredHeight: childrenRect.height
 
-			Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-			Layout.preferredWidth: 160
-			Layout.preferredHeight: childrenRect.height
+				ColumnLayout {
+					anchors.centerIn: parent
+					spacing: Appearance.spacing.normal
 
-			ColumnLayout {
-				anchors.top: parent.top
-				anchors.horizontalCenter: parent.horizontalCenter
-				spacing: Appearance.spacing.small
-				width: parent.width
+					Circular {
+						id: disk
 
-				StyledText {
-					id: wiredDownloadUsage
+						value: Math.round(SysUsage.diskUsed / SysUsage.diskTotal * 100)
+						text: value + "%"
+						size: 0
+					}
 
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wired download usage:\n" + SysUsage.formatUsage(SysUsage.totalWiredDownloadUsage)
-					color: Appearance.colors.on_surface
-				}
+					StyledText {
+						id: diskText
 
-				StyledText {
-					id: wiredUploadUsage
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wired upload usage:\n" + SysUsage.formatUsage(SysUsage.totalWiredUploadUsage)
-					color: Appearance.colors.on_surface
-				}
-
-				StyledText {
-					id: wirelessDownloadUsage
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wireless download usage:\n" + SysUsage.formatUsage(SysUsage.totalWirelessDownloadUsage)
-					color: Appearance.colors.on_surface
-				}
-
-				StyledText {
-					id: wirelessUploadUsage
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wireless upload usage:\n" + SysUsage.formatUsage(SysUsage.totalWirelessUploadUsage)
-					color: Appearance.colors.on_surface
+						Layout.alignment: Qt.AlignHCenter
+						text: "Disk usage" + "\n" + root.diskProp + " GB"
+						color: Appearance.colors.on_surface
+					}
 				}
 			}
-		}
 
-		Item {
-			id: networkInterfaceItem
+			Item {
+				Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+				Layout.preferredWidth: 160
+				Layout.preferredHeight: childrenRect.height
 
-			Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-			Layout.preferredWidth: 160
-			Layout.preferredHeight: childrenRect.height
+				ColumnLayout {
+					anchors.top: parent.top
+					anchors.horizontalCenter: parent.horizontalCenter
+					spacing: Appearance.spacing.small
+					width: parent.width
 
-			ColumnLayout {
-				anchors.top: parent.top
-				anchors.horizontalCenter: parent.horizontalCenter
-				spacing: Appearance.spacing.small
-				width: parent.width
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wired Download:\n" + SysUsage.formatSpeed(SysUsage.wiredDownloadSpeed)
+						color: Appearance.colors.on_surface
+					}
 
-				StyledText {
-					id: wiredInterface
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wired Upload:\n" + SysUsage.formatSpeed(SysUsage.wiredUploadSpeed)
+						color: Appearance.colors.on_surface
+					}
 
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wired interface:\n" + SysUsage.wiredInterface
-					color: Appearance.colors.on_surface
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wireless Download:\n" + SysUsage.formatSpeed(SysUsage.wirelessDownloadSpeed)
+						color: Appearance.colors.on_surface
+					}
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wireless Upload:\n" + SysUsage.formatSpeed(SysUsage.wirelessUploadSpeed)
+						color: Appearance.colors.on_surface
+					}
 				}
+			}
 
-				StyledText {
-					id: wirelessInterface
+			Item {
+				Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+				Layout.preferredWidth: 160
+				Layout.preferredHeight: childrenRect.height
 
-					Layout.alignment: Qt.AlignHCenter
-					Layout.fillWidth: true
-					horizontalAlignment: Text.AlignHCenter
-					text: "Wireless interface:\n" + SysUsage.wirelessInterface
-					color: Appearance.colors.on_surface
+				ColumnLayout {
+					anchors.top: parent.top
+					anchors.horizontalCenter: parent.horizontalCenter
+					spacing: Appearance.spacing.small
+					width: parent.width
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wired download usage:\n" + SysUsage.formatUsage(SysUsage.totalWiredDownloadUsage)
+						color: Appearance.colors.on_surface
+					}
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wired upload usage:\n" + SysUsage.formatUsage(SysUsage.totalWiredUploadUsage)
+						color: Appearance.colors.on_surface
+					}
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wireless download usage:\n" + SysUsage.formatUsage(SysUsage.totalWirelessDownloadUsage)
+						color: Appearance.colors.on_surface
+					}
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wireless upload usage:\n" + SysUsage.formatUsage(SysUsage.totalWirelessUploadUsage)
+						color: Appearance.colors.on_surface
+					}
+				}
+			}
+
+			Item {
+				Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+				Layout.preferredWidth: 160
+				Layout.preferredHeight: childrenRect.height
+
+				ColumnLayout {
+					anchors.top: parent.top
+					anchors.horizontalCenter: parent.horizontalCenter
+					spacing: Appearance.spacing.small
+					width: parent.width
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wired interface:\n" + SysUsage.wiredInterface
+						color: Appearance.colors.on_surface
+					}
+
+					StyledText {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.fillWidth: true
+						horizontalAlignment: Text.AlignHCenter
+						text: "Wireless interface:\n" + SysUsage.wirelessInterface
+						color: Appearance.colors.on_surface
+					}
 				}
 			}
 		}
