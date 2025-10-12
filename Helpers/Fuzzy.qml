@@ -11,19 +11,19 @@ Singleton {
 
 	// Character similarity map for look-alike matching
 	readonly property var charMap: ({
-		'a': 'aàáâãäåāăą4@',
-		'e': 'eèéêëēėę3',
-		'i': 'iìíîïīįı1!|l',
-		'o': 'oòóôõöøōő0',
-		'u': 'uùúûüūůű',
-		'c': 'cçćč',
-		'n': 'nñńň',
-		's': 'sśšş5$',
-		'z': 'zźżž2',
-		'l': 'l1!|i',
-		'g': 'g9',
-		't': 't7+'
-	})
+			'a': 'aàáâãäåāăą4@',
+			'e': 'eèéêëēėę3',
+			'i': 'iìíîïīįı1!|l',
+			'o': 'oòóôõöøōő0',
+			'u': 'uùúûüūůű',
+			'c': 'cçćč',
+			'n': 'nñńň',
+			's': 'sśšş5$',
+			'z': 'zźżž2',
+			'l': 'l1!|i',
+			'g': 'g9',
+			't': 't7+'
+		})
 
 	function normalizeChar(chars: string): string {
 		const lower = chars.toLowerCase();
@@ -44,12 +44,14 @@ Singleton {
 	}
 
 	function levenshteinDistance(a: string, b: string): int {
-		if (a.length === 0) return b.length;
-		if (b.length === 0) return a.length;
+		if (a.length === 0)
+			return b.length;
+		if (b.length === 0)
+			return a.length;
 
 		const shorter = a.length <= b.length ? a : b;
 		const longer = a.length <= b.length ? b : a;
-		
+
 		let prevRow = new Array(shorter.length + 1);
 		let currRow = new Array(shorter.length + 1);
 
@@ -62,12 +64,8 @@ Singleton {
 
 			for (let j = 1; j <= shorter.length; j++) {
 				const cost = longer[i - 1] === shorter[j - 1] ? 0 : 1;
-				
-				currRow[j] = Math.min(
-					prevRow[j] + 1,
-					currRow[j - 1] + 1,
-					prevRow[j - 1] + cost
-				);
+
+				currRow[j] = Math.min(prevRow[j] + 1, currRow[j - 1] + 1, prevRow[j - 1] + cost);
 			}
 
 			[prevRow, currRow] = [currRow, prevRow];
@@ -78,11 +76,12 @@ Singleton {
 
 	function distanceScore(a: string, b: string): real {
 		const maxLen = Math.max(a.length, b.length);
-		if (maxLen === 0) return 1;
+		if (maxLen === 0)
+			return 1;
 
 		const distance = levenshteinDistance(a, b);
 		const normalized = (maxLen - distance) / maxLen;
-		
+
 		return Math.pow(normalized, 1.5);
 	}
 
@@ -101,8 +100,9 @@ Singleton {
 	}
 
 	function consecutiveScore(q: string, t: string): real {
-		if (q.length === 0) return 1;
-		
+		if (q.length === 0)
+			return 1;
+
 		let best = 0;
 		let current = 0;
 		let qIdx = 0;
@@ -159,7 +159,7 @@ Singleton {
 		}
 
 		const normalizedQuery = normalizeText(query).trim();
-		
+
 		if (normalizedQuery.length === 0) {
 			return items;
 		}
@@ -175,14 +175,20 @@ Singleton {
 			}
 
 			const normalizedText = normalizeText(searchText);
-			
+
 			if (normalizedText === normalizedQuery) {
-				results.push({ item: item, score: 1.0 });
+				results.push({
+					item: item,
+					score: 1.0
+				});
 				continue;
 			}
 
 			if (normalizedText.indexOf(normalizedQuery) !== -1) {
-				results.push({ item: item, score: 0.95 });
+				results.push({
+					item: item,
+					score: 0.95
+				});
 				continue;
 			}
 
@@ -190,7 +196,10 @@ Singleton {
 			const score = getScore(normalizedQuery, normalizedText, words);
 
 			if (score >= threshold) {
-				results.push({ item: item, score: score });
+				results.push({
+					item: item,
+					score: score
+				});
 			}
 		}
 

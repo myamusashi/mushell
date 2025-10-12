@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -26,103 +25,73 @@ Scope {
 		target: Pipewire.defaultAudioSink?.audio
 		function onVolumeChanged() {
 			root.isVolumeOSDShow = true;
-			hideVolumeOSDTimer.restart();
+			hideOSDTimer.restart();
 		}
+	}
+
+	// This is the easiest way to get lock state with a little bit performance concern
+	Process {
+		id: lockStateProcess
+
+		running: true
+		command: [`${Quickshell.shellDir}/Assets/lockState`]
 	}
 
 	property bool capsLockState: false
-	property bool isCapsLockOSDShow: false
-
-	function getCapsLockState(): void {
-		capsLockInfo.running = true;
-	}
-
-	Process {
-		id: capsLockInfo
-
-		running: true
-		command: ["sh", "-c", "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .capsLock'"]
-		stdout: StdioCollector {
-			onStreamFinished: {
-				let newState = text.trim() === "true";
-				if (root.capsLockState !== newState) {
-					root.capsLockState = newState;
-					root.isCapsLockOSDShow = true;
-					hideCapsLockOSDTimer.restart();
-				}
-			}
-		}
-		onExited: {
-			root.getCapsLockState();
-		}
-	}
-
 	property bool numLockState: false
+	property bool isCapsLockOSDShow: false
 	property bool isNumLockOSDShow: false
 
-	function getNumlockState(): void {
-		numLockInfo.running = true;
-	}
+	FileView {
+		id: capsLockStateFile
 
-	Process {
-		id: numLockInfo
-
-		running: true
-		command: ["sh", "-c", "hyprctl devices -j | jq -r '.keyboards[] | select(.main == true) | .numLock'"]
-		stdout: StdioCollector {
-			onStreamFinished: {
-				let newState = text.trim() === "true";
-				if (root.numLockState !== newState) {
-					root.numLockState = newState;
-					root.isNumLockOSDShow = true;
-					hideNumLockOSDTimer.restart();
-				}
+		path: Quickshell.env("HOME") + "/.cache/hyprlandKeyState/capslockState"
+		watchChanges: true
+		onFileChanged: {
+			reload();
+			let newState = text().trim() === "true";
+			if (root.capsLockState !== newState) {
+				root.capsLockState = newState;
+				root.isCapsLockOSDShow = true;
+				hideOSDTimer.restart();
 			}
 		}
-		onExited: {
-			root.getNumlockState();
+	}
+
+	FileView {
+		id: numLockStateFile
+
+		path: Quickshell.env("HOME") + "/.cache/hyprlandKeyState/numlockState"
+		watchChanges: true
+		onFileChanged: {
+			reload();
+			let newState = text().trim() === "true";
+			if (root.numLockState !== newState) {
+				root.numLockState = newState;
+				root.isNumLockOSDShow = true;
+				hideOSDTimer.restart();
+			}
 		}
 	}
 
 	Timer {
-		id: hideVolumeOSDTimer
+		id: hideOSDTimer
 
 		interval: 2000
 		onTriggered: {
 			root.isVolumeOSDShow = false;
-		}
-	}
-
-	Timer {
-		id: hideCapsLockOSDTimer
-
-		interval: 2000
-		onTriggered: {
 			root.isCapsLockOSDShow = false;
-		}
-	}
-
-	Timer {
-		id: hideNumLockOSDTimer
-
-		interval: 2000
-		onTriggered: {
 			root.isNumLockOSDShow = false;
 		}
 	}
 
-	// LMAO, what is this
 	LazyLoader {
 		id: volumeOsdLoader
 
 		activeAsync: root.isVolumeOSDShow
 		component: PanelWindow {
-			required property ShellScreen screen
-			anchors {
-				bottom: true
-			}
+			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:volume"
-			screen: screen
 			color: "transparent"
 			exclusionMode: ExclusionMode.Ignore
 			focusable: false
@@ -146,12 +115,8 @@ Scope {
 
 		activeAsync: root.isCapsLockOSDShow
 		component: PanelWindow {
-			required property ShellScreen screen
-			anchors {
-				bottom: true
-			}
+			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:capslock"
-			screen: screen
 			color: "transparent"
 			exclusionMode: ExclusionMode.Ignore
 			focusable: false
@@ -191,12 +156,8 @@ Scope {
 
 		activeAsync: root.isNumLockOSDShow
 		component: PanelWindow {
-			required property ShellScreen screen
-			anchors {
-				bottom: true
-			}
+			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:numlock"
-			screen: screen
 			color: "transparent"
 			exclusionMode: ExclusionMode.Ignore
 			focusable: false
