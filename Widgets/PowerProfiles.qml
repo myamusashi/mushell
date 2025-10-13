@@ -8,7 +8,7 @@ import qs.Data
 import qs.Helpers
 import qs.Components
 
-Rectangle {
+StyledRect {
 	Layout.fillHeight: true
 	clip: true
 	color: "transparent"
@@ -61,7 +61,7 @@ Rectangle {
 					Layout.fillHeight: true
 					implicitWidth: this.height ? this.height : 1
 
-					Rectangle {
+					StyledRect {
 						id: bgCon
 						anchors.fill: parent
 						anchors.margins: 2
@@ -124,7 +124,7 @@ Rectangle {
 						layerRadius: 5
 						visible: !bgCon.visible
 
-						Rectangle {
+						StyledRect {
 							id: rippleEffect
 							anchors.centerIn: parent
 							width: 0

@@ -88,7 +88,7 @@ Scope {
 	LazyLoader {
 		id: volumeOsdLoader
 
-		activeAsync: root.isVolumeOSDShow
+		active: root.isVolumeOSDShow
 		component: PanelWindow {
 			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:volume"
@@ -101,7 +101,7 @@ Scope {
 			margins.bottom: 30
 			mask: Region {}
 
-			Rectangle {
+			StyledRect {
 				anchors.fill: parent
 				radius: height / 2
 				color: Colors.colors.background
@@ -113,7 +113,7 @@ Scope {
 	LazyLoader {
 		id: capsLockOsdLoader
 
-		activeAsync: root.isCapsLockOSDShow
+		active: root.isCapsLockOSDShow
 		component: PanelWindow {
 			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:capslock"
@@ -126,7 +126,7 @@ Scope {
 			margins.bottom: 90
 			mask: Region {}
 
-			Rectangle {
+			StyledRect {
 				anchors.fill: parent
 				radius: height / 2
 				color: Colors.colors.background
@@ -154,7 +154,7 @@ Scope {
 	LazyLoader {
 		id: numLockOsdLoader
 
-		activeAsync: root.isNumLockOSDShow
+		active: root.isNumLockOSDShow
 		component: PanelWindow {
 			anchors.bottom: true
 			WlrLayershell.namespace: "shell:osd:numlock"
@@ -167,7 +167,7 @@ Scope {
 			margins.bottom: 150
 			mask: Region {}
 
-			Rectangle {
+			StyledRect {
 				anchors.fill: parent
 				radius: height / 2
 				color: Colors.colors.background

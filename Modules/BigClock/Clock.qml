@@ -31,7 +31,7 @@ Scope {
 
 			exclusiveZone: 0
 
-			Rectangle {
+			StyledRect {
 				anchors.centerIn: parent
 
 				color: "transparent"

@@ -10,7 +10,7 @@ Loader {
 
 	anchors.centerIn: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		id: root
 
 		readonly property int diskProp: SysUsage.diskUsed / 1048576

@@ -13,7 +13,7 @@ RowLayout {
 
 	property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
 
-	Rectangle {
+	StyledRect {
 		id: workspaceBar
 
 		Layout.preferredWidth: Math.max(50, Workspaces.maxWorkspace * 25)

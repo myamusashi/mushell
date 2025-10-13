@@ -8,7 +8,7 @@ import qs.Data
 import qs.Helpers
 import qs.Components
 
-Rectangle {
+StyledRect {
 	id: root
 
 	property string icon: Audio.getIcon(root.node)

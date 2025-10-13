@@ -16,7 +16,7 @@ Loader {
 
 	anchors.fill: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		id: root
 
 		Layout.fillWidth: true
@@ -27,7 +27,7 @@ Loader {
 		border.width: 2
 		clip: true
 
-		Rectangle {
+		StyledRect {
 			id: wallCover
 
 			anchors.fill: parent
@@ -99,7 +99,7 @@ Loader {
 				anchors.fill: parent
 				layer.enabled: true
 				visible: false
-				Rectangle {
+				StyledRect {
 					width: wallCover.width
 					height: wallCover.height
 					radius: root.radius
@@ -127,7 +127,7 @@ Loader {
 				Layout.fillWidth: true
 				Layout.fillHeight: true
 
-				Rectangle {
+				StyledRect {
 					anchors.fill: parent
 					color: "transparent"
 
@@ -169,7 +169,7 @@ Loader {
 								anchors.fill: parent
 								layer.enabled: true
 								visible: false
-								Rectangle {
+								StyledRect {
 									anchors.fill: parent
 									radius: width / 2
 								}
@@ -244,7 +244,7 @@ Loader {
 									width: 44
 									height: 44
 
-									Rectangle {
+									StyledRect {
 										id: bgCon
 
 										anchors.fill: parent

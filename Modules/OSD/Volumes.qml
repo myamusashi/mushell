@@ -21,14 +21,14 @@ RowLayout {
 		font.pixelSize: Appearance.fonts.extraLarge * 1.2
 	}
 
-	Rectangle {
+	StyledRect {
 		Layout.fillWidth: true
 
 		implicitHeight: 10
 		radius: 20
 		color: Colors.withAlpha(Colors.dark.primary, 0.3)
 
-		Rectangle {
+		StyledRect {
 			anchors {
 				left: parent.left
 				top: parent.top

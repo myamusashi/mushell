@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import Quickshell.Wayland
 
 import qs.Data
+import qs.Components
 
 WlSessionLockSurface {
 	id: root
@@ -22,7 +23,7 @@ WlSessionLockSurface {
 		}
 	}
 
-	Rectangle {
+	StyledRect {
 		id: surface
 
 		anchors.fill: parent
@@ -73,7 +74,7 @@ WlSessionLockSurface {
 				bottomMargin: Appearance.spacing.large * 4
 			}
 
-			Rectangle {
+			StyledRect {
 				id: errorContainer
 
 				Layout.alignment: Qt.AlignHCenter

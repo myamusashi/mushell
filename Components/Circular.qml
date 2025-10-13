@@ -3,7 +3,7 @@ import QtQuick
 import qs.Data
 import qs.Components
 
-Rectangle {
+StyledRect {
 	id: root
 
 	color: "transparent"

@@ -9,6 +9,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 
 import qs.Data
+import qs.Components
 import "Inbox" as Inbox
 
 Scope {
@@ -53,7 +54,7 @@ Scope {
 			implicitWidth: root.baseWidth
 			implicitHeight: root.baseHeight
 
-			Rectangle {
+			StyledRect {
 				anchors.fill: parent
 				anchors.margins: 20
 				color: "transparent"

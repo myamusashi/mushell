@@ -95,7 +95,7 @@ LazyLoader {
 				}
 			}
 
-			delegate: Rectangle {
+			delegate: StyledRect {
 				id: delegateNotif
 
 				required property Notification modelData
@@ -188,7 +188,7 @@ LazyLoader {
 							anchors.centerIn: parent
 							width: 65
 							height: 65
-							sourceComponent: Rectangle {
+							sourceComponent: StyledRect {
 								width: 65
 								height: 65
 								radius: Appearance.rounding.full
@@ -235,7 +235,7 @@ LazyLoader {
 							width: 28
 							height: 28
 							z: 1
-							sourceComponent: Rectangle {
+							sourceComponent: StyledRect {
 								width: 28
 								height: 28
 								radius: width / 2
@@ -258,7 +258,7 @@ LazyLoader {
 										layer.enabled: true
 										layer.effect: MultiEffect {
 											maskEnabled: true
-											maskSource: Rectangle {
+											maskSource: StyledRect {
 												width: 24
 												height: 24
 												radius: width / 2
@@ -345,7 +345,7 @@ LazyLoader {
 							Repeater {
 								model: delegateNotif.modelData?.actions
 
-								delegate: Rectangle {
+								delegate: StyledRect {
 									id: actionButton
 
 									Layout.fillWidth: true
@@ -359,7 +359,7 @@ LazyLoader {
 									border.width: actionMouse.containsMouse ? 2 : 1
 									radius: 6
 
-									Rectangle {
+									StyledRect {
 										anchors.fill: parent
 										anchors.topMargin: 1
 										color: "transparent"
@@ -383,7 +383,7 @@ LazyLoader {
 											delegateNotif.modelData.dismiss();
 										}
 
-										Rectangle {
+										StyledRect {
 											id: ripple
 
 											anchors.centerIn: parent

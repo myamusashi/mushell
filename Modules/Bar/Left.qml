@@ -8,7 +8,7 @@ Loader {
 	active: root.isBarOpen
 	asynchronous: true
 
- 	sourceComponent: RowLayout {
+	sourceComponent: RowLayout {
 		anchors.fill: parent
 		anchors.leftMargin: Appearance.margin.small
 		spacing: Appearance.spacing.normal

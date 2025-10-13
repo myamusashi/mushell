@@ -14,11 +14,10 @@ import qs.Components
 
 Loader {
 	active: dashboardLoader.activeAsync
-	asynchronous: true
 
 	anchors.fill: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		id: root
 
 		Layout.fillWidth: true
@@ -70,7 +69,7 @@ Loader {
 						locked: true
 					}
 
-					Rectangle {
+					StyledRect {
 						id: rectNotification
 
 						width: listViewNotifs.width
@@ -101,7 +100,7 @@ Loader {
 									anchors.centerIn: parent
 									width: 65
 									height: 65
-									sourceComponent: Rectangle {
+									sourceComponent: StyledRect {
 										width: 65
 										height: 65
 										radius: Appearance.rounding.full
@@ -148,7 +147,7 @@ Loader {
 									width: 28
 									height: 28
 									z: 1
-									sourceComponent: Rectangle {
+									sourceComponent: StyledRect {
 										width: 28
 										height: 28
 										radius: width / 2
@@ -171,7 +170,7 @@ Loader {
 												layer.enabled: true
 												layer.effect: MultiEffect {
 													maskEnabled: true
-													maskSource: Rectangle {
+													maskSource: StyledRect {
 														width: 24
 														height: 24
 														radius: width / 2
@@ -258,7 +257,7 @@ Loader {
 									Repeater {
 										model: flickDelegate.modelData?.actions
 
-										delegate: Rectangle {
+										delegate: StyledRect {
 											id: actionButton
 
 											Layout.fillWidth: true
@@ -272,7 +271,7 @@ Loader {
 											border.width: actionMouse.containsMouse ? 2 : 1
 											radius: 6
 
-											Rectangle {
+											StyledRect {
 												anchors.fill: parent
 												anchors.topMargin: 1
 												color: "transparent"
@@ -296,7 +295,7 @@ Loader {
 													flickDelegate.modelData.dismiss();
 												}
 
-												Rectangle {
+												StyledRect {
 													id: ripple
 
 													anchors.centerIn: parent

@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Data
+import qs.Components
 
 RowLayout {
 	id: root
@@ -20,7 +21,7 @@ RowLayout {
 		font.family: Appearance.fonts.family_Sans
 		font.pixelSize: Appearance.fonts.large
 
-		background: Rectangle {
+		background: StyledRect {
 			anchors.fill: parent
 
 			color: passwordBox.activeFocus ? Colors.colors.surface_container_high : Colors.colors.surface_container
@@ -131,7 +132,7 @@ RowLayout {
 			}
 		}
 
-		Rectangle {
+		StyledRect {
 			anchors.right: parent.right
 			anchors.rightMargin: Appearance.padding.large
 			anchors.verticalCenter: parent.verticalCenter

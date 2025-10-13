@@ -9,7 +9,7 @@ Loader {
 	active: dashboardLoader
 	asynchronous: true
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		id: root
 
 		implicitWidth: 400
@@ -74,7 +74,7 @@ Loader {
 				Layout.fillWidth: true
 			}
 
-			Rectangle {
+			StyledRect {
 				Layout.fillWidth: true
 				Layout.preferredHeight: 80
 				color: "transparent"

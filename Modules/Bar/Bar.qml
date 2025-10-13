@@ -1,3 +1,5 @@
+// Thx Rexiel for your Bar PR on quickshell-mirror
+
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -5,7 +7,9 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+
 import qs.Data
+import qs.Components
 
 Scope {
 	id: root
@@ -43,7 +47,7 @@ Scope {
 
 				anchors.fill: parent
 
-				sourceComponent: Rectangle {
+				sourceComponent: StyledRect {
 					id: base
 
 					color: Colors.colors.background

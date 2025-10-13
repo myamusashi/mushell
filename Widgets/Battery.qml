@@ -6,7 +6,7 @@ import qs.Data
 import qs.Components
 import qs.Helpers
 
-Rectangle {
+StyledRect {
 	id: root
 
 	readonly property bool batCharging: UPower.displayDevice.state == UPowerDeviceState.Charging

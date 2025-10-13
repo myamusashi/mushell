@@ -64,7 +64,7 @@ Scope {
 			margins.left: monitorWidth * 0.3
 			margins.right: margins.left
 
-			Rectangle {
+			StyledRect {
 				id: rectLauncher
 
 				anchors.fill: parent
@@ -91,7 +91,7 @@ Scope {
 						color: Colors.colors.on_surface
 						placeholderTextColor: Colors.colors.on_surface_variant
 
-						background: Rectangle {
+						background: StyledRect {
 							radius: Appearance.rounding.small
 							color: Colors.withAlpha(Colors.dark.surface, 0)
 							// border.color: Colors.colors.on_background
@@ -195,7 +195,7 @@ Scope {
 								}
 							}
 
-							Rectangle {
+							StyledRect {
 								anchors.fill: parent
 								anchors.margins: 2
 
@@ -269,7 +269,7 @@ Scope {
 						highlightFollowsCurrentItem: true
 						highlightResizeDuration: Appearance.animations.durations.small
 						highlightMoveDuration: Appearance.animations.durations.small
-						highlight: Rectangle {
+						highlight: StyledRect {
 							color: Colors.colors.primary
 							radius: Appearance.rounding.normal
 							opacity: 0.06

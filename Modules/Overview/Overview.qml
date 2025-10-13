@@ -1,3 +1,5 @@
+// Thx M7moud El-zayat for your Overview code
+
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -57,14 +59,14 @@ Scope {
 			WlrLayershell.layer: WlrLayer.Overlay
 			WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
-			Rectangle {
+			StyledRect {
 				color: Colors.colors.background
 				anchors.fill: contentGrid
 				anchors.margins: -12
 			}
 
 			// Overlay Layer
-			Rectangle {
+			StyledRect {
 				id: overLayer
 				color: "transparent"
 				z: 1
@@ -85,7 +87,7 @@ Scope {
 				Repeater {
 					model: 8
 
-					delegate: Rectangle {
+					delegate: StyledRect {
 						id: workspaceContainer
 
 						required property int index
@@ -165,8 +167,8 @@ Scope {
 								property var toplevelData: modelData.lastIpcObject
 								property int initX: toplevelData.at?.[0] ?? 0
 								property int initY: toplevelData.at?.[1] ?? 0
-								property Rectangle originalParent: workspaceContainer
-								property Rectangle visualParent: overLayer
+								property StyledRect originalParent: workspaceContainer
+								property StyledRect visualParent: overLayer
 								property bool isCaught: false
 
 								captureSource: waylandHandle

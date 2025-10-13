@@ -7,7 +7,7 @@ import Quickshell.Wayland
 import qs.Data
 import qs.Components
 
-Rectangle {
+StyledRect {
 	id: root
 
 	Layout.fillHeight: true

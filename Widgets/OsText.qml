@@ -3,8 +3,9 @@ import QtQuick.Layouts
 
 import qs.Data
 import qs.Helpers
+import qs.Components
 
-Rectangle {
+StyledRect {
 	Layout.fillHeight: true
 	color: "transparent"
 	// color: Colors.colors.withAlpha(Colors.colors.background, 0.79)

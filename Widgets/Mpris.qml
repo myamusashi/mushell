@@ -14,7 +14,7 @@ Loader {
 
 	anchors.centerIn: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		id: root
 
 		anchors.centerIn: parent
@@ -149,7 +149,7 @@ Loader {
 						}
 					}
 
-					Rectangle {
+					StyledRect {
 						anchors.fill: parent
 						anchors.margins: 2
 						color: Colors.colors.on_primary

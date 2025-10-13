@@ -10,11 +10,10 @@ import qs.Components
 
 Loader {
 	active: dashboardLoader.activeAsync
-	asynchronous: true
 
 	anchors.fill: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		anchors.fill: parent
 		color: Colors.colors.background
 		radius: Appearance.rounding.normal
@@ -38,7 +37,7 @@ Loader {
 				Layout.preferredHeight: 48
 				spacing: Appearance.spacing.normal
 
-				Rectangle {
+				StyledRect {
 					Layout.preferredWidth: 40
 					Layout.preferredHeight: 40
 					radius: Appearance.rounding.full
@@ -91,7 +90,7 @@ Loader {
 					font.pixelSize: Appearance.fonts.large
 				}
 
-				Rectangle {
+				StyledRect {
 					Layout.preferredWidth: 40
 					Layout.preferredHeight: 40
 					radius: Appearance.rounding.full
@@ -134,7 +133,7 @@ Loader {
 				Layout.topMargin: Appearance.spacing.small
 				Layout.preferredHeight: 32
 
-				delegate: Rectangle {
+				delegate: StyledRect {
 					id: daysOfWeekDelegate
 
 					required property var model
@@ -168,7 +167,7 @@ Loader {
 				month: root.currentMonth
 				year: root.currentYear
 
-				delegate: Rectangle {
+				delegate: StyledRect {
 					id: dayItem
 
 					required property var model

@@ -8,11 +8,10 @@ import qs.Components
 
 Loader {
 	active: dashboardLoader.activeAsync
-	asynchronous: true
 
 	anchors.fill: parent
 
-	sourceComponent: Rectangle {
+	sourceComponent: StyledRect {
 		Layout.fillWidth: true
 		Layout.preferredHeight: 60
 		color: Colors.colors.background
@@ -48,7 +47,7 @@ Loader {
 					}
 				]
 
-				delegate: Rectangle {
+				delegate: StyledRect {
 					id: notifHeaderDelegate
 
 					Layout.preferredWidth: 32

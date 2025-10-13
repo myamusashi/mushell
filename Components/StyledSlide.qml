@@ -26,7 +26,7 @@ Slider {
 		x: root.leftPadding
 		y: root.topPadding
 
-		Rectangle {
+		StyledRect {
 			id: unprogressBackground
 
 			width: root.sliderOrientation === Qt.Horizontal ? parent.width : parent.height
@@ -37,7 +37,7 @@ Slider {
 			radius: Appearance.rounding.small
 		}
 
-		Rectangle {
+		StyledRect {
 			id: progressBackground
 
 			width: root.sliderOrientation === Qt.Horizontal ? parent.width * root.visualPosition : unprogressBackground.width
@@ -49,7 +49,7 @@ Slider {
 		}
 	}
 
-	handle: Rectangle {
+	handle: StyledRect {
 		id: sliderHandle
 
 		x: root.sliderOrientation === Qt.Horizontal ? root.leftPadding + root.visualPosition * (root.availableWidth - width) : root.leftPadding + root.availableWidth / 2 - width / 2
@@ -59,7 +59,7 @@ Slider {
 		radius: width / 2
 		color: root.pressed ? Colors.colors.primary : Colors.colors.on_surface
 
-		Rectangle {
+		StyledRect {
 			anchors.centerIn: parent
 			width: root.pressed ? 28 : (root.hovered ? 24 : 0)
 			height: width

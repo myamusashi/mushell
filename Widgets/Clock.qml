@@ -5,7 +5,7 @@ import qs.Data
 import qs.Components
 import qs.Helpers
 
-Rectangle {
+StyledRect {
 	Layout.fillHeight: true
 	color: "transparent"
 	// color: Colors.colors.withAlpha(Colors.colors.background, 0.79)

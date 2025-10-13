@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import qs.Data
+import qs.Components
 
 ColumnLayout {
 	id: root
@@ -26,7 +27,7 @@ ColumnLayout {
 		onTriggered: root.currentDate = new Date()
 	}
 
-	Rectangle {
+	StyledRect {
 		id: clockContainer
 
 		Layout.alignment: Qt.AlignHCenter
@@ -35,7 +36,7 @@ ColumnLayout {
 		color: Qt.rgba(Colors.colors.secondary.r, Colors.colors.secondary.g, Colors.colors.secondary.b, 0.12)
 		radius: width / 2
 
-		Rectangle {
+		StyledRect {
 			anchors.fill: parent
 			anchors.margins: 2
 			color: "transparent"
@@ -64,7 +65,7 @@ ColumnLayout {
 				Layout.alignment: Qt.AlignHCenter
 			}
 
-			Rectangle {
+			StyledRect {
 				Layout.alignment: Qt.AlignHCenter
 				Layout.preferredWidth: 60
 				Layout.preferredHeight: 32

@@ -42,7 +42,7 @@ Scope {
 			Item {
 				anchors.fill: parent
 
-				Rectangle {
+				StyledRect {
 					anchors.fill: parent
 					radius: Appearance.rounding.large
 					color: Colors.colors.background
@@ -105,7 +105,7 @@ Scope {
 								},
 							]
 
-							delegate: Rectangle {
+							delegate: StyledRect {
 								id: iconDelegate
 
 								required property var modelData

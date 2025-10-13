@@ -9,7 +9,7 @@ import Quickshell.Widgets
 import qs.Data
 import qs.Components
 
-Rectangle {
+StyledRect {
 	id: root
 
 	readonly property var parentWindow: bar
@@ -61,7 +61,7 @@ Rectangle {
 				width: 25
 				height: 25
 
-				Rectangle {
+				StyledRect {
 					id: bgTrayIcon
 					width: 25
 					height: 25
