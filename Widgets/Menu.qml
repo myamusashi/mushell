@@ -19,6 +19,8 @@ Scope {
 
 		delegate: PanelWindow {
 
+			required property ShellScreen modelData
+
 			anchors {
 				top: true
 				left: true
@@ -29,6 +31,7 @@ Scope {
 
 			width: 120
 			height: 250
+			screen: modelData
 			color: Colors.colors.background
 			visible: root.isMenuOpen
 
@@ -80,7 +83,8 @@ Scope {
 					delegate: MouseArea {
 						id: delegateItem
 
-						anchors.fill: parent
+						Layout.fillWidth: true
+						Layout.fillHeight: true
 
 						Layout.preferredHeight: 40
 
