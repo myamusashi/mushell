@@ -7,14 +7,10 @@ Loader {
 	asynchronous: true
 
 	sourceComponent: RowLayout {
-		anchors.centerIn: parent
+		Layout.alignment: Qt.AlignCenter
 
 		Mpris {
 			Layout.alignment: Qt.AlignCenter
-		}
-
-		Item {
-			Layout.preferredWidth: 250
 		}
 	}
 }
