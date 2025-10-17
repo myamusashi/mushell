@@ -9,7 +9,7 @@ import qs.Helpers
 import qs.Components
 
 Loader {
-	active: root.isBarOpen
+	active: true
 	asynchronous: true
 
 	anchors.centerIn: parent
