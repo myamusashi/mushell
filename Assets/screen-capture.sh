@@ -28,9 +28,7 @@ goto_link() {
 	"default")
 		if command -v foot >/dev/null 2>&1; then
 			if command -v yazi >/dev/null 2>&1; then
-				echo "DEBUG: Executing: footclient yazi '$IMG'"
 				footclient yazi "$IMG" &
-				echo "DEBUG: Command executed with PID: $!"
 			else
 				echo "ERROR: yazi command not found"
 				xdg-open "$(dirname "$IMG")" &
@@ -41,20 +39,20 @@ goto_link() {
 		fi
 		;;
 	"")
-		echo "DEBUG: No action taken (notification dismissed or timeout)"
+		echo "No action taken (notification dismissed or timeout)"
 		;;
 	*)
-		echo "DEBUG: Unexpected action: '$ACTION'"
+		echo "Unexpected action: '$ACTION'"
 		;;
 	esac
 }
 
 case "$1" in
 "--screenshot-window")
+	sleep 3
 	output=$(hyprshot -m window -d -s -o "$HOME/Pictures/screenshot/" -f "$(date +%Y-%m-%d_%H-%m-%s).png")
 	if ! [[ "$output" =~ "selection cancelled" ]]; then
 		wl-copy <"$IMG"
-		sleep 1
 		goto_link
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
@@ -62,10 +60,10 @@ case "$1" in
 	exit
 	;;
 "--screenshot-selection")
+	sleep 3
 	grim -g "$(slurp)" "$IMG"
 	if [ $? -eq 0 ]; then
 		wl-copy <"$IMG"
-		sleep 1
 		goto_link
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
