@@ -29,7 +29,7 @@ RowLayout {
 
 			border.color: {
 				if (!passwordBox.enabled)
-					return Colors.withAlpha(Colors.dark.outline, 0.12);
+					return Colors.withAlpha(Colors.colors.outline, 0.12);
 				else if (passwordBox.activeFocus)
 					return Colors.colors.primary;
 				else
@@ -84,7 +84,7 @@ RowLayout {
 		placeholderTextColor: root.pam.showFailure ? Colors.colors.error : Colors.colors.on_surface_variant
 		font.bold: root.pam.showFailure ? true : false
 
-		selectionColor: Colors.withAlpha(Colors.dark.on_surface, 0.16)
+		selectionColor: Colors.withAlpha(Colors.colors.on_surface, 0.16)
 		selectedTextColor: Colors.colors.on_primary
 
 		onAccepted: {

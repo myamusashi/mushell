@@ -95,7 +95,7 @@ Scope {
 
 						background: StyledRect {
 							radius: Appearance.rounding.small
-							color: Colors.withAlpha(Colors.dark.surface, 0)
+							color: Colors.withAlpha(Colors.colors.surface, 0)
 							// border.color: Colors.colors.on_background
 							// border.width: 2
 						}
@@ -210,7 +210,7 @@ Scope {
 								}
 
 								readonly property bool selected: entryMouseArea.containsMouse || (listView.currentIndex === entryMouseArea.index && listView.activeFocus)
-								color: selected ? Colors.withAlpha(Colors.dark.on_surface, 0.1) : "transparent"
+								color: selected ? Colors.withAlpha(Colors.colors.on_surface, 0.1) : "transparent"
 								radius: Appearance.rounding.normal
 
 								Behavior on color {

@@ -45,9 +45,9 @@ Loader {
 					radius: Appearance.rounding.full
 					color: {
 						if (prevMouseArea.containsMouse && prevMouseArea.containsPress)
-							return Colors.withAlpha(Colors.dark.primary, 0.12);
+							return Colors.withAlpha(Colors.colors.primary, 0.12);
 						else if (prevMouseArea.containsMouse)
-							return Colors.withAlpha(Colors.dark.primary, 0.08);
+							return Colors.withAlpha(Colors.colors.primary, 0.08);
 						else
 							return "transparent";
 					}
@@ -101,9 +101,9 @@ Loader {
 					radius: Appearance.rounding.full
 					color: {
 						if (nextMouseArea.containsMouse && nextMouseArea.containsPress)
-							return Colors.withAlpha(Colors.dark.primary, 0.12);
+							return Colors.withAlpha(Colors.colors.primary, 0.12);
 						else if (nextMouseArea.containsMouse)
-							return Colors.withAlpha(Colors.dark.primary, 0.08);
+							return Colors.withAlpha(Colors.colors.primary, 0.08);
 						else
 							return "transparent";
 					}

@@ -239,7 +239,7 @@ Loader {
 									MatIcon {
 										icon: "close"
 										font.pixelSize: Appearance.fonts.large * 1.8
-										color: mIcon.containsMouse ? Colors.withAlpha(Colors.dark.error, 0.4) : Colors.colors.error
+										color: mIcon.containsMouse ? Colors.withAlpha(Colors.colors.error, 0.4) : Colors.colors.error
 
 										MouseArea {
 											id: mIcon
@@ -312,7 +312,7 @@ Loader {
 
 												anchors.topMargin: 1
 												color: "transparent"
-												border.color: Colors.withAlpha(Colors.dark.background, 0.01)
+												border.color: Colors.withAlpha(Colors.colors.background, 0.01)
 												border.width: actionMouse.pressed ? 0 : 1
 												radius: parent.radius
 												visible: !actionMouse.pressed
@@ -342,7 +342,7 @@ Loader {
 													width: 0
 													height: 0
 													radius: width / 2
-													color: Colors.withAlpha(Colors.dark.primary, 0.3)
+													color: Colors.withAlpha(Colors.colors.primary, 0.3)
 													visible: false
 
 													SequentialAnimation {

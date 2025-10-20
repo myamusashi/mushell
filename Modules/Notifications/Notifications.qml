@@ -328,7 +328,7 @@ LazyLoader {
 									Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
 									icon: "close"
 									font.pixelSize: Appearance.fonts.normal * 1.7
-									color: mArea.containsMouse ? Colors.withAlpha(Colors.dark.error, 0.4) : Colors.colors.error
+									color: mArea.containsMouse ? Colors.withAlpha(Colors.colors.error, 0.4) : Colors.colors.error
 
 									MouseArea {
 										id: mArea
@@ -402,7 +402,7 @@ LazyLoader {
 
 											anchors.topMargin: 1
 											color: "transparent"
-											border.color: Colors.withAlpha(Colors.dark.background, 0.01)
+											border.color: Colors.withAlpha(Colors.colors.background, 0.01)
 											border.width: actionMouse.pressed ? 0 : 1
 											radius: parent.radius
 											visible: !actionMouse.pressed
