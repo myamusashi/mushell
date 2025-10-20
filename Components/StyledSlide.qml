@@ -12,10 +12,9 @@ Slider {
 	property int handleWidth: 15
 	required property int valueWidth
 	required property int valueHeight
-	property int sliderOrientation: Qt.Horizontal // Ganti nama property
+	property int sliderOrientation: Qt.Horizontal
 	Layout.alignment: Qt.AlignHCenter
 
-	// Set orientation bawaan QML Slider
 	orientation: sliderOrientation
 
 	background: Item {
@@ -33,7 +32,7 @@ Slider {
 			height: root.sliderOrientation === Qt.Horizontal ? parent.height : parent.width
 			x: root.sliderOrientation === Qt.Horizontal ? 0 : (parent.width - width) / 2
 			y: root.sliderOrientation === Qt.Horizontal ? (parent.height - height) / 2 : 0
-			color: Colors.withAlpha(Colors.colors.primary, 0.1)
+			color: Colors.colors.secondary_container
 			radius: Appearance.rounding.small
 		}
 
@@ -47,7 +46,7 @@ Slider {
 			x: root.sliderOrientation === Qt.Horizontal ? 0 : (parent.width - width) / 2
 			y: root.sliderOrientation === Qt.Horizontal ? (parent.height - height) / 2 : parent.height - height
 
-			color: Colors.withAlpha(Colors.colors.primary, 0.8)
+			color: Colors.colors.primary
 			radius: Appearance.rounding.small
 		}
 	}
