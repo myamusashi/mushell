@@ -45,7 +45,7 @@ StyledRect {
 			var startAngle = -Math.PI / 2;
 			var endAngle = startAngle + (root.value / 100) * 2 * Math.PI;
 			ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-			ctx.strokeStyle = root.value > 80 ? Colors.colors.on_error : root.value > 60 ? Colors.colors.tertiary : Colors.colors.primary;
+			ctx.strokeStyle = root.value > 80 ? Colors.colors.error : root.value > 60 ? Colors.colors.tertiary : Colors.colors.primary;
 			ctx.lineWidth = 8;
 			ctx.lineCap = "round";
 			ctx.stroke();
