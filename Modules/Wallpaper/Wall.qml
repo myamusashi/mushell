@@ -66,7 +66,7 @@ Scope {
 
 		function set(path: string): void {
 			Quickshell.execDetached({
-				command: ["sh", "-c", "echo" + path + ">" + Quickshell.env("HOME") + "/.cache/wall/path.txt"]
+				command: ["sh", "-c", "echo " + path + " >" + Quickshell.env("HOME") + "/.cache/wall/path.txt"]
 			});
 		}
 		function get(): string {
