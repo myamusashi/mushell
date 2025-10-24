@@ -7,7 +7,6 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Services.Notifications
 
 import qs.Data
@@ -25,22 +24,12 @@ LazyLoader {
 			right: true
 		}
 
-		property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-		property var scaleMonitor: (monitor.scale === null || monitor.scale === undefined) ? 1.0 : monitor.scale
-
-		property var screenWidth: monitor.width / scaleMonitor
-		property var screenHeight: monitor.height / scaleMonitor
-		property var screenX: monitor.x / scaleMonitor
-		property var screenY: monitor.y / scaleMonitor
-
 		WlrLayershell.namespace: "shell:notification"
 		exclusiveZone: 0
 		color: "transparent"
 
 		implicitWidth: 300 * 1.5
 		implicitHeight: Math.min(600, notifListView.contentHeight + 20)
-
-		margins.left: 50
 
 		visible: {
 			if (!Notifs.notifications.disabledDnD && Notifs.notifications.popupNotifications.length > 0)
@@ -63,34 +52,17 @@ LazyLoader {
 			}
 
 			add: Transition {
-				ParallelAnimation {
-					NumbAnim {
-						properties: "opacity"
-
-						from: 0
-						to: 1
-					}
-					NumbAnim {
-						properties: "scale"
-
-						from: 0.1
-						to: 1
-					}
+				NumbAnim {
+					properties: "opacity"
+					from: 0
+					to: 1
 				}
 			}
 
 			remove: Transition {
-				ParallelAnimation {
-					NumbAnim {
-						properties: "opacity"
-
-						to: 0
-					}
-					NumbAnim {
-						properties: "scale"
-
-						to: 0.3
-					}
+				NumbAnim {
+					properties: "opacity"
+					to: 0
 				}
 			}
 
@@ -109,8 +81,8 @@ LazyLoader {
 				property bool hasAppIcon: modelData.appIcon.length > 0
 				property bool isPaused: false
 
-				width: notifListView.width
-				height: contentLayout.implicitHeight * 1.3
+				implicitWidth: notifListView.width
+				implicitHeight: contentLayout.implicitHeight * 1.3
 				boundsBehavior: Flickable.DragAndOvershootBounds
 				flickableDirection: Flickable.HorizontalFlick
 
@@ -213,7 +185,6 @@ LazyLoader {
 								id: appIcon
 
 								active: delegateNotif.hasAppIcon || !delegateNotif.hasImage
-								asynchronous: true
 
 								anchors.centerIn: parent
 								width: 65
@@ -228,7 +199,6 @@ LazyLoader {
 										id: icon
 
 										active: delegateNotif.hasAppIcon
-										asynchronous: true
 
 										anchors.centerIn: parent
 										width: 65
@@ -241,7 +211,6 @@ LazyLoader {
 
 									Loader {
 										active: !delegateNotif.hasAppIcon
-										asynchronous: true
 
 										anchors.centerIn: parent
 										anchors.horizontalCenterOffset: -Appearance.fonts.large * 0.02
@@ -259,7 +228,6 @@ LazyLoader {
 								id: image
 
 								active: delegateNotif.hasImage
-								asynchronous: true
 
 								anchors.right: parent.right
 								anchors.bottom: parent.bottom
@@ -421,7 +389,6 @@ LazyLoader {
 												actionButton.modelData.invoke();
 												Notifs.notifications.removePopupNotification(delegateNotif.modelData);
 												Notifs.notifications.removeListNotification(delegateNotif.modelData);
-												delegateNotif.modelData.dismiss();
 											}
 
 											StyledRect {
@@ -431,7 +398,7 @@ LazyLoader {
 												width: 0
 												height: 0
 												radius: width / 2
-												color: Qt.rgba(Colors.colors.primary.r, Colors.colors.primary.g, Colors.colors.primary.b, 0.3)
+												color: Colors.withAlpha(Colors.colors.primary, 03)
 												visible: false
 
 												SequentialAnimation {
