@@ -44,8 +44,8 @@ Scope {
 			id: root
 
 			property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-			property real workspaceWidth: (root.monitor.width - (root.reserved[0] + root.reserved[2])) * scope.scaleFactor
-			property real workspaceHeight: (root.monitor.height - (root.reserved[1] + root.reserved[3])) * scope.scaleFactor
+			property real workspaceWidth: (root.monitor.width - (root.reserved[0] + root.reserved[2])) * scope.scaleFactor / root.monitor.scale
+			property real workspaceHeight: (root.monitor.height - (root.reserved[1] + root.reserved[3])) * scope.scaleFactor / root.monitor.scale
 			property real containerWidth: workspaceWidth + scope.borderWidth
 			property real containerHeight: workspaceHeight + scope.borderWidth
 			property list<int> reserved: monitor.lastIpcObject?.reserved
@@ -175,8 +175,8 @@ Scope {
 								captureSource: waylandHandle
 								live: true
 
-								width: sourceSize.width * scope.scaleFactor
-								height: sourceSize.height * scope.scaleFactor
+								width: sourceSize.width * scope.scaleFactor / root.monitor.scale
+								height: sourceSize.height * scope.scaleFactor / root.monitor.scale
 								scale: (Drag.active && !toplevelData?.floating) ? 0.75 : 1
 
 								x: (toplevelData?.at?.[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * scope.scaleFactor + scope.borderWidth + 12
