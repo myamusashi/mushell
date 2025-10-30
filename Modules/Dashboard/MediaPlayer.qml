@@ -40,6 +40,14 @@ StyledRect {
 				anchors.fill: parent
 				visible: Player.active == null
 				source: Qt.resolvedUrl("root:/Assets/kuru.gif")
+				cache: false
+
+				onVisibleChanged: {
+					if (!visible)
+						source: "";
+					else
+						source: Qt.resolvedUrl("root:/Assets/kuru.gif");
+				}
 			}
 		}
 

@@ -50,28 +50,28 @@ WlSessionLockSurface {
 			opacity: 1
 			fillMode: Image.PreserveAspectCrop
 			source: wallFile.text().trim()
-			layer.enabled: true
-			layer.effect: MultiEffect {
-				id: wallBlur
-
-				autoPaddingEnabled: false
-				blurEnabled: true
-
-				NumbAnim on blur {
-					easing.type: Easing.Linear
-					from: 0
-					to: 0.69
-				}
-
-				NumbAnim {
-					easing.type: Easing.Linear
-					duration: Appearance.animations.durations.large
-					property: "blur"
-					running: root.lock.locked
-					target: wallBlur
-					to: 0
-				}
-			}
+			// layer.enabled: true
+			// layer.effect: MultiEffect {
+			// 	id: wallBlur
+			//
+			// 	autoPaddingEnabled: false
+			// 	blurEnabled: true
+			//
+			// 	NumbAnim on blur {
+			// 		easing.type: Easing.Linear
+			// 		from: 0
+			// 		to: 0.69
+			// 	}
+			//
+			// 	NumbAnim {
+			// 		easing.type: Easing.Linear
+			// 		duration: Appearance.animations.durations.large
+			// 		property: "blur"
+			// 		running: root.lock.locked
+			// 		target: wallBlur
+			// 		to: 0
+			// 	}
+			// }
 		}
 
 		// ScreencopyView {
