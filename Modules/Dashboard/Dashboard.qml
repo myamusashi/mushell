@@ -99,6 +99,7 @@ Scope {
 							Layout.minimumWidth: 400
 							Loader {
 								id: performanceLoader
+
 								Layout.fillWidth: true
 								Layout.preferredHeight: 400
 								active: root.isDashboardOpen

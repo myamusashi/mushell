@@ -3,7 +3,7 @@
 SCREENSHOT_DIR="$HOME/Pictures/screenshot"
 VIDEO_DIR="$HOME/Videos/Shell"
 THUMBNAIL_DIR="$HOME/.cache/thumbnails/normal"
-RECORD_PID_FILE="/tmp/wf-recorder.pid"
+RECORD_PID_FILE="/tmp/gpu-screen-recorder.pid"
 
 mkdir -p "$SCREENSHOT_DIR"
 mkdir -p "$VIDEO_DIR"
@@ -92,8 +92,8 @@ goto_link() {
 	esac
 }
 
-RECORD_PID_FILE="/tmp/wf-recorder.pid"
-RECORD_VIDEO_FILE="/tmp/wf-recorder.video"
+RECORD_PID_FILE="/tmp/gpu-screen-recorder.pid"
+RECORD_VIDEO_FILE="/tmp/gpu-screen-recorder.video"
 
 start_recording() {
 	local geometry="$1"
@@ -105,14 +105,13 @@ start_recording() {
 	fi
 
 	VID="$VIDEO_DIR/$(date +%Y-%m-%d_%H-%M-%S).mkv"
-	HW_ACCEL_OPTS="-c h264_vaapi -d /dev/dri/renderD128"
 	
 	if [ -n "$geometry" ]; then
-		wf-recorder -g "$geometry" "$HW_ACCEL_OPTS" -f "$VID" &
+		gpu-screen-recorder -k av1 -w region -region "$geometry" -o "$VID" &
 	elif [ -n "$output" ]; then
-		wf-recorder -o "$output" "$HW_ACCEL_OPTS" -f "$VID" &
+		gpu-screen-recorder -k av1 -w "$output" -o "$VID" &
 	else
-		wf-recorder "$HW_ACCEL_OPTS" -f "$VID" &
+		gpu-screen-recorder -k av1 -w screen -o "$VID" &
 	fi
 
 	echo $! >"$RECORD_PID_FILE"
@@ -229,7 +228,7 @@ case "$1" in
 		stop_recording
 	else
 		sleep 2
-		GEOMETRY=$(slurp)
+		GEOMETRY=$(slurp -f "%wx%h+%x+%y")
 		if [ $? -eq 0 ]; then
 			start_recording "$GEOMETRY" ""
 		else

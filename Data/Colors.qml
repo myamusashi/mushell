@@ -5,6 +5,8 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
+import qs.Data
+
 Singleton {
 	id: root
 
@@ -13,7 +15,7 @@ Singleton {
 	FileView {
 		id: colorsFile
 
-		path: Quickshell.env("HOME") + "/.config/shell/colors.json"
+		path: Paths.shellDir + "/colors.json"
 		watchChanges: true
 		blockLoading: true
 		onFileChanged: reload()

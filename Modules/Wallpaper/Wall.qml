@@ -5,12 +5,14 @@ import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 
+import qs.Data
+
 Scope {
 	id: root
 
 	FileView {
 		id: wallid
-		path: Qt.resolvedUrl(Quickshell.env("HOME") + "/.cache/wall/path.txt")
+		path: Qt.resolvedUrl(Paths.currentWallpaper)
 
 		watchChanges: true
 
@@ -66,7 +68,7 @@ Scope {
 
 		function set(path: string): void {
 			Quickshell.execDetached({
-				command: ["sh", "-c", "echo " + path + " >" + Quickshell.env("HOME") + "/.cache/wall/path.txt"]
+				command: ["sh", "-c", "echo " + path + " >" + Paths.currentWallpaper]
 			});
 		}
 		function get(): string {

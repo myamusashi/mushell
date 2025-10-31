@@ -110,7 +110,7 @@ Scope {
 						FileView {
 							id: wallid
 
-							path: Qt.resolvedUrl(Quickshell.env("HOME") + "/.cache/wall/path.txt")
+							path: Qt.resolvedUrl(Paths.currentWallpaper)
 							watchChanges: true
 							blockLoading: true
 							onFileChanged: reload()

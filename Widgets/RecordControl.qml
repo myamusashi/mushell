@@ -20,7 +20,7 @@ Scope {
 	FileView {
 		id: pidStatusRecording
 
-		path: "/tmp/wf-recorder.pid"
+		path: "/tmp/gpu-screen-recorder.pid"
 		watchChanges: true
 		blockLoading: true
 		onFileChanged: {

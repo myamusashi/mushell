@@ -47,6 +47,15 @@ Singleton {
 			notification.dismiss();
 		}
 
+		function dismiss() {
+			for ( var i = 0; i <= popupNotifications.length; i++ ) {
+				popupNotifications[i === 0].dismiss();
+			}
+			for ( var i = 0; i <= listNotifications.length; i++ ) {
+				listNotifications[i === 0].dismiss();
+			}
+		}
+
 		function dismissAll() {
 			for (var i = 0; i < popupNotifications.length; i++)
 				popupNotifications[i].dismiss();

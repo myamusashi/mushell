@@ -14,8 +14,8 @@ Singleton {
 	property real diskTotal
 
 	// Networking
-	property string wiredInterface: "enp0s31f6"
-	property string wirelessInterface: "wlp3s0"
+	property string wiredInterface
+	property string wirelessInterface
 
 	property var previousData: ({})
 	property var lastUpdateTime: 0
@@ -53,12 +53,11 @@ Singleton {
 	Process {
 		id: networkWiredInterfacesState
 
-		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':ethernet:' | head -1"]
+		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':ethernet:' | head -1 | cut -d ':' -f1"]
+		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
-				const data = text.trim();
-				root.wiredInterface = root.parseInterfaceState(data, "ethernet");
-				// networkWiredInterfacesState.running = false;
+				root.wiredInterface = text.trim();
 			}
 		}
 	}
@@ -66,29 +65,13 @@ Singleton {
 	Process {
 		id: networkWirelessInterfacesState
 
-		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':wifi:' | head -1"]
+		command: ["sh", "-c", "nmcli -t -f DEVICE,TYPE,STATE device status | grep ':wifi:' | head -1 | cut -d ':' -f1"]
+		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
-				const data = text.trim();
-				root.wirelessInterface = root.parseInterfaceState(data, "wifi");
-				// networkWirelessInterfacesState.running = false;
+				root.wirelessInterface = text.trim();
 			}
 		}
-	}
-
-	function parseInterfaceState(data, expectedType) {
-		if (!data) {
-			return `No ${expectedType} interface found`;
-		}
-
-		const [device, type, state] = data.split(':');
-
-		if (type !== expectedType) {
-			return `No ${expectedType} interface found`;
-		}
-
-		const status = (state === "connected") ? "ONLINE" : "OFFLINE";
-		return `${device} [${status}]`;
 	}
 
 	function parseNetworkData(data) {
@@ -236,7 +219,7 @@ Singleton {
 		path: "/proc/stat"
 		onLoaded: {
 			const data = text();
-			// Idk what the fuck this is
+			// Idk what the fuck is this
 			const match = data.match(/^cpu\s+(\d+)(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?(?:\s+(\d+))?/m);
 
 			if (match) {

@@ -27,7 +27,7 @@ WlSessionLockSurface {
 	FileView {
 		id: wallFile
 
-		path: Quickshell.env("HOME") + "/.cache/wall/path.txt"
+		path: Paths.currentWallpaper
 		watchChanges: true
 		onFileChanged: reload()
 	}

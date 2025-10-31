@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Data
+import qs.Helpers
 import qs.Components
 
 StyledRect {
@@ -35,17 +36,15 @@ StyledRect {
 			Layout.alignment: Qt.AlignHCenter
 			Layout.topMargin: 10
 			Layout.bottomMargin: 10
-			spacing: 0
+			spacing: Appearance.spacing.normal
 
-			IconImage {
+			MatIcon {
 				id: weatherIcon
 
 				Layout.alignment: Qt.AlignHCenter
-				implicitSize: 128
-				source: Qt.resolvedUrl("https://openweathermap.org/img/wn/" + Weather.weatherIconData + "@4x.png")
-				asynchronous: true
-				smooth: true
-				mipmap: true
+				font.pixelSize: Appearance.fonts.extraLarge * 4
+				color: Colors.colors.primary
+				icon: "air"
 			}
 
 			StyledText {

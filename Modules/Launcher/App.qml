@@ -63,7 +63,7 @@ Scope {
 			implicitWidth: monitorWidth * 0.3
 			implicitHeight: monitorHeight * 0.5
 			margins.left: monitorWidth * 0.3
-			margins.right: margins.left
+			margins.right: monitorWidth * 0.3
 
 			StyledRect {
 				id: rectLauncher

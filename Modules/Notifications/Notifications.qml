@@ -392,7 +392,7 @@ LazyLoader {
 								Layout.fillWidth: true
 								text: delegateNotif.modelData.summary
 								font.pixelSize: Appearance.fonts.normal * 1.1
-								font.weight: Font.DemiBold // MD3 title style
+								font.weight: Font.DemiBold
 								color: Colors.colors.on_surface
 								elide: Text.ElideRight
 								wrapMode: Text.Wrap
@@ -405,7 +405,7 @@ LazyLoader {
 								Layout.fillWidth: true
 								text: delegateNotif.modelData.body || ""
 								font.pixelSize: Appearance.fonts.small * 1.1
-								lineHeight: 1.4 // MD3 line height
+								lineHeight: 1.4
 								color: Colors.colors.on_surface_variant
 								Layout.preferredWidth: parent.width
 								elide: Text.ElideRight
@@ -419,8 +419,8 @@ LazyLoader {
 
 								opacity: delegateNotif.isShowMoreBody ? 1.0 : 0.92
 								Behavior on opacity {
-									NumberAnimation {
-										duration: Appearance.animations.durations.short * 0.8
+									NumbAnim {
+										duration: Appearance.animations.durations.small
 										easing.type: Easing.OutQuad
 									}
 								}
@@ -449,7 +449,7 @@ LazyLoader {
 
 										Behavior on color {
 											ColorAnimation {
-												duration: Appearance.animations.durations.short
+												duration: Appearance.animations.durations.small
 												easing.type: Easing.OutCubic
 											}
 										}
@@ -484,7 +484,7 @@ LazyLoader {
 											anchors.centerIn: parent
 											text: actionButton.modelData.text
 											font.pixelSize: Appearance.fonts.small * 1.05
-											font.weight: Font.Medium // MD3 button text is medium weight
+											font.weight: Font.Medium
 											color: Colors.colors.on_secondary_container
 											elide: Text.ElideRight
 										}
