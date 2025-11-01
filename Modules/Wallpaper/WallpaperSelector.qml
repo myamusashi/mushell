@@ -112,7 +112,8 @@ Scope {
 						Layout.fillHeight: true
 
 						model: scope.filteredWallpaperList
-						pathItemCount: 5
+						clip: true
+						pathItemCount: Math.min(5, scope.filteredWallpaperList.length)
 
 						Component.onCompleted: {
 							const currentIndex = scope.wallpaperList.indexOf(Paths.currentWallpaper);
