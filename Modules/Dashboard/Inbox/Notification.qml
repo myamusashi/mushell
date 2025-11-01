@@ -31,6 +31,7 @@ Loader {
 			anchors.fill: root
 			clip: true
 
+			spacing: 10
 			anchors.margins: 15
 
 			model: ScriptModel {
@@ -61,12 +62,10 @@ Loader {
 			delegate: Flickable {
 				id: flickDelegate
 
-				width: parent.width
-				height: Math.max(150, contentLayout.implicitHeight + 20)
+				width: listViewNotifs.width
+				height: contentHeight + 50
 
-				contentWidth: width
-
-				contentHeight: height
+				contentHeight: contentLayout.height
 				boundsBehavior: Flickable.DragAndOvershootBounds
 				flickableDirection: Flickable.HorizontalFlick
 
