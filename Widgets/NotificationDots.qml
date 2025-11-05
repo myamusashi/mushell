@@ -19,7 +19,14 @@ StyledRect {
 		implicitHeight: parent.height - 5
 
 		MatIcon {
-			color: Colors.colors.primary
+			color: {
+				if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
+					Colors.colors.primary;
+				else if (root.isDndEnable)
+					Colors.colors.on_surface;
+				else
+					Colors.colors.on_surface;
+			}
 			font.pixelSize: Appearance.fonts.large * 1.3
 			anchors.horizontalCenter: parent.horizontalCenter
 			icon: {
