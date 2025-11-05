@@ -1,8 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Controls
 import Quickshell
 import Quickshell.Hyprland
 
@@ -12,7 +12,7 @@ import qs.Components
 
 LazyLoader {
 	property bool isCalendarShow: false
-	active: isCalendarShow
+	activeAsync: isCalendarShow
 
 	component: PanelWindow {
 		anchors {
@@ -175,7 +175,12 @@ LazyLoader {
 							horizontalAlignment: Text.AlignHCenter
 							verticalAlignment: Text.AlignVCenter
 							text: daysOfWeekDelegate.model.shortName
-							color: Colors.colors.on_surface_variant
+							color: {
+								if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName === "Sat")
+									return Colors.colors.error;
+								else
+									return Colors.colors.on_surface;
+							}
 							font.pixelSize: Appearance.fonts.small * 1.2
 							font.weight: 600
 						}
@@ -199,6 +204,8 @@ LazyLoader {
 						id: dayItem
 
 						required property var model
+						property date cellDate: model.date
+						property int dayOfWeek: cellDate.getDay()
 
 						width: monthGrid.cellWidth
 						height: monthGrid.cellHeight
@@ -235,10 +242,16 @@ LazyLoader {
 							color: {
 								if (dayItem.model.today)
 									return Colors.colors.on_primary;
+								else if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
+									return Colors.colors.error;
 								else if (dayItem.model.month === root.currentMonth)
 									return Colors.colors.on_surface;
-								else
-									return Colors.withAlpha(Colors.colors.on_surface, 0.2);
+								else {
+									if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
+										return Colors.withAlpha(Colors.colors.error, 0.2);
+									else
+										return Colors.withAlpha(Colors.colors.on_surface, 0.2);
+								}
 							}
 							font.pixelSize: Appearance.fonts.small * 1.3
 							font.weight: {
