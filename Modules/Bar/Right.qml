@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs.Data
 import qs.Widgets
 import qs.Components
+import qs.Modules.QuickSettings
 
 Loader {
 	active: true
@@ -36,7 +37,7 @@ Loader {
 			}
 			StyledRect {
 				Layout.alignment: Qt.AlignVCenter
-				Layout.preferredWidth: controlCenterLayout.implicitWidth * 1.1
+				Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
 				Layout.preferredHeight: 25
 				color: mArea.containsPress ? Colors.withAlpha(Colors.colors.on_surface, 0.08) : mArea.containsMouse ? Colors.withAlpha(Colors.colors.on_surface, 0.16) : Colors.withAlpha(Colors.colors.on_surface, 0.20)
 				radius: Appearance.rounding.normal
@@ -46,9 +47,9 @@ Loader {
 				}
 
 				RowLayout {
-					id: controlCenterLayout
-					anchors.fill: parent
+					id: quickSettingsLayout
 
+					anchors.fill: parent
 					spacing: Appearance.spacing.small
 
 					Sound {
@@ -69,13 +70,13 @@ Loader {
 					hoverEnabled: true
 
 					cursorShape: Qt.PointingHandCursor
-					onClicked: controlCenter.isControlCenterOpen = !controlCenter.isControlCenterOpen
+					onClicked: quickSettings.isControlCenterOpen = !quickSettings.isControlCenterOpen
 				}
 			}
 		}
 
-		ControlCenter {
-			id: controlCenter
+		QuickSettings {
+			id: quickSettings
 		}
 	}
 }

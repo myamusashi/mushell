@@ -40,6 +40,9 @@ Singleton {
 	property real lastCpuTotal: 0
 	property bool initialized: false
 
+	readonly property int diskProp: diskUsed / 1048576
+	readonly property int memProp: memUsed / 1048576
+
 	FileView {
 		id: networkInfo
 
