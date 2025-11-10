@@ -9,6 +9,8 @@ import qs.Components
 ColumnLayout {
 	id: root
 
+	required property bool useCustomProperties
+	property Component customProperty
 	required property PwNode node
 
 	PwObjectTracker {
@@ -27,15 +29,25 @@ ColumnLayout {
 			sourceSize.height: 20
 		}
 
-		StyledLabel {
-			text: {
-				const app = root.node.properties["application.name"] ?? (root.node.description != "" ? root.node.description : root.node.name);
-				const media = root.node.properties["media.name"];
-				return media != undefined ? `${app} - ${media}` : app;
+		Loader {
+			active: true
+
+			sourceComponent: root.useCustomProperties ? root.customProperty : defaultNode
+		}
+
+		Component {
+			id: defaultNode
+			
+			StyledLabel {
+				text: {
+					const app = root.node.properties["application.name"] ?? (root.node.description != "" ? root.node.description : root.node.name);
+					const media = root.node.properties["media.name"];
+					return media != undefined ? `${app} - ${media}` : app;
+				}
+				elide: Text.ElideRight
+				wrapMode: Text.Wrap
+				Layout.fillWidth: true
 			}
-			elide: Text.ElideRight
-			wrapMode: Text.Wrap
-			Layout.fillWidth: true
 		}
 
 		StyledButton {
