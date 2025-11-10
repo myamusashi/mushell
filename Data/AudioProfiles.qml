@@ -48,6 +48,7 @@ Singleton {
 
 	Process {
 		id: activeProfiles
+
 		command: ["sh", "-c", "pw-dump | jq '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id: .id, name: .info.props[\"device.name\"], active_profile: .info.params.Profile}].[0].active_profile'"]
 		running: true
 		stdout: StdioCollector {
