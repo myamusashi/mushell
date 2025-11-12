@@ -7,21 +7,20 @@ import qs.Helpers
 import qs.Components
 
 StyledRect {
-	Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-	Layout.fillWidth: true
 	Layout.preferredHeight: 140
 	color: Colors.colors.surface_container_low
 	radius: Appearance.rounding.normal
 
-	ColumnLayout {
+	// Use RowLayout instead of GridLayout for horizontal arrangement
+	RowLayout {
 		anchors.fill: parent
-		anchors.margins: 10
-		anchors.bottomMargin: 25
-		spacing: Appearance.spacing.small
+		anchors.margins: 15
+		spacing: 15
 
+		// Battery icon with percentage
 		Item {
-			Layout.fillWidth: true
-			Layout.preferredHeight: 60
+			Layout.preferredWidth: 80
+			Layout.fillHeight: true
 
 			MatIcon {
 				anchors.centerIn: parent
@@ -50,6 +49,7 @@ StyledRect {
 			}
 		}
 
+		// Battery details list
 		BatteryDetailsList {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
@@ -85,7 +85,7 @@ StyledRect {
 			},
 			{
 				label: "Battery Health:",
-				value: Battery.overallBatteryHealth,
+				value: Battery.overallBatteryHealth + "%",
 				color: getHealthColor(Battery.overallBatteryHealth)
 			}
 		]

@@ -6,7 +6,7 @@ import qs.Data
 import qs.Components
 
 RowLayout {
-	spacing: Appearance.spacing.normal
+	spacing: Appearance.spacing.small
 
 	readonly property var profiles: [
 		{
