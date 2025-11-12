@@ -6,65 +6,62 @@ import qs.Data
 import qs.Helpers
 import qs.Components
 
-ColumnLayout {
+StyledRect {
 	Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+	Layout.fillWidth: true
+	Layout.preferredHeight: 140
+	color: Colors.colors.surface_container_low
+	radius: Appearance.rounding.normal
 
-	StyledRect {
-		Layout.fillWidth: true
-		Layout.preferredHeight: 140
-		color: Colors.colors.surface_container_low
-		radius: Appearance.rounding.normal
+	ColumnLayout {
+		anchors.fill: parent
+		anchors.margins: 10
+		anchors.bottomMargin: 25
+		spacing: Appearance.spacing.small
 
-		ColumnLayout {
-			anchors.fill: parent
-			anchors.margins: 10
-			anchors.bottomMargin: 25
-			spacing: Appearance.spacing.small
+		Item {
+			Layout.fillWidth: true
+			Layout.preferredHeight: 60
 
-			Item {
-				Layout.fillWidth: true
-				Layout.preferredHeight: 60
+			MatIcon {
+				anchors.centerIn: parent
+				icon: Battery.charging ? Battery.chargeIcon : Battery.icon
+				color: Battery.charging ? Colors.colors.on_primary : Colors.colors.on_surface_variant
+				font.pixelSize: Appearance.fonts.extraLarge * 3
+			}
+
+			RowLayout {
+				anchors.centerIn: parent
+				spacing: 4
 
 				MatIcon {
-					anchors.centerIn: parent
-					icon: Battery.charging ? Battery.chargeIcon : Battery.icon
-					color: Battery.charging ? Colors.colors.on_primary : Colors.colors.on_surface_variant
-					font.pixelSize: Appearance.fonts.extraLarge * 3
+					icon: "bolt"
+					color: Battery.charging ? Colors.colors.primary : Colors.colors.surface
+					visible: Battery.charging
+					font.pixelSize: Appearance.fonts.large
 				}
 
-				RowLayout {
-					anchors.centerIn: parent
-					spacing: 4
-
-					MatIcon {
-						icon: "bolt"
-						color: Battery.charging ? Colors.colors.primary : Colors.colors.surface
-						visible: Battery.charging
-						font.pixelSize: Appearance.fonts.large
-					}
-
-					StyledText {
-						text: (UPower.displayDevice.percentage * 100).toFixed(0)
-						color: Battery.charging ? Colors.colors.primary : Colors.colors.surface
-						font.pixelSize: Appearance.fonts.large
-						font.bold: true
-					}
+				StyledText {
+					text: (UPower.displayDevice.percentage * 100).toFixed(0)
+					color: Battery.charging ? Colors.colors.primary : Colors.colors.surface
+					font.pixelSize: Appearance.fonts.large
+					font.bold: true
 				}
-			}
-
-			BatteryDetailsList {
-				Layout.fillWidth: true
-				Layout.fillHeight: true
 			}
 		}
 
-		Timer {
-			interval: 600
-			repeat: true
-			running: Battery.charging
-			triggeredOnStart: true
-			onTriggered: Battery.chargeIconIndex = (Battery.chargeIconIndex % 10) + 1
+		BatteryDetailsList {
+			Layout.fillWidth: true
+			Layout.fillHeight: true
 		}
+	}
+
+	Timer {
+		interval: 600
+		repeat: true
+		running: Battery.charging
+		triggeredOnStart: true
+		onTriggered: Battery.chargeIconIndex = (Battery.chargeIconIndex % 10) + 1
 	}
 
 	component BatteryDetailsList: ColumnLayout {

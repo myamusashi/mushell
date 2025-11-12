@@ -11,6 +11,8 @@ import QtQuick.Controls
 import qs.Data
 import qs.Components
 
+import "Settings"
+
 Scope {
 	id: scope
 
@@ -77,16 +79,15 @@ Scope {
 					initialItem: viewComponent
 
 					onCurrentItemChanged: {
-						if (currentItem) {
+						if (currentItem)
 							currentItem.viewIndex = scope.state;
-						}
 					}
 
 					Component {
 						id: contentView
 
 						StyledRect {
-							color: Colors.colors.surface_container_high
+							color: Colors.colors.surface_container
 
 							property int viewIndex: 0
 

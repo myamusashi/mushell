@@ -1,59 +1,58 @@
 import QtQuick
 import QtQuick.Layouts
 
-import "Settings"
-
-ColumnLayout {
-	id: settings
-
+Item {
 	anchors.fill: parent
-	spacing: 15
+	ColumnLayout {
+		id: settings
 
-	property alias wifiList: wifiList
+		anchors.fill: parent
+		spacing: 15
 
-	RowLayout {
-		Layout.fillWidth: true
-		Layout.fillHeight: true
+		property alias wifiList: wifiList
 
-		BatteryInfoCard {
-			Layout.fillHeight: true
+		RowLayout {
 			Layout.fillWidth: true
-			Layout.margins: 15
+			Layout.fillHeight: true
+
+			BatteryInfoCard {
+				Layout.fillHeight: true
+				Layout.fillWidth: true
+				Layout.margins: 15
+			}
+
+			NetworkInfoColumn {
+				Layout.fillHeight: true
+				Layout.fillWidth: true
+				Layout.margins: 15
+			}
 		}
 
-		NetworkInfoColumn {
-			Layout.fillHeight: true
+		PowerProfileButtons {
 			Layout.fillWidth: true
-			Layout.margins: 15
+			Layout.rightMargin: 15
+			Layout.leftMargin: 15
+		}
+
+		BrightnessControls {
+			Layout.fillWidth: true
+			Layout.rightMargin: 15
+			Layout.leftMargin: 15
+		}
+
+		Widgets {
+			Layout.fillWidth: true
+			Layout.rightMargin: 15
+			Layout.leftMargin: 15
+		}
+
+		Item {
+			Layout.fillHeight: true
 		}
 	}
-
-	PowerProfileButtons {
-		Layout.fillWidth: true
-		Layout.rightMargin: 15
-		Layout.leftMargin: 15
-	}
-
-	BrightnessControls {
-		Layout.fillWidth: true
-		Layout.rightMargin: 15
-		Layout.leftMargin: 15
-	}
-
-	Widgets {
-		Layout.fillWidth: true
-		Layout.rightMargin: 15
-		Layout.leftMargin: 15
-	}
-
-	Item {
-		Layout.fillHeight: true
-	}
-
 	WifiList {
 		id: wifiList
 
-		Layout.fillWidth: true
-		Layout.fillHeight: true
+		anchors.fill: parent
 	}
 }

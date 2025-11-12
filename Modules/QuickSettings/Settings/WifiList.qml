@@ -11,7 +11,8 @@ import qs.Components
 Loader {
 	id: loader
 
-	anchors.fill: parent
+	Layout.fillWidth: true
+	Layout.fillHeight: true
 	active: false
 
 	sourceComponent: WiFi {}

@@ -8,6 +8,7 @@ import qs.Helpers
 import qs.Components
 
 ColumnLayout {
+
 	Layout.alignment: Qt.AlignLeft | Qt.AlignTop
 	spacing: Appearance.spacing.normal
 
