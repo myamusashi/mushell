@@ -46,7 +46,6 @@ Scope {
 
 	Volumes {
 		active: root.isVolumeOSDShow
-		node: Pipewire.defaultAudioSink
 	}
 
 	CapsLockWidget {
