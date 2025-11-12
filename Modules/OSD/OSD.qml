@@ -33,6 +33,10 @@ Scope {
 		}
 	}
 
+	PwObjectTracker {
+		objects: [Pipewire.defaultAudioSink]
+	}
+
 	Timer {
 		id: hideOSDTimer
 
@@ -46,6 +50,7 @@ Scope {
 
 	Volumes {
 		active: root.isVolumeOSDShow
+		node: Pipewire.defaultAudioSink
 	}
 
 	CapsLockWidget {

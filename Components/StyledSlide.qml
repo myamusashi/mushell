@@ -34,7 +34,7 @@ Slider {
 		x: root.handleGap + (normalizedValue * (parent.width - root.handleGap * 2)) - root.trackDotSize / 2
 		width: root.trackDotSize
 		height: root.trackDotSize
-		radius: root.trackDotSize / 2
+		radius: Appearance.rounding.normal
 		visible: root.dotEnd && index > 0 && index < (root.to - root.from) / root.stepSize
 		color: normalizedValue > root.visualPosition ? Colors.colors.on_secondary_container : Colors.colors.on_primary
 	}
@@ -77,7 +77,7 @@ Slider {
 			width: root.handleGap + (root.visualPosition * (parent.width - root.handleGap * 2)) - ((root.pressed ? 1.5 : 3) / 2 + root.handleGap)
 			height: parent.height - root.trackHeightDiff
 			color: Colors.colors.primary
-			radius: Appearance.rounding.full
+			radius: Appearance.rounding.normal
 			topRightRadius: Appearance.rounding.small * 0.5
 			bottomRightRadius: Appearance.rounding.small * 0.5
 		}
@@ -92,7 +92,7 @@ Slider {
 			width: root.handleGap + ((1 - root.visualPosition) * (parent.width - root.handleGap * 2)) - ((root.pressed ? 1.5 : 3) / 2 + root.handleGap)
 			height: parent.height - root.trackHeightDiff
 			color: Colors.colors.surface_container_highest
-			radius: Appearance.rounding.full
+			radius: Appearance.rounding.normal
 			topLeftRadius: Appearance.rounding.small * 0.5
 			bottomLeftRadius: Appearance.rounding.small * 0.5
 		}
@@ -108,11 +108,17 @@ Slider {
 	}
 
 	handle: StyledRect {
-		width: 5
+		width: root.pressed ? 2 : 4
 		height: root.height
 		x: root.handleGap + (root.visualPosition * (root.availableWidth - root.handleGap * 2)) - width / 2
 		anchors.verticalCenter: parent.verticalCenter
-		radius: Appearance.rounding.full
+		radius: Appearance.rounding.normal
 		color: Colors.colors.primary
+
+		Behavior on width {
+			NumbAnim {
+				duration: Appearance.animations.durations.small
+			}
+		}
 	}
 }
