@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import Quickshell.Hyprland
 
 import qs.Data
@@ -82,6 +83,8 @@ Scope {
 			implicitHeight: monitorHeight * 0.35
 			margins.bottom: monitorHeight * 0.05
 			exclusiveZone: 0
+			WlrLayershell.layer: WlrLayer.Overlay
+			WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 			color: "transparent"
 
 			StyledRect {
