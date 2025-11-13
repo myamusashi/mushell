@@ -98,7 +98,9 @@ Scope {
 									id: coverArt
 
 									anchors.fill: parent
-									source: Player.active && Player.active.trackArtUrl !== "" ? Player.active.trackArtUrl : "root:/Assets/kuru.gif"
+									source: Player.active && Player.active.trackArtUrl !== "" ? Player.active.trackArtUrl :
+																								"root:/Assets/kuru.gif"
+
 									fillMode: Image.PreserveAspectCrop
 									visible: Player.active !== null
 									opacity: 0.5
@@ -221,13 +223,15 @@ Scope {
 							StyledText {
 								id: timeTrack
 
-								text: Player.active == null ? "00:00" : `${root.formatTime(Player.active?.position)} / ${root.formatTime(Player.active?.length)}`
+								text: Player.active == null ? "00:00" : `${root.formatTime(Player.active?.position)} 
+${root.formatTime(Player.active?.length)}`
 								font.pixelSize: Appearance.fonts.large
 								color: Themes.colors.on_background
 
 								Timer {
-									running: Player.active !== null && Player.active.playbackState == MprisPlaybackState.Playing
-									interval: 100
+									running: Player.active !== null && Player.active.playbackState
+											 == MprisPlaybackState.Playing
+									interval: 1000
 									repeat: true
 									onTriggered: Player.active.positionChanged()
 								}
@@ -240,14 +244,15 @@ Scope {
 							MatIcon {
 								id: pauseButton
 
-								icon: Player.active === null ? "pause_circle" : Player.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
+								icon: Player.active === null ? "pause_circle" : Player.active.playbackState
+															   === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
 								color: {
 									if (pauseMouseArea.pressed)
-										return Themes.withAlpha(Themes.colors.primary, 0.08);
+									return Themes.withAlpha(Themes.colors.primary, 0.08);
 									else if (pauseMouseArea.containsMouse)
-										return Themes.withAlpha(Themes.colors.primary, 0.12);
+									return Themes.withAlpha(Themes.colors.primary, 0.12);
 									else
-										return Themes.colors.primary;
+									return Themes.colors.primary;
 								}
 								font.pixelSize: Appearance.fonts.extraLarge * 1.5
 
@@ -276,10 +281,11 @@ Scope {
 							StyledSlide {
 								id: barSlide
 
-								value: Player.active === null ? 0 : Player.active.length > 0 ? Player.active.position / Player.active.length : 0
+								value: Player.active === null ? 0 : Player.active.length > 0 ? Player.active.position
+																							   / Player.active.length : 0
 
 								Layout.fillWidth: true
-								Layout.preferredHeight: 48
+								Layout.preferredHeight: 40
 								valueWidth: 0
 								valueHeight: 0
 

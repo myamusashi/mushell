@@ -15,20 +15,21 @@ Singleton {
 	Process {
 		id: profiles
 
-		command: ["sh", "-c", "pw-dump | jq '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id: .id, name: .info.props[\"device.name\"], profiles: .info.params.EnumProfile}][0].profiles'"]
+		command: ["sh", "-c",
+			"pw-dump | jq '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id: .id, name: .info.props[\"device.name\"], profiles: .info.params.EnumProfile}][0].profiles'"]
 		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
 				const data = JSON.parse(text.trim());
 				root.models = data.map(profile => {
-					return {
-						index: profile.index,
-						name: profile.name,
-						description: profile.description,
-						available: profile.available,
-						readable: formatProfileName(profile.name)
-					};
-				});
+										   return {
+											   index: profile.index,
+											   name: profile.name,
+											   description: profile.description,
+											   available: profile.available,
+											   readable: formatProfileName(profile.name)
+										   };
+									   });
 			}
 		}
 	}
@@ -36,7 +37,8 @@ Singleton {
 	Process {
 		id: pipewireId
 
-		command: ["sh", "-c", "pw-dump | jq -r '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id, profiles: .info.params.EnumProfile} | select(.profiles != null and .profiles != []) | .id][]'"]
+		command: ["sh", "-c",
+			"pw-dump | jq -r '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id, profiles: .info.params.EnumProfile} | select(.profiles != null and .profiles != []) | .id][]'"]
 		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
@@ -49,20 +51,21 @@ Singleton {
 	Process {
 		id: activeProfiles
 
-		command: ["sh", "-c", "pw-dump | jq '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id: .id, name: .info.props[\"device.name\"], active_profile: .info.params.Profile}].[0].active_profile'"]
+		command: ["sh", "-c",
+			"pw-dump | jq '[.[] | select(.type == \"PipeWire:Interface:Device\") | {id: .id, name: .info.props[\"device.name\"], active_profile: .info.params.Profile}].[0].active_profile'"]
 		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
 				const data = JSON.parse(text.trim());
 				root.activeProfiles = data.map(active => {
-					return {
-						index: active.index,
-						name: active.name,
-						description: active.description,
-						available: active.available,
-						save: active.save
-					};
-				});
+												   return {
+													   index: active.index,
+													   name: active.name,
+													   description: active.description,
+													   available: active.available,
+													   save: active.save
+												   };
+											   });
 				root.activeProfileIndex = data.length > 0 ? data[0].index : -1;
 			}
 		}
@@ -86,8 +89,8 @@ Singleton {
 
 			// Replace hyphens with spaces and capitalize
 			part = part.split("-").map(word => {
-				return word.charAt(0).toUpperCase() + word.slice(1);
-			}).join(" ");
+										   return word.charAt(0).toUpperCase() + word.slice(1);
+									   }).join(" ");
 
 			formatted.push(part);
 		}

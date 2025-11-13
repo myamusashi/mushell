@@ -20,7 +20,6 @@ StyledRect {
 	Layout.preferredWidth: systemTrayRow.width + horizontalPadding * 1.2
 	Layout.minimumWidth: visible ? horizontalPadding * 1.2 : 0
 
-	// width: calculatedWidth
 	height: widgetHeight
 	radius: Appearance.rounding.small
 	color: "transparent"
@@ -32,6 +31,7 @@ StyledRect {
 
 	Row {
 		id: systemTrayRow
+
 		anchors.centerIn: parent
 		spacing: Appearance.spacing.small
 
@@ -47,7 +47,7 @@ StyledRect {
 						if (icon.includes("?path=")) {
 							const split = icon.split("?path=");
 							if (split.length !== 2)
-								return icon;
+							return icon;
 							const name = split[0];
 							const path = split[1];
 							const fileName = name.substring(name.lastIndexOf("/") + 1);
@@ -63,6 +63,7 @@ StyledRect {
 
 				StyledRect {
 					id: bgTrayIcon
+
 					width: 25
 					height: 25
 					radius: Appearance.rounding.normal
@@ -86,16 +87,14 @@ StyledRect {
 
 				MouseArea {
 					id: trayItemArea
-					anchors.fill: parent
 
+					anchors.fill: parent
 					acceptedButtons: Qt.LeftButton | Qt.RightButton
 					hoverEnabled: true
-
 					cursorShape: Qt.PointingHandCursor
-
 					onClicked: mouse => {
 						if (!delegateTray.modelData)
-							return;
+						return;
 
 						if (mouse.button === Qt.LeftButton && !delegateTray.modelData.onlyMenu) {
 							delegateTray.modelData.activate();
@@ -119,7 +118,8 @@ StyledRect {
 								// Thx Hanabi for the best solution to fix tray anchor relative position
 								menuAnchor.menu = delegateTray.modelData?.menu;
 								menuAnchor.anchor.window = validWindow;
-								menuAnchor.anchor.rect = delegateTray.QsWindow.window.contentItem.mapFromItem(delegateTray, 0, delegateTray.height, delegateTray.width, delegateTray.width);
+								menuAnchor.anchor.rect = delegateTray.QsWindow.window.contentItem.mapFromItem(delegateTray,
+																											  0, delegateTray.height, delegateTray.width, delegateTray.width);
 								menuAnchor.open();
 							} else {
 								console.warn("Cannot find valid Quickshell window for tray menu");

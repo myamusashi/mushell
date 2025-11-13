@@ -67,7 +67,8 @@ Scope {
 				const secs = seconds % 60;
 
 				if (hours > 0) {
-					return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+					return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:
+${String(secs).padStart(2, '0')}`;
 				}
 				return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 			}
@@ -129,7 +130,9 @@ Scope {
 							Layout.preferredWidth: 28
 							Layout.preferredHeight: 28
 							radius: Appearance.rounding.large
-							color: closeButtonMouse.pressed ? Themes.colors.secondary_container : closeButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : "transparent"
+							color: closeButtonMouse.pressed ? Themes.colors.secondary_container :
+															  closeButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.08) :
+																							   "transparent"
 
 							Behavior on color {
 								ColAnim {
@@ -194,7 +197,8 @@ Scope {
 							Layout.preferredWidth: 100
 							Layout.preferredHeight: 45
 							radius: Appearance.rounding.normal
-							color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.colors.error, 0.8) : stopButtonMouse.containsMouse ? Themes.colors.error : Themes.withAlpha(Themes.colors.error, 0.9)
+							color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.colors.error, 0.8) : stopButtonMouse.containsMouse
+															 ? Themes.colors.error : Themes.withAlpha(Themes.colors.error, 0.9)
 
 							Behavior on color {
 								ColAnim {
@@ -250,8 +254,9 @@ Scope {
 									recordingTimer.stop();
 									scope.recordingSeconds = 0;
 									Quickshell.execDetached({
-										command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --stop-recording"]
-									});
+																command: ["sh", "-c", Quickshell.shellDir
+																	+ "/Assets/screen-capture.sh --stop-recording"]
+															});
 									scope.isRecordingControlOpen = false;
 								}
 							}

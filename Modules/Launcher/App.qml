@@ -22,15 +22,16 @@ Scope {
 	// Thx caelestia
 	function launch(entry: DesktopEntry): void {
 		if (entry.runInTerminal)
-			Quickshell.execDetached({
-				command: ["app2unit", "--", "foot", `${Quickshell.shellDir}/Assets/wrap_term_launch.sh`, ...entry.command],
-				workingDirectory: entry.workingDirectory
-			});
+		Quickshell.execDetached({
+									command: ["app2unit", "--", "foot", `${Quickshell.shellDir}/Assets/wrap_term_launch.sh`,
+										...entry.command],
+									workingDirectory: entry.workingDirectory
+								});
 		else
-			Quickshell.execDetached({
-				command: ["app2unit", "--", ...entry.command],
-				workingDirectory: entry.workingDirectory
-			});
+		Quickshell.execDetached({
+									command: ["app2unit", "--", ...entry.command],
+									workingDirectory: entry.workingDirectory
+								});
 	}
 
 	LazyLoader {
@@ -150,7 +151,7 @@ Scope {
 
 						onModelChanged: {
 							if (root.currentIndex >= model.values.length)
-								root.currentIndex = Math.max(0, model.values.length - 1);
+							root.currentIndex = Math.max(0, model.values.length - 1);
 						}
 
 						delegate: MouseArea {
@@ -181,15 +182,15 @@ Scope {
 
 							Keys.onPressed: kevent => {
 								switch (kevent.key) {
-								case Qt.Key_Escape:
+									case Qt.Key_Escape:
 									root.isLauncherOpen = false;
 									break;
-								case Qt.Key_Enter:
-								case Qt.Key_Return:
+									case Qt.Key_Enter:
+									case Qt.Key_Return:
 									root.launch(modelData);
 									root.isLauncherOpen = false;
 									break;
-								case Qt.Key_Up:
+									case Qt.Key_Up:
 									if (index === 0) {
 										search.focus = true;
 									}
@@ -209,7 +210,8 @@ Scope {
 									origin.y: height / 2
 								}
 
-								readonly property bool selected: entryMouseArea.containsMouse || (listView.currentIndex === entryMouseArea.index && listView.activeFocus)
+								readonly property bool selected: entryMouseArea.containsMouse || (listView.currentIndex
+																								  === entryMouseArea.index && listView.activeFocus)
 								color: selected ? Themes.withAlpha(Themes.colors.on_surface, 0.1) : "transparent"
 								radius: Appearance.rounding.normal
 

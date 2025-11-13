@@ -74,13 +74,17 @@ StyledRect {
 
 					MatIcon {
 						icon: settingButton.modelData.icon
-						color: root.state === settingButton.index ? Themes.colors.primary : Themes.colors.on_surface_variant
+						color: root.state === settingButton.index ? Themes.colors.primary :
+																	Themes.colors.on_surface_variant
+
 						font.pixelSize: Appearance.fonts.large * root.scaleFactor + 10
 					}
 
 					StyledText {
 						text: settingButton.modelData.title
-						color: root.state === settingButton.index ? Themes.colors.primary : Themes.colors.on_surface_variant
+						color: root.state === settingButton.index ? Themes.colors.primary :
+																	Themes.colors.on_surface_variant
+
 						font.pixelSize: Appearance.fonts.large * root.scaleFactor
 						elide: Text.ElideRight
 					}
@@ -99,22 +103,22 @@ StyledRect {
 		radius: Appearance.rounding.large
 
 		x: {
-			if (tabRepeater.itemAt(root.state)) {
-				return tabRepeater.itemAt(root.state).x + tabLayout.x;
-			}
+			if (tabRepeater.itemAt(root.state))
+			return tabRepeater.itemAt(root.state).x + tabLayout.x;
+
 			return 0;
 		}
 
 		Behavior on x {
-			NumbAnim {}
+			NumbAnim {
+				duration: Appearance.animations.durations.small
+			}
 		}
 
 		Behavior on width {
-			NumbAnim {}
+			NumbAnim {
+				easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
+			}
 		}
-	}
-
-	Component.onCompleted: {
-		indicator.x = tabRepeater.itemAt(root.state) ? tabRepeater.itemAt(root.state).x + tabLayout.x : 0;
 	}
 }

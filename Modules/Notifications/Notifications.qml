@@ -38,9 +38,9 @@ LazyLoader {
 
 		visible: {
 			if (!Notifs.notifications.disabledDnD && Notifs.notifications.popupNotifications.length > 0)
-				return true;
+			return true;
 			else
-				return false;
+			return false;
 		}
 
 		ListView {
@@ -134,11 +134,13 @@ LazyLoader {
 				StyledRect {
 					anchors.fill: parent
 
-					color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.colors.error_container : Themes.colors.surface_container_low
+					color: delegateNotif.modelData.urgency === NotificationUrgency.Critical
+						   ? Themes.colors.error_container : Themes.colors.surface_container_low
 
 					radius: Appearance.rounding.large
 
-					border.color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.colors.error : "transparent"
+					border.color: delegateNotif.modelData.urgency === NotificationUrgency.Critical
+								  ? Themes.colors.error : "transparent"
 					border.width: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? 1 : 0
 
 					MouseArea {
@@ -163,13 +165,13 @@ LazyLoader {
 
 							onActiveChanged: {
 								if (delegateMouseNotif.drag.active)
-									return;
+								return;
 
 								if (Math.abs(delegateNotif.x) > (delegateNotif.width * 0.45)) {
 									Notifs.notifications.removePopupNotification(delegateNotif.modelData);
 									Notifs.notifications.removeListNotification(delegateNotif.modelData);
 								} else
-									delegateNotif.x = 0;
+								delegateNotif.x = 0;
 							}
 						}
 					}
@@ -203,7 +205,9 @@ LazyLoader {
 									width: 40
 									height: 40
 									radius: Appearance.rounding.full
-									color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.colors.error : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.colors.secondary_container : Themes.colors.primary_container
+									color: delegateNotif.modelData.urgency === NotificationUrgency.Critical
+										   ? Themes.colors.error : delegateNotif.modelData.urgency === NotificationUrgency.Low
+											 ? Themes.colors.secondary_container : Themes.colors.primary_container
 
 									Loader {
 										id: icon
@@ -225,7 +229,10 @@ LazyLoader {
 										anchors.centerIn: parent
 										sourceComponent: MatIcon {
 											text: "notifications_active"
-											color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.colors.on_error : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.colors.on_secondary_container : Themes.colors.on_primary_container
+											color: delegateNotif.modelData.urgency === NotificationUrgency.Critical
+												   ? Themes.colors.on_error : delegateNotif.modelData.urgency
+													 === NotificationUrgency.Low ? Themes.colors.on_secondary_container :
+																				   Themes.colors.on_primary_container
 											font.pointSize: Appearance.fonts.normal
 										}
 									}
@@ -333,7 +340,9 @@ LazyLoader {
 									Layout.preferredHeight: 32
 
 									radius: Appearance.rounding.large
-									color: expandButtonMouse.pressed ? Themes.colors.secondary_container : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : "transparent"
+									color: expandButtonMouse.pressed ? Themes.colors.secondary_container :
+																	   expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface,
+																														  0.08) : "transparent"
 
 									Behavior on color {
 										ColorAnimation {
@@ -432,14 +441,18 @@ LazyLoader {
 
 										required property NotificationAction modelData
 
-										color: actionMouse.pressed ? Themes.colors.secondary_container : actionMouse.containsMouse ? Themes.colors.secondary_container : Themes.colors.surface_container_high
+										color: actionMouse.pressed ? Themes.colors.secondary_container :
+																	 actionMouse.containsMouse ? Themes.colors.secondary_container :
+																								 Themes.colors.surface_container_high
 
 										radius: Appearance.rounding.full
 
 										StyledRect {
 											anchors.fill: parent
 											radius: parent.radius
-											color: actionMouse.pressed ? Themes.withAlpha(Themes.colors.on_secondary_container, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_secondary_container, 0.08) : "transparent"
+											color: actionMouse.pressed ? Themes.withAlpha(Themes.colors.on_secondary_container,
+																						  0.12) : actionMouse.containsMouse ? Themes.withAlpha(
+																																  Themes.colors.on_secondary_container, 0.08) : "transparent"
 										}
 
 										MouseArea {

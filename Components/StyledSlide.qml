@@ -31,12 +31,15 @@ Slider {
 		property real stepValue: root.from + (index * root.stepSize)
 		property real normalizedValue: (stepValue - root.from) / (root.to - root.from)
 		anchors.verticalCenter: parent.verticalCenter
-		x: root.handleGap + (normalizedValue * (parent.width - root.handleGap * 2)) - root.trackDotSize / 2
+		x: root.handleGap + (normalizedValue * (parent.width - root.handleGap * 2)) - root.trackDotSize
+		   / 2
+
 		width: root.trackDotSize
 		height: root.trackDotSize
 		radius: Appearance.rounding.normal
 		visible: root.dotEnd && index > 0 && index < (root.to - root.from) / root.stepSize
-		color: normalizedValue > root.visualPosition ? Themes.colors.on_secondary_container : Themes.colors.on_primary
+		color: normalizedValue > root.visualPosition ? Themes.colors.on_secondary_container :
+													   Themes.colors.on_primary
 	}
 
 	MouseArea {
@@ -74,7 +77,8 @@ Slider {
 				verticalCenter: parent.verticalCenter
 				left: parent.left
 			}
-			width: root.handleGap + (root.visualPosition * (parent.width - root.handleGap * 2)) - ((root.pressed ? 1.5 : 3) / 2 + root.handleGap)
+			width: root.handleGap + (root.visualPosition * (parent.width - root.handleGap * 2)) - ((root.pressed
+																									? 1.5 : 3) / 2 + root.handleGap)
 			height: parent.height - root.trackHeightDiff
 			color: Themes.colors.primary
 			radius: Appearance.rounding.normal
@@ -89,7 +93,8 @@ Slider {
 				verticalCenter: parent.verticalCenter
 				right: parent.right
 			}
-			width: root.handleGap + ((1 - root.visualPosition) * (parent.width - root.handleGap * 2)) - ((root.pressed ? 1.5 : 3) / 2 + root.handleGap)
+			width: root.handleGap + ((1 - root.visualPosition) * (parent.width - root.handleGap * 2)) - ((
+																											 root.pressed ? 1.5 : 3) / 2 + root.handleGap)
 			height: parent.height - root.trackHeightDiff
 			color: Themes.colors.surface_container_highest
 			radius: Appearance.rounding.normal

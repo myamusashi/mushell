@@ -44,7 +44,8 @@ ColumnLayout {
 
 			StyledLabel {
 				text: {
-					const app = root.node.properties["application.name"] ?? (root.node.description != "" ? root.node.description : root.node.name);
+					const app = root.node.properties["application.name"] ?? (root.node.description != ""
+																			 ? root.node.description : root.node.name);
 					const media = root.node.properties["media.name"];
 					return media != undefined ? `${app} - ${media}` : app;
 				}

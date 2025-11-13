@@ -213,7 +213,8 @@ Scope {
 
 									width: listViewNotifs.width
 									height: Math.max(120, contentLayout.implicitHeight + 32)
-									color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.colors.error_container : Themes.colors.surface_container_low
+									color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical
+										   ? Themes.colors.error_container : Themes.colors.surface_container_low
 									radius: Appearance.rounding.normal
 
 									Behavior on implicitWidth {
@@ -232,13 +233,13 @@ Scope {
 
 											onActiveChanged: {
 												if (delegateMouseNotif.drag.active)
-													return;
+												return;
 
 												if (Math.abs(flickDelegate.x) > (flickDelegate.width * 0.45)) {
 													Notifs.notifications.removePopupNotification(flickDelegate.modelData);
 													Notifs.notifications.removeListNotification(flickDelegate.modelData);
 												} else
-													flickDelegate.x = 0;
+												flickDelegate.x = 0;
 											}
 										}
 									}
@@ -272,7 +273,10 @@ Scope {
 													width: 65
 													height: 65
 													radius: Appearance.rounding.full
-													color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.colors.error : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.colors.surface_container_highest : Themes.colors.secondary_container
+													color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical
+														   ? Themes.colors.error : flickDelegate.modelData?.urgency
+															 === NotificationUrgency.Low ? Themes.colors.surface_container_highest :
+																						   Themes.colors.secondary_container
 
 													Loader {
 														id: icon
@@ -298,7 +302,10 @@ Scope {
 														anchors.verticalCenterOffset: Appearance.fonts.large * 0.02
 														sourceComponent: MatIcon {
 															text: "release_alert"
-															color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.colors.on_error : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.colors.on_surface : Themes.colors.on_secondary_container
+															color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical
+																   ? Themes.colors.on_error : flickDelegate.modelData?.urgency
+																	 === NotificationUrgency.Low ? Themes.colors.on_surface :
+																								   Themes.colors.on_secondary_container
 															font.pointSize: Appearance.fonts.large
 														}
 													}
@@ -415,7 +422,9 @@ Scope {
 													Layout.preferredHeight: 32
 
 													radius: Appearance.rounding.large
-													color: expandButtonMouse.pressed ? Themes.colors.secondary_container : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : "transparent"
+													color: expandButtonMouse.pressed ? Themes.colors.secondary_container :
+																					   expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_surface,
+																																		  0.08) : "transparent"
 
 													MatIcon {
 														id: expandIcon
@@ -504,14 +513,18 @@ Scope {
 
 														required property NotificationAction modelData
 
-														color: actionMouse.pressed ? Themes.colors.secondary_container : actionMouse.containsMouse ? Themes.colors.secondary_container : Themes.colors.surface_container_high
+														color: actionMouse.pressed ? Themes.colors.secondary_container :
+																					 actionMouse.containsMouse ? Themes.colors.secondary_container :
+																												 Themes.colors.surface_container_high
 														radius: Appearance.rounding.small
 
 														StyledRect {
 															anchors.fill: parent
 
 															anchors.topMargin: 1
-															color: actionMouse.pressed ? Themes.withAlpha(Themes.colors.on_secondary_container, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.colors.on_secondary_container, 0.08) : "transparent"
+															color: actionMouse.pressed ? Themes.withAlpha(Themes.colors.on_secondary_container,
+																										  0.12) : actionMouse.containsMouse ? Themes.withAlpha(
+																																				  Themes.colors.on_secondary_container, 0.08) : "transparent"
 															radius: parent.radius
 															visible: !actionMouse.pressed
 														}
@@ -584,7 +597,8 @@ Scope {
 															text: actionButton.modelData.text
 															font.pixelSize: Appearance.fonts.small * 1.1
 															font.weight: actionMouse.containsMouse ? Font.Medium : Font.Normal
-															color: actionMouse.containsMouse ? Themes.colors.on_primary_container : Themes.colors.on_surface
+															color: actionMouse.containsMouse ? Themes.colors.on_primary_container :
+																							   Themes.colors.on_surface
 															elide: Text.ElideRight
 														}
 

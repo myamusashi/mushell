@@ -8,8 +8,9 @@ import qs.Modules.Notifications
 StyledRect {
 	implicitWidth: root.width
 	implicitHeight: parent.height
-	color: mArea.containsPress ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.16) : "transparent"
-	
+	color: mArea.containsPress ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : mArea.containsMouse
+								 ? Themes.withAlpha(Themes.colors.on_surface, 0.16) : "transparent"
+
 	Dots {
 		id: root
 
@@ -47,7 +48,8 @@ StyledRect {
 		anchors.fill: parent
 		hoverEnabled: true
 		cursorShape: Qt.PointingHandCursor
-		onClicked: notificationCenter.isNotificationCenterOpen = !notificationCenter.isNotificationCenterOpen
+		onClicked: notificationCenter.isNotificationCenterOpen =
+				   !notificationCenter.isNotificationCenterOpen
 	}
 
 	NotificationCenter {

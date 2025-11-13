@@ -42,7 +42,8 @@ ColumnLayout {
 
 	StyledText {
 		Layout.alignment: Qt.AlignHCenter
-		text: Weather.weatherDescriptionData.charAt(0).toUpperCase() + Weather.weatherDescriptionData.slice(1)
+		text: Weather.weatherDescriptionData.charAt(0).toUpperCase()
+			  + Weather.weatherDescriptionData.slice(1)
 		color: Themes.colors.on_surface_variant
 		font.pixelSize: Appearance.fonts.normal * 1.5
 		wrapMode: Text.WordWrap

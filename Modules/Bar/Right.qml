@@ -12,67 +12,64 @@ Loader {
 	active: true
 	asynchronous: true
 
-	sourceComponent: StyledRect {
-		color: "transparent"
-		RowLayout {
-			anchors.fill: parent
+	sourceComponent: RowLayout {
+		Layout.alignment: Qt.AlignLeft | Qt.AlignCenter
+		layoutDirection: Qt.RightToLeft
+		spacing: Appearance.spacing.small
 
-			anchors.rightMargin: 8
-			layoutDirection: Qt.RightToLeft
-			spacing: Appearance.spacing.small
+		Clock {
+			Layout.alignment: Qt.AlignVCenter
+			Layout.maximumWidth: implicitWidth
+		}
+		NotificationDots {
+			Layout.alignment: Qt.AlignVCenter
+		}
+		Tray {}
+		StyledRect {
+			Layout.alignment: Qt.AlignVCenter
+			Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
+			Layout.preferredHeight: 25
+			color: mArea.containsPress ? Themes.withAlpha(Themes.colors.surface_container_highest, 0.08) :
+										 mArea.containsMouse ? Themes.withAlpha(Themes.colors.surface_container_highest, 0.1) :
+															   Themes.colors.surface_container
+			radius: Appearance.rounding.normal
 
-			Clock {
-				Layout.alignment: Qt.AlignVCenter
-				Layout.maximumWidth: implicitWidth
+			Behavior on color {
+				ColAnim {}
 			}
-			NotificationDots {
-				Layout.alignment: Qt.AlignVCenter
+
+			RowLayout {
+				id: quickSettingsLayout
+
+				anchors.fill: parent
+				spacing: Appearance.spacing.small
+
+				Sound {
+					Layout.alignment: Qt.AlignVCenter
+					Layout.fillHeight: true
+				}
+				Battery {
+					Layout.alignment: Qt.AlignVCenter
+					Layout.fillHeight: true
+					widthBattery: 33
+					heightBattery: 18
+				}
 			}
-			Tray {
-				Layout.alignment: Qt.AlignVCenter
-			}
-			StyledRect {
-				Layout.alignment: Qt.AlignVCenter
-				Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
-				Layout.preferredHeight: 25
-				color: mArea.containsPress ? Themes.withAlpha(Themes.colors.surface_container_highest, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.colors.surface_container_highest, 0.1) : Themes.colors.surface_container
-				radius: Appearance.rounding.normal
 
-				Behavior on color {
-					ColAnim {}
-				}
+			MouseArea {
+				id: mArea
 
-				RowLayout {
-					id: quickSettingsLayout
+				anchors.fill: parent
 
-					anchors.fill: parent
-					spacing: Appearance.spacing.small
+				hoverEnabled: true
 
-					Sound {
-						Layout.alignment: Qt.AlignVCenter
-						Layout.fillHeight: true
-					}
-					Battery {
-						Layout.alignment: Qt.AlignVCenter
-						Layout.fillHeight: true
-					}
-				}
-
-				MouseArea {
-					id: mArea
-
-					anchors.fill: parent
-
-					hoverEnabled: true
-
-					cursorShape: Qt.PointingHandCursor
-					onClicked: quickSettings.isControlCenterOpen = !quickSettings.isControlCenterOpen
-				}
+				cursorShape: Qt.PointingHandCursor
+				onClicked: quickSettings.isControlCenterOpen = !quickSettings.isControlCenterOpen
 			}
 		}
+	}
 
-		QuickSettings {
-			id: quickSettings
-		}
+	QuickSettings {
+		id: quickSettings
 	}
 }

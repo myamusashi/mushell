@@ -34,11 +34,11 @@ Singleton {
 					if (line.includes("Current brightness:")) {
 						const match = line.match(/Current brightness:\s*(\d+)\s*\((\d+)%\)/);
 						if (match)
-							root.value = parseInt(match[1]);
+						root.value = parseInt(match[1]);
 					} else if (line.includes("Max brightness:")) {
 						const match = line.match(/Max brightness:\s*(\d+)/);
 						if (match)
-							root.maxValue = parseInt(match[1]);
+						root.maxValue = parseInt(match[1]);
 					}
 				}
 				root.available = true;
@@ -96,7 +96,7 @@ Singleton {
 		stderr: StdioCollector {
 			onStreamFinished: {
 				if (this.text.trim() !== "")
-					console.warn("Failed to set brightness:", this.text.trim());
+				console.warn("Failed to set brightness:", this.text.trim());
 			}
 		}
 	}

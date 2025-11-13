@@ -109,9 +109,12 @@ Singleton {
 		readonly property color surface_pressed: root.parseRGBA(root.dark.surface_pressed)
 		readonly property color surface_container_pressed: root.parseRGBA(root.dark.surface_pressed)
 
-		readonly property color primary_container_pressed: root.parseRGBA(root.dark.primary_container_pressed)
-		readonly property color secondary_container_pressed: root.parseRGBA(root.dark.secondary_container_pressed)
-		readonly property color tertiary_container_pressed: root.parseRGBA(root.dark.tertiary_container_pressed)
+		readonly property color primary_container_pressed: root.parseRGBA(
+															   root.dark.primary_container_pressed)
+		readonly property color secondary_container_pressed: root.parseRGBA(
+																 root.dark.secondary_container_pressed)
+		readonly property color tertiary_container_pressed: root.parseRGBA(
+																root.dark.tertiary_container_pressed)
 
 		readonly property color primary_focus: root.parseRGBA(root.dark.primary_focus)
 		readonly property color secondary_focus: root.parseRGBA(root.dark.secondary_focus)
@@ -127,7 +130,8 @@ Singleton {
 		readonly property color scrim_heavy: root.parseRGBA(root.dark.scrim_heavy)
 
 		readonly property color on_surface_disabled: root.parseRGBA(root.dark.on_surface_disabled)
-		readonly property color on_surface_variant_disabled: root.parseRGBA(root.dark.on_surface_variant_disabled)
+		readonly property color on_surface_variant_disabled: root.parseRGBA(
+																 root.dark.on_surface_variant_disabled)
 		readonly property color primary_disabled: root.parseRGBA(root.dark.primary_disabled)
 		readonly property color on_primary_disabled: root.parseRGBA(root.dark.on_primary_disabled)
 

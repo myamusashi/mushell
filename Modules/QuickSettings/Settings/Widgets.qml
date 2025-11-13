@@ -33,12 +33,15 @@ RowLayout {
 	function executeAction(action) {
 		if (action.script) {
 			Quickshell.execDetached({
-				command: ["sh", "-c", `${Quickshell.shellDir}/Assets/screen-capture.sh ${action.script}`]
-			});
+										command: ["sh", "-c", `${Quickshell.shellDir}/Assets/screen-capture.sh 
+
+
+${action.script}`]
+									});
 		} else if (action.command) {
 			Quickshell.execDetached({
-				command: action.command
-			});
+										command: action.command
+									});
 		}
 	}
 

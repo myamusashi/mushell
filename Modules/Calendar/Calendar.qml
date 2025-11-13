@@ -66,11 +66,11 @@ LazyLoader {
 						radius: Appearance.rounding.full
 						color: {
 							if (prevMouseArea.containsMouse && prevMouseArea.containsPress)
-								return Themes.withAlpha(Themes.colors.primary, 0.12);
+							return Themes.withAlpha(Themes.colors.primary, 0.12);
 							else if (prevMouseArea.containsMouse)
-								return Themes.withAlpha(Themes.colors.primary, 0.08);
+							return Themes.withAlpha(Themes.colors.primary, 0.08);
 							else
-								return "transparent";
+							return "transparent";
 						}
 
 						MatIcon {
@@ -104,8 +104,8 @@ LazyLoader {
 						Layout.fillWidth: true
 						text: {
 							const monthNames = Array.from({
-								length: 12
-							}, (_, i) => Qt.locale().monthName(i, Qt.locale().LongFormat));
+															  length: 12
+														  }, (_, i) => Qt.locale().monthName(i, Qt.locale().LongFormat));
 							return monthNames[root.currentMonth] + " " + root.currentYear;
 						}
 						horizontalAlignment: Text.AlignHCenter
@@ -122,11 +122,11 @@ LazyLoader {
 						radius: Appearance.rounding.full
 						color: {
 							if (nextMouseArea.containsMouse && nextMouseArea.containsPress)
-								return Themes.withAlpha(Themes.colors.primary, 0.12);
+							return Themes.withAlpha(Themes.colors.primary, 0.12);
 							else if (nextMouseArea.containsMouse)
-								return Themes.withAlpha(Themes.colors.primary, 0.08);
+							return Themes.withAlpha(Themes.colors.primary, 0.08);
 							else
-								return "transparent";
+							return "transparent";
 						}
 
 						MatIcon {
@@ -176,10 +176,11 @@ LazyLoader {
 							verticalAlignment: Text.AlignVCenter
 							text: daysOfWeekDelegate.model.shortName
 							color: {
-								if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName === "Sat")
-									return Themes.colors.error;
+								if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName
+									=== "Sat")
+								return Themes.colors.error;
 								else
-									return Themes.colors.on_surface;
+								return Themes.colors.on_surface;
 							}
 							font.pixelSize: Appearance.fonts.small * 1.2
 							font.weight: 600
@@ -212,9 +213,9 @@ LazyLoader {
 
 						color: {
 							if (dayItem.model.today)
-								return Themes.colors.primary;
+							return Themes.colors.primary;
 							else if (mouseArea.containsMouse && dayItem.model.month === root.currentMonth)
-								return Themes.colors.surface_variant;
+							return Themes.colors.surface_variant;
 
 							return "transparent";
 						}
@@ -241,26 +242,26 @@ LazyLoader {
 							text: Qt.formatDate(dayItem.model.date, "d")
 							color: {
 								if (dayItem.model.today)
-									return Themes.colors.on_primary;
+								return Themes.colors.on_primary;
 								else if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-									return Themes.colors.error;
+								return Themes.colors.error;
 								else if (dayItem.model.month === root.currentMonth)
-									return Themes.colors.on_surface;
+								return Themes.colors.on_surface;
 								else {
 									if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-										return Themes.withAlpha(Themes.colors.error, 0.2);
+									return Themes.withAlpha(Themes.colors.error, 0.2);
 									else
-										return Themes.withAlpha(Themes.colors.on_surface, 0.2);
+									return Themes.withAlpha(Themes.colors.on_surface, 0.2);
 								}
 							}
 							font.pixelSize: Appearance.fonts.small * 1.3
 							font.weight: {
 								if (dayItem.model.today)
-									return 1000;
+								return 1000;
 								else if (dayItem.model.month === root.currentMonth)
-									return 600;
+								return 600;
 								else
-									return 100;
+								return 100;
 							}
 							horizontalAlignment: Text.AlignHCenter
 							verticalAlignment: Text.AlignVCenter

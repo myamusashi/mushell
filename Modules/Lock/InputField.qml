@@ -25,7 +25,8 @@ RowLayout {
 		background: StyledRect {
 			anchors.fill: parent
 
-			color: passwordBox.activeFocus ? Themes.colors.surface_container_high : Themes.colors.surface_container
+			color: passwordBox.activeFocus ? Themes.colors.surface_container_high :
+											 Themes.colors.surface_container
 
 			border.color: {
 				if (!passwordBox.enabled)
@@ -81,7 +82,8 @@ RowLayout {
 		inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
 
 		placeholderText: root.pam.showFailure ? "Password invalid" : "Enter password"
-		placeholderTextColor: root.pam.showFailure ? Themes.colors.error : Themes.colors.on_surface_variant
+		placeholderTextColor: root.pam.showFailure ? Themes.colors.error :
+													 Themes.colors.on_surface_variant
 		font.bold: root.pam.showFailure ? true : false
 
 		selectionColor: Themes.withAlpha(Themes.colors.on_surface, 0.16)

@@ -22,7 +22,7 @@ Singleton {
 			try {
 				JSON.parse(text());
 				if (adapter.utilities.toasts.configLoaded)
-					console.log("Config loaded");
+				console.log("Config loaded");
 			} catch (e) {
 				console.log("Failed to loaded", e.message);
 			}
@@ -30,7 +30,7 @@ Singleton {
 
 		onLoadFailed: err => {
 			if (err !== FileViewError.FileNotFound)
-				console.log("Failed to read config files");
+			console.log("Failed to read config files");
 		}
 
 		onSaveFailed: err => console.log("Failed to save config", FileViewError.toString(err))

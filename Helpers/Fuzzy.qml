@@ -11,19 +11,19 @@ Singleton {
 
 	// Character similarity map for look-alike matching
 	readonly property var charMap: ({
-			'a': 'aàáâãäåāăą4@',
-			'e': 'eèéêëēėę3',
-			'i': 'iìíîïīįı1!|l',
-			'o': 'oòóôõöøōő0',
-			'u': 'uùúûüūůű',
-			'c': 'cçćč',
-			'n': 'nñńň',
-			's': 'sśšş5$',
-			'z': 'zźżž2',
-			'l': 'l1!|i',
-			'g': 'g9',
-			't': 't7+'
-		})
+										'a': 'aàáâãäåāăą4@',
+										'e': 'eèéêëēėę3',
+										'i': 'iìíîïīįı1!|l',
+										'o': 'oòóôõöøōő0',
+										'u': 'uùúûüūůű',
+										'c': 'cçćč',
+										'n': 'nñńň',
+										's': 'sśšş5$',
+										'z': 'zźżž2',
+										'l': 'l1!|i',
+										'g': 'g9',
+										't': 't7+'
+									})
 
 	function normalizeChar(chars: string): string {
 		const lower = chars.toLowerCase();
@@ -45,9 +45,9 @@ Singleton {
 
 	function levenshteinDistance(a: string, b: string): int {
 		if (a.length === 0)
-			return b.length;
+		return b.length;
 		if (b.length === 0)
-			return a.length;
+		return a.length;
 
 		const shorter = a.length <= b.length ? a : b;
 		const longer = a.length <= b.length ? b : a;
@@ -178,17 +178,17 @@ Singleton {
 
 			if (normalizedText === normalizedQuery) {
 				results.push({
-					item: item,
-					score: 1.0
-				});
+								 item: item,
+								 score: 1.0
+							 });
 				continue;
 			}
 
 			if (normalizedText.indexOf(normalizedQuery) !== -1) {
 				results.push({
-					item: item,
-					score: 0.95
-				});
+								 item: item,
+								 score: 0.95
+							 });
 				continue;
 			}
 
@@ -197,21 +197,21 @@ Singleton {
 
 			if (score >= threshold) {
 				results.push({
-					item: item,
-					score: score
-				});
+								 item: item,
+								 score: score
+							 });
 			}
 		}
 
 		results.sort((a, b) => {
-			const scoreDiff = b.score - a.score;
-			if (Math.abs(scoreDiff) < 0.001) {
-				const aText = key ? a.item[key] : a.item;
-				const bText = key ? b.item[key] : b.item;
-				return aText.length - bText.length;
-			}
-			return scoreDiff;
-		});
+						 const scoreDiff = b.score - a.score;
+						 if (Math.abs(scoreDiff) < 0.001) {
+							 const aText = key ? a.item[key] : a.item;
+							 const bText = key ? b.item[key] : b.item;
+							 return aText.length - bText.length;
+						 }
+						 return scoreDiff;
+					 });
 
 		return results.map(r => r.item);
 	}

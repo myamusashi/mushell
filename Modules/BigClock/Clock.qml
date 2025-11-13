@@ -88,7 +88,8 @@ Scope {
 
 							Layout.alignment: Qt.AlignHCenter
 							implicitSize: 37
-							source: Qt.resolvedUrl("https://openweathermap.org/img/wn/" + Weather.weatherIconData + "@4x.png") || Quickshell.iconPath("stock_weather-cloudy")
+							source: Qt.resolvedUrl("https://openweathermap.org/img/wn/" + Weather.weatherIconData
+												   + "@4x.png") || Quickshell.iconPath("stock_weather-cloudy")
 							asynchronous: true
 							smooth: true
 						}

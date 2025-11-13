@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Services.UPower
 
 import qs.Data
-import qs.Helpers
+import qs.Widgets
 import qs.Components
 
 StyledRect {
@@ -20,30 +20,10 @@ StyledRect {
 			Layout.preferredWidth: 80
 			Layout.fillHeight: true
 
-			MatIcon {
+			Battery {
 				anchors.centerIn: parent
-				icon: Battery.charging ? Battery.chargeIcon : Battery.icon
-				color: Battery.charging ? Themes.colors.on_primary : Themes.colors.on_surface_variant
-				font.pixelSize: Appearance.fonts.extraLarge * 3
-			}
-
-			RowLayout {
-				anchors.centerIn: parent
-				spacing: 4
-
-				MatIcon {
-					icon: "bolt"
-					color: Battery.charging ? Themes.colors.primary : Themes.colors.surface
-					visible: Battery.charging
-					font.pixelSize: Appearance.fonts.large
-				}
-
-				StyledText {
-					text: (UPower.displayDevice.percentage * 100).toFixed(0)
-					color: Battery.charging ? Themes.colors.primary : Themes.colors.surface
-					font.pixelSize: Appearance.fonts.large
-					font.bold: true
-				}
+				widthBattery: 75
+				heightBattery: 36
 			}
 		}
 

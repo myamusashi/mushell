@@ -43,7 +43,9 @@ Loader {
 
 							anchors.centerIn: parent
 							icon: "arrow_back"
-							color: mIconBackArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) : mIconBackArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) : Themes.colors.on_background
+							color: mIconBackArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) :
+																 mIconBackArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) :
+																							   Themes.colors.on_background
 							font.pixelSize: Appearance.fonts.extraLarge
 						}
 
@@ -89,7 +91,9 @@ Loader {
 
 							anchors.centerIn: parent
 							icon: "refresh"
-							color: mRefreshArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) : mRefreshArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) : Themes.colors.on_background
+							color: mRefreshArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) :
+																mRefreshArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) :
+																							 Themes.colors.on_background
 							font.pixelSize: Appearance.fonts.extraLarge
 							opacity: NetworkManager.wifiEnabled ? 1.0 : 0.5
 
@@ -171,7 +175,9 @@ Loader {
 
 								anchors.centerIn: parent
 								icon: "close"
-								color: disconnectArea.containsPress ? Themes.withAlpha(Themes.colors.error, 0.1) : disconnectArea.containsMouse ? Themes.withAlpha(Themes.colors.error, 0.8) : Themes.colors.on_surface_variant
+								color: disconnectArea.containsPress ? Themes.withAlpha(Themes.colors.error, 0.1) :
+																	  disconnectArea.containsMouse ? Themes.withAlpha(Themes.colors.error, 0.8) :
+																									 Themes.colors.on_surface_variant
 								font.pixelSize: Appearance.fonts.large * 1.5
 							}
 
@@ -253,7 +259,10 @@ Loader {
 
 							width: ListView.view.width
 							implicitHeight: networkLayout.implicitHeight + 20
-							color: mouseArea.containsPress ? Themes.withAlpha(Themes.colors.surface_container, 0.12) : mouseArea.containsMouse ? Themes.withAlpha(Themes.colors.surface_container, 0.08) : modelData.active ? Themes.withAlpha(Themes.colors.surface_container, 0.08) : Themes.colors.surface_container
+							color: mouseArea.containsPress ? Themes.withAlpha(Themes.colors.surface_container, 0.12) :
+															 mouseArea.containsMouse ? Themes.withAlpha(Themes.colors.surface_container, 0.08) :
+																					   modelData.active ? Themes.withAlpha(Themes.colors.surface_container, 0.08) :
+																										  Themes.colors.surface_container
 							radius: Appearance.rounding.normal
 
 							RowLayout {
@@ -341,7 +350,8 @@ Loader {
 				Item {
 					Layout.fillWidth: true
 					Layout.fillHeight: true
-					visible: NetworkManager.wifiEnabled && NetworkManager.networks.length === 0 && !NetworkManager.scanning
+					visible: NetworkManager.wifiEnabled && NetworkManager.networks.length === 0 &&
+							 !NetworkManager.scanning
 
 					ColumnLayout {
 						anchors.centerIn: parent

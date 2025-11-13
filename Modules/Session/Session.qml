@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
@@ -61,8 +60,8 @@ Scope {
 									name: "Shutdown",
 									action: () => {
 										Quickshell.execDetached({
-											command: ["sh", "-c", "systemctl poweroff"]
-										});
+																	command: ["sh", "-c", "systemctl poweroff"]
+																});
 									}
 								},
 								{
@@ -70,8 +69,8 @@ Scope {
 									name: "Reboot",
 									action: () => {
 										Quickshell.execDetached({
-											command: ["sh", "-c", "systemctl reboot"]
-										});
+																	command: ["sh", "-c", "systemctl reboot"]
+																});
 									}
 								},
 								{
@@ -79,8 +78,8 @@ Scope {
 									name: "Sleep",
 									action: () => {
 										Quickshell.execDetached({
-											command: ["sh", "-c", "systemctl suspend"]
-										});
+																	command: ["sh", "-c", "systemctl suspend"]
+																});
 									}
 								},
 								{
@@ -88,8 +87,8 @@ Scope {
 									name: "Logout",
 									action: () => {
 										Quickshell.execDetached({
-											command: ["sh", "-c", "hyprctl dispatch exit"]
-										});
+																	command: ["sh", "-c", "hyprctl dispatch exit"]
+																});
 									}
 								},
 								{
@@ -97,8 +96,8 @@ Scope {
 									name: "Lockscreen",
 									action: () => {
 										Quickshell.execDetached({
-											command: ["sh", "-c", "shell ipc call lock lock"]
-										});
+																	command: ["sh", "-c", "shell ipc call lock lock"]
+																});
 									}
 								}
 							]
@@ -108,7 +107,8 @@ Scope {
 
 								required property var modelData
 								required property int index
-								property bool isHighlighted: mouseArea.containsMouse || (iconDelegate.focus && rectDelegate.index === session.currentIndex)
+								property bool isHighlighted: mouseArea.containsMouse || (iconDelegate.focus
+																						 && rectDelegate.index === session.currentIndex)
 
 								Layout.alignment: Qt.AlignHCenter
 								Layout.preferredWidth: 60
@@ -135,11 +135,11 @@ Scope {
 									Keys.onReturnPressed: handleAction()
 									Keys.onUpPressed: {
 										if (session.currentIndex > 0)
-											session.currentIndex--;
+										session.currentIndex--;
 									}
 									Keys.onDownPressed: {
 										if (session.currentIndex < 4)
-											session.currentIndex++;
+										session.currentIndex++;
 									}
 									Keys.onEscapePressed: session.isSessionOpen = false
 
@@ -191,7 +191,7 @@ Scope {
 
 					onAccepted: {
 						if (session.pendingAction)
-							session.pendingAction();
+						session.pendingAction();
 
 						session.showConfirmDialog = false;
 						session.isSessionOpen = false;

@@ -27,7 +27,8 @@ Switch {
 			width: root.down ? 24 : root.checked ? 24 : 16
 			height: root.down ? 28 : root.checked ? 24 : 16
 			radius: Appearance.rounding.full
-			color: root.down ? Themes.colors.on_primary : root.checked ? Themes.colors.on_primary : Themes.colors.outline
+			color: root.down ? Themes.colors.on_primary : root.checked ? Themes.colors.on_primary :
+																		 Themes.colors.outline
 
 			MatIcon {
 				icon: "check"

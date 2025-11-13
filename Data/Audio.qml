@@ -12,7 +12,8 @@ Singleton {
 	}
 
 	function getSinkIcon(node: PwNode): string {
-		return (node.audio.muted) ? "volume_off" : (node.audio.volume > 0.5) ? "volume_up" : (node.audio.volume > 0.01) ? "volume_down" : "volume_mute";
+		return (node.audio.muted) ? "volume_off" : (node.audio.volume > 0.5) ? "volume_up" : (
+																				   node.audio.volume > 0.01) ? "volume_down" : "volume_mute";
 	}
 
 	function getSourceIcon(node: PwNode): string {
@@ -24,17 +25,15 @@ Singleton {
 	}
 
 	function wheelAction(event: WheelEvent, node: PwNode) {
-		if (event.angleDelta.y < 0) {
+		if (event.angleDelta.y < 0)
 			node.audio.volume -= 0.01;
-		} else {
+		else
 			node.audio.volume += 0.01;
-		}
 
-		if (node.audio.volume > 1.3) {
+		if (node.audio.volume > 1.3)
 			node.audio.volume = 1.3;
-		}
-		if (node.audio.volume < 0) {
+
+		if (node.audio.volume < 0)
 			node.audio.volume = 0.0;
-		}
 	}
 }

@@ -84,7 +84,7 @@ Scope {
 					initialItem: viewComponent
 					onCurrentItemChanged: {
 						if (currentItem)
-							currentItem.viewIndex = scope.state;
+						currentItem.viewIndex = scope.state;
 					}
 
 					Component {

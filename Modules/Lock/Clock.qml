@@ -17,7 +17,8 @@ ColumnLayout {
 	}
 
 	function getMonthName(index) {
-		const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"];
+		const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov",
+						"Des"];
 		return months[index];
 	}
 

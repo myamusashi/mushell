@@ -33,13 +33,15 @@ ColumnLayout {
 			Rectangle {
 				Layout.preferredWidth: 50
 				Layout.fillHeight: true
-				color: ethernetCard.isConnected ? Themes.colors.primary : Themes.withAlpha(Themes.colors.on_surface, 0.1)
+				color: ethernetCard.isConnected ? Themes.colors.primary : Themes.withAlpha(
+													  Themes.colors.on_surface, 0.1)
 				radius: Appearance.rounding.small
 
 				MatIcon {
 					anchors.centerIn: parent
 					icon: "settings_ethernet"
-					color: ethernetCard.isConnected ? Themes.colors.on_primary : Themes.withAlpha(Themes.colors.on_surface, 0.38)
+					color: ethernetCard.isConnected ? Themes.colors.on_primary : Themes.withAlpha(
+														  Themes.colors.on_surface, 0.38)
 					font.pixelSize: Appearance.fonts.extraLarge
 				}
 			}
@@ -85,8 +87,8 @@ ColumnLayout {
 
 		readonly property var activeNetwork: {
 			for (let i = 0; i < NetworkManager.networks.length; i++)
-				if (NetworkManager.networks[i].active)
-					return NetworkManager.networks[i];
+			if (NetworkManager.networks[i].active)
+			return NetworkManager.networks[i];
 
 			return null;
 		}
@@ -98,7 +100,7 @@ ColumnLayout {
 			enabled: settings && !settings.wifiList.active
 			onClicked: {
 				if (settings)
-					settings.wifiList.active = !settings.wifiList.active;
+				settings.wifiList.active = !settings.wifiList.active;
 			}
 		}
 
@@ -122,13 +124,16 @@ ColumnLayout {
 			Rectangle {
 				Layout.preferredWidth: 50
 				Layout.preferredHeight: 50
-				color: wifiCard.activeNetwork ? Themes.colors.primary : Themes.withAlpha(Themes.colors.on_surface, 0.1)
+				color: wifiCard.activeNetwork ? Themes.colors.primary : Themes.withAlpha(
+													Themes.colors.on_surface, 0.1)
 				radius: Appearance.rounding.small
 
 				MatIcon {
 					anchors.centerIn: parent
-					icon: wifiCard.activeNetwork ? wifiCard.getWiFiIcon(wifiCard.activeNetwork.strength) : "wifi_off"
-					color: wifiCard.activeNetwork ? Themes.colors.on_primary : Themes.withAlpha(Themes.colors.on_surface, 0.38)
+					icon: wifiCard.activeNetwork ? wifiCard.getWiFiIcon(wifiCard.activeNetwork.strength) :
+												   "wifi_off"
+					color: wifiCard.activeNetwork ? Themes.colors.on_primary : Themes.withAlpha(
+														Themes.colors.on_surface, 0.38)
 					font.pixelSize: Appearance.fonts.extraLarge
 				}
 			}

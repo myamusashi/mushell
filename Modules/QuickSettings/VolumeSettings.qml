@@ -112,12 +112,15 @@ ScrollView {
 						padding: Appearance.padding.normal
 
 						background: StyledRect {
-							color: itemDelegate.highlighted ? Themes.colors.primary : itemDelegate.hovered ? itemDelegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(Themes.colors.primary, 0.1) : "transparent"
+							color: itemDelegate.highlighted ? Themes.colors.primary : itemDelegate.hovered
+															  ? itemDelegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(
+																												 Themes.colors.primary, 0.1) : "transparent"
 						}
 
 						contentItem: StyledText {
 							text: itemDelegate.modelData.readable
-							color: itemDelegate.modelData.available !== "yes" ? Themes.colors.outline_variant : Themes.colors.on_background
+							color: itemDelegate.modelData.available !== "yes" ? Themes.colors.outline_variant :
+																				Themes.colors.on_background
 							verticalAlignment: Text.AlignVCenter
 							elide: Text.ElideRight
 						}
@@ -231,8 +234,9 @@ ScrollView {
 						const profile = AudioProfiles.models[index];
 						if (profile && profile.available === "yes") {
 							Quickshell.execDetached({
-								command: ["sh", "-c", `pw-cli set-param ${AudioProfiles.idPipewire} Profile '{ \"index\": ${profile.index}}'`]
-							});
+														command: ["sh", "-c", `pw-cli set-param 
+${AudioProfiles.idPipewire} Profile '{ \"index\": ${profile.index}}'`]
+													});
 							AudioProfiles.activeProfileIndex = profile.index;
 						}
 					}

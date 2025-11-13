@@ -1,84 +1,90 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import Quickshell.Services.UPower
 
 import qs.Data
-import qs.Components
 import qs.Helpers
+import qs.Components
 
-StyledRect {
+Item {
 	id: root
 
 	readonly property bool batCharging: UPower.displayDevice.state == UPowerDeviceState.Charging
-	readonly property string batIcon: {
-		if (batPercentage > 0.95)
-			return "battery_android_full";
-		if (batPercentage > 0.85)
-			return "battery_android_6";
-		if (batPercentage > 0.65)
-			return "battery_android_5";
-		if (batPercentage > 0.55)
-			return "battery_android_4";
-		if (batPercentage > 0.45)
-			return "battery_android_3";
-		if (batPercentage > 0.35)
-			return "battery_android_2";
-		if (batPercentage > 0.15)
-			return "battery_android_1";
-		if (batPercentage > 0.05)
-			return "battery_android_0";
-		return "battery_android_0";
-	}
-	readonly property list<string> batIcons: ["battery_android_full"    // 96-100%
-		, "battery_android_6",
-		// 86-95%
-		"battery_android_5",
-		// 66-85%
-		"battery_android_4",
-		// 56-65%
-		"battery_android_3",
-		// 46-55%
-		"battery_android_2",
-		// 36-45%
-		"battery_android_1",
-		// 16-35%
-		"battery_android_0",
-		// 6-15%
-		"battery_android_0",
-		// 6-15%
-		"battery_android_0",
-		// 6-15%
-		"battery_android_alert"
-		// 0-5% (only when not charging)
-	]
 	readonly property real batPercentage: UPower.displayDevice.percentage
-	readonly property string chargeIcon: batIcons[10 - chargeIconIndex]
-	property int chargeIconIndex: 0
+	readonly property list<int> batFill: [(batteryBody.width - 4) * 1.0, (batteryBody.width - 4) * 0.9, (
+			batteryBody.width - 4) * 0.8, (batteryBody.width - 4) * 0.7, (batteryBody.width - 4) * 0.6, (
+			batteryBody.width - 4) * 0.5, (batteryBody.width - 4) * 0.4, (batteryBody.width - 4) * 0.3, (
+			batteryBody.width - 4) * 0.2, (batteryBody.width - 4) * 0.1, (batteryBody.width - 4) * 0]
+	readonly property real chargeFill: batFill[10 - chargeFillIndex]
+	property int chargeFillIndex: 0
+	property int widthBattery: 26
+	property int heightBattery: 12
 
-	Layout.fillHeight: true
-	// color: Themes.colors.withAlpha(Themes.colors.background, 0.79)
-	color: "transparent"
-	implicitWidth: container.width
-	radius: Appearance.rounding.small
+	width: widthBattery + 4
+	height: heightBattery
 
-	Dots {
-		id: container
+	StyledRect {
+		id: batteryBody
 
-		spacing: Appearance.spacing.small
+		width: root.widthBattery
+		height: root.heightBattery
+		anchors.left: parent.left
+		anchors.verticalCenter: parent.verticalCenter
+		border {
+			width: 2
+			color: root.batPercentage <= 0.2 && !root.batCharging ? "#FF3B30" : Themes.withAlpha(
+																		Themes.colors.outline, 0.5)
+		}
+		color: "transparent"
+		radius: 6
 
-		MatIcon {
-			color: Themes.colors.on_background
-			font.pixelSize: Appearance.fonts.large * 1.2
-			Layout.alignment: Qt.AlignVCenter
-			icon: (root.batCharging) ? root.chargeIcon : root.batIcon
+		StyledRect {
+			id: batteryFill
+
+			anchors.left: parent.left
+			anchors.top: parent.top
+			anchors.bottom: parent.bottom
+			width: root.batCharging ? root.chargeFill : (parent.width - 4) * root.batPercentage
+			color: {
+				if (root.batCharging)
+					return "#34C759";
+				if (root.batPercentage <= 0.2)
+					return "#FF3B30";
+				if (root.batPercentage <= 0.5)
+					return "#FFCC00";
+				return Themes.colors.on_surface;
+			}
+			radius: parent.radius
+
+			Behavior on width {
+				NumbAnim {
+					duration: root.batCharging ? 600 : 300
+				}
+			}
 		}
 
 		StyledText {
-			color: Themes.colors.on_background
-			font.pixelSize: Appearance.fonts.medium
-			Layout.alignment: Qt.AlignVCenter
-			text: (UPower.displayDevice.percentage * 100).toFixed(0) + "%"
+			anchors.centerIn: parent
+			text: Math.round(root.batPercentage * 100)
+			font.pixelSize: root.batCharging ? 6 : batteryBody.height * 0.65
+			font.weight: Font.Bold
+			color: root.batPercentage <= 0.5 ? Themes.colors.on_background : Themes.colors.surface
 		}
+	}
+
+	StyledRect {
+		id: batteryTip
+
+		width: 2
+		height: 5
+		anchors.left: batteryBody.right
+		anchors.leftMargin: 0.5
+		anchors.verticalCenter: parent.verticalCenter
+		color: root.batPercentage <= 0.2 && !root.batCharging ? "#FF3B30" : Themes.withAlpha(
+																	Themes.colors.outline, 0.5)
+		topRightRadius: 1
+		bottomRightRadius: 1
 	}
 
 	Timer {
@@ -86,10 +92,8 @@ StyledRect {
 		repeat: true
 		running: root.batCharging
 		triggeredOnStart: true
-
-		onTriggered: () => {
-			root.chargeIconIndex = root.chargeIconIndex % 10;
-			root.chargeIconIndex += 1;
+		onTriggered: {
+			root.chargeFillIndex = (root.chargeFillIndex % 10) + 1;
 		}
 	}
 }

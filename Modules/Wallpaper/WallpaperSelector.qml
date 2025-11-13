@@ -30,20 +30,21 @@ Scope {
 
 	property var filteredWallpaperList: {
 		if (debouncedSearchQuery === "")
-			return wallpaperList;
+		return wallpaperList;
 
 		const query = debouncedSearchQuery.toLowerCase();
 		return wallpaperList.filter(path => {
-			const fileName = path.split('/').pop().toLowerCase();
-			return fileName.includes(query);
-		});
+										const fileName = path.split('/').pop().toLowerCase();
+										return fileName.includes(query);
+									});
 	}
 
 	Process {
 		id: listWallpaper
 
 		workingDirectory: Paths.wallpaperDir
-		command: ["sh", "-c", `find -L ${Paths.wallpaperDir} -type d -path */.* -prune -o -not -name .* -type f -print`]
+		command: ["sh", "-c", `find -L ${Paths.wallpaperDir
+			} -type d -path */.* -prune -o -not -name .* -type f -print`]
 		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
@@ -114,7 +115,7 @@ Scope {
 							searchDebounceTimer.restart();
 
 							if (pathView.count > 0)
-								pathView.currentIndex = 0;
+							pathView.currentIndex = 0;
 						}
 
 						background: StyledRect {
@@ -143,7 +144,7 @@ Scope {
 						Component.onCompleted: {
 							const currentIndex = scope.wallpaperList.indexOf(Paths.currentWallpaper);
 							if (currentIndex !== -1)
-								pathView.currentIndex = currentIndex;
+							pathView.currentIndex = currentIndex;
 						}
 
 						delegate: Item {
@@ -182,7 +183,10 @@ Scope {
 								anchors.fill: parent
 								color: "transparent"
 								radius: Appearance.rounding.normal
-								border.color: delegateItem.isCurrentItem ? searchField.focus ? Themes.withAlpha(Themes.colors.primary, 0.4) : Themes.colors.primary : mArea.containsPress ? Themes.colors.secondary : Themes.colors.outline_variant
+								border.color: delegateItem.isCurrentItem ? searchField.focus ? Themes.withAlpha(
+																								   Themes.colors.primary, 0.4) : Themes.colors.primary :
+																							   mArea.containsPress ? Themes.colors.secondary :
+																													 Themes.colors.outline_variant
 								border.width: delegateItem.isCurrentItem ? 3 : 1
 
 								ColumnLayout {
@@ -217,8 +221,11 @@ Scope {
 											onClicked: {
 												pathView.currentIndex = delegateItem.index;
 												Quickshell.execDetached({
-													command: ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
-												});
+																			command: ["sh", "-c", `shell ipc call img set 
+
+
+${delegateItem.modelData}`]
+																		});
 											}
 										}
 									}
@@ -275,21 +282,23 @@ Scope {
 						Keys.onPressed: event => {
 							if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
 								Quickshell.execDetached({
-									command: ["sh", "-c", `shell ipc call img set ${model[currentIndex]}`]
-								});
+															command: ["sh", "-c", `shell ipc call img set 
+
+${model[currentIndex]}`]
+														});
 							}
 
 							if (event.key === Qt.Key_Escape)
-								scope.isWallpaperSwitcherOpen = false;
+							scope.isWallpaperSwitcherOpen = false;
 
 							if (event.key === Qt.Key_Left)
-								decrementCurrentIndex();
+							decrementCurrentIndex();
 
 							if (event.key === Qt.Key_Right)
-								incrementCurrentIndex();
+							incrementCurrentIndex();
 
 							if (event.key === Qt.Key_Tab)
-								searchField.focus = true;
+							searchField.focus = true;
 						}
 					}
 

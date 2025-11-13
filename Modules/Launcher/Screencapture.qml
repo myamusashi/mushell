@@ -87,14 +87,17 @@ Scope {
 									Layout.fillWidth: true
 									Layout.preferredHeight: 32
 
-									radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
+									radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0,
+																	  0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
 
 									color: captureWindow.activeTab === index ? Themes.colors.primary : Themes.colors.surface
 
 									StyledText {
 										anchors.centerIn: parent
 										text: tabButton.modelData
-										color: captureWindow.activeTab === tabButton.index ? Themes.colors.on_primary : Themes.colors.outline
+										color: captureWindow.activeTab === tabButton.index ? Themes.colors.on_primary :
+																							 Themes.colors.outline
+
 										font.pixelSize: Appearance.fonts.normal * 0.9
 										font.bold: captureWindow.activeTab === tabButton.index
 									}
@@ -129,8 +132,9 @@ Scope {
 											icon: "select_window_2",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-window"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenshot-window"]
+																		});
 											}
 										},
 										{
@@ -138,8 +142,9 @@ Scope {
 											icon: "select",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-selection"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenshot-selection"]
+																		});
 											}
 										},
 										{
@@ -147,8 +152,9 @@ Scope {
 											icon: "monitor",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-eDP-1"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenshot-eDP-1"]
+																		});
 											}
 										},
 										{
@@ -156,8 +162,9 @@ Scope {
 											icon: "monitor",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-HDMI-A-2"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenshot-HDMI-A-2"]
+																		});
 											}
 										},
 										{
@@ -165,8 +172,9 @@ Scope {
 											icon: "dual_screen",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-both-screens"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenshot-both-screens"]
+																		});
 											}
 										}
 									]
@@ -189,7 +197,8 @@ Scope {
 
 											spacing: Appearance.spacing.normal
 
-											focus: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab === 0
+											focus: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab
+												   === 0
 											Keys.onEnterPressed: {
 												iconDelegate1.modelData.action();
 												screencapture.isScreencaptureOpen = false;
@@ -200,15 +209,18 @@ Scope {
 											}
 											Keys.onUpPressed: screencapture.currentIndex > 0 ? screencapture.currentIndex-- : ""
 											Keys.onDownPressed: screencapture.currentIndex < 4 ? screencapture.currentIndex++ : ""
-											Keys.onEscapePressed: screencapture.isScreencaptureOpen = !screencapture.isScreencaptureOpen
+											Keys.onEscapePressed: screencapture.isScreencaptureOpen =
+																  !screencapture.isScreencaptureOpen
 
 											transform: Scale {
 												id: scaleTransform1
 
 												origin.x: rowIndex1.width / 2
 												origin.y: rowIndex1.height / 2
-												xScale: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab === 0 ? 1.03 : 1.0
-												yScale: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab === 0 ? 1.03 : 1.0
+												xScale: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab
+														=== 0 ? 1.03 : 1.0
+												yScale: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab
+														=== 0 ? 1.03 : 1.0
 
 												Behavior on xScale {
 													NumbAnim {
@@ -226,7 +238,8 @@ Scope {
 												id: icon1
 
 												icon: iconDelegate1.modelData.icon
-												color: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab === 0 ? Themes.colors.primary : Themes.colors.outline
+												color: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab
+													   === 0 ? Themes.colors.primary : Themes.colors.outline
 												font.pixelSize: Appearance.fonts.large
 												Layout.alignment: Qt.AlignVCenter
 
@@ -240,7 +253,8 @@ Scope {
 											StyledText {
 												id: name1
 
-												color: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab === 0 ? Themes.colors.primary : Themes.colors.outline
+												color: iconDelegate1.index === screencapture.currentIndex && captureWindow.activeTab
+													   === 0 ? Themes.colors.primary : Themes.colors.outline
 												font.pixelSize: Appearance.fonts.normal
 												text: iconDelegate1.modelData.name
 												Layout.fillWidth: true
@@ -276,8 +290,9 @@ Scope {
 											icon: "select",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-selection"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenrecord-selection"]
+																		});
 											}
 										},
 										{
@@ -285,8 +300,9 @@ Scope {
 											icon: "monitor",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-eDP-1"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenrecord-eDP-1"]
+																		});
 											}
 										},
 										{
@@ -294,8 +310,9 @@ Scope {
 											icon: "monitor",
 											action: () => {
 												Quickshell.execDetached({
-													command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-HDMI-A-2"]
-												});
+																			command: ["sh", "-c", Quickshell.shellDir
+																				+ "/Assets/screen-capture.sh --screenrecord-HDMI-A-2"]
+																		});
 											}
 										}
 									]
@@ -318,7 +335,8 @@ Scope {
 
 											spacing: Appearance.spacing.normal
 
-											focus: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab === 1
+											focus: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab
+												   === 1
 											Keys.onEnterPressed: {
 												iconDelegate2.modelData.action();
 												screencapture.isScreencaptureOpen = false;
@@ -329,15 +347,18 @@ Scope {
 											}
 											Keys.onUpPressed: screencapture.currentIndex > 0 ? screencapture.currentIndex-- : ""
 											Keys.onDownPressed: screencapture.currentIndex < 2 ? screencapture.currentIndex++ : ""
-											Keys.onEscapePressed: screencapture.isScreencaptureOpen = !screencapture.isScreencaptureOpen
+											Keys.onEscapePressed: screencapture.isScreencaptureOpen =
+																  !screencapture.isScreencaptureOpen
 
 											transform: Scale {
 												id: scaleTransform2
 
 												origin.x: rowIndex2.width / 2
 												origin.y: rowIndex2.height / 2
-												xScale: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab === 1 ? 1.03 : 1.0
-												yScale: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab === 1 ? 1.03 : 1.0
+												xScale: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab
+														=== 1 ? 1.03 : 1.0
+												yScale: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab
+														=== 1 ? 1.03 : 1.0
 
 												Behavior on xScale {
 													NumbAnim {
@@ -355,7 +376,8 @@ Scope {
 												id: icon2
 
 												icon: iconDelegate2.modelData.icon
-												color: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab === 1 ? Themes.colors.primary : Themes.colors.outline
+												color: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab
+													   === 1 ? Themes.colors.primary : Themes.colors.outline
 												font.pixelSize: Appearance.fonts.large
 												Layout.alignment: Qt.AlignVCenter
 
@@ -369,7 +391,8 @@ Scope {
 											StyledText {
 												id: name2
 
-												color: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab === 1 ? Themes.colors.primary : Themes.colors.outline
+												color: iconDelegate2.index === screencapture.currentIndex && captureWindow.activeTab
+													   === 1 ? Themes.colors.primary : Themes.colors.outline
 												font.pixelSize: Appearance.fonts.normal
 												text: iconDelegate2.modelData.name
 												Layout.fillWidth: true

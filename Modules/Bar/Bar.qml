@@ -47,7 +47,6 @@ Scope {
 			Loader {
 				active: root.isBarOpen
 				asynchronous: true
-
 				anchors.fill: parent
 
 				sourceComponent: StyledRect {
@@ -56,10 +55,14 @@ Scope {
 					color: Themes.colors.background
 					radius: Appearance.rounding.large
 					anchors.fill: parent
-					anchors.margins: 4
+					anchors.margins: 3
 
 					RowLayout {
 						width: parent.width
+						anchors {
+							leftMargin: 5
+							rightMargin: 5
+						}
 						anchors.fill: parent
 
 						Left {
