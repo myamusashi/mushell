@@ -8,8 +8,8 @@ StyledRect {
 
 	color: "transparent"
 	required property real value
-	required property string text
-	required property real size
+	property string text
+	property real size
 
 	property real textPadding: 20
 	property real minSize: 120 + size

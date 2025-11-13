@@ -51,14 +51,12 @@ Loader {
 					elide: Qt.ElideMiddle
 					font.pixelSize: Appearance.fonts.extraLarge
 					font.bold: true
-
 					Layout.fillWidth: true
 				}
 
 				Rectangle {
 					implicitHeight: 1
 					implicitWidth: parent.width
-
 					color: Themes.colors.outline_variant
 				}
 
@@ -69,7 +67,6 @@ Loader {
 					color: Themes.colors.on_background
 					font.pixelSize: Appearance.fonts.large
 					wrapMode: Text.Wrap
-
 					Layout.fillWidth: true
 					Layout.fillHeight: true
 				}
@@ -77,7 +74,6 @@ Loader {
 				Rectangle {
 					implicitHeight: 1
 					implicitWidth: parent.width
-
 					color: Themes.colors.outline_variant
 				}
 
@@ -89,9 +85,8 @@ Loader {
 					StyledButton {
 						iconButton: "cancel"
 						buttonTitle: "No"
+						buttonTextColor: Themes.colors.on_background
 						buttonColor: "transparent"
-						buttonHoverColor: "transparent"
-						buttonPressedColor: "transparent"
 						onClicked: root.rejected()
 					}
 

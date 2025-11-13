@@ -8,15 +8,11 @@ import qs.Helpers
 Button {
 	id: root
 
-	required property string buttonTitle
+	property string buttonTitle
 	property string iconButton: ""
-
+	property int iconSize
 	property color buttonColor: Themes.colors.primary
-	property color buttonHoverColor: Themes.withAlpha(Themes.colors.primary, 0.08)
-	property color buttonPressedColor: Themes.withAlpha(Themes.colors.primary, 0.12)
 	property color buttonTextColor: Themes.colors.on_primary
-	property color buttonHoverTextColor: Themes.withAlpha(Themes.colors.on_primary, 0.08)
-	property color buttonPressedTextColor: Themes.withAlpha(Themes.colors.on_primary, 0.12)
 	property color buttonBorderColor: Themes.colors.outline
 	property int buttonBorderWidth: 2
 	property int buttonHeight: 40
@@ -25,81 +21,44 @@ Button {
 	property bool isButtonUseBorder: false
 	property real backgroundRounding: 0
 
-	implicitWidth: contentItem.implicitWidth + horizontalPadding * 2
+	implicitWidth: contentItem.implicitWidth + leftPadding + rightPadding
 	implicitHeight: buttonHeight
-
 	hoverEnabled: true
 
 	contentItem: RowLayout {
 		spacing: root.iconTextSpacing
-		Layout.fillWidth: true
-		Layout.alignment: Qt.AlignHCenter
 
 		MatIcon {
-			id: icon
 			icon: root.iconButton
-			font.pixelSize: Appearance.fonts.large * 1.2
+			font.pixelSize: Appearance.fonts.large * 1.2 + root.iconSize
 			font.bold: true
 			visible: root.iconButton !== ""
-			color: {
-				if (root.pressed)
-					root.buttonPressedTextColor;
-				else if (root.hovered)
-					root.buttonHoverTextColor;
-				else
-					root.buttonTextColor;
-			}
-			Layout.alignment: Qt.AlignVCenter
+			color: root.buttonTextColor
+			opacity: root.pressed ? 0.12 : root.hovered ? 0.08 : 1.0
 		}
 
 		StyledText {
-			id: title
 			text: root.buttonTitle
 			font.pixelSize: Appearance.fonts.large
 			font.weight: Font.Medium
-			color: {
-				if (root.pressed)
-					root.buttonPressedTextColor;
-				else if (root.hovered)
-					root.buttonHoverTextColor;
-				else
-					root.buttonTextColor;
-			}
-			Layout.alignment: Qt.AlignVCenter
-			Layout.preferredWidth: text === "" ? 0 : implicitWidth
+			color: root.buttonTextColor
+			opacity: root.pressed ? 0.12 : root.hovered ? 0.08 : 1.0
 			visible: text !== ""
 		}
 	}
 
 	background: StyledRect {
-		implicitWidth: root.implicitWidth
-		implicitHeight: root.implicitHeight
-		border {
-			color: root.isButtonUseBorder ? root.buttonBorderColor : "transparent"
-			width: root.isButtonUseBorder ? root.buttonBorderWidth : 0
-		}
-		radius: root.isButtonFullRound ? root.buttonHeight / 2 : root.backgroundRounding
-		color: {
-			if (root.pressed)
-				root.buttonPressedColor;
-			else if (root.hovered)
-				root.buttonHoverColor;
-			else
-				root.buttonColor;
-		}
+		border.color: root.isButtonUseBorder ? root.buttonBorderColor : "transparent"
+		border.width: root.isButtonUseBorder ? root.buttonBorderWidth : 0
+		radius: Appearance.rounding.full
+		color: root.buttonColor
+		opacity: root.pressed ? 0.12 : root.hovered ? 0.08 : 1.0
 
-		Behavior on color {
-			ColAnim {
+		Behavior on opacity {
+			NumberAnimation {
 				duration: Appearance.animations.durations.small
 				easing.type: Easing.OutCubic
 			}
-		}
-	}
-
-	Behavior on opacity {
-		NumbAnim {
-			duration: Appearance.animations.durations.small
-			easing.type: Easing.OutCubic
 		}
 	}
 }
