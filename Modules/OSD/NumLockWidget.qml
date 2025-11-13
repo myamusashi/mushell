@@ -39,6 +39,7 @@ LazyLoader {
 
 				StyledText {
 					text: "Num Lock"
+					font.weight: Font.Medium
 					color: Themes.colors.on_background
 					font.pixelSize: Appearance.fonts.large * 1.5
 				}

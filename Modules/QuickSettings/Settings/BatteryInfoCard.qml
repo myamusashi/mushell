@@ -11,13 +11,11 @@ StyledRect {
 	color: Themes.colors.surface_container_low
 	radius: Appearance.rounding.normal
 
-	// Use RowLayout instead of GridLayout for horizontal arrangement
 	RowLayout {
 		anchors.fill: parent
 		anchors.margins: 15
-		spacing: 15
+		spacing: 5
 
-		// Battery icon with percentage
 		Item {
 			Layout.preferredWidth: 80
 			Layout.fillHeight: true
@@ -49,7 +47,6 @@ StyledRect {
 			}
 		}
 
-		// Battery details list
 		BatteryDetailsList {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
@@ -109,8 +106,9 @@ StyledRect {
 
 				StyledText {
 					text: parent.modelData.label
+					font.weight: Font.DemiBold
 					color: Themes.colors.on_background
-					font.pixelSize: Appearance.fonts.small
+					font.pixelSize: Appearance.fonts.normal
 				}
 
 				Item {
@@ -120,8 +118,8 @@ StyledRect {
 				StyledText {
 					text: parent.modelData.value
 					color: parent.modelData.color
-					font.pixelSize: Appearance.fonts.small
-					font.bold: true
+					font.weight: Font.DemiBold
+					font.pixelSize: Appearance.fonts.normal
 				}
 			}
 		}

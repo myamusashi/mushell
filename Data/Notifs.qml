@@ -47,12 +47,10 @@ Singleton {
 		}
 
 		function dismiss() {
-			for (var i = 0; i <= popupNotifications.length; i++) {
-				popupNotifications[i === 0].dismiss();
-			}
-			for (var i = 0; i <= listNotifications.length; i++) {
-				listNotifications[i === 0].dismiss();
-			}
+			if (popupNotifications.length > 0)
+				popupNotifications[0].dismiss();
+			if (listNotifications.length > 0)
+				listNotifications[0].dismiss();
 		}
 
 		function dismissAll() {

@@ -71,7 +71,7 @@ Variants {
 			NumbAnim {
 				id: walAnimation
 
-				duration: Appearance.animations.durations.expressiveDefaultSpatial * 5
+				duration: Appearance.animations.durations.expressiveDefaultSpatial * 2
 				from: 0
 				property: "width"
 				target: animatinRect

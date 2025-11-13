@@ -11,11 +11,8 @@ StyledRect {
 	id: root
 
 	Layout.fillHeight: true
-	clip: true
-	// color: Themes.colors.withAlpha(Themes.colors.background, 0.79)
 	color: "transparent"
 	implicitWidth: windowNameText.contentWidth
-	radius: 5
 
 	Behavior on implicitWidth {
 		NumbAnim {
@@ -33,7 +30,8 @@ StyledRect {
 		anchors.centerIn: parent
 		color: Themes.colors.on_background
 		elide: Text.ElideMiddle
-		font.pixelSize: Appearance.fonts.medium
+		font.weight: Font.Light
+		font.pixelSize: Appearance.fonts.large
 		horizontalAlignment: Text.AlignHCenter
 		text: actWinName.toUpperCase()
 	}

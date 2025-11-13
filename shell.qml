@@ -1,5 +1,5 @@
 //@ pragma UseQApplication
-//@ pragma IconTheme la-capitaine-icon-theme
+//@ pragma IconTheme WhiteSur-dark
 //@ pragma Env QS_NO_RELOAD_POPUP=1
 
 import qs.Modules.Lock

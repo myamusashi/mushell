@@ -14,8 +14,8 @@ Text {
 
 	antialiasing: true
 
-	verticalAlignment: Text.AlignVCenter
 	horizontalAlignment: Text.AlignHCenter
+	verticalAlignment: Text.AlignVCenter
 
 	color: "transparent"
 

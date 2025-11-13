@@ -122,7 +122,7 @@ Scope {
 					StyledRect {
 						color: Themes.colors.outline_variant
 						Layout.fillWidth: true
-						height: 1
+						implicitHeight: 1
 					}
 
 					StyledRect {
@@ -136,7 +136,6 @@ Scope {
 
 							anchors.fill: notifRect
 							clip: true
-
 							spacing: 10
 							anchors.margins: 15
 
@@ -171,7 +170,7 @@ Scope {
 								property bool isShowMoreBody: false
 
 								width: listViewNotifs.width
-								height: contentHeight + 50
+								height: Math.max(120, contentLayout.implicitHeight + 32)
 
 								implicitWidth: listViewNotifs.width
 								contentHeight: contentLayout.implicitHeight
@@ -395,11 +394,16 @@ Scope {
 														StyledText {
 															id: whenTime
 
-															text: {
-																const now = new Date();
-																return TimeAgo.timeAgoWithIfElse(now);
-															}
+															property date currentTime: new Date()
+															text: TimeAgo.timeAgoWithIfElse(currentTime)
 															color: Themes.colors.on_surface_variant
+
+															Timer {
+																interval: 60000
+																running: true
+																repeat: true
+																onTriggered: whenTime.currentTime = new Date()
+															}
 														}
 													}
 												}
@@ -421,15 +425,12 @@ Scope {
 														font.pixelSize: Appearance.fonts.large + 5
 														color: Themes.colors.on_surface_variant
 
-														RotationAnimator on rotation {
-															id: rotateArrowIcon
-
-															from: 0
-															to: 180
-															duration: Appearance.animations.durations.normal
-															easing.type: Easing.BezierSpline
-															easing.bezierCurve: Appearance.animations.curves.standard
-															running: false
+														Behavior on rotation {
+															RotationAnimation {
+																duration: Appearance.animations.durations.normal
+																easing.type: Easing.BezierSpline
+																easing.bezierCurve: Appearance.animations.curves.standard
+															}
 														}
 													}
 
@@ -441,7 +442,6 @@ Scope {
 														cursorShape: Qt.PointingHandCursor
 														onClicked: {
 															flickDelegate.isShowMoreBody = !flickDelegate.isShowMoreBody;
-															rotateArrowIcon.running = !rotateArrowIcon.running;
 														}
 													}
 												}
@@ -494,7 +494,7 @@ Scope {
 												visible: flickDelegate.modelData?.actions && flickDelegate.modelData?.actions.length > 0
 
 												Repeater {
-													model: flickDelegate.modelData?.actions
+													model: flickDelegate.modelData?.actions ?? []
 
 													delegate: StyledRect {
 														id: actionButton

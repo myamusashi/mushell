@@ -53,7 +53,7 @@ ColumnLayout {
 
 					StyledText {
 						text: "Ethernet"
-						font.pixelSize: Appearance.fonts.normal
+						font.pixelSize: Appearance.fonts.large
 						font.weight: Font.Medium
 						color: Themes.colors.on_surface
 					}
@@ -68,7 +68,7 @@ ColumnLayout {
 
 				StyledText {
 					text: SysUsage.statusWiredInterface === "connected" ? "Connected" : "Not Connected"
-					font.pixelSize: Appearance.fonts.small * 0.8
+					font.pixelSize: Appearance.fonts.normal
 					color: Themes.colors.on_surface_variant
 				}
 			}
@@ -139,13 +139,13 @@ ColumnLayout {
 
 				StyledText {
 					text: "Internet"
-					font.pixelSize: Appearance.fonts.normal
+					font.pixelSize: Appearance.fonts.large
 					color: Themes.colors.on_surface_variant
 				}
 
 				StyledText {
 					text: wifiCard.activeNetwork ? wifiCard.activeNetwork.ssid : "WiFi Disconnected"
-					font.pixelSize: Appearance.fonts.small * 0.8
+					font.pixelSize: Appearance.fonts.normal
 					font.weight: Font.Medium
 					width: parent.width
 					elide: Text.ElideRight
