@@ -7,6 +7,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 
 import qs.Data
+import qs.Helpers
 import qs.Components
 
 StyledRect {
@@ -85,7 +86,7 @@ StyledRect {
 					mipmap: true
 				}
 
-				MouseArea {
+				MArea {
 					id: trayItemArea
 
 					anchors.fill: parent

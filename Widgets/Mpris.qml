@@ -57,7 +57,7 @@ Loader {
 			}
 		}
 
-		MouseArea {
+		MArea {
 			anchors.fill: mediaInfo
 
 			cursorShape: Qt.PointingHandCursor

@@ -42,7 +42,7 @@ StyledRect {
 			}
 		}
 	}
-	MouseArea {
+	MArea {
 		id: mArea
 
 		anchors.fill: parent

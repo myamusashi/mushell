@@ -106,7 +106,7 @@ Scope {
 										color: Themes.colors.on_surface
 									}
 
-									MouseArea {
+									MArea {
 										id: iconMouse
 
 										anchors.fill: parent
@@ -221,7 +221,7 @@ Scope {
 										NumbAnim {}
 									}
 
-									MouseArea {
+									MArea {
 										id: delegateMouseNotif
 
 										anchors.fill: parent
@@ -443,7 +443,7 @@ Scope {
 														}
 													}
 
-													MouseArea {
+													MArea {
 														id: expandButtonMouse
 
 														anchors.fill: parent
@@ -529,7 +529,7 @@ Scope {
 															visible: !actionMouse.pressed
 														}
 
-														MouseArea {
+														MArea {
 															id: actionMouse
 
 															anchors.fill: parent

@@ -65,9 +65,9 @@ LazyLoader {
 						Layout.preferredHeight: 40
 						radius: Appearance.rounding.full
 						color: {
-							if (prevMouseArea.containsMouse && prevMouseArea.containsPress)
+							if (prevMArea.containsMouse && prevMArea.containsPress)
 							return Themes.withAlpha(Themes.colors.primary, 0.12);
-							else if (prevMouseArea.containsMouse)
+							else if (prevMArea.containsMouse)
 							return Themes.withAlpha(Themes.colors.primary, 0.08);
 							else
 							return "transparent";
@@ -82,8 +82,8 @@ LazyLoader {
 							color: Themes.colors.on_primary_container
 						}
 
-						MouseArea {
-							id: prevMouseArea
+						MArea {
+							id: prevMArea
 
 							anchors.fill: parent
 
@@ -121,9 +121,9 @@ LazyLoader {
 						Layout.preferredHeight: 40
 						radius: Appearance.rounding.full
 						color: {
-							if (nextMouseArea.containsMouse && nextMouseArea.containsPress)
+							if (nextMArea.containsMouse && nextMArea.containsPress)
 							return Themes.withAlpha(Themes.colors.primary, 0.12);
-							else if (nextMouseArea.containsMouse)
+							else if (nextMArea.containsMouse)
 							return Themes.withAlpha(Themes.colors.primary, 0.08);
 							else
 							return "transparent";
@@ -137,8 +137,8 @@ LazyLoader {
 							color: Themes.colors.primary
 						}
 
-						MouseArea {
-							id: nextMouseArea
+						MArea {
+							id: nextMArea
 
 							anchors.fill: parent
 
@@ -225,7 +225,7 @@ LazyLoader {
 						implicitWidth: 40
 						implicitHeight: 40
 
-						MouseArea {
+						MArea {
 							id: mouseArea
 
 							anchors.fill: parent

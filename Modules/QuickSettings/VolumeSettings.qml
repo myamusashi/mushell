@@ -8,6 +8,7 @@ import Quickshell.Services.Pipewire
 
 import qs.Data
 import qs.Widgets
+import qs.Helpers
 import qs.Components
 
 ScrollView {
@@ -71,7 +72,7 @@ ScrollView {
 					}
 					height: contentItem.implicitHeight * 2
 
-					MouseArea {
+					MArea {
 						id: mArea
 
 						anchors.fill: parent

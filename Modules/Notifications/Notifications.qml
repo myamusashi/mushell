@@ -143,7 +143,7 @@ LazyLoader {
 								  ? Themes.colors.error : "transparent"
 					border.width: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? 1 : 0
 
-					MouseArea {
+					MArea {
 						id: delegateMouseNotif
 
 						anchors.fill: parent
@@ -370,7 +370,7 @@ LazyLoader {
 										}
 									}
 
-									MouseArea {
+									MArea {
 										id: expandButtonMouse
 
 										anchors.fill: parent
@@ -455,7 +455,7 @@ LazyLoader {
 																																  Themes.colors.on_secondary_container, 0.08) : "transparent"
 										}
 
-										MouseArea {
+										MArea {
 											id: actionMouse
 
 											anchors.fill: parent

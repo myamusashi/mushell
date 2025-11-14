@@ -93,7 +93,7 @@ ColumnLayout {
 			return null;
 		}
 
-		MouseArea {
+		MArea {
 			anchors.fill: parent
 			hoverEnabled: true
 			cursorShape: settings && settings.wifiList.active ? Qt.ArrowCursor : Qt.PointingHandCursor

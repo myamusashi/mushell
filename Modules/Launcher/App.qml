@@ -10,8 +10,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Data
-import qs.Components
 import qs.Helpers
+import qs.Components
 
 Scope {
 	id: root
@@ -22,13 +22,13 @@ Scope {
 	// Thx caelestia
 	function launch(entry: DesktopEntry): void {
 		if (entry.runInTerminal)
-		Quickshell.execDetached({
+			Quickshell.execDetached({
 									command: ["app2unit", "--", "foot", `${Quickshell.shellDir}/Assets/wrap_term_launch.sh`,
 										...entry.command],
 									workingDirectory: entry.workingDirectory
 								});
 		else
-		Quickshell.execDetached({
+			Quickshell.execDetached({
 									command: ["app2unit", "--", ...entry.command],
 									workingDirectory: entry.workingDirectory
 								});
@@ -155,7 +155,7 @@ Scope {
 						}
 
 						delegate: MouseArea {
-							id: entryMouseArea
+							id: entryMArea
 
 							required property DesktopEntry modelData
 							required property int index
@@ -204,14 +204,14 @@ Scope {
 								anchors.margins: 2
 
 								transform: Scale {
-									xScale: entryMouseArea.itemScale
-									yScale: entryMouseArea.itemScale
+									xScale: entryMArea.itemScale
+									yScale: entryMArea.itemScale
 									origin.x: width / 2
 									origin.y: height / 2
 								}
 
-								readonly property bool selected: entryMouseArea.containsMouse || (listView.currentIndex
-																								  === entryMouseArea.index && listView.activeFocus)
+								readonly property bool selected: entryMArea.containsMouse || (listView.currentIndex
+																							  === entryMArea.index && listView.activeFocus)
 								color: selected ? Themes.withAlpha(Themes.colors.on_surface, 0.1) : "transparent"
 								radius: Appearance.rounding.normal
 
@@ -234,7 +234,7 @@ Scope {
 											Layout.preferredHeight: 40
 											asynchronous: true
 
-											source: Quickshell.iconPath(entryMouseArea.modelData.icon) || ""
+											source: Quickshell.iconPath(entryMArea.modelData.icon) || ""
 
 											opacity: 0
 											Component.onCompleted: {
@@ -249,7 +249,7 @@ Scope {
 									StyledText {
 										Layout.fillWidth: true
 										Layout.alignment: Qt.AlignVCenter
-										text: entryMouseArea.modelData.name || ""
+										text: entryMArea.modelData.name || ""
 										font.pixelSize: Appearance.fonts.normal
 										color: Themes.colors.on_background
 										elide: Text.ElideRight

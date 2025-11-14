@@ -4,7 +4,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -12,6 +11,7 @@ import Quickshell.Widgets
 import Quickshell.Hyprland
 
 import qs.Data
+import qs.Helpers
 import qs.Components
 
 Scope {
@@ -161,7 +161,7 @@ ${toplevel.initY}, address:0x${address}`);
 							}
 						}
 
-						MouseArea {
+						MArea {
 							anchors.fill: parent
 
 							onClicked: if (workspaceContainer.workspace !== Hyprland.focusedWorkspace)
@@ -250,7 +250,7 @@ ${toplevel.initY}, address:0x${address}`);
 									anchors.centerIn: parent
 								}
 
-								MouseArea {
+								MArea {
 									id: mouseArea
 
 									property bool dragged: false

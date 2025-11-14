@@ -9,6 +9,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 
 import qs.Data
+import qs.Helpers
 import qs.Components
 
 Scope {
@@ -43,8 +44,7 @@ Scope {
 		id: listWallpaper
 
 		workingDirectory: Paths.wallpaperDir
-		command: ["sh", "-c", `find -L ${Paths.wallpaperDir
-			} -type d -path */.* -prune -o -not -name .* -type f -print`]
+		command: ["sh", "-c", `find -L ${Paths.wallpaperDir} -type d -path */.* -prune -o -not -name .* -type f -print`]
 		running: true
 		stdout: StdioCollector {
 			onStreamFinished: {
@@ -214,17 +214,14 @@ Scope {
 											mipmap: true
 										}
 
-										MouseArea {
+										MArea {
 											id: mArea
 
 											anchors.fill: parent
 											onClicked: {
 												pathView.currentIndex = delegateItem.index;
 												Quickshell.execDetached({
-																			command: ["sh", "-c", `shell ipc call img set 
-
-
-${delegateItem.modelData}`]
+																			command: ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
 																		});
 											}
 										}
@@ -282,9 +279,7 @@ ${delegateItem.modelData}`]
 						Keys.onPressed: event => {
 							if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
 								Quickshell.execDetached({
-															command: ["sh", "-c", `shell ipc call img set 
-
-${model[currentIndex]}`]
+															command: ["sh", "-c", `shell ipc call img set ${model[currentIndex]}`]
 														});
 							}
 

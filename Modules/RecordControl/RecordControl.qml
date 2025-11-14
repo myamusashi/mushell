@@ -149,7 +149,7 @@ ${String(secs).padStart(2, '0')}`;
 								color: Themes.colors.on_surface_variant
 							}
 
-							MouseArea {
+							MArea {
 								id: closeButtonMouse
 
 								anchors.fill: parent
@@ -243,7 +243,7 @@ ${String(secs).padStart(2, '0')}`;
 								}
 							}
 
-							MouseArea {
+							MArea {
 								id: stopButtonMouse
 
 								anchors.fill: parent

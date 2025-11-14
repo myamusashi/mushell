@@ -155,7 +155,7 @@ Scope {
 										session.showConfirmDialog = true;
 									}
 
-									MouseArea {
+									MArea {
 										id: mouseArea
 
 										anchors.fill: parent

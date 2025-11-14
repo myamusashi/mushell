@@ -200,7 +200,7 @@ Scope {
 									implicitWidth: 20
 									implicitHeight: 20
 
-									MouseArea {
+									MArea {
 										anchors.fill: parent
 										hoverEnabled: true
 										cursorShape: Qt.PointingHandCursor
@@ -247,17 +247,17 @@ ${root.formatTime(Player.active?.length)}`
 								icon: Player.active === null ? "pause_circle" : Player.active.playbackState
 															   === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
 								color: {
-									if (pauseMouseArea.pressed)
+									if (pauseMArea.pressed)
 									return Themes.withAlpha(Themes.colors.primary, 0.08);
-									else if (pauseMouseArea.containsMouse)
+									else if (pauseMArea.containsMouse)
 									return Themes.withAlpha(Themes.colors.primary, 0.12);
 									else
 									return Themes.colors.primary;
 								}
 								font.pixelSize: Appearance.fonts.extraLarge * 1.5
 
-								MouseArea {
-									id: pauseMouseArea
+								MArea {
+									id: pauseMArea
 
 									anchors.fill: parent
 									hoverEnabled: true

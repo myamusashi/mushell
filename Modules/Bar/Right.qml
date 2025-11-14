@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 import qs.Data
 import qs.Widgets
+import qs.Helpers
 import qs.Components
 import qs.Modules.QuickSettings
 
@@ -56,7 +57,7 @@ Loader {
 				}
 			}
 
-			MouseArea {
+			MArea {
 				id: mArea
 
 				anchors.fill: parent

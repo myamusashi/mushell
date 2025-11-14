@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell
 
 import qs.Data
+import qs.Helpers
 
 Loader {
 	id: root
@@ -25,7 +26,7 @@ Loader {
 		}
 		color: "transparent"
 
-		MouseArea {
+		MArea {
 			anchors.fill: parent
 			onClicked: root.rejected()
 		}

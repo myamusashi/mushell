@@ -51,7 +51,7 @@ StyledRect {
 		}
 	}
 
-	MouseArea {
+	MArea {
 		acceptedButtons: Qt.MiddleButton | Qt.LeftButton
 		anchors.fill: parent
 

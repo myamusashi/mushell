@@ -42,7 +42,7 @@ Slider {
 													   Themes.colors.on_primary
 	}
 
-	MouseArea {
+	MArea {
 		anchors.fill: parent
 		onPressed: mouse => mouse.accepted = false
 		cursorShape: root.pressed ? Qt.ClosedHandCursor : Qt.PointingHandCursor

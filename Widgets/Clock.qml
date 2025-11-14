@@ -34,7 +34,7 @@ StyledRect {
 			text: Qt.formatDateTime(Time?.date, "h:mm AP")
 		}
 	}
-	MouseArea {
+	MArea {
 		id: mArea
 
 		anchors.fill: timeContainer

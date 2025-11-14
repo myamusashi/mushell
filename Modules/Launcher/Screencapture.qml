@@ -102,7 +102,7 @@ Scope {
 										font.bold: captureWindow.activeTab === tabButton.index
 									}
 
-									MouseArea {
+									MArea {
 										anchors.fill: parent
 										cursorShape: Qt.PointingHandCursor
 										onClicked: captureWindow.activeTab = tabButton.index
@@ -259,22 +259,21 @@ Scope {
 												text: iconDelegate1.modelData.name
 												Layout.fillWidth: true
 											}
+										}
+										MArea {
+											id: mArea1
 
-											MouseArea {
-												id: mArea1
+											Layout.fillWidth: true
+											Layout.fillHeight: true
+											cursorShape: Qt.PointingHandCursor
+											hoverEnabled: true
 
-												Layout.fillWidth: true
-												Layout.fillHeight: true
-												cursorShape: Qt.PointingHandCursor
-												hoverEnabled: true
-
-												onClicked: {
-													icon1.focus = true;
-													iconDelegate1.modelData.action();
-													screencapture.isScreencaptureOpen = false;
-												}
-												onEntered: parent.focus = true
+											onClicked: {
+												icon1.focus = true;
+												iconDelegate1.modelData.action();
+												screencapture.isScreencaptureOpen = false;
 											}
+											onEntered: parent.focus = true
 										}
 									}
 								}
@@ -397,23 +396,22 @@ Scope {
 												text: iconDelegate2.modelData.name
 												Layout.fillWidth: true
 											}
+										}
+										MArea {
+											id: mArea2
 
-											MouseArea {
-												id: mArea2
+											Layout.fillWidth: true
+											Layout.fillHeight: true
+											cursorShape: Qt.PointingHandCursor
+											hoverEnabled: true
 
-												Layout.fillWidth: true
-												Layout.fillHeight: true
-												cursorShape: Qt.PointingHandCursor
-												hoverEnabled: true
-
-												onClicked: {
-													icon2.focus = true;
-													iconDelegate2.modelData.action();
-													recordControl.isRecordingControlOpen = true;
-													screencapture.isScreencaptureOpen = false;
-												}
-												onEntered: parent.focus = true
+											onClicked: {
+												icon2.focus = true;
+												iconDelegate2.modelData.action();
+												recordControl.isRecordingControlOpen = true;
+												screencapture.isScreencaptureOpen = false;
 											}
+											onEntered: parent.focus = true
 										}
 									}
 								}

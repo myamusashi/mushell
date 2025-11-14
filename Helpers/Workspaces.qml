@@ -19,10 +19,9 @@ Singleton {
 	}
 
 	function findMaxId(): int {
-		if (hyprland.workspaces.length === 0) {
+		if (hyprland.workspaces.length === 0)
 			return 1;
-			// Return 1 if no workspaces exist
-		}
+
 		let num = hyprland.workspaces.length;
 		let maxId = hyprland.workspaces[num - 1]?.id || 1;
 		return maxId;

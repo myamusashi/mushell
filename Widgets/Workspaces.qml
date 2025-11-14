@@ -24,7 +24,7 @@ RowLayout {
 																												Themes.colors.surface_container_highest, 0.1) :
 																											Themes.colors.surface_container
 
-		MouseArea {
+		MArea {
 			id: workspaceMBarArea
 
 			anchors.fill: parent
@@ -101,7 +101,7 @@ RowLayout {
 						}
 					}
 
-					MouseArea {
+					MArea {
 						id: workspaceMArea
 
 						anchors.fill: parent

@@ -49,7 +49,7 @@ Loader {
 							font.pixelSize: Appearance.fonts.extraLarge
 						}
 
-						MouseArea {
+						MArea {
 							id: mIconBackArea
 
 							anchors.fill: parent
@@ -108,7 +108,7 @@ Loader {
 							}
 						}
 
-						MouseArea {
+						MArea {
 							id: mRefreshArea
 
 							anchors.fill: parent
@@ -181,7 +181,7 @@ Loader {
 								font.pixelSize: Appearance.fonts.large * 1.5
 							}
 
-							MouseArea {
+							MArea {
 								id: disconnectArea
 
 								anchors.fill: parent
@@ -331,7 +331,7 @@ Loader {
 								}
 							}
 
-							MouseArea {
+							MArea {
 								id: mouseArea
 
 								anchors.fill: parent

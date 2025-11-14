@@ -52,7 +52,7 @@ RowLayout {
 				}
 			}
 
-			MouseArea {
+			MArea {
 				id: mouseAreaMain
 
 				anchors.fill: parent
@@ -156,7 +156,7 @@ RowLayout {
 					}
 				}
 
-				MouseArea {
+				MArea {
 					id: mouseArea
 
 					anchors.fill: parent
@@ -209,7 +209,7 @@ RowLayout {
 			}
 		}
 
-		MouseArea {
+		MArea {
 			id: mouseAreaToggle
 
 			anchors.fill: parent
