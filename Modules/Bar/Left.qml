@@ -5,28 +5,28 @@ import qs.Data
 import qs.Widgets
 
 Loader {
-	active: true
-	asynchronous: true
+    active: true
+    asynchronous: true
 
-	sourceComponent: RowLayout {
-		anchors.fill: parent
-		anchors.leftMargin: Appearance.margin.small
-		spacing: Appearance.spacing.normal
+    sourceComponent: RowLayout {
+        anchors.fill: parent
+        anchors.leftMargin: Appearance.margin.small
+        spacing: Appearance.spacing.normal
 
-		OsText {
-			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-		}
+        OsText {
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        }
 
-		Workspaces {
-			Layout.alignment: Qt.AlignCenter
-		}
+        Workspaces {
+            Layout.alignment: Qt.AlignCenter
+        }
 
-		WorkspaceName {
-			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-		}
+        WorkspaceName {
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        }
 
-		Item {
-			Layout.fillWidth: true
-		}
-	}
+        Item {
+            Layout.fillWidth: true
+        }
+    }
 }

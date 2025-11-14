@@ -9,119 +9,122 @@ import qs.Helpers
 import qs.Components
 
 Scope {
-	Variants {
-		model: Quickshell.screens
+    Variants {
+        model: Quickshell.screens
 
-		delegate: WlrLayershell {
-			id: root
+        delegate: WlrLayershell {
+            id: root
 
-			required property ShellScreen modelData
+            required property ShellScreen modelData
 
-			anchors {
-				top: true
-				right: true
-				left: true
-				bottom: true
-			}
+            anchors {
+                top: true
+                right: true
+                left: true
+                bottom: true
+            }
 
-			namespace: "shell:bigclock"
-			layer: WlrLayer.Background
-			screen: modelData
-			color: "transparent"
+            namespace: "shell:bigclock"
+            layer: WlrLayer.Background
+            screen: modelData
+            color: "transparent"
 
-			exclusiveZone: 0
+            exclusiveZone: 0
 
-			StyledRect {
-				anchors.centerIn: parent
+            StyledRect {
+                anchors.centerIn: parent
 
-				color: "transparent"
+                color: "transparent"
 
-				ColumnLayout {
-					id: clock
+                ColumnLayout {
+                    id: clock
 
-					anchors.centerIn: parent
-					spacing: Appearance.spacing.normal
+                    anchors.centerIn: parent
+                    spacing: Appearance.spacing.normal
 
-					StyledText {
-						id: hours
+                    StyledText {
+                        id: hours
 
-						Layout.alignment: Qt.AlignCenter
-						text: Qt.formatDateTime(Time?.date, "h:mm AP")
-						font.pixelSize: Appearance.fonts.extraLarge * 2.5
-						font.bold: true
-						antialiasing: true
-						color: Themes.colors.secondary
-					}
+                        Layout.alignment: Qt.AlignCenter
+                        text: Qt.formatDateTime(Time?.date, "h:mm AP")
+                        font.pixelSize: Appearance.fonts.extraLarge * 2.5
+                        font.bold: true
+                        antialiasing: true
+                        color: Themes.colors.secondary
+                    }
 
-					RowLayout {
-						Layout.alignment: Qt.AlignCenter
+                    RowLayout {
+                        Layout.alignment: Qt.AlignCenter
 
-						StyledText {
-							id: day
+                        StyledText {
+                            id: day
 
-							text: Qt.formatDateTime(Time?.date, "dddd")
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
+                            text: Qt.formatDateTime(Time?.date, "dddd")
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
 
-						StyledText {
-							id: month
+                        StyledText {
+                            id: month
 
-							text: Qt.formatDateTime(Time?.date, "MMMM")
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
+                            text: Qt.formatDateTime(Time?.date, "MMMM")
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
 
-						StyledText {
-							id: year
+                        StyledText {
+                            id: year
 
-							text: Qt.formatDateTime(Time?.date, "yyyy")
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
+                            text: Qt.formatDateTime(Time?.date, "yyyy")
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
 
-						IconImage {
-							id: weatherIcon
+                        IconImage {
+                            id: weatherIcon
 
-							Layout.alignment: Qt.AlignHCenter
-							implicitSize: 37
-							source: Qt.resolvedUrl("https://openweathermap.org/img/wn/" + Weather.weatherIconData
-												   + "@4x.png") || Quickshell.iconPath("stock_weather-cloudy")
-							asynchronous: true
-							smooth: true
-						}
+                            Layout.alignment: Qt.AlignHCenter
+                            implicitSize: 37
+                            source: Qt.resolvedUrl(
+                                        "https://openweathermap.org/img/wn/"
+                                        + Weather.weatherIconData + "@4x.png")
+                                    || Quickshell.iconPath(
+                                        "stock_weather-cloudy")
+                            asynchronous: true
+                            smooth: true
+                        }
 
-						StyledText {
-							id: temp
+                        StyledText {
+                            id: temp
 
-							text: Weather.tempData + "°"
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
+                            text: Weather.tempData + "°"
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
 
-						MatIcon {
-							id: huy
-							icon: "humidity_low"
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
+                        MatIcon {
+                            id: huy
+                            icon: "humidity_low"
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
 
-						StyledText {
-							id: humidity
+                        StyledText {
+                            id: humidity
 
-							text: Weather.humidityData + "%"
-							font.pixelSize: Appearance.fonts.large
-							color: Themes.withAlpha(Themes.colors.secondary, 1)
-							antialiasing: true
-						}
-					}
-				}
-			}
-		}
-	}
+                            text: Weather.humidityData + "%"
+                            font.pixelSize: Appearance.fonts.large
+                            color: Themes.withAlpha(Themes.colors.secondary, 1)
+                            antialiasing: true
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

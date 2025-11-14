@@ -19,16 +19,17 @@ Singleton {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const data = JSON.parse(text.trim());
+                const data = JSON.parse(text.trim())
                 root.models = data.map(profile => {
-                    return {
-                        index: profile.index,
-                        name: profile.name,
-                        description: profile.description,
-                        available: profile.available,
-                        readable: formatProfileName(profile.name)
-                    };
-                });
+                                           return {
+                                               "index": profile.index,
+                                               "name": profile.name,
+                                               "description": profile.description,
+                                               "available": profile.available,
+                                               "readable": formatProfileName(
+                                                               profile.name)
+                                           }
+                                       })
             }
         }
     }
@@ -40,8 +41,8 @@ Singleton {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const data = text.trim();
-                root.idPipewire = data;
+                const data = text.trim()
+                root.idPipewire = data
             }
         }
     }
@@ -53,45 +54,46 @@ Singleton {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const data = JSON.parse(text.trim());
+                const data = JSON.parse(text.trim())
                 root.activeProfiles = data.map(active => {
-                    return {
-                        index: active.index,
-                        name: active.name,
-                        description: active.description,
-                        available: active.available,
-                        save: active.save
-                    };
-                });
-                root.activeProfileIndex = data.length > 0 ? data[0].index : -1;
+                                                   return {
+                                                       "index": active.index,
+                                                       "name": active.name,
+                                                       "description": active.description,
+                                                       "available": active.available,
+                                                       "save": active.save
+                                                   }
+                                               })
+                root.activeProfileIndex = data.length > 0 ? data[0].index : -1
             }
         }
     }
 
     function formatProfileName(name) {
         if (name === "off")
-            return "Off";
+            return "Off"
         if (name === "pro-audio")
-            return "Pro Audio";
+            return "Pro Audio"
 
         // separate output and input
-        const parts = name.split("+");
-        const formatted = [];
+        const parts = name.split("+")
+        const formatted = []
 
         for (let part of parts) {
-            part = part.trim();
+            part = part.trim()
 
             // Remove prefixes
-            part = part.replace(/^output:/, "").replace(/^input:/, "");
+            part = part.replace(/^output:/, "").replace(/^input:/, "")
 
             // Replace hyphens with spaces and capitalize
             part = part.split("-").map(word => {
-                return word.charAt(0).toUpperCase() + word.slice(1);
-            }).join(" ");
+                                           return word.charAt(0).toUpperCase(
+                                               ) + word.slice(1)
+                                       }).join(" ")
 
-            formatted.push(part);
+            formatted.push(part)
         }
 
-        return formatted.join(" + ");
+        return formatted.join(" + ")
     }
 }

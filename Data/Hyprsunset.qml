@@ -5,29 +5,29 @@ import Quickshell.Io
 import QtQuick
 
 Singleton {
-	id: root
+    id: root
 
-	property bool isNightModeOn: false
+    property bool isNightModeOn: false
 
-	Process {
-		id: hyprsunset
+    Process {
+        id: hyprsunset
 
-		command: ["sh", "-c", "hyprsunset -t 3000"]
-	}
+        command: ["sh", "-c", "hyprsunset -t 3000"]
+    }
 
-	Process {
-		id: killHyprsunset
+    Process {
+        id: killHyprsunset
 
-		command: ["sh", "-c", "kill $(pgrep hyprsunset)"]
-	}
+        command: ["sh", "-c", "kill $(pgrep hyprsunset)"]
+    }
 
-	function up(): void {
-		root.isNightModeOn = true;
-		hyprsunset.running = true;
-	}
+    function up(): void {
+        root.isNightModeOn = true
+        hyprsunset.running = true
+    }
 
-	function down(): void {
-		root.isNightModeOn = false;
-		killHyprsunset.running = true;
-	}
+    function down(): void {
+        root.isNightModeOn = false
+        killHyprsunset.running = true
+    }
 }

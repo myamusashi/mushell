@@ -32,11 +32,11 @@ TextField {
 
         border.color: {
             if (!passwordInput.enabled)
-                return Themes.withAlpha(Themes.colors.outline, 0.38);
+                return Themes.withAlpha(Themes.colors.outline, 0.38)
             else if (passwordInput.activeFocus)
-                return Themes.colors.primary;
+                return Themes.colors.primary
             else
-                return Themes.colors.outline;
+                return Themes.colors.outline
         }
         border.width: passwordInput.activeFocus ? 2 : 1
 
@@ -45,11 +45,11 @@ TextField {
             radius: parent.radius
             color: {
                 if (!passwordInput.enabled)
-                    return "transparent";
+                    return "transparent"
                 else if (passwordInput.activeFocus)
-                    return Themes.withAlpha(Themes.colors.primary, 0.08);
+                    return Themes.withAlpha(Themes.colors.primary, 0.08)
                 else
-                    return "transparent";
+                    return "transparent"
             }
 
             Behavior on color {

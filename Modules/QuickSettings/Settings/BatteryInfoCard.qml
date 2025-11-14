@@ -44,35 +44,30 @@ StyledRect {
     component BatteryDetailsList: ColumnLayout {
         spacing: Appearance.spacing.small
 
-        readonly property var details: [
-            {
-                label: "Battery found:",
-                value: Battery.foundBattery,
-                color: Themes.colors.on_background
-            },
-            {
-                label: "Current capacity:",
-                value: UPower.displayDevice.energy.toFixed(2) + " Wh",
-                color: Themes.colors.on_background
-            },
-            {
-                label: "Full capacity:",
-                value: UPower.displayDevice.energyCapacity.toFixed(2) + " Wh",
-                color: Themes.colors.on_background
-            },
-            {
-                label: "Battery Health:",
-                value: Battery.overallBatteryHealth + "%",
-                color: getHealthColor(Battery.overallBatteryHealth)
-            }
-        ]
+        readonly property var details: [{
+                "label": "Battery found:",
+                "value": Battery.foundBattery,
+                "color": Themes.colors.on_background
+            }, {
+                "label": "Current capacity:",
+                "value": UPower.displayDevice.energy.toFixed(2) + " Wh",
+                "color": Themes.colors.on_background
+            }, {
+                "label": "Full capacity:",
+                "value": UPower.displayDevice.energyCapacity.toFixed(2) + " Wh",
+                "color": Themes.colors.on_background
+            }, {
+                "label": "Battery Health:",
+                "value": Battery.overallBatteryHealth + "%",
+                "color": getHealthColor(Battery.overallBatteryHealth)
+            }]
 
         function getHealthColor(health) {
             if (health > 80)
-                return Themes.colors.primary;
+                return Themes.colors.primary
             if (health > 50)
-                return Themes.colors.secondary;
-            return Themes.colors.error;
+                return Themes.colors.secondary
+            return Themes.colors.error
         }
 
         Repeater {

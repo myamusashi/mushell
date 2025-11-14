@@ -1,0 +1,11 @@
+diff --git a/src/libs/solutions/tasking/qprocesstask.cpp b/src/libs/solutions/tasking/qprocesstask.cpp
+index b0a61986a38..5519393f6e7 100644
+--- a/src/libs/solutions/tasking/qprocesstask.cpp
++++ b/src/libs/solutions/tasking/qprocesstask.cpp
+@@ -10,6 +10,7 @@
+ #include <QtCore/QThread>
+ #include <QtCore/QTimer>
+ #include <QtCore/QWaitCondition>
++#include <QElapsedTimer>
+ 
+ QT_BEGIN_NAMESPACE

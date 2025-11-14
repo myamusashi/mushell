@@ -1,5 +1,4 @@
 // Thx M7moud El-zayat for your Overview code
-
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -30,9 +29,9 @@ Scope {
         target: Hyprland
 
         function onRawEvent() {
-            Hyprland.refreshMonitors();
-            Hyprland.refreshWorkspaces();
-            Hyprland.refreshToplevels();
+            Hyprland.refreshMonitors()
+            Hyprland.refreshWorkspaces()
+            Hyprland.refreshToplevels()
         }
     }
 
@@ -45,8 +44,12 @@ Scope {
             id: root
 
             property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-            property real workspaceWidth: (root.monitor.width - (root.reserved[0] + root.reserved[2])) * scope.scaleFactor / root.monitor.scale
-            property real workspaceHeight: (root.monitor.height - (root.reserved[1] + root.reserved[3])) * scope.scaleFactor / root.monitor.scale
+            property real workspaceWidth: (root.monitor.width
+                                           - (root.reserved[0] + root.reserved[2]))
+                                          * scope.scaleFactor / root.monitor.scale
+            property real workspaceHeight: (root.monitor.height
+                                            - (root.reserved[1] + root.reserved[3]))
+                                           * scope.scaleFactor / root.monitor.scale
             property real containerWidth: workspaceWidth + scope.borderWidth
             property real containerHeight: workspaceHeight + scope.borderWidth
             property list<int> reserved: monitor.lastIpcObject?.reserved
@@ -92,10 +95,14 @@ Scope {
                         id: workspaceContainer
 
                         required property int index
-                        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === index + 1) ?? null
-                        property bool hasFullscreen: !!(workspace?.toplevels?.values.some(t => t.wayland?.fullscreen))
+                        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(
+                                                                  w => w.id === index + 1)
+                                                              ?? null
+                        property bool hasFullscreen: !!(workspace?.toplevels?.values.some(
+                                                            t => t.wayland?.fullscreen))
 
-                        property bool hasMaximized: !!(workspace?.toplevels?.values.some(t => t.wayland?.maximized))
+                        property bool hasMaximized: !!(workspace?.toplevels?.values.some(
+                                                           t => t.wayland?.maximized))
 
                         implicitWidth: root.containerWidth + 25
                         implicitHeight: root.containerHeight + 25
@@ -140,19 +147,20 @@ Scope {
                             onExited: drag.source.isCaught = false
 
                             onDropped: drag => {
-                                const toplevel = drag.source;
+                                const toplevel = drag.source
 
                                 if (toplevel.modelData.workspace !== workspaceContainer.workspace) {
-                                    const address = toplevel.modelData.address;
+                                    const address = toplevel.modelData.address
                                     Hyprland.dispatch(`movetoworkspacesilent
-${workspaceContainer.index + 1}, address:0x
+                                                      ${workspaceContainer.index + 1}, address:0x
 
 
 
 
-${address}`);
-                                    Hyprland.dispatch(`movewindowpixel exact ${toplevel.initX}
-${toplevel.initY}, address:0x${address}`);
+                                                      ${address}`)
+                                    Hyprland.dispatch(
+                                        `movewindowpixel exact ${toplevel.initX}
+                                        ${toplevel.initY}, address:0x${address}`)
                                 }
                             }
                         }
@@ -160,8 +168,9 @@ ${toplevel.initY}, address:0x${address}`);
                         MArea {
                             anchors.fill: parent
 
-                            onClicked: if (workspaceContainer.workspace !== Hyprland.focusedWorkspace)
-                                Hyprland.dispatch("workspace" + parent.index + 1)
+                            onClicked: if (workspaceContainer.workspace
+                                           !== Hyprland.focusedWorkspace)
+                            Hyprland.dispatch("workspace" + parent.index + 1)
                         }
 
                         // Toplevels
@@ -174,8 +183,8 @@ ${toplevel.initY}, address:0x${address}`);
                                 required property HyprlandToplevel modelData
                                 property Toplevel waylandHandle: modelData?.wayland
                                 property var toplevelData: modelData.lastIpcObject
-                                property int initX: toplevelData.at?.[0] ?? 0
-                                property int initY: toplevelData.at?.[1] ?? 0
+                                property int initX: toplevelData.at[0] ?? 0
+                                property int initY: toplevelData.at[1] ?? 0
                                 property StyledRect originalParent: workspaceContainer
                                 property StyledRect visualParent: overLayer
                                 property bool isCaught: false
@@ -185,11 +194,17 @@ ${toplevel.initY}, address:0x${address}`);
 
                                 width: sourceSize.width * scope.scaleFactor / root.monitor.scale
                                 height: sourceSize.height * scope.scaleFactor / root.monitor.scale
-                                scale: (Drag.active && !toplevelData?.floating) ? 0.75 : 1
+                                scale: (Drag.active
+                                        && !toplevelData?.floating) ? 0.75 : 1
 
-                                x: (toplevelData?.at?.[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * scope.scaleFactor + scope.borderWidth + 12
-                                y: (toplevelData?.at?.[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * scope.scaleFactor + scope.borderWidth + 12
-                                z: (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 2 : toplevelData?.floating ? 1 : 0
+                                x: (toplevelData?.at[0]
+                                    - (waylandHandle?.fullscreen ? 0 : root.reserved[0]))
+                                   * scope.scaleFactor + scope.borderWidth + 12
+                                y: (toplevelData?.at[1]
+                                    - (waylandHandle?.fullscreen ? 0 : root.reserved[1]))
+                                   * scope.scaleFactor + scope.borderWidth + 12
+                                z: (waylandHandle?.fullscreen
+                                    || waylandHandle?.maximized) ? 2 : toplevelData?.floating ? 1 : 0
 
                                 Behavior on x {
                                     NumbAnim {
@@ -217,23 +232,27 @@ ${toplevel.initY}, address:0x${address}`);
                                 Drag.hotSpot.y: height / 2
                                 Drag.onActiveChanged: {
                                     if (Drag.active) {
-                                        parent = visualParent;
+                                        parent = visualParent
                                     } else {
-                                        var mapped = mapToItem(originalParent, 0, 0);
-                                        parent = originalParent;
+                                        var mapped = mapToItem(originalParent,
+                                                               0, 0)
+                                        parent = originalParent
 
                                         if (toplevelData?.floating) {
-                                            x = mapped.x;
-                                            y = mapped.y;
+                                            x = mapped.x
+                                            y = mapped.y
                                         } else if (!toplevelData?.floating) {
-                                            x = !isCaught ? mapped.x : (toplevelData?.at?.[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * scope.scaleFactor + scope.borderWidth + 12;
-                                            y = !isCaught ? mapped.y : (toplevelData?.at?.[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * scope.scaleFactor + scope.borderWidth + 12;
+                                            x = !isCaught ? mapped.x : (toplevelData?.at[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * scope.scaleFactor + scope.borderWidth + 12
+                                            y = !isCaught ? mapped.y : (toplevelData?.at[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * scope.scaleFactor + scope.borderWidth + 12
                                         }
                                     }
                                 }
 
                                 IconImage {
-                                    source: Quickshell.iconPath(DesktopEntries.heuristicLookup(toplevel.waylandHandle?.appId)?.icon, "image-missing")
+                                    source: Quickshell.iconPath(
+                                                DesktopEntries.heuristicLookup(
+                                                    toplevel.waylandHandle?.appId)?.icon,
+                                                "image-missing")
                                     implicitSize: 48
                                     backer.cache: true
                                     backer.asynchronous: true
@@ -245,40 +264,47 @@ ${toplevel.initY}, address:0x${address}`);
 
                                     property bool dragged: false
 
-                                    drag.target: (toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized) ? undefined : toplevel
+                                    drag.target: (toplevel.waylandHandle?.fullscreen
+                                                  || toplevel.waylandHandle?.maximized) ? undefined : toplevel
 
                                     cursorShape: dragged ? Qt.DragMoveCursor : Qt.ArrowCursor
                                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                                     anchors.fill: parent
 
                                     onPressed: {
-                                        dragged = false;
+                                        dragged = false
                                     }
 
                                     onPositionChanged: {
                                         if (drag.active)
-                                            dragged = true;
+                                        dragged = true
                                     }
 
                                     onClicked: mouse => {
                                         if (!dragged) {
                                             if (mouse.button === Qt.LeftButton)
-                                                toplevel.waylandHandle.activate();
+                                            toplevel.waylandHandle.activate()
                                             else if (mouse.button === Qt.RightButton)
-                                                toplevel.waylandHandle.close();
+                                            toplevel.waylandHandle.close()
                                         }
                                     }
 
                                     onReleased: {
-                                        if (dragged && !(toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized)) {
-                                            const mapped = toplevel.mapToItem(toplevel.originalParent, 0, 0);
-                                            const x = Math.round(mapped.x / scope.scaleFactor + root.reserved[0]);
-                                            const y = Math.round(mapped.y / scope.scaleFactor + root.reserved[1]);
+                                        if (dragged
+                                            && !(toplevel.waylandHandle?.fullscreen
+                                                 || toplevel.waylandHandle?.maximized)) {
+                                            const mapped = toplevel.mapToItem(
+                                                toplevel.originalParent, 0, 0)
+                                            const x = Math.round(
+                                                mapped.x / scope.scaleFactor + root.reserved[0])
+                                            const y = Math.round(
+                                                mapped.y / scope.scaleFactor + root.reserved[1])
 
-                                            Hyprland.dispatch(`movewindowpixel exact ${x} ${y}, address:0x
+                                            Hyprland.dispatch(
+                                                `movewindowpixel exact ${x} ${y}, address:0x
 
-${toplevel.modelData.address}`);
-                                            toplevel.Drag.drop();
+                                                ${toplevel.modelData.address}`)
+                                            toplevel.Drag.drop()
                                         }
                                     }
                                 }

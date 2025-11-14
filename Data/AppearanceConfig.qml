@@ -3,5 +3,5 @@ pragma Singleton
 import Quickshell
 
 Singleton {
-	id: root
+    id: root
 }

@@ -54,67 +54,66 @@ Scope {
                         spacing: 5
 
                         Repeater {
-                            model: [
-                                {
-                                    icon: "power_settings_circle",
-                                    name: "Shutdown",
-                                    action: () => {
+                            model: [{
+                                    "icon": "power_settings_circle",
+                                    "name": "Shutdown",
+                                    "action": () => {
                                         Quickshell.execDetached({
-                                            command: ["sh", "-c", "systemctl poweroff"]
-                                        });
+                                                                    "command": ["sh", "-c", "systemctl poweroff"]
+                                                                })
                                     }
-                                },
-                                {
-                                    icon: "restart_alt",
-                                    name: "Reboot",
-                                    action: () => {
+                                }, {
+                                    "icon": "restart_alt",
+                                    "name": "Reboot",
+                                    "action": () => {
                                         Quickshell.execDetached({
-                                            command: ["sh", "-c", "systemctl reboot"]
-                                        });
+                                                                    "command": ["sh", "-c", "systemctl reboot"]
+                                                                })
                                     }
-                                },
-                                {
-                                    icon: "sleep",
-                                    name: "Sleep",
-                                    action: () => {
+                                }, {
+                                    "icon": "sleep",
+                                    "name": "Sleep",
+                                    "action": () => {
                                         Quickshell.execDetached({
-                                            command: ["sh", "-c", "systemctl suspend"]
-                                        });
+                                                                    "command": ["sh", "-c", "systemctl suspend"]
+                                                                })
                                     }
-                                },
-                                {
-                                    icon: "door_open",
-                                    name: "Logout",
-                                    action: () => {
+                                }, {
+                                    "icon": "door_open",
+                                    "name": "Logout",
+                                    "action": () => {
                                         Quickshell.execDetached({
-                                            command: ["sh", "-c", "hyprctl dispatch exit"]
-                                        });
+                                                                    "command": ["sh", "-c", "hyprctl dispatch exit"]
+                                                                })
                                     }
-                                },
-                                {
-                                    icon: "lock",
-                                    name: "Lockscreen",
-                                    action: () => {
+                                }, {
+                                    "icon": "lock",
+                                    "name": "Lockscreen",
+                                    "action": () => {
                                         Quickshell.execDetached({
-                                            command: ["sh", "-c", "shell ipc call lock lock"]
-                                        });
+                                                                    "command": ["sh", "-c", "shell ipc call lock lock"]
+                                                                })
                                     }
-                                }
-                            ]
+                                }]
 
                             delegate: StyledRect {
                                 id: rectDelegate
 
                                 required property var modelData
                                 required property int index
-                                property bool isHighlighted: mouseArea.containsMouse || (iconDelegate.focus && rectDelegate.index === session.currentIndex)
+                                property bool isHighlighted: mouseArea.containsMouse
+                                                             || (iconDelegate.focus
+                                                                 && rectDelegate.index
+                                                                 === session.currentIndex)
 
                                 Layout.alignment: Qt.AlignHCenter
                                 Layout.preferredWidth: 60
                                 Layout.preferredHeight: 70
 
                                 radius: Appearance.rounding.normal
-                                color: isHighlighted ? Themes.withAlpha(Themes.colors.secondary, 0.2) : "transparent"
+                                color: isHighlighted ? Themes.withAlpha(
+                                                           Themes.colors.secondary,
+                                                           0.2) : "transparent"
 
                                 Behavior on color {
                                     ColAnim {}
@@ -134,11 +133,11 @@ Scope {
                                     Keys.onReturnPressed: handleAction()
                                     Keys.onUpPressed: {
                                         if (session.currentIndex > 0)
-                                            session.currentIndex--;
+                                        session.currentIndex--
                                     }
                                     Keys.onDownPressed: {
                                         if (session.currentIndex < 4)
-                                            session.currentIndex++;
+                                        session.currentIndex++
                                     }
                                     Keys.onEscapePressed: session.isSessionOpen = false
 
@@ -149,9 +148,10 @@ Scope {
                                     }
 
                                     function handleAction() {
-                                        session.pendingAction = rectDelegate.modelData.action;
-                                        session.pendingActionName = rectDelegate.modelData.name + "?";
-                                        session.showConfirmDialog = true;
+                                        session.pendingAction = rectDelegate.modelData.action
+                                        session.pendingActionName
+                                                = rectDelegate.modelData.name + "?"
+                                        session.showConfirmDialog = true
                                     }
 
                                     MArea {
@@ -163,14 +163,14 @@ Scope {
                                         hoverEnabled: true
 
                                         onClicked: {
-                                            parent.focus = true;
-                                            session.currentIndex = rectDelegate.index;
-                                            parent.handleAction();
+                                            parent.focus = true
+                                            session.currentIndex = rectDelegate.index
+                                            parent.handleAction()
                                         }
 
                                         onEntered: {
-                                            parent.focus = true;
-                                            session.currentIndex = rectDelegate.index;
+                                            parent.focus = true
+                                            session.currentIndex = rectDelegate.index
                                         }
                                     }
                                 }
@@ -190,18 +190,18 @@ Scope {
 
                     onAccepted: {
                         if (session.pendingAction)
-                            session.pendingAction();
+                        session.pendingAction()
 
-                        session.showConfirmDialog = false;
-                        session.isSessionOpen = false;
-                        session.pendingAction = null;
-                        session.pendingActionName = "";
+                        session.showConfirmDialog = false
+                        session.isSessionOpen = false
+                        session.pendingAction = null
+                        session.pendingActionName = ""
                     }
 
                     onRejected: {
-                        session.showConfirmDialog = false;
-                        session.pendingAction = null;
-                        session.pendingActionName = "";
+                        session.showConfirmDialog = false
+                        session.pendingAction = null
+                        session.pendingActionName = ""
                     }
                 }
             }
@@ -212,7 +212,7 @@ Scope {
         target: "session"
 
         function toggle(): void {
-            session.isSessionOpen = !session.isSessionOpen;
+            session.isSessionOpen = !session.isSessionOpen
         }
     }
 }

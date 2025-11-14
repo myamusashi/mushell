@@ -1,7 +1,4 @@
-{
-  self,
-  apple-fonts,
-}: {
+{self, apple-fonts}: {
   config,
   lib,
   pkgs,
@@ -10,23 +7,9 @@
   cfg = config.programs.quickshell-shell;
   system = pkgs.system;
 
-  packages = import ./default.nix {
-    inherit pkgs system lib;
-    quickshell = null;
-  };
-  runtimeDeps = packages.runtimeDeps;
-
-  material-symbols = pkgs.material-symbols.overrideAttrs (oldAttrs: {
-    version = "4.0.0-unstable-2025-04-11";
-
-    src = pkgs.fetchFromGitHub {
-      owner = "google";
-      repo = "material-design-icons";
-      rev = "bb04090f930e272697f2a1f0d7b352d92dfeee43";
-      hash = "sha256-5bcEh7Oetd2JmFEPCcoweDrLGQTpcuaCU8hCjz8ls3M=";
-      sparseCheckout = ["variablefont"];
-    };
-  });
+  runtimeDeps = self.packages.${system}.runtimeDeps;
+  
+  material-symbols = pkgs.callPackage ./material-symbols.nix {};
 in {
   options.programs.quickshell-shell = {
     enable = lib.mkEnableOption "quickshell shell";
@@ -40,7 +23,7 @@ in {
     installFonts = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "install required fonts";
+      description = "Install required fonts (recommended)";
     };
 
     extraPackages = lib.mkOption {
@@ -53,12 +36,11 @@ in {
   config = lib.mkIf cfg.enable {
     home.packages =
       [cfg.package]
-      ++ runtimeDeps
       ++ cfg.extraPackages
       ++ lib.optionals cfg.installFonts [
-        apple-fonts.packages.${system}.sf-pro
-        apple-fonts.packages.${system}.sf-mono-nerd
-        material-symbols
+        lib.optionals apple-fonts.packages.${system}.sf-pro
+        lib.optionals apple-fonts.packages.${system}.sf-mono-nerd
+        lib.optionals material-symbols
       ];
 
     fonts.fontconfig.enable = lib.mkDefault true;

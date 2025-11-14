@@ -18,7 +18,7 @@ WlSessionLockSurface {
         target: root.lock
 
         function onUnlock(): void {
-            unlockSequence.start();
+            unlockSequence.start()
         }
     }
 
@@ -285,7 +285,7 @@ WlSessionLockSurface {
 
         function onShowFailureChanged() {
             if (root.pam.showFailure)
-                errorShakeAnimation.start();
+                errorShakeAnimation.start()
         }
     }
 

@@ -16,20 +16,20 @@ Scope {
     Connections {
         target: KeyLockState.state
         function onCapsLockChanged() {
-            root.isCapsLockOSDShow = true;
-            hideOSDTimer.restart();
+            root.isCapsLockOSDShow = true
+            hideOSDTimer.restart()
         }
         function onNumLockChanged() {
-            root.isNumLockOSDShow = true;
-            hideOSDTimer.restart();
+            root.isNumLockOSDShow = true
+            hideOSDTimer.restart()
         }
     }
 
     Connections {
         target: Pipewire.defaultAudioSink.audio
         function onVolumeChanged() {
-            root.isVolumeOSDShow = true;
-            hideOSDTimer.restart();
+            root.isVolumeOSDShow = true
+            hideOSDTimer.restart()
         }
     }
 
@@ -42,9 +42,9 @@ Scope {
 
         interval: 2000
         onTriggered: {
-            root.isVolumeOSDShow = false;
-            root.isCapsLockOSDShow = false;
-            root.isNumLockOSDShow = false;
+            root.isVolumeOSDShow = false
+            root.isCapsLockOSDShow = false
+            root.isNumLockOSDShow = false
         }
     }
 

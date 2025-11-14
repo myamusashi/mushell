@@ -31,13 +31,14 @@ Scope {
 
     property var filteredWallpaperList: {
         if (debouncedSearchQuery === "")
-            return wallpaperList;
+        return wallpaperList
 
-        const query = debouncedSearchQuery.toLowerCase();
+        const query = debouncedSearchQuery.toLowerCase()
         return wallpaperList.filter(path => {
-            const fileName = path.split('/').pop().toLowerCase();
-            return fileName.includes(query);
-        });
+                                        const fileName = path.split('/').pop(
+                                            ).toLowerCase()
+                                        return fileName.includes(query)
+                                    })
     }
 
     Process {
@@ -48,8 +49,9 @@ Scope {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const wallList = text.trim().split('\n').filter(path => path.length > 0);
-                scope.wallpaperList = wallList;
+                const wallList = text.trim().split('\n').filter(
+                    path => path.length > 0)
+                scope.wallpaperList = wallList
             }
         }
     }
@@ -60,10 +62,10 @@ Scope {
         active: scope.isWallpaperSwitcherOpen
         onActiveChanged: {
             if (!active) {
-                scope.searchQuery = "";
-                scope.debouncedSearchQuery = "";
+                scope.searchQuery = ""
+                scope.debouncedSearchQuery = ""
 
-                cleanupTimer.start();
+                cleanupTimer.start()
             }
         }
 
@@ -111,15 +113,17 @@ Scope {
                         focus: true
 
                         onTextChanged: {
-                            scope.searchQuery = text;
-                            searchDebounceTimer.restart();
+                            scope.searchQuery = text
+                            searchDebounceTimer.restart()
 
                             if (pathView.count > 0)
-                                pathView.currentIndex = 0;
+                            pathView.currentIndex = 0
                         }
 
                         background: StyledRect {
-                            color: Themes.withAlpha(Themes.colors.surface_container_high, 0.12)
+                            color: Themes.withAlpha(
+                                       Themes.colors.surface_container_high,
+                                       0.12)
                             radius: Appearance.rounding.normal
                             border.color: searchField.activeFocus ? Themes.colors.primary : Themes.colors.outline_variant
                             border.width: searchField.activeFocus ? 2 : 1
@@ -138,13 +142,16 @@ Scope {
                         model: scope.filteredWallpaperList
                         clip: true
 
-                        pathItemCount: Math.min(7, scope.filteredWallpaperList.length)
+                        pathItemCount: Math.min(
+                                           7,
+                                           scope.filteredWallpaperList.length)
                         cacheItemCount: 7
 
                         Component.onCompleted: {
-                            const currentIndex = scope.wallpaperList.indexOf(Paths.currentWallpaper);
+                            const currentIndex = scope.wallpaperList.indexOf(
+                                Paths.currentWallpaper)
                             if (currentIndex !== -1)
-                                pathView.currentIndex = currentIndex;
+                            pathView.currentIndex = currentIndex
                         }
 
                         delegate: Item {
@@ -216,10 +223,10 @@ Scope {
 
                                             anchors.fill: parent
                                             onClicked: {
-                                                pathView.currentIndex = delegateItem.index;
+                                                pathView.currentIndex = delegateItem.index
                                                 Quickshell.execDetached({
-                                                    command: ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
-                                                });
+                                                                            "command": ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
+                                                                        })
                                             }
                                         }
                                     }
@@ -228,7 +235,8 @@ Scope {
                                         Layout.fillWidth: true
                                         Layout.preferredHeight: 20
                                         Layout.margins: 4
-                                        text: delegateItem.modelData.split('/').pop()
+                                        text: delegateItem.modelData.split(
+                                                  '/').pop()
                                         color: "white"
                                         elide: Text.ElideMiddle
                                         font.pixelSize: Appearance.fonts.small
@@ -274,30 +282,32 @@ Scope {
                         preferredHighlightEnd: 0.5
 
                         Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            if (event.key === Qt.Key_Return
+                                || event.key === Qt.Key_Enter) {
                                 Quickshell.execDetached({
-                                    command: ["sh", "-c", `shell ipc call img set ${model[currentIndex]}`]
-                                });
+                                                            "command": ["sh", "-c", `shell ipc call img set ${model[currentIndex]}`]
+                                                        })
                             }
 
                             if (event.key === Qt.Key_Escape)
-                                scope.isWallpaperSwitcherOpen = false;
+                            scope.isWallpaperSwitcherOpen = false
 
                             if (event.key === Qt.Key_Left)
-                                decrementCurrentIndex();
+                            decrementCurrentIndex()
 
                             if (event.key === Qt.Key_Right)
-                                incrementCurrentIndex();
+                            incrementCurrentIndex()
 
                             if (event.key === Qt.Key_Tab)
-                                searchField.focus = true;
+                            searchField.focus = true
                         }
                     }
 
                     StyledLabel {
                         Layout.alignment: Qt.AlignHCenter
                         Layout.bottomMargin: Appearance.spacing.small
-                        text: pathView.count > 0 ? (pathView.currentIndex + 1) + " / " + pathView.count : "0 / 0"
+                        text: pathView.count > 0 ? (pathView.currentIndex + 1)
+                                                   + " / " + pathView.count : "0 / 0"
                         color: Themes.colors.on_surface
                         font.pixelSize: Appearance.fonts.small
                     }
@@ -312,7 +322,7 @@ Scope {
         interval: 500
         repeat: false
         onTriggered: {
-            gc();
+            gc()
         }
     }
 }

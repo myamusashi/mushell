@@ -69,24 +69,20 @@ GridLayout {
         spacing: Appearance.spacing.small
 
         Repeater {
-            model: [
-                {
-                    label: "Wired Download",
-                    value: SysUsage.formatSpeed(SysUsage.wiredDownloadSpeed)
-                },
-                {
-                    label: "Wired Upload",
-                    value: SysUsage.formatSpeed(SysUsage.wiredUploadSpeed)
-                },
-                {
-                    label: "Wireless Download",
-                    value: SysUsage.formatSpeed(SysUsage.wirelessDownloadSpeed)
-                },
-                {
-                    label: "Wireless Upload",
-                    value: SysUsage.formatSpeed(SysUsage.wirelessUploadSpeed)
-                }
-            ]
+            model: [{
+                    "label": "Wired Download",
+                    "value": SysUsage.formatSpeed(SysUsage.wiredDownloadSpeed)
+                }, {
+                    "label": "Wired Upload",
+                    "value": SysUsage.formatSpeed(SysUsage.wiredUploadSpeed)
+                }, {
+                    "label": "Wireless Download",
+                    "value": SysUsage.formatSpeed(
+                                 SysUsage.wirelessDownloadSpeed)
+                }, {
+                    "label": "Wireless Upload",
+                    "value": SysUsage.formatSpeed(SysUsage.wirelessUploadSpeed)
+                }]
 
             StyledText {
                 required property var modelData
@@ -105,24 +101,23 @@ GridLayout {
         spacing: Appearance.spacing.small
 
         Repeater {
-            model: [
-                {
-                    label: "Wired download usage",
-                    value: SysUsage.formatUsage(SysUsage.totalWiredDownloadUsage)
-                },
-                {
-                    label: "Wired upload usage",
-                    value: SysUsage.formatUsage(SysUsage.totalWirelessUploadUsage)
-                },
-                {
-                    label: "Wireless download usage",
-                    value: SysUsage.formatUsage(SysUsage.totalWirelessDownloadUsage)
-                },
-                {
-                    label: "Wireless upload usage",
-                    value: SysUsage.formatUsage(SysUsage.totalWirelessUploadUsage)
-                }
-            ]
+            model: [{
+                    "label": "Wired download usage",
+                    "value": SysUsage.formatUsage(
+                                 SysUsage.totalWiredDownloadUsage)
+                }, {
+                    "label": "Wired upload usage",
+                    "value": SysUsage.formatUsage(
+                                 SysUsage.totalWirelessUploadUsage)
+                }, {
+                    "label": "Wireless download usage",
+                    "value": SysUsage.formatUsage(
+                                 SysUsage.totalWirelessDownloadUsage)
+                }, {
+                    "label": "Wireless upload usage",
+                    "value": SysUsage.formatUsage(
+                                 SysUsage.totalWirelessUploadUsage)
+                }]
 
             StyledText {
                 required property var modelData
@@ -141,16 +136,13 @@ GridLayout {
         spacing: Appearance.spacing.small
 
         Repeater {
-            model: [
-                {
-                    label: "Wired interface",
-                    value: SysUsage.wiredInterface
-                },
-                {
-                    label: "Wireless interface",
-                    value: SysUsage.wirelessInterface
-                }
-            ]
+            model: [{
+                    "label": "Wired interface",
+                    "value": SysUsage.wiredInterface
+                }, {
+                    "label": "Wireless interface",
+                    "value": SysUsage.wirelessInterface
+                }]
 
             StyledText {
                 required property var modelData

@@ -24,11 +24,11 @@ RowLayout {
 
             color: {
                 if (mouseAreaMain.containsPress)
-                    Themes.withAlpha(Themes.colors.primary, 0.08);
+                Themes.withAlpha(Themes.colors.primary, 0.08)
                 else if (mouseAreaMain.containsMouse)
-                    Themes.withAlpha(Themes.colors.primary, 0.1);
+                Themes.withAlpha(Themes.colors.primary, 0.1)
                 else
-                    Themes.colors.primary;
+                Themes.colors.primary
             }
 
             radius: Appearance.rounding.full
@@ -62,42 +62,38 @@ RowLayout {
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
                     Quickshell.execDetached({
-                        command: ["sh", "-c", "systemctl poweroff"]
-                    });
+                                                "command": ["sh", "-c", "systemctl poweroff"]
+                                            })
                 }
             }
         }
 
         Repeater {
-            model: [
-                {
-                    icon: "restart_alt",
-                    name: "Reboot",
-                    action: () => {
+            model: [{
+                    "icon": "restart_alt",
+                    "name": "Reboot",
+                    "action": () => {
                         Quickshell.execDetached({
-                            command: ["sh", "-c", "systemctl reboot"]
-                        });
+                                                    "command": ["sh", "-c", "systemctl reboot"]
+                                                })
                     }
-                },
-                {
-                    icon: "sleep",
-                    name: "Sleep",
-                    action: () => {
+                }, {
+                    "icon": "sleep",
+                    "name": "Sleep",
+                    "action": () => {
                         Quickshell.execDetached({
-                            command: ["sh", "-c", "systemctl suspend"]
-                        });
+                                                    "command": ["sh", "-c", "systemctl suspend"]
+                                                })
                     }
-                },
-                {
-                    icon: "door_open",
-                    name: "Logout",
-                    action: () => {
+                }, {
+                    "icon": "door_open",
+                    "name": "Logout",
+                    "action": () => {
                         Quickshell.execDetached({
-                            command: ["sh", "-c", "hyprctl dispatch exit"]
-                        });
+                                                    "command": ["sh", "-c", "hyprctl dispatch exit"]
+                                                })
                     }
-                },
-            ]
+                }]
 
             delegate: StyledRect {
                 id: buttonDelegate
@@ -107,7 +103,9 @@ RowLayout {
                 Layout.preferredWidth: mainButton.width
                 Layout.preferredHeight: root.isOpen ? 56 : 0
 
-                color: mouseArea.pressed ? Themes.withAlpha(Themes.colors.primary, 0.08) : mouseArea.containsMouse ? Themes.withAlpha(Themes.colors.primary, 0.1) : Themes.colors.primary
+                color: mouseArea.pressed ? Themes.withAlpha(
+                                               Themes.colors.primary,
+                                               0.08) : mouseArea.containsMouse ? Themes.withAlpha(Themes.colors.primary, 0.1) : Themes.colors.primary
 
                 radius: Appearance.rounding.full
 
@@ -178,11 +176,11 @@ RowLayout {
 
         color: {
             if (mouseAreaToggle.containsPress)
-                Themes.withAlpha(Themes.colors.primary, 0.08);
+            Themes.withAlpha(Themes.colors.primary, 0.08)
             else if (mouseAreaToggle.containsMouse)
-                Themes.withAlpha(Themes.colors.primary, 0.1);
+            Themes.withAlpha(Themes.colors.primary, 0.1)
             else
-                Themes.colors.primary;
+            Themes.colors.primary
         }
 
         radius: Appearance.rounding.full
@@ -216,8 +214,8 @@ RowLayout {
 
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                root.isOpen = !root.isOpen;
-                rotateArrowIcon.running = !rotateArrowIcon.running;
+                root.isOpen = !root.isOpen
+                rotateArrowIcon.running = !rotateArrowIcon.running
             }
         }
     }

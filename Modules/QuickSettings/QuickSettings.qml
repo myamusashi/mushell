@@ -20,7 +20,7 @@ Scope {
     property int state: 0
 
     function toggleControlCenter(): void {
-        isControlCenterOpen = !isControlCenterOpen;
+        isControlCenterOpen = !isControlCenterOpen
     }
 
     GlobalShortcut {
@@ -42,7 +42,8 @@ Scope {
             property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
             property real monitorWidth: monitor.width / monitor.scale
             property real monitorHeight: monitor.height / monitor.scale
-            property real scaleFactor: Math.min(1.0, monitorWidth / monitor.width)
+            property real scaleFactor: Math.min(1.0,
+                                                monitorWidth / monitor.width)
 
             implicitWidth: monitorWidth * 0.3
             implicitHeight: 500
@@ -62,8 +63,8 @@ Scope {
                     scaleFactor: root.scaleFactor
 
                     onTabClicked: index => {
-                        scope.state = index;
-                        controlCenterStackView.currentItem.viewIndex = index;
+                        scope.state = index
+                        controlCenterStackView.currentItem.viewIndex = index
                     }
                 }
 
@@ -84,7 +85,7 @@ Scope {
                     initialItem: viewComponent
                     onCurrentItemChanged: {
                         if (currentItem)
-                            currentItem.viewIndex = scope.state;
+                        currentItem.viewIndex = scope.state
                     }
 
                     Component {
@@ -137,7 +138,7 @@ Scope {
     IpcHandler {
         target: "controlCenter"
         function toggle(): void {
-            scope.toggleControlCenter();
+            scope.toggleControlCenter()
         }
     }
 }

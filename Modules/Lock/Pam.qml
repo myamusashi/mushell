@@ -19,10 +19,10 @@ Scope {
 
     function tryUnlock() {
         if (currentText === "")
-            return;
+            return
 
-        unlockInProgress = true;
-        pam.start();
+        unlockInProgress = true
+        pam.start()
     }
 
     PamContext {
@@ -33,19 +33,19 @@ Scope {
 
         onPamMessage: {
             if (this.responseRequired) {
-                this.respond(root.currentText);
+                this.respond(root.currentText)
             }
         }
 
         onCompleted: result => {
             if (result === PamResult.Success) {
-                root.lock.unlock();
+                root.lock.unlock()
             } else {
-                root.currentText = "";
-                root.showFailure = true;
+                root.currentText = ""
+                root.showFailure = true
             }
 
-            root.unlockInProgress = false;
+            root.unlockInProgress = false
         }
     }
 }

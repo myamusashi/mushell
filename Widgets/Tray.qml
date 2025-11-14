@@ -43,20 +43,21 @@ StyledRect {
 
                 required property SystemTrayItem modelData
                 property string iconSource: {
-                    let icon = modelData && modelData.icon;
+                    let icon = modelData && modelData.icon
                     if (typeof icon === 'string' || icon instanceof String) {
                         if (icon.includes("?path=")) {
-                            const split = icon.split("?path=");
+                            const split = icon.split("?path=")
                             if (split.length !== 2)
-                                return icon;
-                            const name = split[0];
-                            const path = split[1];
-                            const fileName = name.substring(name.lastIndexOf("/") + 1);
-                            return "file://" + path + "/" + fileName;
+                            return icon
+                            const name = split[0]
+                            const path = split[1]
+                            const fileName = name.substring(
+                                name.lastIndexOf("/") + 1)
+                            return "file://" + path + "/" + fileName
                         }
-                        return icon;
+                        return icon
                     }
-                    return "";
+                    return ""
                 }
 
                 width: 25
@@ -95,34 +96,40 @@ StyledRect {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: mouse => {
                         if (!delegateTray.modelData)
-                            return;
+                        return
 
-                        if (mouse.button === Qt.LeftButton && !delegateTray.modelData.onlyMenu) {
-                            delegateTray.modelData.activate();
-                            return;
+                        if (mouse.button === Qt.LeftButton
+                            && !delegateTray.modelData.onlyMenu) {
+                            delegateTray.modelData.activate()
+                            return
                         }
 
                         if (delegateTray.modelData.hasMenu) {
-                            var validWindow = root.parentWindow;
+                            var validWindow = root.parentWindow
                             if (!validWindow) {
-                                var item = root.parent;
+                                var item = root.parent
                                 while (item && !validWindow) {
-                                    if (item.toString().includes("WlrLayershell")) {
-                                        validWindow = item;
-                                        break;
+                                    if (item.toString().includes(
+                                            "WlrLayershell")) {
+                                        validWindow = item
+                                        break
                                     }
-                                    item = item.parent;
+                                    item = item.parent
                                 }
                             }
 
                             if (validWindow) {
                                 // Thx Hanabi for the best solution to fix tray anchor relative position
-                                menuAnchor.menu = delegateTray.modelData?.menu;
-                                menuAnchor.anchor.window = validWindow;
-                                menuAnchor.anchor.rect = delegateTray.QsWindow.window.contentItem.mapFromItem(delegateTray, 0, delegateTray.height, delegateTray.width, delegateTray.width);
-                                menuAnchor.open();
+                                menuAnchor.menu = delegateTray.modelData?.menu
+                                menuAnchor.anchor.window = validWindow
+                                menuAnchor.anchor.rect
+                                = delegateTray.QsWindow.window.contentItem.mapFromItem(
+                                    delegateTray, 0, delegateTray.height,
+                                    delegateTray.width, delegateTray.width)
+                                menuAnchor.open()
                             } else {
-                                console.warn("Cannot find valid Quickshell window for tray menu");
+                                console.warn(
+                                    "Cannot find valid Quickshell window for tray menu")
                             }
                         }
                     }

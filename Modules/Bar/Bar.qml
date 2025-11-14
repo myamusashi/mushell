@@ -1,5 +1,4 @@
 // Thx Rexiel for your Bar PR on quickshell-mirror
-
 pragma ComponentBehavior: Bound
 
 import QtQuick
@@ -12,86 +11,86 @@ import qs.Data
 import qs.Components
 
 Scope {
-	id: root
+    id: root
 
-	property bool isBarOpen: true
+    property bool isBarOpen: true
 
-	Variants {
-		model: Quickshell.screens
-		delegate: PanelWindow {
-			id: bar
+    Variants {
+        model: Quickshell.screens
+        delegate: PanelWindow {
+            id: bar
 
-			required property ShellScreen modelData
+            required property ShellScreen modelData
 
-			anchors {
-				left: true
-				right: true
-				top: true
-			}
-			color: "transparent"
-			WlrLayershell.namespace: "shell:bar"
-			screen: modelData
-			exclusionMode: ExclusionMode.Auto
-			focusable: false
+            anchors {
+                left: true
+                right: true
+                top: true
+            }
+            color: "transparent"
+            WlrLayershell.namespace: "shell:bar"
+            screen: modelData
+            exclusionMode: ExclusionMode.Auto
+            focusable: false
 
-			implicitHeight: 40
-			exclusiveZone: 1
-			surfaceFormat.opaque: false
-			margins {
-				top: 2
-				left: 2
-				right: 2
-			}
-			visible: root.isBarOpen
+            implicitHeight: 40
+            exclusiveZone: 1
+            surfaceFormat.opaque: false
+            margins {
+                top: 2
+                left: 2
+                right: 2
+            }
+            visible: root.isBarOpen
 
-			Loader {
-				active: root.isBarOpen
-				asynchronous: true
-				anchors.fill: parent
+            Loader {
+                active: root.isBarOpen
+                asynchronous: true
+                anchors.fill: parent
 
-				sourceComponent: StyledRect {
-					id: base
+                sourceComponent: StyledRect {
+                    id: base
 
-					color: Themes.colors.background
-					radius: Appearance.rounding.large
-					anchors.fill: parent
-					anchors.margins: 3
+                    color: Themes.colors.background
+                    radius: Appearance.rounding.large
+                    anchors.fill: parent
+                    anchors.margins: 3
 
-					RowLayout {
-						width: parent.width
-						anchors {
-							leftMargin: 5
-							rightMargin: 5
-						}
-						anchors.fill: parent
+                    RowLayout {
+                        width: parent.width
+                        anchors {
+                            leftMargin: 5
+                            rightMargin: 5
+                        }
+                        anchors.fill: parent
 
-						Left {
-							Layout.fillHeight: true
-							Layout.preferredWidth: parent.width / 6
-							Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-						}
+                        Left {
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: parent.width / 6
+                            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        }
 
-						Middle {
-							Layout.fillHeight: true
-							Layout.preferredWidth: parent.width / 6
-							Layout.alignment: Qt.AlignCenter
-						}
+                        Middle {
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: parent.width / 6
+                            Layout.alignment: Qt.AlignCenter
+                        }
 
-						Right {
-							Layout.fillHeight: true
-							Layout.preferredWidth: parent.width / 6
-							Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-						}
-					}
-				}
-			}
-		}
-	}
-	IpcHandler {
-		target: "layerShell"
+                        Right {
+                            Layout.fillHeight: true
+                            Layout.preferredWidth: parent.width / 6
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        }
+                    }
+                }
+            }
+        }
+    }
+    IpcHandler {
+        target: "layerShell"
 
-		function toggle(): void {
-			root.isBarOpen = !root.isBarOpen;
-		}
-	}
+        function toggle(): void {
+            root.isBarOpen = !root.isBarOpen
+        }
+    }
 }

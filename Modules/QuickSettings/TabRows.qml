@@ -30,28 +30,23 @@ StyledRect {
         Repeater {
             id: tabRepeater
 
-            model: [
-                {
-                    title: "Settings",
-                    icon: "settings",
-                    index: 0
-                },
-                {
-                    title: "Volumes",
-                    icon: "speaker",
-                    index: 1
-                },
-                {
-                    title: "Performance",
-                    icon: "speed",
-                    index: 2
-                },
-                {
-                    title: "Weather",
-                    icon: "cloud",
-                    index: 3
-                }
-            ]
+            model: [{
+                    "title": "Settings",
+                    "icon": "settings",
+                    "index": 0
+                }, {
+                    "title": "Volumes",
+                    "icon": "speaker",
+                    "index": 1
+                }, {
+                    "title": "Performance",
+                    "icon": "speed",
+                    "index": 2
+                }, {
+                    "title": "Weather",
+                    "icon": "cloud",
+                    "index": 3
+                }]
 
             StyledButton {
                 id: settingButton
@@ -95,16 +90,17 @@ StyledRect {
         id: indicator
 
         anchors.bottom: tabLayout.bottom
-        width: tabRepeater.itemAt(root.state) ? tabRepeater.itemAt(root.state).width : 0
+        width: tabRepeater.itemAt(root.state) ? tabRepeater.itemAt(
+                                                    root.state).width : 0
         height: 2
         color: Themes.colors.primary
         radius: Appearance.rounding.large
 
         x: {
             if (tabRepeater.itemAt(root.state))
-                return tabRepeater.itemAt(root.state).x + tabLayout.x;
+            return tabRepeater.itemAt(root.state).x + tabLayout.x
 
-            return 0;
+            return 0
         }
 
         Behavior on x {

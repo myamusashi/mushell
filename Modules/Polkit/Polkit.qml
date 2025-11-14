@@ -42,7 +42,8 @@ Scope {
                         width: 40
                         height: 40
                         asynchronous: true
-                        source: Quickshell.iconPath(polkitAgent?.flow?.iconName) || ""
+                        source: Quickshell.iconPath(
+                                    polkitAgent?.flow?.iconName) || ""
                     }
                 }
 
@@ -69,7 +70,8 @@ Scope {
 
                 StyledLabel {
                     Layout.fillWidth: true
-                    text: polkitAgent?.flow?.supplementaryMessage || "Ehh na (no supplementaryMessage)"
+                    text: polkitAgent?.flow?.supplementaryMessage
+                          || "Ehh na (no supplementaryMessage)"
                     wrapMode: Text.Wrap
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: Appearance.fonts.medium
@@ -119,12 +121,13 @@ Scope {
 
                         buttonTitle: "Authenticate"
                         Layout.preferredHeight: 40
-                        enabled: passwordInput.text.length > 0 || !!polkitAgent?.flow?.isResponseRequired
+                        enabled: passwordInput.text.length > 0
+                                 || !!polkitAgent?.flow?.isResponseRequired
 
                         onClicked: {
-                            polkitAgent?.flow?.submit(passwordInput.text);
-                            passwordInput.text = "";
-                            passwordInput.forceActiveFocus();
+                            polkitAgent?.flow?.submit(passwordInput.text)
+                            passwordInput.text = ""
+                            passwordInput.forceActiveFocus()
                         }
                     }
 
@@ -136,8 +139,8 @@ Scope {
                         visible: polkitAgent.isActive
 
                         onClicked: {
-                            polkitAgent?.flow?.cancelAuthenticationRequest();
-                            passwordInput.text = "";
+                            polkitAgent?.flow?.cancelAuthenticationRequest()
+                            passwordInput.text = ""
                         }
                     }
                 }
@@ -146,9 +149,9 @@ Scope {
             Connections {
                 target: polkitAgent?.flow
                 function onIsResponseRequiredChanged() {
-                    passwordInput.text = "";
+                    passwordInput.text = ""
                     if (polkitAgent?.flow.isResponseRequired)
-                        passwordInput.forceActiveFocus();
+                        passwordInput.forceActiveFocus()
                 }
             }
         }

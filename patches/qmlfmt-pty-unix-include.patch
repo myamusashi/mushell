@@ -1,0 +1,15 @@
+diff --git a/qmljs/ptyqt.cpp b/qmljs/ptyqt.cpp
+index 1703398..aef2e4c 100644
+--- a/qmljs/ptyqt.cpp
++++ b/qmljs/ptyqt.cpp
+@@ -1,5 +1,10 @@
+ #include "../qt-creator/src/libs/3rdparty/libptyqt/ptyqt.h"
+ 
++#ifdef Q_OS_UNIX
++#include "../qt-creator/src/libs/3rdparty/libptyqt/unixptyprocess.h"
++#include <pty.h>
++#endif
++
+ #ifdef Q_OS_WIN
+ #include "../qt-creator/src/libs/3rdparty/libptyqt/conptyprocess.h"
+ #endif

@@ -23,13 +23,13 @@ Scope {
         watchChanges: true
         blockLoading: true
         onFileChanged: {
-            reload();
+            reload()
             if (text().trim() != "") {
-                scope.recordingSeconds = 0;
-                scope.isRecordingControlOpen = true;
+                scope.recordingSeconds = 0
+                scope.isRecordingControlOpen = true
             } else {
-                scope.recordingSeconds = 0;
-                scope.isRecordingControlOpen = false;
+                scope.recordingSeconds = 0
+                scope.isRecordingControlOpen = false
             }
         }
     }
@@ -62,15 +62,17 @@ Scope {
             color: "transparent"
 
             function formatTime(seconds) {
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const secs = seconds % 60;
+                const hours = Math.floor(seconds / 3600)
+                const minutes = Math.floor((seconds % 3600) / 60)
+                const secs = seconds % 60
 
                 if (hours > 0) {
-                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:
-${String(secs).padStart(2, '0')}`;
+                    return `${String(hours).padStart(2, '0')}:${String(
+                                minutes).padStart(2, '0')}:
+                    ${String(secs).padStart(2, '0')}`
                 }
-                return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                return `${String(minutes).padStart(2, '0')}:${String(
+                            secs).padStart(2, '0')}`
             }
 
             StyledRect {
@@ -180,7 +182,8 @@ ${String(secs).padStart(2, '0')}`;
                                 }
 
                                 StyledText {
-                                    text: root.formatTime(scope.recordingSeconds)
+                                    text: root.formatTime(
+                                              scope.recordingSeconds)
                                     color: Themes.colors.on_surface
                                     font.pixelSize: Appearance.fonts.large * 1.2
                                     font.bold: true
@@ -195,7 +198,9 @@ ${String(secs).padStart(2, '0')}`;
                             Layout.preferredWidth: 100
                             Layout.preferredHeight: 45
                             radius: Appearance.rounding.normal
-                            color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.colors.error, 0.8) : stopButtonMouse.containsMouse ? Themes.colors.error : Themes.withAlpha(Themes.colors.error, 0.9)
+                            color: stopButtonMouse.pressed ? Themes.withAlpha(
+                                                                 Themes.colors.error,
+                                                                 0.8) : stopButtonMouse.containsMouse ? Themes.colors.error : Themes.withAlpha(Themes.colors.error, 0.9)
 
                             Behavior on color {
                                 ColAnim {
@@ -247,13 +252,13 @@ ${String(secs).padStart(2, '0')}`;
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: {
-                                    scope.isRecordingControlOpen = false;
-                                    recordingTimer.stop();
-                                    scope.recordingSeconds = 0;
+                                    scope.isRecordingControlOpen = false
+                                    recordingTimer.stop()
+                                    scope.recordingSeconds = 0
                                     Quickshell.execDetached({
-                                        command: ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --stop-recording"]
-                                    });
-                                    scope.isRecordingControlOpen = false;
+                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --stop-recording"]
+                                                            })
+                                    scope.isRecordingControlOpen = false
                                 }
                             }
                         }

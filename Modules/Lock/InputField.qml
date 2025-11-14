@@ -29,11 +29,11 @@ RowLayout {
 
             border.color: {
                 if (!passwordBox.enabled)
-                    return Themes.withAlpha(Themes.colors.outline, 0.12);
+                    return Themes.withAlpha(Themes.colors.outline, 0.12)
                 else if (passwordBox.activeFocus)
-                    return Themes.colors.primary;
+                    return Themes.colors.primary
                 else
-                    return Themes.colors.outline;
+                    return Themes.colors.outline
             }
 
             border.width: passwordBox.activeFocus ? 2 : 1
@@ -89,12 +89,12 @@ RowLayout {
 
         onAccepted: {
             if (root.pam && text.length > 0)
-                root.pam.tryUnlock();
+                root.pam.tryUnlock()
         }
 
         onTextChanged: {
             if (root.pam) {
-                root.pam.currentText = text;
+                root.pam.currentText = text
             }
         }
 
@@ -106,7 +106,7 @@ RowLayout {
 
             function onCurrentTextChanged() {
                 if (passwordBox.text !== root.pam.currentText) {
-                    passwordBox.text = root.pam.currentText;
+                    passwordBox.text = root.pam.currentText
                 }
             }
         }
@@ -166,7 +166,6 @@ RowLayout {
             // 	duration: Appearance.animations.durations.extraLarge
             // 	loops: Animation.Infinite
             // }
-
             Behavior on opacity {
                 PropertyAnimation {
                     duration: Appearance.animations.durations.small

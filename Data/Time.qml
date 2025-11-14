@@ -4,8 +4,8 @@ import Quickshell
 import QtQuick
 
 SystemClock {
-	id: clock
+    id: clock
 
-	enabled: true
-	precision: SystemClock.Seconds
+    enabled: true
+    precision: SystemClock.Seconds
 }

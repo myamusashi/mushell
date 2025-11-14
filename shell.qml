@@ -1,7 +1,6 @@
 //@ pragma UseQApplication
 //@ pragma IconTheme WhiteSur-dark
 //@ pragma Env QS_NO_RELOAD_POPUP=1
-
 import qs.Modules.Lock
 import qs.Modules.Bar
 import qs.Modules.Wallpaper
@@ -43,11 +42,11 @@ ShellRoot {
 
     Connections {
         function onReloadCompleted() {
-            Quickshell.inhibitReloadPopup();
+            Quickshell.inhibitReloadPopup()
         }
 
         function onReloadFailed() {
-            Quickshell.inhibitReloadPopup();
+            Quickshell.inhibitReloadPopup()
         }
 
         target: Quickshell

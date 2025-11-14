@@ -19,20 +19,21 @@ Scope {
     property bool isMediaPlayerOpen: false
 
     function formatTime(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = Math.floor(seconds % 60);
+        const hours = Math.floor(seconds / 3600)
+        const minutes = Math.floor((seconds % 3600) / 60)
+        const secs = Math.floor(seconds % 60)
 
         if (hours > 0)
-            return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            return `${hours}:${minutes.toString().padStart(
+                        2, '0')}:${secs.toString().padStart(2, '0')}`
 
-        return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        return `${minutes}:${secs.toString().padStart(2, '0')}`
     }
 
     property string url: ""
 
     function getTrackUrl(): void {
-        trackUrl.running = true;
+        trackUrl.running = true
     }
 
     Process {
@@ -42,8 +43,8 @@ Scope {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                const res = text.trim();
-                root.url = res;
+                const res = text.trim()
+                root.url = res
             }
         }
     }
@@ -98,7 +99,8 @@ Scope {
                                     id: coverArt
 
                                     anchors.fill: parent
-                                    source: Player.active && Player.active.trackArtUrl !== "" ? Player.active.trackArtUrl : "root:/Assets/kuru.gif"
+                                    source: Player.active
+                                            && Player.active.trackArtUrl !== "" ? Player.active.trackArtUrl : "root:/Assets/kuru.gif"
 
                                     fillMode: Image.PreserveAspectCrop
                                     visible: Player.active !== null
@@ -120,7 +122,8 @@ Scope {
                                     wrapMode: Text.Wrap
                                     elide: Text.ElideRight
                                     color: Themes.colors.on_surface
-                                    visible: Player.active && Player.active.trackArtUrl === ""
+                                    visible: Player.active
+                                             && Player.active.trackArtUrl === ""
                                 }
 
                                 AnimatedImage {
@@ -194,7 +197,8 @@ Scope {
                                 }
 
                                 IconImage {
-                                    source: Quickshell.iconPath(Player.active.desktopEntry)
+                                    source: Quickshell.iconPath(
+                                                Player.active.desktopEntry)
                                     asynchronous: true
                                     implicitWidth: 20
                                     implicitHeight: 20
@@ -203,7 +207,8 @@ Scope {
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         cursorShape: Qt.PointingHandCursor
-                                        onClicked: Qt.openUrlExternally(root.url)
+                                        onClicked: Qt.openUrlExternally(
+                                                       root.url)
                                     }
                                 }
                             }
@@ -222,13 +227,16 @@ Scope {
                             StyledText {
                                 id: timeTrack
 
-                                text: Player.active == null ? "00:00" : `${root.formatTime(Player.active?.position)}
-${root.formatTime(Player.active?.length)}`
+                                text: Player.active == null ? "00:00" : `${root.formatTime(
+                                                                  Player.active?.position)}
+                                ${root.formatTime(Player.active?.length)}`
                                 font.pixelSize: Appearance.fonts.large
                                 color: Themes.colors.on_background
 
                                 Timer {
-                                    running: Player.active !== null && Player.active.playbackState == MprisPlaybackState.Playing
+                                    running: Player.active !== null
+                                             && Player.active.playbackState
+                                             == MprisPlaybackState.Playing
                                     interval: 1000
                                     repeat: true
                                     onTriggered: Player.active.positionChanged()
@@ -245,11 +253,13 @@ ${root.formatTime(Player.active?.length)}`
                                 icon: Player.active === null ? "pause_circle" : Player.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
                                 color: {
                                     if (pauseMArea.pressed)
-                                        return Themes.withAlpha(Themes.colors.primary, 0.08);
+                                    return Themes.withAlpha(
+                                        Themes.colors.primary, 0.08)
                                     else if (pauseMArea.containsMouse)
-                                        return Themes.withAlpha(Themes.colors.primary, 0.12);
+                                    return Themes.withAlpha(
+                                        Themes.colors.primary, 0.12)
                                     else
-                                        return Themes.colors.primary;
+                                    return Themes.colors.primary
                                 }
                                 font.pixelSize: Appearance.fonts.extraLarge * 1.5
 
@@ -259,7 +269,8 @@ ${root.formatTime(Player.active?.length)}`
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: Player.active ? Player.active.togglePlaying() : ""
+                                    onClicked: Player.active ? Player.active.togglePlaying(
+                                                                   ) : ""
                                 }
                             }
                         }
@@ -272,7 +283,8 @@ ${root.formatTime(Player.active?.length)}`
                             StyledButton {
                                 iconButton: "skip_previous"
                                 iconSize: 10
-                                onClicked: Player.active ? Player.active.previous() : {}
+                                onClicked: Player.active ? Player.active.previous(
+                                                               ) : {}
                             }
 
                             StyledSlide {
@@ -286,17 +298,21 @@ ${root.formatTime(Player.active?.length)}`
                                 valueHeight: 0
 
                                 FrameAnimation {
-                                    running: Player.active && Player.active.playbackState == MprisPlaybackState.Playing
+                                    running: Player.active
+                                             && Player.active.playbackState
+                                             == MprisPlaybackState.Playing
                                     onTriggered: Player.active.positionChanged()
                                 }
 
-                                onMoved: Player.active ? Player.active.position = value * Player.active.length : {}
+                                onMoved: Player.active ? Player.active.position
+                                                         = value * Player.active.length : {}
                             }
 
                             StyledButton {
                                 iconButton: "skip_next"
                                 iconSize: 10
-                                onClicked: Player.active ? Player.active.next() : {}
+                                onClicked: Player.active ? Player.active.next(
+                                                               ) : {}
                             }
                         }
                     }

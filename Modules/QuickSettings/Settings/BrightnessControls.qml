@@ -33,8 +33,13 @@ RowLayout {
     StyledButton {
         iconButton: "bedtime"
         buttonTitle: "Night mode"
-        buttonTextColor: Hyprsunset.isNightModeOn ? Themes.colors.on_primary : Themes.withAlpha(Themes.colors.on_surface, 0.38)
-        buttonColor: Hyprsunset.isNightModeOn ? Themes.colors.primary : Themes.withAlpha(Themes.colors.on_surface, 0.1)
-        onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down() : Hyprsunset.up()
+        buttonTextColor: Hyprsunset.isNightModeOn ? Themes.colors.on_primary : Themes.withAlpha(
+                                                        Themes.colors.on_surface,
+                                                        0.38)
+        buttonColor: Hyprsunset.isNightModeOn ? Themes.colors.primary : Themes.withAlpha(
+                                                    Themes.colors.on_surface,
+                                                    0.1)
+        onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down(
+                                                  ) : Hyprsunset.up()
     }
 }

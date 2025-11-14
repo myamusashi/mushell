@@ -26,14 +26,15 @@ Loader {
         property bool playerControlShow: false
 
         function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = Math.floor(seconds % 60);
+            const hours = Math.floor(seconds / 3600)
+            const minutes = Math.floor((seconds % 3600) / 60)
+            const secs = Math.floor(seconds % 60)
 
             if (hours > 0)
-                return hours + ":" + minutes.toString().padStart(2, '0') + ":" + secs.toString().padStart(2, '0');
+                return hours + ":" + minutes.toString().padStart(
+                            2, '0') + ":" + secs.toString().padStart(2, '0')
 
-            return minutes + ":" + secs.toString().padStart(2, '0');
+            return minutes + ":" + secs.toString().padStart(2, '0')
         }
 
         RowLayout {
@@ -43,7 +44,9 @@ Loader {
             spacing: Appearance.spacing.small
 
             MatIcon {
-                icon: Player.active === null ? "question_mark" : Player.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
+                icon: Player.active
+                      === null ? "question_mark" : Player.active.playbackState
+                                 === MprisPlaybackState.Playing ? "genres" : "play_circle"
                 font.pixelSize: Appearance.fonts.medium * 1.8
                 color: Themes.colors.on_background
             }

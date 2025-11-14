@@ -16,35 +16,31 @@
     quickshell,
     apple-fonts,
   }: let
-    lib = nixpkgs.lib;
+    systems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
 
-    perSystem = package: (lib.listToAttrs (lib.map (a: {
-      name = a;
-      value = package {
-        pkgs = nixpkgs.legacyPackages.${a};
-        system = a;
+    forAllSystems = nixpkgs.lib.genAttrs systems;
+
+    pkgsFor = system:
+      import nixpkgs {
+        inherit system;
+        overlays = [];
       };
-    }) (lib.attrNames nixpkgs.legacyPackages)));
   in {
-    packages = perSystem ({
-      pkgs,
-      system,
-    }:
-      import ./nix/default.nix {
-        inherit pkgs system lib quickshell;
+    packages = forAllSystems (system: let
+      pkgs = pkgsFor system;
+    in
+      pkgs.callPackage ./nix/default.nix {
+        inherit quickshell;
       });
 
     homeManagerModules.default = import ./nix/hm-modules.nix {
       inherit self apple-fonts;
     };
 
-    devShells = perSystem ({
-      pkgs,
-      system,
-    }: let
-      packages = import ./nix/default.nix {
-        inherit pkgs system lib;
-        quickshell = quickshell;
+    devShells = forAllSystems (system: let
+      pkgs = pkgsFor system;
+      packages = pkgs.callPackage ./nix/default.nix {
+        inherit quickshell;
       };
     in {
       default = pkgs.mkShell {
@@ -53,6 +49,7 @@
             packages.default
             quickshell.packages.${system}.default
             pkgs.go
+            (pkgs.callPackage ./nix/qmlfmt.nix {})
           ]
           ++ packages.runtimeDeps
           ++ [
@@ -63,7 +60,7 @@
           ];
 
         shellHook = ''
-          shell development
+          echo "Quickshell development environment"
         '';
       };
     });

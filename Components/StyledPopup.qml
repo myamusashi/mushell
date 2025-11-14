@@ -21,7 +21,7 @@ PopupWindow {
     implicitHeight: background.height
 
     function toggle() {
-        background.state = background.state == "opened" ? "closed" : "opened";
+        background.state = background.state == "opened" ? "closed" : "opened"
     }
 
     WrapperRectangle {

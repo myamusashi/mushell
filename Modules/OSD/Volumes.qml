@@ -67,7 +67,8 @@ Scope {
                                 font.pixelSize: Appearance.fonts.large
                             }
                             StyledText {
-                                text: `${Math.round(Pipewire.defaultAudioSink?.audio.volume * 100)}%`
+                                text: `${Math.round(
+                                          Pipewire.defaultAudioSink?.audio.volume * 100)}%`
                                 font.weight: Font.Medium
                                 color: Themes.colors.on_background
                                 font.pixelSize: Appearance.fonts.normal

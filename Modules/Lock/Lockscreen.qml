@@ -31,15 +31,15 @@ Scope {
         target: "lock"
 
         function lock(): void {
-            lock.locked = true;
+            lock.locked = true
         }
 
         function unlock(): void {
-            lock.unlock();
+            lock.unlock()
         }
 
         function isLocked(): bool {
-            return lock.locked;
+            return lock.locked
         }
     }
 }

@@ -12,13 +12,13 @@ ColumnLayout {
     property var currentDate: new Date()
 
     function getDayName(index) {
-        const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-        return days[index];
+        const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"]
+        return days[index]
     }
 
     function getMonthName(index) {
-        const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"];
-        return months[index];
+        const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Des"]
+        return months[index]
     }
 
     Timer {
@@ -79,9 +79,11 @@ ColumnLayout {
                 color: Themes.colors.on_surface
                 renderType: Text.NativeRendering
                 text: {
-                    const hours = root.currentDate.getHours().toString().padStart(2, '0');
-                    const minutes = root.currentDate.getMinutes().toString().padStart(2, '0');
-                    return `${hours}:${minutes}`;
+                    const hours = root.currentDate.getHours().toString(
+                                    ).padStart(2, '0')
+                    const minutes = root.currentDate.getMinutes().toString(
+                                      ).padStart(2, '0')
+                    return `${hours}:${minutes}`
                 }
                 Layout.alignment: Qt.AlignHCenter
 
@@ -120,7 +122,8 @@ ColumnLayout {
                     font.weight: Font.Medium
                     color: Themes.colors.on_surface
                     renderType: Text.NativeRendering
-                    text: root.currentDate.getSeconds().toString().padStart(2, '0')
+                    text: root.currentDate.getSeconds().toString().padStart(2,
+                                                                            '0')
                 }
             }
         }
@@ -195,7 +198,8 @@ ColumnLayout {
                 font.weight: Font.Normal
                 color: Themes.colors.on_surface
                 renderType: Text.NativeRendering
-                text: `${root.currentDate.getDate()} ${root.getMonthName(root.currentDate.getMonth())}`
+                text: `${root.currentDate.getDate()} ${root.getMonthName(
+                          root.currentDate.getMonth())}`
             }
         }
     }

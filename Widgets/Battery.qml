@@ -8,23 +8,19 @@ import qs.Helpers
 import qs.Components
 
 Item {
-	id: root
+    id: root
 
-	readonly property bool batCharging: UPower.displayDevice.state == UPowerDeviceState.Charging
-	readonly property real batPercentage: UPower.displayDevice.percentage
-	readonly property list<int> batFill: [(batteryBody.width - 4) * 1.0, (batteryBody.width - 4) * 0.9, (
-			batteryBody.width - 4) * 0.8, (batteryBody.width - 4) * 0.7, (batteryBody.width - 4) * 0.6, (
-			batteryBody.width - 4) * 0.5, (batteryBody.width - 4) * 0.4, (batteryBody.width - 4) * 0.3, (
-			batteryBody.width - 4) * 0.2, (batteryBody.width - 4) * 0.1, (batteryBody.width - 4) * 0]
-	readonly property real chargeFill: batFill[10 - chargeFillIndex]
-	property int chargeFillIndex: 0
-	property int widthBattery: 26
-	property int heightBattery: 12
+    readonly property bool batCharging: UPower.displayDevice.state == UPowerDeviceState.Charging
+    readonly property real batPercentage: UPower.displayDevice.percentage
+    readonly property real batFill: (batteryBody.width - 4) * (batPercentage / 100.0)
+    property real chargeFillIndex: 0 // Ubah ke real untuk animasi smooth
+    property int widthBattery: 26
+    property int heightBattery: 12
 
-	width: widthBattery + 4
-	height: heightBattery
+    width: widthBattery + 4
+    height: heightBattery
 
-	StyledRect {
+    StyledRect {
         id: batteryBody
 
         width: root.widthBattery
@@ -33,7 +29,9 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         border {
             width: 2
-            color: root.batPercentage <= 0.2 && !root.batCharging ? "#FF3B30" : Themes.withAlpha(Themes.colors.outline, 0.5)
+            color: root.batPercentage <= 0.2
+                   && !root.batCharging ? Themes.colors.error : Themes.withAlpha(
+                                              Themes.colors.outline, 0.5)
         }
         color: "transparent"
         radius: 6
@@ -44,29 +42,30 @@ Item {
             anchors.left: parent.left
             anchors.top: parent.top
             anchors.bottom: parent.bottom
-            width: root.batCharging ? root.chargeFill : (parent.width - 4) * root.batPercentage
+            width: root.batCharging ? (parent.width - 4) * (root.chargeFillIndex
+                                                            / 100.0) : (parent.width - 4)
+                                      * root.batPercentage
             color: {
                 if (root.batCharging)
-                    return Themes.colors.green;
+                    return Themes.colors.green
                 if (root.batPercentage <= 0.2)
-                    return Themes.colors.red;
+                    return Themes.colors.red
                 if (root.batPercentage <= 0.5)
-                    return Themes.colors.yellow;
-                return Themes.colors.on_surface;
+                    return Themes.colors.yellow
+                return Themes.colors.on_surface
             }
             radius: parent.radius
 
             Behavior on width {
-                NumbAnim {
-                    duration: root.batCharging ? 600 : 300
-                }
+                enabled: !root.batCharging
+                NumbAnim {}
             }
         }
 
         StyledText {
             anchors.centerIn: parent
             text: Math.round(root.batPercentage * 100)
-            font.pixelSize: root.batCharging ? 6 : batteryBody.height * 0.65
+            font.pixelSize: batteryBody.height * 0.65
             font.weight: Font.Bold
             color: root.batPercentage <= 0.5 ? Themes.colors.on_background : Themes.colors.surface
         }
@@ -80,18 +79,77 @@ Item {
         anchors.left: batteryBody.right
         anchors.leftMargin: 0.5
         anchors.verticalCenter: parent.verticalCenter
-        color: root.batPercentage <= 0.2 && !root.batCharging ? Themes.colors.error : Themes.withAlpha(Themes.colors.outline, 0.5)
+        color: root.batPercentage <= 0.2
+               && !root.batCharging ? Themes.colors.error : Themes.withAlpha(
+                                          Themes.colors.outline, 0.5)
         topRightRadius: 1
         bottomRightRadius: 1
     }
 
-	Timer {
-		interval: 600
-		repeat: true
-		running: root.batCharging
-		triggeredOnStart: true
-		onTriggered: {
-			root.chargeFillIndex = (root.chargeFillIndex % 10) + 1;
-		}
-	}
+    SequentialAnimation {
+        running: root.batCharging
+        loops: Animation.Infinite
+
+        PauseAnimation {
+            duration: Appearance.animations.durations.normal
+        }
+
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 0
+            to: 20
+            duration: Appearance.animations.durations.normal
+            easing.type: Easing.Linear
+        }
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 20
+            to: 40
+            duration: Appearance.animations.durations.normal
+            easing.type: Easing.Linear
+        }
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 40
+            to: 60
+            duration: Appearance.animations.durations.normal
+            easing.type: Easing.Linear
+        }
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 60
+            to: 80
+            duration: Appearance.animations.durations.normal
+            easing.type: Easing.Linear
+        }
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 80
+            to: 100
+            duration: Appearance.animations.durations.normal
+            easing.type: Easing.Linear
+        }
+
+        PauseAnimation {
+            duration: Appearance.animations.durations.extraLarge
+        }
+
+        NumbAnim {
+            target: root
+            property: "chargeFillIndex"
+            from: 100
+            to: 0
+            duration: Appearance.animations.durations.large
+            easing.type: Easing.Linear
+        }
+
+        onStopped: {
+            root.chargeFillIndex = 0
+        }
+    }
 }
