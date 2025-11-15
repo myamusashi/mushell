@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Widgets
 import Quickshell.Wayland
 import QtQuick
 
@@ -60,7 +59,7 @@ Variants {
             }
         }
 
-        ClippingRectangle {
+        Rectangle {
             id: animatinRect
 
             anchors.right: parent.right
