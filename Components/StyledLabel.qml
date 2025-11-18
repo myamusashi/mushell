@@ -5,9 +5,8 @@ import qs.Data
 
 Label {
     font.family: Appearance.fonts.family_Sans
-    font.weight: Font.Medium
-    color: Themes.colors.on_surface
-    font.hintingPreference: Font.PreferVerticalHinting
-    font.letterSpacing: -0.2
+    font.hintingPreference: Font.PreferFullHinting
+    font.letterSpacing: 0
     renderType: Text.NativeRendering
+    color: Themes.colors.on_surface
 }

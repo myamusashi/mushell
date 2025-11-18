@@ -9,8 +9,8 @@ Singleton {
 
     component FontsComponent: QtObject {
         readonly property string family_Material: "Material Symbols Rounded"
-        readonly property string family_Mono: "SFMono Nerd Font"
-        readonly property string family_Sans: "SF Pro"
+        readonly property string family_Mono: "Hack"
+        readonly property string family_Sans: "Google Sans Flex"
 
         readonly property real small: 12
         readonly property real medium: 13

@@ -8,16 +8,14 @@ Text {
 
     required property string icon
 
-    font.family: Appearance.fonts.family_Material
+	font.family: Appearance.fonts.family_Material
+	font.weight: Font.Normal
     font.pixelSize: Appearance.fonts.medium
-    font.hintingPreference: Font.PreferDefaultHinting
+    font.hintingPreference: Font.PreferFullHinting
 
     antialiasing: true
-
     verticalAlignment: Text.AlignVCenter
-
     color: "transparent"
-
     renderType: Text.NativeRendering
     text: root.icon
 
