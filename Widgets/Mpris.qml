@@ -6,7 +6,7 @@ import Quickshell.Services.Mpris
 
 import qs.Configs
 import qs.Helpers
-import qs.Services as Player
+import qs.Services
 import qs.Components
 import qs.Modules.MediaPlayer
 
@@ -44,13 +44,13 @@ Loader {
             spacing: Appearance.spacing.small
 
             MaterialIcon {
-                icon: Player.Mpris.active === null ? "question_mark" : Player.Mpris.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
+                icon: Players.active === null ? "question_mark" : Players.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
                 font.pointSize: Appearance.fonts.large
                 color: Themes.m3Colors.m3OnBackground
             }
 
             StyledText {
-                text: Player.Mpris.active === null ? "null" : Player.Mpris.active.trackArtist
+                text: Players.active === null ? "null" : Players.active.trackArtist
                 color: Themes.m3Colors.m3OnBackground
             }
         }
