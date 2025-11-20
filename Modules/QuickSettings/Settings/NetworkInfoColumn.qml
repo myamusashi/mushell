@@ -21,7 +21,7 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.preferredHeight: 65
-        color: Themes.m3Colors.surfaceContainer
+        color: Themes.m3Colors.m3SurfaceContainer
         radius: Appearance.rounding.normal
 
         readonly property bool isConnected: SystemUsage.statusWiredInterface === "connected"
@@ -34,13 +34,13 @@ ColumnLayout {
             Rectangle {
                 Layout.preferredWidth: 50
                 Layout.fillHeight: true
-                color: ethernetCard.isConnected ? Themes.m3Colors.primary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.1)
+                color: ethernetCard.isConnected ? Themes.m3Colors.m3Primary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.1)
                 radius: Appearance.rounding.small
 
                 MaterialIcon {
                     anchors.centerIn: parent
                     icon: "settings_ethernet"
-                    color: ethernetCard.isConnected ? Themes.m3Colors.onPrimary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.38)
+                    color: ethernetCard.isConnected ? Themes.m3Colors.m3OnPrimary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.38)
                     font.pointSize: Appearance.fonts.extraLarge * 0.8
                 }
             }
@@ -56,21 +56,21 @@ ColumnLayout {
                         text: "Ethernet"
                         font.pixelSize: Appearance.fonts.large
                         font.weight: Font.Medium
-                        color: Themes.m3Colors.onSurface
+                        color: Themes.m3Colors.m3OnSurface
                     }
 
                     StyledText {
                         text: `(${SystemUsage.statusVPNInterface})`
                         visible: SystemUsage.statusVPNInterface !== ""
                         font.pixelSize: Appearance.fonts.small
-                        color: Themes.m3Colors.onSurface
+                        color: Themes.m3Colors.m3OnSurface
                     }
                 }
 
                 StyledText {
                     text: SystemUsage.statusWiredInterface === "connected" ? "Connected" : "Not Connected"
                     font.pixelSize: Appearance.fonts.normal
-                    color: Themes.m3Colors.onSurfaceVariant
+                    color: Themes.m3Colors.m3OnSurfaceVariant
                 }
             }
         }
@@ -81,7 +81,7 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.preferredHeight: 65
-        color: Themes.m3Colors.surfaceContainer
+        color: Themes.m3Colors.m3SurfaceContainer
         radius: Appearance.rounding.normal
 
         readonly property var activeNetwork: {
@@ -123,13 +123,13 @@ ColumnLayout {
             Rectangle {
                 Layout.preferredWidth: 50
                 Layout.preferredHeight: 50
-                color: wifiCard.activeNetwork ? Themes.m3Colors.primary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.1)
+                color: wifiCard.activeNetwork ? Themes.m3Colors.m3Primary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.1)
                 radius: Appearance.rounding.small
 
                 MaterialIcon {
                     anchors.centerIn: parent
                     icon: wifiCard.activeNetwork ? wifiCard.getWiFiIcon(wifiCard.activeNetwork.strength) : "wifi_off"
-                    color: wifiCard.activeNetwork ? Themes.m3Colors.onPrimary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.38)
+                    color: wifiCard.activeNetwork ? Themes.m3Colors.m3OnPrimary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.38)
                     font.pointSize: Appearance.fonts.extraLarge * 0.8
                 }
             }
@@ -141,7 +141,7 @@ ColumnLayout {
                 StyledText {
                     text: "Internet"
                     font.pixelSize: Appearance.fonts.large
-                    color: Themes.m3Colors.onSurfaceVariant
+                    color: Themes.m3Colors.m3OnSurfaceVariant
                 }
 
                 StyledText {
@@ -150,7 +150,7 @@ ColumnLayout {
                     font.weight: Font.Medium
                     width: parent.width
                     elide: Text.ElideRight
-                    color: Themes.m3Colors.onSurface
+                    color: Themes.m3Colors.m3OnSurface
                 }
             }
         }

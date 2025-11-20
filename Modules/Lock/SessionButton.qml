@@ -24,11 +24,11 @@ RowLayout {
 
             color: {
                 if (mouseAreaMain.containsPress)
-                    Themes.withAlpha(Themes.m3Colors.primary, 0.08);
+                    Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
                 else if (mouseAreaMain.containsMouse)
-                    Themes.withAlpha(Themes.m3Colors.primary, 0.1);
+                    Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1);
                 else
-                    Themes.m3Colors.primary;
+                    Themes.m3Colors.m3Primary;
             }
 
             radius: Appearance.rounding.full
@@ -41,13 +41,13 @@ RowLayout {
 
                 MaterialIcon {
                     icon: "power_settings_circle"
-                    color: Themes.m3Colors.onPrimary
+                    color: Themes.m3Colors.m3OnPrimary
                     font.pointSize: Appearance.fonts.extraLarge
                 }
 
                 StyledText {
                     text: "Shutdown"
-                    color: Themes.m3Colors.onPrimary
+                    color: Themes.m3Colors.m3OnPrimary
                     font.pixelSize: Appearance.fonts.large
                 }
             }
@@ -108,7 +108,7 @@ RowLayout {
                 Layout.preferredHeight: root.isOpen ? 56 : 0
 				Layout.topMargin: root.isOpen ? Appearance.spacing.normal : 0
 
-                color: mouseArea.pressed ? Themes.withAlpha(Themes.m3Colors.primary, 0.08) : mouseArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.primary, 0.1) : Themes.m3Colors.primary
+                color: mouseArea.pressed ? Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08) : mouseArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1) : Themes.m3Colors.m3Primary
                 radius: Appearance.rounding.full
                 visible: root.isOpen || Layout.bottomMargin > -height
 
@@ -140,13 +140,13 @@ RowLayout {
 
                     MaterialIcon {
                         icon: buttonDelegate.modelData.icon
-                        color: Themes.m3Colors.onPrimary
+                        color: Themes.m3Colors.m3OnPrimary
                         font.pointSize: Appearance.fonts.extraLarge
                     }
 
                     StyledText {
                         text: buttonDelegate.modelData.name
-                        color: Themes.m3Colors.onPrimary
+                        color: Themes.m3Colors.m3OnPrimary
                         font.pixelSize: Appearance.fonts.large
                     }
                 }
@@ -174,11 +174,11 @@ RowLayout {
 
         color: {
             if (mouseAreaToggle.containsPress)
-                Themes.withAlpha(Themes.m3Colors.primary, 0.08);
+                Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
             else if (mouseAreaToggle.containsMouse)
-                Themes.withAlpha(Themes.m3Colors.primary, 0.1);
+                Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1);
             else
-                Themes.m3Colors.primary;
+                Themes.m3Colors.m3Primary;
         }
 
         radius: Appearance.rounding.full
@@ -188,7 +188,7 @@ RowLayout {
 
             anchors.centerIn: parent
             icon: root.isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"
-            color: Themes.m3Colors.onPrimary
+            color: Themes.m3Colors.m3OnPrimary
             font.pointSize: Appearance.fonts.extraLarge
 
             RotationAnimator on rotation {

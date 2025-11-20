@@ -42,8 +42,8 @@ Loader {
             implicitHeight: contentHeight
 
             radius: Appearance.rounding.large
-            color: Themes.m3Colors.surface
-            border.color: Themes.m3Colors.outline
+            color: Themes.m3Colors.m3Surface
+            border.color: Themes.m3Colors.m3Outline
             border.width: 2
 
             ColumnLayout {
@@ -54,7 +54,7 @@ Loader {
 
                 StyledText {
                     text: root.header
-                    color: Themes.m3Colors.onSurface
+                    color: Themes.m3Colors.m3OnSurface
                     elide: Text.ElideMiddle
                     font.pixelSize: Appearance.fonts.extraLarge
                     font.bold: true
@@ -63,13 +63,13 @@ Loader {
 
                 StyledRect {
                     implicitHeight: 1
-                    color: Themes.m3Colors.outlineVariant
+                    color: Themes.m3Colors.m3OutlineVariant
                     Layout.fillWidth: true
                 }
 
                 StyledText {
                     text: root.body
-                    color: Themes.m3Colors.onBackground
+                    color: Themes.m3Colors.m3OnBackground
                     font.pixelSize: Appearance.fonts.large
                     wrapMode: Text.Wrap
                     Layout.fillWidth: true
@@ -78,7 +78,7 @@ Loader {
 
                 StyledRect {
                     implicitHeight: 1
-                    color: Themes.m3Colors.outlineVariant
+                    color: Themes.m3Colors.m3OutlineVariant
                     Layout.fillWidth: true
                 }
 
@@ -89,7 +89,7 @@ Loader {
                     StyledButton {
                         iconButton: "cancel"
                         buttonTitle: "No"
-                        buttonTextColor: Themes.m3Colors.onBackground
+                        buttonTextColor: Themes.m3Colors.m3OnBackground
                         buttonColor: "transparent"
                         onClicked: root.rejected()
                     }

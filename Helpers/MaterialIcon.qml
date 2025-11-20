@@ -8,18 +8,17 @@ Text {
 
     required property string icon
 
-	font {
-		family: Appearance.fonts.familyMaterial
-		pointSize: Appearance.fonts.medium
-		hintingPreference: Font.PreferNoHinting
-		variableAxes: {
-			"FILL": false,
-			"wght": fontInfo.weight,
-			"GRAD": -25,
-			"opsz": 48
-		}
-	}
-
+    font {
+        family: Appearance.fonts.familyMaterial
+        pointSize: Appearance.fonts.medium
+        hintingPreference: Font.PreferNoHinting
+        variableAxes: {
+            "FILL": false,
+            "wght": fontInfo.weight,
+            "GRAD": 0,
+            "opsz": 48
+        }
+    }
 
     antialiasing: true
     color: "transparent"

@@ -13,9 +13,9 @@ Button {
     property string buttonTitle
     property string iconButton: ""
     property int iconSize
-    property color buttonColor: Themes.m3Colors.primary
-    property color buttonTextColor: Themes.m3Colors.onPrimary
-    property color buttonBorderColor: Themes.m3Colors.outline
+    property color buttonColor: Themes.m3Colors.m3Primary
+    property color buttonTextColor: Themes.m3Colors.m3OnPrimary
+    property color buttonBorderColor: Themes.m3Colors.m3Outline
     property int buttonBorderWidth: 2
     property int buttonHeight: 40
     property int iconTextSpacing: 8

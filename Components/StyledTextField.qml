@@ -11,16 +11,16 @@ TextField {
     id: root
 
     Material.theme: Material.System
-    Material.accent: Themes.m3Colors.primary
-    Material.primary: Themes.m3Colors.primary
-    Material.background: Themes.m3Colors.surface
-    Material.foreground: Themes.m3Colors.onSurface
+    Material.accent: Themes.m3Colors.m3Primary
+    Material.primary: Themes.m3Colors.m3Primary
+    Material.background: Themes.m3Colors.m3Surface
+    Material.foreground: Themes.m3Colors.m3OnSurface
     Material.containerStyle: Material.Outlined
     renderType: Text.QtRendering
 
-    selectedTextColor: Themes.m3Colors.onSecondaryContainer
-    selectionColor: Themes.m3Colors.secondaryContainer
-    placeholderTextColor: Themes.m3Colors.outline
+    selectedTextColor: Themes.m3Colors.m3OnSecondaryContainer
+    selectionColor: Themes.m3Colors.m3SecondaryContainer
+    placeholderTextColor: Themes.m3Colors.m3Outline
     clip: true
 
     font {

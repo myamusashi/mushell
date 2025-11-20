@@ -46,12 +46,12 @@ Loader {
             MaterialIcon {
                 icon: Player.Mpris.active === null ? "question_mark" : Player.Mpris.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
                 font.pointSize: Appearance.fonts.large
-                color: Themes.m3Colors.onBackground
+                color: Themes.m3Colors.m3OnBackground
             }
 
             StyledText {
                 text: Player.Mpris.active === null ? "null" : Player.Mpris.active.trackArtist
-                color: Themes.m3Colors.onBackground
+                color: Themes.m3Colors.m3OnBackground
             }
         }
 

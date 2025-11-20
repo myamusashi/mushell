@@ -87,9 +87,9 @@ Scope {
 
             StyledRect {
                 anchors.fill: parent
-                color: Themes.m3Colors.surfaceContainerHigh
+                color: Themes.m3Colors.m3SurfaceContainerHigh
                 radius: Appearance.rounding.large
-                border.color: Themes.m3Colors.outline
+                border.color: Themes.m3Colors.m3Outline
                 border.width: 1
 
                 ColumnLayout {
@@ -107,7 +107,7 @@ Scope {
                             Layout.preferredWidth: 12
                             Layout.preferredHeight: 12
                             radius: 6
-                            color: Themes.m3Colors.error
+                            color: Themes.m3Colors.m3Error
 
                             SequentialAnimation on opacity {
                                 loops: Animation.Infinite
@@ -128,7 +128,7 @@ Scope {
                             id: header
 
                             text: "Screen Recording"
-                            color: Themes.m3Colors.onSurface
+                            color: Themes.m3Colors.m3OnSurface
                             font.pixelSize: Appearance.fonts.normal
                             font.bold: true
                         }
@@ -143,7 +143,7 @@ Scope {
                             Layout.preferredWidth: 28
                             Layout.preferredHeight: 28
                             radius: Appearance.rounding.large
-                            color: closeButtonMouse.pressed ? Themes.m3Colors.secondaryContainer : closeButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSurface, 0.08) : "transparent"
+                            color: closeButtonMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : closeButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : "transparent"
 
                             Behavior on color {
                                 CAnim {
@@ -157,7 +157,7 @@ Scope {
                                 anchors.centerIn: parent
                                 icon: "close"
                                 font.pointSize: Appearance.fonts.large
-                                color: Themes.m3Colors.onSurfaceVariant
+                                color: Themes.m3Colors.m3OnSurfaceVariant
                             }
 
                             MArea {
@@ -180,7 +180,7 @@ Scope {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 45
                             radius: Appearance.rounding.normal
-                            color: Themes.m3Colors.surfaceContainer
+                            color: Themes.m3Colors.m3SurfaceContainer
 
                             RowLayout {
                                 anchors.centerIn: parent
@@ -189,12 +189,12 @@ Scope {
                                 MaterialIcon {
                                     icon: "schedule"
                                     font.pointSize: Appearance.fonts.large
-                                    color: Themes.m3Colors.primary
+                                    color: Themes.m3Colors.m3Primary
                                 }
 
                                 StyledText {
                                     text: root.formatTime(scope.recordingSeconds)
-                                    color: Themes.m3Colors.onSurface
+                                    color: Themes.m3Colors.m3OnSurface
                                     font.pixelSize: Appearance.fonts.large * 1.2
                                     font.bold: true
                                     font.family: Appearance.fonts.familyMono
@@ -208,7 +208,7 @@ Scope {
                             Layout.preferredWidth: 100
                             Layout.preferredHeight: 45
                             radius: Appearance.rounding.normal
-                            color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.m3Colors.error, 0.8) : stopButtonMouse.containsMouse ? Themes.m3Colors.error : Themes.withAlpha(Themes.m3Colors.error, 0.9)
+                            color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.m3Colors.m3Error, 0.8) : stopButtonMouse.containsMouse ? Themes.m3Colors.m3Error : Themes.withAlpha(Themes.m3Colors.m3Error, 0.9)
 
                             Behavior on color {
                                 CAnim {

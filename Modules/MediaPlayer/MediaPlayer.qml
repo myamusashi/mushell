@@ -47,24 +47,24 @@ Scope {
                 root.url = res;
             }
         }
-	}
+    }
 
-	Timer {
+    Timer {
         id: cleanup
 
         interval: 500
         repeat: false
-		onTriggered: {
-			root.url = "";
+        onTriggered: {
+            root.url = "";
             gc();
         }
     }
 
     LazyLoader {
-		active: root.isMediaPlayerOpen
-		onActiveChanged: {
-			cleanup.start();
-		}
+        active: root.isMediaPlayerOpen
+        onActiveChanged: {
+            cleanup.start();
+        }
 
         component: PanelWindow {
             anchors {
@@ -84,7 +84,7 @@ Scope {
 
                 implicitWidth: parent.width
                 implicitHeight: contentLayout.implicitHeight + 15
-                color: Themes.m3Colors.surface
+                color: Themes.m3Colors.m3Surface
                 radius: Appearance.rounding.normal
 
                 RowLayout {
@@ -131,7 +131,7 @@ Scope {
                                     text: "Achievement Unlocked: 🏆 Static Image Starer - You expected the kuru spin but trackArtUrl decided to disconnect. GG."
                                     wrapMode: Text.Wrap
                                     elide: Text.ElideRight
-                                    color: Themes.m3Colors.onSurface
+                                    color: Themes.m3Colors.m3OnSurface
                                     visible: Mpris.active && Mpris.active.trackArtUrl === ""
                                 }
 
@@ -175,7 +175,7 @@ Scope {
                             StyledLabel {
                                 width: parent.width
                                 text: Mpris.active ? Mpris.active.trackTitle : ""
-                                color: Themes.m3Colors.onBackground
+                                color: Themes.m3Colors.m3OnBackground
                                 font.pixelSize: Appearance.fonts.large
                                 wrapMode: Text.NoWrap
                                 elide: Text.ElideRight
@@ -187,7 +187,7 @@ Scope {
                                 StyledText {
                                     Layout.preferredWidth: width
                                     text: Mpris.active ? Mpris.active.trackArtist : ""
-                                    color: Themes.m3Colors.onSurface
+                                    color: Themes.m3Colors.m3OnSurface
                                     font.pixelSize: Appearance.fonts.small
                                     wrapMode: Text.NoWrap
                                     elide: Text.ElideRight
@@ -195,13 +195,13 @@ Scope {
 
                                 StyledText {
                                     text: Mpris.active ? "•" : ""
-                                    color: Themes.m3Colors.onBackground
+                                    color: Themes.m3Colors.m3OnBackground
                                     font.pixelSize: Appearance.fonts.extraLarge
                                 }
 
                                 StyledText {
                                     text: Mpris.active ? "Watched on " : ""
-                                    color: Themes.m3Colors.onBackground
+                                    color: Themes.m3Colors.m3OnBackground
                                     font.pixelSize: Appearance.fonts.small
                                 }
 
@@ -234,10 +234,9 @@ Scope {
                             StyledText {
                                 id: timeTrack
 
-                                text: Mpris.active == null ? "00:00" : `${root.formatTime(Mpris.active?.position)}
-                                ${root.formatTime(Mpris.active?.length)}`
+                                text: Mpris.active == null ? "00:00" : `${root.formatTime(Mpris.active?.position)}:${root.formatTime(Mpris.active?.length)}`
                                 font.pixelSize: Appearance.fonts.large
-                                color: Themes.m3Colors.onBackground
+                                color: Themes.m3Colors.m3OnBackground
 
                                 Timer {
                                     running: Mpris.active !== null && Mpris.active.playbackState == MprisPlaybackState.Playing
@@ -257,11 +256,11 @@ Scope {
                                 icon: Mpris.active === null ? "pause_circle" : Mpris.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
                                 color: {
                                     if (pauseMArea.pressed)
-                                        return Themes.withAlpha(Themes.m3Colors.primary, 0.08);
+                                        return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
                                     else if (pauseMArea.containsMouse)
-                                        return Themes.withAlpha(Themes.m3Colors.primary, 0.12);
+                                        return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.12);
                                     else
-                                        return Themes.m3Colors.primary;
+                                        return Themes.m3Colors.m3Primary;
                                 }
                                 font.pointSize: Appearance.fonts.extraLarge * 1.5
 

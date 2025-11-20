@@ -93,7 +93,7 @@ Variants {
 
             function set(path: string): void {
                 Quickshell.execDetached({
-                    command: ["sh", "-c", "echo " + path + " >" + Paths.currentWallpaperFile + " && " + `matugen image ${path} -t scheme-tonal-spot --json hex | jq '.' > ${Paths.shellDir}/colors.json`]
+                    command: ["sh", "-c", "echo " + path + " >" + Paths.currentWallpaperFile + " && " + `matugen image ${path}`]
                 });
             }
             function get(): string {

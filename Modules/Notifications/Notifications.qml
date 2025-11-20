@@ -133,11 +133,11 @@ LazyLoader {
                 StyledRect {
                     anchors.fill: parent
 
-                    color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.errorContainer : Themes.m3Colors.surfaceContainerLow
+                    color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3SurfaceContainerLow
 
                     radius: Appearance.rounding.large
 
-                    border.color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.error : "transparent"
+                    border.color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : "transparent"
                     border.width: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? 1 : 0
 
                     MArea {
@@ -201,7 +201,7 @@ LazyLoader {
                                     width: 40
                                     height: 40
                                     radius: Appearance.rounding.full
-                                    color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.error : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.secondaryContainer : Themes.m3Colors.primaryContainer
+                                    color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3SecondaryContainer : Themes.m3Colors.m3PrimaryContainer
 
                                     Loader {
                                         id: icon
@@ -223,7 +223,7 @@ LazyLoader {
                                         anchors.centerIn: parent
                                         sourceComponent: MaterialIcon {
                                             text: "notifications_active"
-                                            color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.onError : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.onSecondaryContainer : Themes.m3Colors.onPrimaryContainer
+                                            color: delegateNotif.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.onError : delegateNotif.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3OnSecondaryContainer : Themes.m3Colors.m3OnPrimaryContainer
                                             font.pointSize: Appearance.fonts.normal
                                         }
                                     }
@@ -246,8 +246,8 @@ LazyLoader {
                                     width: 20
                                     height: 20
                                     radius: 10
-                                    color: Themes.m3Colors.surface
-                                    border.color: Themes.m3Colors.outlineVariant
+                                    color: Themes.m3Colors.m3Surface
+                                    border.color: Themes.m3Colors.m3OutlineVariant
                                     border.width: 1.5
 
                                     ClippingRectangle {
@@ -300,7 +300,7 @@ LazyLoader {
                                             text: delegateNotif.modelData.appName
                                             font.pixelSize: Appearance.fonts.large
                                             font.weight: Font.Medium
-                                            color: Themes.m3Colors.onSurfaceVariant
+                                            color: Themes.m3Colors.m3OnSurfaceVariant
                                             elide: Text.ElideRight
                                         }
 
@@ -308,7 +308,7 @@ LazyLoader {
                                             id: dots
 
                                             text: "•"
-                                            color: Themes.m3Colors.onSurfaceVariant
+                                            color: Themes.m3Colors.m3OnSurfaceVariant
                                             font.pixelSize: Appearance.fonts.large
                                         }
 
@@ -319,7 +319,7 @@ LazyLoader {
                                                 const now = new Date();
                                                 return TimeAgo.timeAgoWithIfElse(now);
                                             }
-                                            color: Themes.m3Colors.onSurfaceVariant
+                                            color: Themes.m3Colors.m3OnSurfaceVariant
                                         }
                                     }
                                 }
@@ -331,7 +331,7 @@ LazyLoader {
                                     Layout.preferredHeight: 32
 
                                     radius: Appearance.rounding.large
-                                    color: expandButtonMouse.pressed ? Themes.m3Colors.secondaryContainer : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSurface, 0.08) : "transparent"
+                                    color: expandButtonMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : "transparent"
 
                                     MaterialIcon {
                                         id: expandIcon
@@ -339,7 +339,7 @@ LazyLoader {
                                         anchors.centerIn: parent
                                         icon: delegateNotif.isShowMoreBody ? "expand_less" : "expand_more"
                                         font.pointSize: Appearance.fonts.large + 5
-                                        color: Themes.m3Colors.onSurfaceVariant
+                                        color: Themes.m3Colors.m3OnSurfaceVariant
 
                                         RotationAnimator on rotation {
                                             id: rotateArrowIcon
@@ -374,7 +374,7 @@ LazyLoader {
                                 text: delegateNotif.modelData.summary
                                 font.pixelSize: Appearance.fonts.normal * 1.1
                                 font.weight: Font.DemiBold
-                                color: Themes.m3Colors.onSurface
+                                color: Themes.m3Colors.m3OnSurface
                                 elide: Text.ElideRight
                                 wrapMode: Text.Wrap
                                 maximumLineCount: 2
@@ -387,7 +387,7 @@ LazyLoader {
                                 text: delegateNotif.modelData.body || ""
                                 font.pixelSize: Appearance.fonts.small * 1.1
                                 lineHeight: 1.4
-                                color: Themes.m3Colors.onSurfaceVariant
+                                color: Themes.m3Colors.m3OnSurfaceVariant
                                 Layout.preferredWidth: parent.width
                                 elide: Text.ElideRight
                                 textFormat: delegateNotif.isShowMoreBody ? Text.MarkdownText : Text.StyledText
@@ -423,14 +423,14 @@ LazyLoader {
 
                                         required property NotificationAction modelData
 
-                                        color: actionMouse.pressed ? Themes.m3Colors.secondaryContainer : actionMouse.containsMouse ? Themes.m3Colors.secondaryContainer : Themes.m3Colors.surfaceContainerHigh
+                                        color: actionMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : actionMouse.containsMouse ? Themes.m3Colors.m3SecondaryContainer : Themes.m3Colors.m3SurfaceContainerHigh
 
                                         radius: Appearance.rounding.full
 
                                         StyledRect {
                                             anchors.fill: parent
                                             radius: parent.radius
-                                            color: actionMouse.pressed ? Themes.withAlpha(Themes.m3Colors.onSecondaryContainer, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSecondaryContainer, 0.08) : "transparent"
+                                            color: actionMouse.pressed ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.08) : "transparent"
                                         }
 
                                         MArea {
@@ -452,7 +452,7 @@ LazyLoader {
                                             text: actionButton.modelData.text
                                             font.pixelSize: Appearance.fonts.small * 1.05
                                             font.weight: Font.Medium
-                                            color: Themes.m3Colors.onSecondaryContainer
+                                            color: Themes.m3Colors.m3OnSecondaryContainer
                                             elide: Text.ElideRight
                                         }
                                     }

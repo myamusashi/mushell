@@ -27,7 +27,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignLeft
             visible: icon !== ""
             icon: root.icon
-            color: Themes.m3Colors.onSurface
+            color: Themes.m3Colors.m3OnSurface
             font.pointSize: Appearance.fonts.extraLarge
         }
 
@@ -58,8 +58,8 @@ ColumnLayout {
         StyledButton {
             buttonTitle: root.node.audio.muted ? "unmute" : "mute"
             onClicked: root.node.audio.muted = !root.node.audio.muted
-            buttonTextColor: Themes.m3Colors.onSurface
-            buttonColor: Themes.m3Colors.surfaceContainer
+            buttonTextColor: Themes.m3Colors.m3OnSurface
+            buttonColor: Themes.m3Colors.m3SurfaceContainer
             isButtonFullRound: false
             backgroundRounding: 15
         }

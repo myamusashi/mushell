@@ -58,8 +58,8 @@ Scope {
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
             StyledRect {
-                color: Themes.m3Colors.background
-                border.color: Themes.m3Colors.outline
+                color: Themes.m3Colors.m3Background
+                border.color: Themes.m3Colors.m3Outline
                 anchors.fill: contentGrid
                 anchors.margins: -12
             }
@@ -102,7 +102,7 @@ Scope {
                         color: "transparent"
                         border.width: 2
 
-                        border.color: hasMaximized ? "red" : workspace?.focused ? Themes.m3Colors.primary : Themes.m3Colors.onPrimary
+                        border.color: hasMaximized ? "red" : workspace?.focused ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnPrimary
 
                         clip: true
 

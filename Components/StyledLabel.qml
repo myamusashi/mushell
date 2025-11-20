@@ -8,5 +8,5 @@ Label {
     font.hintingPreference: Font.PreferFullHinting
     font.letterSpacing: 0
     renderType: Text.NativeRendering
-    color: Themes.m3Colors.onBackground
+    color: Themes.m3Colors.m3OnBackground
 }

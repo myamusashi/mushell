@@ -19,7 +19,7 @@ Rectangle {
         width: parent.width * 0.3
         height: parent.height
         radius: height / 2
-        color: Themes.m3Colors.primary
+        color: Themes.m3Colors.m3Primary
 
         SequentialAnimation on x {
             loops: Animation.Infinite

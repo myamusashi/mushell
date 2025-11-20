@@ -34,8 +34,8 @@ RowLayout {
 
             iconButton: modelData.icon
             buttonTitle: modelData.name
-            buttonColor: modelData.profile === PowerProfiles.profile ? Themes.m3Colors.primary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.1)
-            buttonTextColor: modelData.profile === PowerProfiles.profile ? Themes.m3Colors.onPrimary : Themes.withAlpha(Themes.m3Colors.onSurface, 0.38)
+            buttonColor: modelData.profile === PowerProfiles.profile ? Themes.m3Colors.m3Primary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.1)
+            buttonTextColor: modelData.profile === PowerProfiles.profile ? Themes.m3Colors.m3OnPrimary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.38)
             onClicked: PowerProfiles.profile = modelData.profile
         }
     }

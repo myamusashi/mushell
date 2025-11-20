@@ -19,9 +19,9 @@ Switch {
         x: root.leftPadding
         y: parent.height / 2 - height / 2
         radius: Appearance.rounding.full
-        color: root.checked ? Themes.m3Colors.primary : Themes.m3Colors.surfaceContainerHighest
+        color: root.checked ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3SurfaceContainerHighest
         border.width: 2
-        border.color: root.checked ? "transparent" : Themes.m3Colors.outline
+        border.color: root.checked ? "transparent" : Themes.m3Colors.m3Outline
 
         StyledRect {
 			id: handle
@@ -37,7 +37,7 @@ Switch {
             width: targetWidth
             height: targetHeight
             radius: Appearance.rounding.full
-            color: isActive ? Themes.m3Colors.onPrimary : Themes.m3Colors.outline
+            color: isActive ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3Outline
 
             Behavior on x {
                 NAnim {
@@ -64,7 +64,7 @@ Switch {
                 asynchronous: true
                 sourceComponent: MaterialIcon {
                     icon: root.checked ? root.onIcon : root.offIcon
-                    color: root.checked ? Themes.m3Colors.onPrimaryContainer : Themes.m3Colors.surfaceContainerHighest
+                    color: root.checked ? Themes.m3Colors.m3OnPrimaryContainer : Themes.m3Colors.m3SurfaceContainerHighest
                     font.pointSize: Appearance.fonts.medium
                 }
             }

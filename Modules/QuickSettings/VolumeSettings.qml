@@ -41,7 +41,7 @@ ScrollView {
 
             Rectangle {
                 Layout.fillWidth: true
-                color: Themes.m3Colors.outline
+                color: Themes.m3Colors.m3Outline
                 implicitHeight: 1
             }
 
@@ -86,13 +86,13 @@ ScrollView {
                     background: Rectangle {
                         implicitWidth: 350
                         radius: 4
-                        color: Themes.withAlpha(Themes.m3Colors.surfaceContainer, 0.9)
+                        color: Themes.withAlpha(Themes.m3Colors.m3SurfaceContainer, 0.9)
 
                         Rectangle {
                             x: 12
                             y: 0
                             height: 2
-                            color: Themes.m3Colors.onBackground
+                            color: Themes.m3Colors.m3OnBackground
                             visible: true
                         }
                     }
@@ -101,7 +101,7 @@ ScrollView {
                         leftPadding: Appearance.padding.normal
                         rightPadding: profilesComboBox.indicator.width + profilesComboBox.spacing
                         text: profilesComboBox.displayText
-                        color: Themes.m3Colors.onBackground
+                        color: Themes.m3Colors.m3OnBackground
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                     }
@@ -115,12 +115,12 @@ ScrollView {
                         padding: Appearance.padding.normal
 
                         background: StyledRect {
-                            color: itemDelegate.highlighted ? Themes.m3Colors.primary : itemDelegate.hovered ? itemDelegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(Themes.m3Colors.primary, 0.1) : "transparent"
+                            color: itemDelegate.highlighted ? Themes.m3Colors.m3Primary : itemDelegate.hovered ? itemDelegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1) : "transparent"
                         }
 
                         contentItem: StyledText {
                             text: itemDelegate.modelData.readable
-                            color: itemDelegate.modelData.available !== "yes" ? Themes.m3Colors.outlineVariant : Themes.m3Colors.onBackground
+                            color: itemDelegate.modelData.available !== "yes" ? Themes.m3Colors.m3OutlineVariant : Themes.m3Colors.m3OnBackground
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                         }
@@ -157,7 +157,7 @@ ScrollView {
                                 context.lineTo(width, 0);
                                 context.lineTo(width / 2, height);
                                 context.closePath();
-                                context.fillStyle = Themes.m3Colors.onBackground;
+                                context.fillStyle = Themes.m3Colors.m3OnBackground;
                                 context.fill();
                             }
                         }
@@ -167,7 +167,7 @@ ScrollView {
                             width: 40
                             height: 40
                             radius: Appearance.rounding.large
-                            color: Themes.m3Colors.primary
+                            color: Themes.m3Colors.m3Primary
                             opacity: profilesComboBox.pressed ? 0.12 : profilesComboBox.hovered ? 0.08 : 0
 
                             Behavior on opacity {
@@ -184,7 +184,7 @@ ScrollView {
                         padding: Appearance.padding.normal
 
                         background: StyledRect {
-                            color: Themes.m3Colors.surfaceContainerLow
+                            color: Themes.m3Colors.m3SurfaceContainerLow
                             radius: Appearance.rounding.small
                         }
 
@@ -198,7 +198,7 @@ ScrollView {
                                 contentItem: StyledRect {
                                     implicitWidth: 4
                                     radius: Appearance.rounding.small
-                                    color: Themes.withAlpha(Themes.m3Colors.primary, 0.1)
+                                    color: Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1)
                                 }
                             }
                         }

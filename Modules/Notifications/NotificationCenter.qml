@@ -47,7 +47,7 @@ Scope {
                 id: container
 
                 anchors.fill: parent
-                color: Themes.m3Colors.surface
+                color: Themes.m3Colors.m3Surface
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -69,7 +69,7 @@ Scope {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: "Notifications"
-                                color: Themes.m3Colors.onBackground
+                                color: Themes.m3Colors.m3OnBackground
                                 font.pixelSize: Appearance.fonts.large * 1.2
                                 font.weight: Font.Medium
                             }
@@ -96,7 +96,7 @@ Scope {
                                     Layout.preferredWidth: 32
                                     Layout.preferredHeight: 32
                                     radius: 6
-                                    color: iconMouse.containsMouse ? Themes.m3Colors.surfaceContainerHigh : "transparent"
+                                    color: iconMouse.containsMouse ? Themes.m3Colors.m3SurfaceContainerHigh : "transparent"
 
                                     required property var modelData
 
@@ -104,7 +104,7 @@ Scope {
                                         anchors.centerIn: parent
                                         icon: notifHeaderDelegate.modelData.icon
                                         font.pointSize: Appearance.fonts.extraLarge * 0.6
-                                        color: Themes.m3Colors.onSurface
+                                        color: Themes.m3Colors.m3OnSurface
                                     }
 
                                     MArea {
@@ -121,7 +121,7 @@ Scope {
                     }
 
                     StyledRect {
-                        color: Themes.m3Colors.outlineVariant
+                        color: Themes.m3Colors.m3OutlineVariant
                         Layout.fillWidth: true
                         implicitHeight: 1
                     }
@@ -214,7 +214,7 @@ Scope {
 
                                     width: listViewNotifs.width
                                     height: Math.max(120, contentLayout.implicitHeight + 32)
-                                    color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.errorContainer : Themes.m3Colors.surfaceContainerLow
+                                    color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3SurfaceContainerLow
                                     radius: Appearance.rounding.normal
 
                                     Behavior on implicitWidth {
@@ -272,7 +272,7 @@ Scope {
                                                     width: 65
                                                     height: 65
                                                     radius: Appearance.rounding.full
-                                                    color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.error : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.m3Colors.surfaceContainerHighest : Themes.m3Colors.secondaryContainer
+                                                    color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3SurfaceContainerHighest : Themes.m3Colors.m3SecondaryContainer
 
                                                     Loader {
                                                         id: icon
@@ -298,7 +298,7 @@ Scope {
                                                         anchors.verticalCenterOffset: Appearance.fonts.large * 0.02
                                                         sourceComponent: MaterialIcon {
                                                             text: "release_alert"
-                                                            color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.onError : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.m3Colors.onSurface : Themes.m3Colors.onSecondaryContainer
+                                                            color: flickDelegate.modelData?.urgency === NotificationUrgency.Critical ? Themes.m3Colors.onError : flickDelegate.modelData?.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3OnSurface : Themes.m3Colors.m3OnSecondaryContainer
                                                             font.pointSize: Appearance.fonts.large
                                                         }
                                                     }
@@ -324,7 +324,7 @@ Scope {
                                                     height: 28
                                                     radius: width / 2
                                                     color: "white"
-                                                    border.color: Themes.m3Colors.surface
+                                                    border.color: Themes.m3Colors.m3Surface
                                                     border.width: 2
 
                                                     ClippingRectangle {
@@ -379,7 +379,7 @@ Scope {
                                                             Layout.fillWidth: true
                                                             text: flickDelegate.modelData?.appName
                                                             font.pixelSize: Appearance.fonts.small * 0.9
-                                                            color: Themes.m3Colors.onBackground
+                                                            color: Themes.m3Colors.m3OnBackground
                                                             elide: Text.ElideRight
                                                         }
 
@@ -387,7 +387,7 @@ Scope {
                                                             id: dots
 
                                                             text: "•"
-                                                            color: Themes.m3Colors.onSurfaceVariant
+                                                            color: Themes.m3Colors.m3OnSurfaceVariant
                                                             font.pixelSize: Appearance.fonts.large
                                                         }
 
@@ -396,7 +396,7 @@ Scope {
 
                                                             property date currentTime: new Date()
                                                             text: TimeAgo.timeAgoWithIfElse(currentTime)
-                                                            color: Themes.m3Colors.onSurfaceVariant
+                                                            color: Themes.m3Colors.m3OnSurfaceVariant
 
                                                             Timer {
                                                                 interval: 60000
@@ -415,7 +415,7 @@ Scope {
                                                     Layout.preferredHeight: 32
 
                                                     radius: Appearance.rounding.large
-                                                    color: expandButtonMouse.pressed ? Themes.m3Colors.secondaryContainer : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSurface, 0.08) : "transparent"
+                                                    color: expandButtonMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : "transparent"
 
                                                     MaterialIcon {
                                                         id: expandIcon
@@ -423,7 +423,7 @@ Scope {
                                                         anchors.centerIn: parent
                                                         icon: flickDelegate.isShowMoreBody ? "expand_less" : "expand_more"
                                                         font.pointSize: Appearance.fonts.large + 5
-                                                        color: Themes.m3Colors.onSurfaceVariant
+                                                        color: Themes.m3Colors.m3OnSurfaceVariant
 
                                                         Behavior on rotation {
                                                             RotationAnimation {
@@ -454,7 +454,7 @@ Scope {
                                                 text: flickDelegate.modelData?.summary
                                                 font.pixelSize: Appearance.fonts.normal * 1.1
                                                 font.weight: Font.DemiBold
-                                                color: Themes.m3Colors.onSurface
+                                                color: Themes.m3Colors.m3OnSurface
                                                 elide: Text.ElideRight
                                                 wrapMode: Text.Wrap
                                                 maximumLineCount: 2
@@ -467,7 +467,7 @@ Scope {
                                                 text: flickDelegate.modelData?.body || ""
                                                 font.pixelSize: Appearance.fonts.small * 1.1
                                                 lineHeight: 1.4
-                                                color: Themes.m3Colors.onSurfaceVariant
+                                                color: Themes.m3Colors.m3OnSurfaceVariant
                                                 Layout.preferredWidth: parent.width
                                                 elide: Text.ElideRight
                                                 textFormat: flickDelegate.isShowMoreBody ? Text.MarkdownText : Text.StyledText
@@ -504,14 +504,14 @@ Scope {
 
                                                         required property NotificationAction modelData
 
-                                                        color: actionMouse.pressed ? Themes.m3Colors.secondaryContainer : actionMouse.containsMouse ? Themes.m3Colors.secondaryContainer : Themes.m3Colors.surfaceContainerHigh
+                                                        color: actionMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : actionMouse.containsMouse ? Themes.m3Colors.m3SecondaryContainer : Themes.m3Colors.m3SurfaceContainerHigh
                                                         radius: Appearance.rounding.small
 
                                                         StyledRect {
                                                             anchors.fill: parent
 
                                                             anchors.topMargin: 1
-                                                            color: actionMouse.pressed ? Themes.withAlpha(Themes.m3Colors.onSecondaryContainer, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSecondaryContainer, 0.08) : "transparent"
+                                                            color: actionMouse.pressed ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.08) : "transparent"
                                                             radius: parent.radius
                                                             visible: !actionMouse.pressed
                                                         }
@@ -538,7 +538,7 @@ Scope {
                                                                 width: 0
                                                                 height: 0
                                                                 radius: width / 2
-                                                                color: Themes.withAlpha(Themes.m3Colors.primary, 0.3)
+                                                                color: Themes.withAlpha(Themes.m3Colors.m3Primary, 0.3)
                                                                 visible: false
 
                                                                 SequentialAnimation {
@@ -584,7 +584,7 @@ Scope {
                                                             text: actionButton.modelData.text
                                                             font.pixelSize: Appearance.fonts.small * 1.1
                                                             font.weight: actionMouse.containsMouse ? Font.Medium : Font.Normal
-                                                            color: actionMouse.containsMouse ? Themes.m3Colors.onPrimaryContainer : Themes.m3Colors.onSurface
+                                                            color: actionMouse.containsMouse ? Themes.m3Colors.m3OnPrimaryContainer : Themes.m3Colors.m3OnSurface
                                                             elide: Text.ElideRight
                                                         }
 

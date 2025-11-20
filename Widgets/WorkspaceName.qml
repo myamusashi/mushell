@@ -28,7 +28,7 @@ StyledRect {
         readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
 
         anchors.centerIn: parent
-        color: Themes.m3Colors.onBackground
+        color: Themes.m3Colors.m3OnBackground
         elide: Text.ElideMiddle
         font.weight: Font.Light
         font.pixelSize: Appearance.fonts.large

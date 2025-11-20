@@ -48,7 +48,7 @@ WlSessionLockSurface {
         anchors.fill: parent
         focus: true
 
-        color: Themes.m3Colors.surfaceContainerLowest
+        color: Themes.m3Colors.m3SurfaceContainerLowest
 
         Keys.onPressed: kevent => {
             if (root.showErrorMessage && kevent.text)
@@ -59,13 +59,13 @@ WlSessionLockSurface {
                 root.pam.tryUnlock();
                 root.inputBuffer = "";
                 root.maskedBuffer = "";
-                passwordBuffer.color = Themes.m3Colors.onSurfaceVariant;
+                passwordBuffer.color = Themes.m3Colors.m3OnSurfaceVariant;
                 root.lastKeystrokeTime = 0;
                 return;
             }
 
             if (kevent.key === Qt.Key_A && (kevent.modifiers & Qt.ControlModifier)) {
-                passwordBuffer.color = Themes.colors.blue;
+                passwordBuffer.color = Themes.m3Colors.m3Blue;
                 root.isAllSelected = true;
                 kevent.accepted = true;
                 return;
@@ -73,7 +73,7 @@ WlSessionLockSurface {
 
             if (kevent.key === Qt.Key_Backspace) {
                 if (kevent.modifiers & Qt.ControlModifier) {
-                    passwordBuffer.color = Themes.m3Colors.onBackground;
+                    passwordBuffer.color = Themes.m3Colors.m3OnBackground;
                     root.inputBuffer = "";
                     root.maskedBuffer = "";
                     root.isAllSelected = false;
@@ -83,7 +83,7 @@ WlSessionLockSurface {
                 if (root.isAllSelected) {
                     root.inputBuffer = "";
                     root.maskedBuffer = "";
-                    passwordBuffer.color = Themes.m3Colors.onSurfaceVariant;
+                    passwordBuffer.color = Themes.m3Colors.m3OnSurfaceVariant;
                     root.isAllSelected = false;
                     return;
                 }
@@ -94,7 +94,7 @@ WlSessionLockSurface {
                 root.maskedBuffer = root.maskedBuffer.slice(0, -randomRemove);
 
                 if (root.maskedBuffer === "")
-                    passwordBuffer.color = Themes.m3Colors.onSurfaceVariant;
+                    passwordBuffer.color = Themes.m3Colors.m3OnSurfaceVariant;
 
                 return;
             }
@@ -106,8 +106,8 @@ WlSessionLockSurface {
                     root.isAllSelected = false;
                 }
 
-                if (passwordBuffer.color === Themes.colors.blue || passwordBuffer.color === Themes.m3Colors.onBackground)
-                    passwordBuffer.color = root.maskedBuffer ? Themes.m3Colors.onSurface : Themes.m3Colors.onSurfaceVariant;
+                if (passwordBuffer.color === Themes.m3Colors.m3Blue || passwordBuffer.color === Themes.m3Colors.m3OnBackground)
+                    passwordBuffer.color = root.maskedBuffer ? Themes.m3Colors.m3OnSurface : Themes.m3Colors.m3OnSurfaceVariant;
 
                 root.inputBuffer += kevent.text;
 
@@ -196,7 +196,7 @@ WlSessionLockSurface {
             anchors.centerIn: parent
             anchors.verticalCenterOffset: -60
             text: "WRONG"
-            color: Themes.m3Colors.error
+            color: Themes.m3Colors.m3Error
             font.pointSize: Appearance.fonts.large * 5
             opacity: root.showErrorMessage ? 1 : 0
             visible: opacity > 0
@@ -214,7 +214,7 @@ WlSessionLockSurface {
 
             anchors.centerIn: parent
             text: root.showErrorMessage ? "" : root.maskedBuffer
-            color: root.maskedBuffer ? (root.pam.showFailure ? Themes.m3Colors.onErrorContainer : Themes.m3Colors.onSurface) : Themes.m3Colors.onSurfaceVariant
+            color: root.maskedBuffer ? (root.pam.showFailure ? Themes.m3Colors.m3OnErrorContainer : Themes.m3Colors.m3OnSurface) : Themes.m3Colors.m3OnSurfaceVariant
 			font.pointSize: Appearance.fonts.extraLarge * 5
 			font.family: Appearance.fonts.familyMono
             z: 0

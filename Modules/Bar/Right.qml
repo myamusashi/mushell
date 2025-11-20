@@ -31,8 +31,8 @@ Loader {
             Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
             Layout.preferredHeight: 25
             color: mArea.containsPress ? Themes.withAlpha(
-                                             Themes.m3Colors.surfaceContainerHighest,
-                                             0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.surfaceContainerHighest, 0.1) : Themes.m3Colors.surfaceContainer
+                                             Themes.m3Colors.m3SurfaceContainerHighest,
+                                             0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainerHighest, 0.1) : Themes.m3Colors.m3SurfaceContainer
             radius: Appearance.rounding.normal
 
             Behavior on color {
