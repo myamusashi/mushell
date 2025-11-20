@@ -90,7 +90,7 @@ Scope {
 
             StyledRect {
                 anchors.fill: parent
-                color: Themes.colors.surface
+                color: Themes.m3Colors.surface
                 radius: Appearance.rounding.large
 
                 ColumnLayout {
@@ -104,10 +104,10 @@ Scope {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 40
                         placeholderText: "Search wallpapers..."
-                        placeholderTextColor: Themes.colors.surface_variant
+                        placeholderTextColor: Themes.m3Colors.surfaceVariant
                         text: scope.searchQuery
                         font.pixelSize: Appearance.fonts.medium
-                        color: Themes.colors.on_surface
+                        color: Themes.m3Colors.onSurface
                         focus: true
 
                         onTextChanged: {
@@ -119,9 +119,9 @@ Scope {
                         }
 
                         background: StyledRect {
-                            color: Themes.withAlpha(Themes.colors.surface_container_high, 0.12)
+                            color: Themes.withAlpha(Themes.m3Colors.surfaceContainerHigh, 0.12)
                             radius: Appearance.rounding.normal
-                            border.color: searchField.activeFocus ? Themes.colors.primary : Themes.colors.outline_variant
+                            border.color: searchField.activeFocus ? Themes.m3Colors.primary : Themes.m3Colors.outlineVariant
                             border.width: searchField.activeFocus ? 2 : 1
                         }
 
@@ -182,10 +182,10 @@ Scope {
 
                                 StyledRect {
                                     anchors.fill: parent
-                                    color: wallpaperGrid.currentIndex === delegateItem.index ? "transparent" : Themes.withAlpha(Themes.colors.surface, 0.7)
+                                    color: wallpaperGrid.currentIndex === delegateItem.index ? "transparent" : Themes.withAlpha(Themes.m3Colors.surface, 0.7)
                                     radius: Appearance.rounding.small
                                     border.width: wallpaperGrid.currentIndex === delegateItem.index ? 3 : 1
-                                    border.color: wallpaperGrid.currentIndex === delegateItem.index ? Themes.colors.primary : Themes.colors.outline_variant
+                                    border.color: wallpaperGrid.currentIndex === delegateItem.index ? Themes.m3Colors.primary : Themes.m3Colors.outlineVariant
                                 }
 
                                 MArea {
@@ -219,7 +219,7 @@ Scope {
                         Layout.alignment: Qt.AlignHCenter
                         Layout.bottomMargin: Appearance.spacing.small
                         text: wallpaperGrid.count > 0 ? (wallpaperGrid.currentIndex + 1) + " / " + wallpaperGrid.count : "0 / 0"
-                        color: Themes.colors.on_surface
+                        color: Themes.m3Colors.onSurface
                         font.pixelSize: Appearance.fonts.small
                     }
                 }

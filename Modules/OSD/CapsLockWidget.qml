@@ -26,7 +26,7 @@ LazyLoader {
         StyledRect {
             anchors.fill: parent
             radius: height / 2
-            color: Themes.colors.background
+            color: Themes.m3Colors.background
 
             Row {
                 anchors.centerIn: parent
@@ -35,13 +35,13 @@ LazyLoader {
                 StyledText {
                     text: "Caps Lock"
                     font.weight: Font.Medium
-                    color: Themes.colors.on_background
+                    color: Themes.m3Colors.onBackground
                     font.pixelSize: Appearance.fonts.large * 1.5
                 }
 
                 MaterialIcon {
                     icon: KeyLockState.state.capsLock ? "lock" : "lock_open_right"
-                    color: KeyLockState.state.capsLock ? Themes.colors.primary : Themes.colors.tertiary
+                    color: KeyLockState.state.capsLock ? Themes.m3Colors.primary : Themes.m3Colors.tertiary
                     font.pointSize: Appearance.fonts.large * 1.5
                 }
             }

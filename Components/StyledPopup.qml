@@ -27,7 +27,7 @@ PopupWindow {
     WrapperRectangle {
         id: background
 
-        color: Themes.colors.background
+        color: Themes.m3Colors.background
 
         opacity: 0
         Behavior on opacity {

@@ -16,7 +16,7 @@ StyledRect {
     property PwNode node: Pipewire.defaultAudioSink
 
     Layout.fillHeight: true
-    // color: Themes.colors.withAlpha(Themes.colors.background, 0.79)
+    // color: Themes.colors.withAlpha(Themes.m3Colors.background, 0.79)
     color: "transparent"
     implicitWidth: container.width
     radius: 5
@@ -35,7 +35,7 @@ StyledRect {
         spacing: 5
 
         MaterialIcon {
-            color: Themes.colors.on_background
+            color: Themes.m3Colors.onBackground
             icon: root.icon
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.large * 1.2
@@ -45,7 +45,7 @@ StyledRect {
         }
 
         StyledText {
-            color: Themes.colors.on_background
+            color: Themes.m3Colors.onBackground
             text: (root.node.audio.volume * 100).toFixed(0) + "%"
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.medium

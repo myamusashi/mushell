@@ -8,7 +8,7 @@ import qs.Components
 
 StyledRect {
     Layout.preferredHeight: 140
-    color: Themes.colors.surface_container_low
+    color: Themes.m3Colors.surfaceContainerLow
     radius: Appearance.rounding.normal
 
     ColumnLayout {
@@ -43,21 +43,21 @@ StyledRect {
             {
                 "label": "Current capacity:",
                 "value": UPower.displayDevice.energy.toFixed(2) + " Wh",
-                "color": Themes.colors.on_background
+                "color": Themes.m3Colors.onBackground
             },
             {
                 "label": "Full capacity:",
                 "value": UPower.displayDevice.energyCapacity.toFixed(2) + " Wh",
-                "color": Themes.colors.on_background
+                "color": Themes.m3Colors.onBackground
             },
         ]
 
         function getHealthColor(health) {
             if (health > 80)
-                return Themes.colors.primary;
+                return Themes.m3Colors.primary;
             if (health > 50)
-                return Themes.colors.secondary;
-            return Themes.colors.error;
+                return Themes.m3Colors.secondary;
+            return Themes.m3Colors.error;
         }
 
         Repeater {
@@ -72,7 +72,7 @@ StyledRect {
                 StyledText {
                     text: parent.modelData.label
                     font.weight: Font.DemiBold
-                    color: Themes.colors.on_background
+                    color: Themes.m3Colors.onBackground
                     font.pixelSize: Appearance.fonts.normal
                 }
 

@@ -8,7 +8,7 @@ MouseArea {
 
     property real clickOpacity: 0.2
     property real hoverOpacity: 0.08
-    property color layerColor: Themes.colors.primary
+    property color layerColor: Themes.m3Colors.primary
     property NumberAnimation layerOpacityAnimation: NAnim {}
     property int layerRadius: parent?.radius ?? Appearance.rounding.small
     property alias layerRect: layer

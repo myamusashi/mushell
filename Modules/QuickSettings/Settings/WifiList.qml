@@ -24,7 +24,7 @@ Loader {
         StyledRect {
             anchors.fill: parent
             radius: 0
-            color: Themes.colors.surface
+            color: Themes.m3Colors.surface
 
             ColumnLayout {
                 anchors.fill: parent
@@ -44,7 +44,7 @@ Loader {
 
                             anchors.centerIn: parent
                             icon: "arrow_back"
-                            color: mIconBackArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) : mIconBackArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) : Themes.colors.on_background
+                            color: mIconBackArea.containsPress ? Themes.withAlpha(Themes.m3Colors.onBackground, 0.1) : mIconBackArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.onBackground, 0.08) : Themes.m3Colors.onBackground
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                         }
 
@@ -60,7 +60,7 @@ Loader {
 
                     StyledLabel {
                         text: "Wi-Fi"
-                        color: Themes.colors.on_background
+                        color: Themes.m3Colors.onBackground
                         font.pixelSize: Appearance.fonts.large
                         font.bold: true
                     }
@@ -90,7 +90,7 @@ Loader {
 
                             anchors.centerIn: parent
                             icon: "refresh"
-                            color: mRefreshArea.containsPress ? Themes.withAlpha(Themes.colors.on_background, 0.1) : mRefreshArea.containsMouse ? Themes.withAlpha(Themes.colors.on_background, 0.08) : Themes.colors.on_background
+                            color: mRefreshArea.containsPress ? Themes.withAlpha(Themes.m3Colors.onBackground, 0.1) : mRefreshArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.onBackground, 0.08) : Themes.m3Colors.onBackground
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                             opacity: Network.wifiEnabled ? 1.0 : 0.5
                             antialiasing: true
@@ -127,14 +127,14 @@ Loader {
 
                 StyledRect {
                     Layout.fillWidth: true
-                    color: Themes.colors.outline
+                    color: Themes.m3Colors.outline
                     implicitHeight: 1
                 }
 
                 StyledRect {
                     Layout.fillWidth: true
                     implicitHeight: currentNetLayout.implicitHeight + 20
-                    color: Themes.colors.surface_container_low
+                    color: Themes.m3Colors.surfaceContainerLow
                     radius: Appearance.rounding.normal
                     visible: Network.active !== null
 
@@ -147,7 +147,7 @@ Loader {
 
                         MaterialIcon {
                             icon: Network.active ? root.getWiFiIcon(Network.active.strength) : "wifi_off"
-                            color: Themes.colors.primary
+                            color: Themes.m3Colors.primary
                             font.pointSize: Appearance.fonts.extraLarge
                         }
 
@@ -156,14 +156,14 @@ Loader {
 
                             StyledLabel {
                                 text: Network.active ? Network.active.ssid : "Not connected"
-                                color: Themes.colors.on_background
+                                color: Themes.m3Colors.onBackground
                                 font.pixelSize: Appearance.fonts.medium
                                 font.bold: true
                             }
 
                             StyledLabel {
                                 text: Network.active ? "Connected • " + Network.active.frequency + " MHz" : ""
-                                color: Themes.colors.on_surface_variant
+                                color: Themes.m3Colors.onSurfaceVariant
                                 font.pixelSize: Appearance.fonts.small
                             }
                         }
@@ -178,7 +178,7 @@ Loader {
 
                                 anchors.centerIn: parent
                                 icon: "close"
-                                color: disconnectArea.containsPress ? Themes.withAlpha(Themes.colors.error, 0.1) : disconnectArea.containsMouse ? Themes.withAlpha(Themes.colors.error, 0.8) : Themes.colors.on_surface_variant
+                                color: disconnectArea.containsPress ? Themes.withAlpha(Themes.m3Colors.error, 0.1) : disconnectArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.error, 0.8) : Themes.m3Colors.onSurfaceVariant
                                 font.pointSize: Appearance.fonts.extraLarge * 0.8
                             }
 
@@ -196,7 +196,7 @@ Loader {
 
                 StyledLabel {
                     text: "Available Networks"
-                    color: Themes.colors.on_surface_variant
+                    color: Themes.m3Colors.onSurfaceVariant
                     font.pixelSize: Appearance.fonts.normal
                     font.bold: true
                     visible: Network.wifiEnabled
@@ -218,21 +218,21 @@ Loader {
                         MaterialIcon {
                             Layout.alignment: Qt.AlignHCenter
                             icon: "wifi_off"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                         }
 
                         StyledLabel {
                             Layout.alignment: Qt.AlignHCenter
                             text: "Wi-Fi is turned off"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pixelSize: Appearance.fonts.large
                         }
 
                         StyledLabel {
                             Layout.alignment: Qt.AlignHCenter
                             text: "Turn on Wi-Fi to see available networks"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pixelSize: Appearance.fonts.normal
                         }
                     }
@@ -258,7 +258,7 @@ Loader {
 
                             width: ListView.view.width
                             implicitHeight: networkLayout.implicitHeight + 20
-                            color: mouseArea.containsPress ? Themes.withAlpha(Themes.colors.surface_container, 0.12) : mouseArea.containsMouse ? Themes.withAlpha(Themes.colors.surface_container, 0.08) : modelData.active ? Themes.withAlpha(Themes.colors.surface_container, 0.08) : Themes.colors.surface_container
+                            color: mouseArea.containsPress ? Themes.withAlpha(Themes.m3Colors.surfaceContainer, 0.12) : mouseArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.surfaceContainer, 0.08) : modelData.active ? Themes.withAlpha(Themes.m3Colors.surfaceContainer, 0.08) : Themes.m3Colors.surfaceContainer
                             radius: Appearance.rounding.normal
 
                             RowLayout {
@@ -270,7 +270,7 @@ Loader {
 
                                 MaterialIcon {
                                     icon: root.getWiFiIcon(delegateWifi.modelData.strength)
-                                    color: delegateWifi.modelData.active ? Themes.colors.primary : Themes.colors.on_surface
+                                    color: delegateWifi.modelData.active ? Themes.m3Colors.primary : Themes.m3Colors.onSurface
                                     font.pointSize: Appearance.fonts.extraLarge
                                 }
 
@@ -283,14 +283,14 @@ Loader {
 
                                         StyledLabel {
                                             text: delegateWifi.modelData.ssid || "(Hidden Network)"
-                                            color: Themes.colors.on_background
+                                            color: Themes.m3Colors.onBackground
                                             font.pixelSize: Appearance.fonts.medium
                                             font.bold: delegateWifi.modelData.active
                                         }
 
                                         MaterialIcon {
                                             icon: "lock"
-                                            color: Themes.colors.on_surface_variant
+                                            color: Themes.m3Colors.onSurfaceVariant
                                             font.pointSize: Appearance.fonts.small
                                             visible: delegateWifi.modelData.isSecure
                                         }
@@ -308,20 +308,20 @@ Loader {
                                             details.push(delegateWifi.modelData.frequency + " MHz");
                                             return details.join(" • ");
                                         }
-                                        color: Themes.colors.on_surface_variant
+                                        color: Themes.m3Colors.onSurfaceVariant
                                         font.pixelSize: Appearance.fonts.small
                                     }
                                 }
 
                                 StyledLabel {
                                     text: delegateWifi.modelData.strength + "%"
-                                    color: Themes.colors.on_surface_variant
+                                    color: Themes.m3Colors.onSurfaceVariant
                                     font.pixelSize: Appearance.fonts.small
                                 }
 
                                 MaterialIcon {
                                     icon: "chevron_right"
-                                    color: Themes.colors.on_surface_variant
+                                    color: Themes.m3Colors.onSurfaceVariant
                                     font.pointSize: Appearance.fonts.large
                                     visible: !delegateWifi.modelData.active
                                 }
@@ -354,21 +354,21 @@ Loader {
                         MaterialIcon {
                             Layout.alignment: Qt.AlignHCenter
                             icon: "wifi_off"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                         }
 
                         StyledLabel {
                             Layout.alignment: Qt.AlignHCenter
                             text: "No networks found"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pixelSize: Appearance.fonts.medium
                         }
 
                         StyledLabel {
                             Layout.alignment: Qt.AlignHCenter
                             text: "Try refreshing the list"
-                            color: Themes.colors.on_surface_variant
+                            color: Themes.m3Colors.onSurfaceVariant
                             font.pixelSize: Appearance.fonts.small
                         }
                     }

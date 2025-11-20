@@ -55,8 +55,8 @@ Scope {
                     anchors.fill: parent
 
                     radius: Appearance.rounding.normal
-                    color: Themes.colors.background
-                    border.color: Themes.colors.outline
+                    color: Themes.m3Colors.background
+                    border.color: Themes.m3Colors.outline
                     border.width: 2
 
                     ColumnLayout {
@@ -126,7 +126,7 @@ Scope {
                                 Layout.preferredHeight: 70
 
                                 radius: Appearance.rounding.normal
-                                color: isHighlighted ? Themes.withAlpha(Themes.colors.secondary, 0.2) : "transparent"
+                                color: isHighlighted ? Themes.withAlpha(Themes.m3Colors.secondary, 0.2) : "transparent"
 
                                 Behavior on color {
                                     CAnim {}
@@ -136,7 +136,7 @@ Scope {
                                     id: iconDelegate
 
                                     anchors.centerIn: parent
-                                    color: Themes.colors.primary
+                                    color: Themes.m3Colors.primary
                                     font.pointSize: Appearance.fonts.large * 3
                                     icon: rectDelegate.modelData.icon
 

@@ -73,8 +73,8 @@ Scope {
 
                     anchors.fill: parent
                     radius: Appearance.rounding.large
-                    color: Themes.colors.background
-                    border.color: Themes.colors.outline
+                    color: Themes.m3Colors.background
+                    border.color: Themes.m3Colors.outline
                     border.width: 2
 
                     readonly property int contentPadding: Appearance.spacing.normal
@@ -107,7 +107,7 @@ Scope {
 
                                     radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
 
-                                    color: isSelected ? Themes.colors.primary : Themes.colors.surface
+                                    color: isSelected ? Themes.m3Colors.primary : Themes.m3Colors.surface
 
                                     Behavior on color {
                                         CAnim {
@@ -118,7 +118,7 @@ Scope {
                                     StyledText {
                                         anchors.centerIn: parent
                                         text: tabItem.modelData
-                                        color: tabItem.isSelected ? Themes.colors.on_primary : Themes.colors.outline
+                                        color: tabItem.isSelected ? Themes.m3Colors.onPrimary : Themes.m3Colors.outline
                                         font.pixelSize: Appearance.fonts.normal * 0.9
                                         font.bold: tabItem.isSelected
                                     }

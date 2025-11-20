@@ -80,7 +80,7 @@ Scope {
                 StyledRect {
                     Layout.fillWidth: true
                     height: 1
-                    color: Themes.colors.outline_variant
+                    color: Themes.m3Colors.outlineVariant
                 }
 
                 StackView {
@@ -101,7 +101,7 @@ Scope {
                         id: contentView
 
                         StyledRect {
-                            color: Themes.colors.surface
+                            color: Themes.m3Colors.surface
                             topLeftRadius: 5
                             topRightRadius: 5
                             property int viewIndex: 0

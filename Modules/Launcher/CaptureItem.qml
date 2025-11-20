@@ -69,7 +69,7 @@ StyledRect {
 
         MaterialIcon {
             icon: root.optionData.icon
-            color: root.isSelected ? Themes.colors.primary : Themes.colors.outline
+            color: root.isSelected ? Themes.m3Colors.primary : Themes.m3Colors.outline
             font.pixelSize: Appearance.fonts.large
             Layout.alignment: Qt.AlignVCenter
 
@@ -81,7 +81,7 @@ StyledRect {
         }
 
         StyledText {
-            color: root.isSelected ? Themes.colors.primary : Themes.colors.outline
+            color: root.isSelected ? Themes.m3Colors.primary : Themes.m3Colors.outline
             font.pixelSize: Appearance.fonts.normal
             text: root.optionData.name
             Layout.fillWidth: true

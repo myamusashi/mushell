@@ -46,7 +46,7 @@ StyledRect {
             // Background arc
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = Themes.colors.secondary_container;
+            ctx.strokeStyle = Themes.m3Colors.secondaryContainer;
             ctx.lineWidth = 8;
             ctx.stroke();
 
@@ -57,7 +57,7 @@ StyledRect {
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
 
             // Color based on value
-            ctx.strokeStyle = value > 80 ? Themes.colors.error : value > 60 ? Themes.colors.tertiary : Themes.colors.primary;
+            ctx.strokeStyle = value > 80 ? Themes.m3Colors.error : value > 60 ? Themes.m3Colors.tertiary : Themes.m3Colors.primary;
             ctx.lineWidth = 8;
             ctx.lineCap = "round";
             ctx.stroke();
@@ -69,7 +69,7 @@ StyledRect {
         text: root.text
         font.pixelSize: Math.max(12, Math.min(24, root.width / 6))
         font.bold: true
-        color: Themes.colors.on_surface
+        color: Themes.m3Colors.onSurface
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap

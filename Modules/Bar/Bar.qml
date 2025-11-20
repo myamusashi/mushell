@@ -52,7 +52,7 @@ Scope {
 				screen: bar.screen
                 visible: bar.visible
                 exclusiveZone: -1
-                barColor: Themes.colors.background
+                barColor: Themes.m3Colors.background
                 exclusionMode: ExclusionMode.Ignore
             }
 

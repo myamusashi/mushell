@@ -16,7 +16,7 @@ LazyLoader {
         title: "Authentication Required"
         visible: Pol.PolAgent.agent.isActive
         implicitHeight: contentColumn.implicitHeight + 48
-        color: Themes.colors.surface_container_high
+        color: Themes.m3Colors.surfaceContainerHigh
 
         ColumnLayout {
             id: contentColumn
@@ -30,7 +30,7 @@ LazyLoader {
                 Layout.preferredHeight: 64
                 Layout.topMargin: 8
                 radius: Appearance.rounding.full
-                color: Themes.withAlpha(Themes.colors.primary, 0.12)
+                color: Themes.withAlpha(Themes.m3Colors.primary, 0.12)
 
                 IconImage {
                     id: appIcon
@@ -50,7 +50,7 @@ LazyLoader {
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Appearance.fonts.extraLarge
                 font.weight: Font.Bold
-                color: Themes.colors.on_surface
+                color: Themes.m3Colors.onSurface
             }
 
             StyledLabel {
@@ -61,7 +61,7 @@ LazyLoader {
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Appearance.fonts.large
                 font.weight: Font.Normal
-                color: Themes.colors.on_surface
+                color: Themes.m3Colors.onSurface
             }
 
             StyledLabel {
@@ -71,7 +71,7 @@ LazyLoader {
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Appearance.fonts.medium
                 font.weight: Font.Normal
-                color: Themes.colors.on_surface_variant
+                color: Themes.m3Colors.onSurfaceVariant
                 lineHeight: 1.4
             }
 
@@ -82,7 +82,7 @@ LazyLoader {
                 wrapMode: Text.Wrap
                 font.pixelSize: Appearance.fonts.medium
                 font.weight: Font.Medium
-                color: Themes.colors.on_surface_variant
+                color: Themes.m3Colors.onSurfaceVariant
             }
 
             InputField {
@@ -92,7 +92,7 @@ LazyLoader {
             StyledLabel {
                 Layout.fillWidth: true
                 text: "Authentication failed. Please try again."
-                color: Themes.colors.error
+                color: Themes.m3Colors.error
                 visible: Pol.PolAgent.agent?.flow?.failed || 0
                 font.pixelSize: 12
                 font.weight: Font.Medium
@@ -126,7 +126,7 @@ LazyLoader {
 
                 StyledButton {
                     buttonTitle: "Cancel"
-                    buttonTextColor: Themes.colors.primary
+                    buttonTextColor: Themes.m3Colors.primary
                     buttonColor: "transparent"
                     Layout.preferredHeight: 40
                     visible: Pol.PolAgent.agent?.isActive

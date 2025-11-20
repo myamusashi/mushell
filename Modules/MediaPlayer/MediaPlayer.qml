@@ -86,7 +86,7 @@ Scope {
 
                 implicitWidth: parent.width
                 implicitHeight: contentLayout.implicitHeight + 15
-                color: Themes.colors.surface
+                color: Themes.m3Colors.surface
                 radius: Appearance.rounding.normal
 
                 RowLayout {
@@ -133,7 +133,7 @@ Scope {
                                     text: "Achievement Unlocked: 🏆 Static Image Starer - You expected the kuru spin but trackArtUrl decided to disconnect. GG."
                                     wrapMode: Text.Wrap
                                     elide: Text.ElideRight
-                                    color: Themes.colors.on_surface
+                                    color: Themes.m3Colors.onSurface
                                     visible: Player.Mpris.active && Player.Mpris.active.trackArtUrl === ""
                                 }
 
@@ -177,7 +177,7 @@ Scope {
                             StyledLabel {
                                 width: parent.width
                                 text: Player.Mpris.active ? Player.Mpris.active.trackTitle : ""
-                                color: Themes.colors.on_background
+                                color: Themes.m3Colors.onBackground
                                 font.pixelSize: Appearance.fonts.large
                                 wrapMode: Text.NoWrap
                                 elide: Text.ElideRight
@@ -189,7 +189,7 @@ Scope {
                                 StyledText {
                                     Layout.preferredWidth: width
                                     text: Player.Mpris.active ? Player.Mpris.active.trackArtist : ""
-                                    color: Themes.colors.on_background
+                                    color: Themes.m3Colors.onBackground
                                     font.pixelSize: Appearance.fonts.small
                                     wrapMode: Text.NoWrap
                                     elide: Text.ElideRight
@@ -197,13 +197,13 @@ Scope {
 
                                 StyledText {
                                     text: Player.Mpris.active ? "•" : ""
-                                    color: Themes.colors.on_background
+                                    color: Themes.m3Colors.onBackground
                                     font.pixelSize: Appearance.fonts.extraLarge
                                 }
 
                                 StyledText {
                                     text: Player.Mpris.active ? "Watched on " : ""
-                                    color: Themes.colors.on_background
+                                    color: Themes.m3Colors.onBackground
                                     font.pixelSize: Appearance.fonts.small
                                 }
 
@@ -239,7 +239,7 @@ Scope {
                                 text: Player.Mpris.active == null ? "00:00" : `${root.formatTime(Player.Mpris.active?.position)}
                                 ${root.formatTime(Player.Mpris.active?.length)}`
                                 font.pixelSize: Appearance.fonts.large
-                                color: Themes.colors.on_background
+                                color: Themes.m3Colors.onBackground
 
                                 Timer {
                                     running: Player.Mpris.active !== null && Player.Mpris.active.playbackState == MprisPlaybackState.Playing
@@ -259,11 +259,11 @@ Scope {
                                 icon: Player.Mpris.active === null ? "pause_circle" : Player.Mpris.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
                                 color: {
                                     if (pauseMArea.pressed)
-                                        return Themes.withAlpha(Themes.colors.primary, 0.08);
+                                        return Themes.withAlpha(Themes.m3Colors.primary, 0.08);
                                     else if (pauseMArea.containsMouse)
-                                        return Themes.withAlpha(Themes.colors.primary, 0.12);
+                                        return Themes.withAlpha(Themes.m3Colors.primary, 0.12);
                                     else
-                                        return Themes.colors.primary;
+                                        return Themes.m3Colors.primary;
                                 }
                                 font.pointSize: Appearance.fonts.extraLarge * 1.5
 

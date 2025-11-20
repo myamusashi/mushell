@@ -39,7 +39,7 @@ LazyLoader {
 
             anchors.fill: parent
 
-            color: Themes.colors.background
+            color: Themes.m3Colors.background
             radius: Appearance.rounding.normal
 
             ColumnLayout {
@@ -66,9 +66,9 @@ LazyLoader {
                         radius: Appearance.rounding.full
                         color: {
                             if (prevMArea.containsMouse && prevMArea.containsPress)
-                                return Themes.withAlpha(Themes.colors.primary, 0.12);
+                                return Themes.withAlpha(Themes.m3Colors.primary, 0.12);
                             else if (prevMArea.containsMouse)
-                                return Themes.withAlpha(Themes.colors.primary, 0.08);
+                                return Themes.withAlpha(Themes.m3Colors.primary, 0.08);
                             else
                                 return "transparent";
                         }
@@ -79,7 +79,7 @@ LazyLoader {
                             anchors.centerIn: parent
                             icon: "chevron_left"
                             font.pointSize: Appearance.fonts.large * 2
-                            color: Themes.colors.on_primary_container
+                            color: Themes.m3Colors.onPrimaryContainer
                         }
 
                         MArea {
@@ -112,7 +112,7 @@ LazyLoader {
                         verticalAlignment: Text.AlignVCenter
                         font.weight: 600
 
-                        color: Themes.colors.on_background
+                        color: Themes.m3Colors.onBackground
                         font.pixelSize: Appearance.fonts.large
                     }
 
@@ -122,9 +122,9 @@ LazyLoader {
                         radius: Appearance.rounding.full
                         color: {
                             if (nextMArea.containsMouse && nextMArea.containsPress)
-                                return Themes.withAlpha(Themes.colors.primary, 0.12);
+                                return Themes.withAlpha(Themes.m3Colors.primary, 0.12);
                             else if (nextMArea.containsMouse)
-                                return Themes.withAlpha(Themes.colors.primary, 0.08);
+                                return Themes.withAlpha(Themes.m3Colors.primary, 0.08);
                             else
                                 return "transparent";
                         }
@@ -135,7 +135,7 @@ LazyLoader {
                             anchors.centerIn: parent
                             icon: "chevron_right"
                             font.pointSize: Appearance.fonts.large * 2
-                            color: Themes.colors.primary
+                            color: Themes.m3Colors.primary
                         }
 
                         MArea {
@@ -178,9 +178,9 @@ LazyLoader {
                             text: daysOfWeekDelegate.model.shortName
                             color: {
                                 if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName === "Sat")
-                                    return Themes.colors.error;
+                                    return Themes.m3Colors.error;
                                 else
-                                    return Themes.colors.on_surface;
+                                    return Themes.m3Colors.onSurface;
                             }
                             font.pixelSize: Appearance.fonts.small * 1.2
                             font.weight: 600
@@ -213,9 +213,9 @@ LazyLoader {
 
                         color: {
                             if (dayItem.model.today)
-                                return Themes.colors.primary;
+                                return Themes.m3Colors.primary;
                             else if (mouseArea.containsMouse && dayItem.model.month === root.currentMonth)
-                                return Themes.colors.surface_variant;
+                                return Themes.m3Colors.surfaceVariant;
 
                             return "transparent";
                         }
@@ -242,16 +242,16 @@ LazyLoader {
                             text: Qt.formatDate(dayItem.model.date, "d")
                             color: {
                                 if (dayItem.model.today)
-                                    return Themes.colors.on_primary;
+                                    return Themes.m3Colors.onPrimary;
                                 else if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-                                    return Themes.colors.error;
+                                    return Themes.m3Colors.error;
                                 else if (dayItem.model.month === root.currentMonth)
-                                    return Themes.colors.on_surface;
+                                    return Themes.m3Colors.onSurface;
                                 else {
                                     if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-                                        return Themes.withAlpha(Themes.colors.error, 0.2);
+                                        return Themes.withAlpha(Themes.m3Colors.error, 0.2);
                                     else
-                                        return Themes.withAlpha(Themes.colors.on_surface, 0.2);
+                                        return Themes.withAlpha(Themes.m3Colors.onSurface, 0.2);
                                 }
                             }
                             font.pixelSize: Appearance.fonts.small * 1.3

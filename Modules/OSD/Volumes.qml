@@ -36,7 +36,7 @@ Scope {
             StyledRect {
                 anchors.fill: parent
                 radius: Appearance.rounding.full
-                color: Themes.colors.background
+                color: Themes.m3Colors.background
 
                 RowLayout {
                     id: content
@@ -48,7 +48,7 @@ Scope {
                     }
 
                     MaterialIcon {
-                        color: Themes.colors.on_background
+                        color: Themes.m3Colors.onBackground
                         icon: root.icon
                         Layout.alignment: Qt.AlignVCenter
                         font.pointSize: Appearance.fonts.extraLarge * 1.2
@@ -64,14 +64,14 @@ Scope {
                             StyledText {
                                 text: "Volumes:"
                                 font.weight: Font.Medium
-                                color: Themes.colors.on_background
+                                color: Themes.m3Colors.onBackground
                                 font.pixelSize: Appearance.fonts.large
                             }
                             StyledText {
                                 text: `${Math.round(
                                           Pipewire.defaultAudioSink?.audio.volume * 100)}%`
                                 font.weight: Font.Medium
-                                color: Themes.colors.on_background
+                                color: Themes.m3Colors.onBackground
                                 font.pixelSize: Appearance.fonts.normal
                             }
                         }

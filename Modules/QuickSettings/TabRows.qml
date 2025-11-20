@@ -19,7 +19,7 @@ StyledRect {
     Layout.preferredHeight: 60
     bottomLeftRadius: 5
     bottomRightRadius: 5
-    color: Themes.colors.surface
+    color: Themes.m3Colors.surface
 
     RowLayout {
         id: tabLayout
@@ -69,14 +69,14 @@ StyledRect {
 
                     MaterialIcon {
                         icon: settingButton.modelData.icon
-                        color: root.state === settingButton.index ? Themes.colors.primary : Themes.colors.on_surface_variant
+                        color: root.state === settingButton.index ? Themes.m3Colors.primary : Themes.m3Colors.onSurfaceVariant
 
                         font.pointSize: Appearance.fonts.large * root.scaleFactor
                     }
 
                     StyledText {
                         text: settingButton.modelData.title
-                        color: root.state === settingButton.index ? Themes.colors.primary : Themes.colors.on_surface_variant
+                        color: root.state === settingButton.index ? Themes.m3Colors.primary : Themes.m3Colors.onSurfaceVariant
 
                         font.pixelSize: Appearance.fonts.large * root.scaleFactor
                         elide: Text.ElideRight
@@ -93,7 +93,7 @@ StyledRect {
         width: tabRepeater.itemAt(root.state) ? tabRepeater.itemAt(
                                                     root.state).width : 0
         height: 2
-        color: Themes.colors.primary
+        color: Themes.m3Colors.primary
         radius: Appearance.rounding.large
 
         x: {

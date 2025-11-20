@@ -9,10 +9,10 @@ import qs.Components
 Scope {
     id: root
 
-    property color colorTextField: Themes.colors.on_surface
-    property color backgroundColorTextField: Themes.colors.surface_container_high
+    property color colorTextField: Themes.m3Colors.onSurface
+    property color backgroundColorTextField: Themes.m3Colors.surfaceContainerHigh
     property int backgroundRadius: Appearance.rounding.large
-    property color backgroundBorderColor: Themes.colors.outline
+    property color backgroundBorderColor: Themes.m3Colors.outline
     property int backgroundBorderWidth
     property real backgroundOpacity
     property bool selectByMouse: false
@@ -41,11 +41,11 @@ Scope {
 
             border.color: {
                 if (!textFieldBox.enabled)
-                    return Themes.withAlpha(Themes.colors.outline, 0.12)
+                    return Themes.withAlpha(Themes.m3Colors.outline, 0.12)
                 else if (textFieldBox.activeFocus)
-                    return Themes.colors.primary
+                    return Themes.m3Colors.primary
                 else
-                    return Themes.colors.outline
+                    return Themes.m3Colors.outline
             }
 
             border.width: textFieldBox.activeFocus ? 2 : 1
@@ -88,8 +88,8 @@ Scope {
         topPadding: Appearance.padding.large
         bottomPadding: Appearance.padding.large
 
-        selectionColor: Themes.withAlpha(Themes.colors.on_surface, 0.16)
-        selectedTextColor: Themes.colors.on_primary
+        selectionColor: Themes.withAlpha(Themes.m3Colors.onSurface, 0.16)
+        selectedTextColor: Themes.m3Colors.onPrimary
 
         Layout.alignment: Qt.AlignVCenter
 
@@ -123,19 +123,19 @@ Scope {
             width: 20
             height: 20
             radius: 10
-            color: Themes.colors.primary
+            color: Themes.m3Colors.primary
             visible: root.pam.unlockInProgress
             opacity: visible ? 1 : 0
 
             SequentialAnimation on color {
                 CAnim {
-                    to: Themes.colors.primary
+                    to: Themes.m3Colors.primary
                 }
                 CAnim {
-                    to: Themes.colors.secondary
+                    to: Themes.m3Colors.secondary
                 }
                 CAnim {
-                    to: Themes.colors.tertiary
+                    to: Themes.m3Colors.tertiary
                 }
                 loops: Animation.Infinite
             }

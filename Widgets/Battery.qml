@@ -26,7 +26,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         border {
             width: 2
-            color: root.batPercentage <= 0.2 && !root.batCharging ? Themes.colors.error : Themes.withAlpha(Themes.colors.outline, 0.5)
+            color: root.batPercentage <= 0.2 && !root.batCharging ? Themes.m3Colors.error : Themes.withAlpha(Themes.m3Colors.outline, 0.5)
         }
         color: "transparent"
         radius: 6
@@ -45,7 +45,7 @@ Item {
                     return Themes.colors.red;
                 if (root.batPercentage <= 0.5)
                     return Themes.colors.yellow;
-                return Themes.colors.on_surface;
+                return Themes.m3Colors.onSurface;
             }
             radius: parent.radius
 
@@ -60,7 +60,7 @@ Item {
             text: Math.round(root.batPercentage * 100)
             font.pixelSize: batteryBody.height * 0.65
             font.weight: Font.Bold
-            color: root.batPercentage <= 0.5 ? Themes.colors.on_background : Themes.colors.surface
+            color: root.batPercentage <= 0.5 ? Themes.m3Colors.onBackground : Themes.m3Colors.surface
         }
     }
 
@@ -72,7 +72,7 @@ Item {
         anchors.left: batteryBody.right
         anchors.leftMargin: 0.5
         anchors.verticalCenter: parent.verticalCenter
-        color: root.batPercentage <= 0.2 && !root.batCharging ? Themes.colors.error : Themes.withAlpha(Themes.colors.outline, 0.5)
+        color: root.batPercentage <= 0.2 && !root.batCharging ? Themes.m3Colors.error : Themes.withAlpha(Themes.m3Colors.outline, 0.5)
         topRightRadius: 1
         bottomRightRadius: 1
     }

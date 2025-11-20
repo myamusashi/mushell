@@ -9,7 +9,7 @@ import qs.Modules.Notifications
 StyledRect {
     implicitWidth: root.width
     implicitHeight: parent.height
-    color: mArea.containsPress ? Themes.withAlpha(Themes.colors.on_surface, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.colors.on_surface, 0.16) : "transparent"
+    color: mArea.containsPress ? Themes.withAlpha(Themes.m3Colors.onSurface, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.onSurface, 0.16) : "transparent"
 
     Dots {
         id: root
@@ -23,11 +23,11 @@ StyledRect {
         MaterialIcon {
             color: {
                 if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
-                    Themes.colors.primary;
+                    Themes.m3Colors.primary;
                 else if (root.isDndEnable)
-                    Themes.colors.on_surface;
+                    Themes.m3Colors.onSurface;
                 else
-                    Themes.colors.on_surface;
+                    Themes.m3Colors.onSurface;
             }
             font.pointSize: Appearance.fonts.large
             anchors.verticalCenter: parent.verticalCenter

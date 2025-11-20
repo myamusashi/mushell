@@ -45,7 +45,7 @@ Slider {
         height: root.trackDotSize
         radius: Appearance.rounding.normal
         visible: root.dotEnd && index > 0 && index < root.dotCount - 1
-        color: isActive ? Themes.colors.on_primary : Themes.colors.on_secondary_container
+        color: isActive ? Themes.m3Colors.onPrimary : Themes.m3Colors.onSecondaryContainer
     }
 
     MArea {
@@ -71,7 +71,7 @@ Slider {
             }
             sourceComponent: MaterialIcon {
                 icon: root.icon
-                color: Themes.colors.on_primary
+                color: Themes.m3Colors.onPrimary
                 font.pointSize: root.iconSize || Appearance.fonts.medium
             }
         }
@@ -83,7 +83,7 @@ Slider {
             }
             width: root.handleGap + (root.visualPosition * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
-            color: Themes.colors.primary
+            color: Themes.m3Colors.primary
             radius: Appearance.rounding.normal
 
             topRightRadius: Appearance.rounding.small * 0.5
@@ -97,7 +97,7 @@ Slider {
             }
             width: root.handleGap + ((1 - root.visualPosition) * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
-            color: Themes.colors.surface_container_highest
+            color: Themes.m3Colors.surfaceContainerHighest
             radius: Appearance.rounding.normal
 
             topLeftRadius: Appearance.rounding.small * 0.5
@@ -119,7 +119,7 @@ Slider {
         x: root.handleGap + (root.visualPosition * root.availableTrackWidth) - width / 2
         anchors.verticalCenter: parent.verticalCenter
         radius: Appearance.rounding.normal
-        color: Themes.colors.primary
+        color: Themes.m3Colors.primary
 
         Behavior on width {
             NumberAnimation {

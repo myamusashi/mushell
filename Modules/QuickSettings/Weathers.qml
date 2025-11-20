@@ -14,7 +14,7 @@ ColumnLayout {
     StyledText {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.cityData
-        color: Themes.colors.on_surface
+        color: Themes.m3Colors.onSurface
         font.pixelSize: Appearance.fonts.extraLarge
     }
 
@@ -28,14 +28,14 @@ ColumnLayout {
         MaterialIcon {
             Layout.alignment: Qt.AlignHCenter
             font.pointSize: Appearance.fonts.extraLarge * 4
-            color: Themes.colors.primary
+            color: Themes.m3Colors.primary
             icon: Weather.weatherIconData
         }
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: Weather.tempData + "°C"
-            color: Themes.colors.primary
+            color: Themes.m3Colors.primary
             font.pixelSize: Appearance.fonts.extraLarge * 2.5
             font.weight: Font.Bold
         }
@@ -45,7 +45,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.weatherDescriptionData.charAt(0).toUpperCase(
                   ) + Weather.weatherDescriptionData.slice(1)
-        color: Themes.colors.on_surface_variant
+        color: Themes.m3Colors.onSurfaceVariant
         font.pixelSize: Appearance.fonts.normal * 1.5
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
@@ -86,7 +86,7 @@ ColumnLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: weatherPage.modelData.value
-                        color: Themes.colors.on_surface
+                        color: Themes.m3Colors.onSurface
                         font.weight: Font.Bold
                         font.pixelSize: Appearance.fonts.small * 1.5
                     }
@@ -94,7 +94,7 @@ ColumnLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: weatherPage.modelData.label
-                        color: Themes.colors.on_surface_variant
+                        color: Themes.m3Colors.onSurfaceVariant
                         font.pixelSize: Appearance.fonts.small * 1.2
                     }
                 }

@@ -85,8 +85,8 @@ Scope {
 
                 anchors.fill: parent
                 radius: Appearance.rounding.large
-                color: Themes.colors.surface
-                border.color: Themes.colors.outline
+                color: Themes.m3Colors.surface
+                border.color: Themes.m3Colors.outline
                 border.width: 2
 
                 ColumnLayout {
@@ -104,13 +104,13 @@ Scope {
                         font.family: Appearance.fonts.familySans
                         focus: true
                         font.pixelSize: Appearance.fonts.large * 1.2
-                        color: Themes.colors.on_background
-                        placeholderTextColor: Themes.colors.on_surface_variant
+                        color: Themes.m3Colors.onBackground
+                        placeholderTextColor: Themes.m3Colors.onSurfaceVariant
 
                         background: StyledRect {
                             radius: Appearance.rounding.small
-                            color: Themes.colors.surface
-                            // border.color: Themes.colors.on_background
+                            color: Themes.m3Colors.surface
+                            // border.color: Themes.m3Colors.onBackground
                             // border.width: 2
                         }
 
@@ -169,7 +169,7 @@ Scope {
 
                                     color: rectLauncher.color
                                     border.width: gridView.currentIndex === delegateItem.index ? 3 : 1
-                                    border.color: gridView.currentIndex === delegateItem.index && search.focus !== true ? Themes.colors.primary : Themes.colors.outline_variant
+                                    border.color: gridView.currentIndex === delegateItem.index && search.focus !== true ? Themes.m3Colors.primary : Themes.m3Colors.outlineVariant
 
                                     IconImage {
                                         anchors.centerIn: parent
