@@ -7,6 +7,7 @@ import qs.Modules.Wallpaper
 import qs.Modules.Session
 import qs.Modules.Launcher
 import qs.Modules.Notifications
+import qs.Modules.RecordPanel
 import qs.Modules.OSD
 import qs.Modules.Overview
 import qs.Modules.Polkit
@@ -20,7 +21,8 @@ ShellRoot {
         id: bar
     }
     Lockscreen {}
-    Wall {}
+	Wall {}
+	RecordPanel {}
     WallpaperSelector {
         id: ws
     }
