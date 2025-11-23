@@ -21,6 +21,7 @@
   hyprland,
   qt6,
   callPackage,
+  intel-gpu-tools,
   roboto-flex,
   roboto-mono,
 }: let
@@ -40,6 +41,7 @@
     foot
     polkit
     hyprland
+    intel-gpu-tools
     roboto-flex
     roboto-mono
     qt6.qtgraphs
