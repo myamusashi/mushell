@@ -21,7 +21,6 @@
   hyprland,
   qt6,
   callPackage,
-  intel-gpu-tools,
 }: let
   app2unit = callPackage ./app2unit.nix {};
   keystate-bin = callPackage ./keystate.nix {};
@@ -43,7 +42,6 @@
     foot
     polkit
     hyprland
-    intel-gpu-tools
     qt6.qtgraphs
     material-symbols
   ];
