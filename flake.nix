@@ -46,6 +46,7 @@
           [
             packages.default
             quickshell.packages.${system}.default
+			pkgs.qt6.qtgraphs
             pkgs.go
             pkgs.roboto
             pkgs.roboto-flex

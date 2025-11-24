@@ -22,8 +22,6 @@
   qt6,
   callPackage,
   intel-gpu-tools,
-  roboto-flex,
-  roboto-mono,
 }: let
   runtimeDeps = [
     findutils
@@ -42,9 +40,8 @@
     polkit
     hyprland
     intel-gpu-tools
-    roboto-flex
-    roboto-mono
     qt6.qtgraphs
+    material-symbols
   ];
 
   app2unit = callPackage ./app2unit.nix {};
