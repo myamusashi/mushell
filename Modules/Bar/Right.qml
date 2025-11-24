@@ -30,7 +30,7 @@ Loader {
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
             Layout.preferredHeight: 25
-            color: mArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainerHighest, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainerHighest, 0.1) : Themes.m3Colors.m3SurfaceContainer
+            color: Themes.m3Colors.m3SurfaceContainer
             radius: Appearance.rounding.normal
 
             Behavior on color {
@@ -59,9 +59,7 @@ Loader {
                 id: mArea
 
                 anchors.fill: parent
-
                 hoverEnabled: true
-
                 cursorShape: Qt.PointingHandCursor
                 onClicked: quickSettings.isControlCenterOpen = !quickSettings.isControlCenterOpen
             }

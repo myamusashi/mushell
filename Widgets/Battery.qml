@@ -40,11 +40,11 @@ Item {
             width: root.batCharging ? (parent.width - 4) * (root.chargeFillIndex / 100.0) : (parent.width - 4) * root.batPercentage
             color: {
                 if (root.batCharging)
-                    return Themes.colors.green;
+                    return Themes.m3Colors.m3Green;
                 if (root.batPercentage <= 0.2)
-                    return Themes.colors.red;
+                    return Themes.m3Colors.m3Red;
                 if (root.batPercentage <= 0.5)
-                    return Themes.colors.yellow;
+                    return Themes.m3Colors.m3Yellow;
                 return Themes.m3Colors.m3OnSurface;
             }
             radius: parent.radius

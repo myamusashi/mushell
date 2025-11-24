@@ -22,15 +22,7 @@ RowLayout {
             Layout.preferredWidth: 56 + propertySplitButton.width
             Layout.preferredHeight: 56
 
-            color: {
-                if (mouseAreaMain.containsPress)
-                    Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
-                else if (mouseAreaMain.containsMouse)
-                    Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1);
-                else
-                    Themes.m3Colors.m3Primary;
-            }
-
+            color: Themes.m3Colors.m3Primary
             radius: Appearance.rounding.full
 
             RowLayout {
@@ -106,9 +98,9 @@ RowLayout {
 
                 Layout.preferredWidth: mainButton.width
                 Layout.preferredHeight: root.isOpen ? 56 : 0
-				Layout.topMargin: root.isOpen ? Appearance.spacing.normal : 0
+                Layout.topMargin: root.isOpen ? Appearance.spacing.normal : 0
 
-                color: mouseArea.pressed ? Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08) : mouseArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1) : Themes.m3Colors.m3Primary
+                color: Themes.m3Colors.m3Primary
                 radius: Appearance.rounding.full
                 visible: root.isOpen || Layout.bottomMargin > -height
 
@@ -172,15 +164,7 @@ RowLayout {
         Layout.preferredWidth: 56
         Layout.preferredHeight: 56
 
-        color: {
-            if (mouseAreaToggle.containsPress)
-                Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
-            else if (mouseAreaToggle.containsMouse)
-                Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1);
-            else
-                Themes.m3Colors.m3Primary;
-        }
-
+        color: Themes.m3Colors.m3Primary
         radius: Appearance.rounding.full
 
         MaterialIcon {

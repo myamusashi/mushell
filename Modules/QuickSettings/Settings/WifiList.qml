@@ -44,7 +44,7 @@ Loader {
 
                             anchors.centerIn: parent
                             icon: "arrow_back"
-                            color: mIconBackArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3OnBackground, 0.1) : mIconBackArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnBackground, 0.08) : Themes.m3Colors.m3OnBackground
+                            color: Themes.m3Colors.m3OnBackground
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                         }
 
@@ -90,7 +90,7 @@ Loader {
 
                             anchors.centerIn: parent
                             icon: "refresh"
-                            color: mRefreshArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3OnBackground, 0.1) : mRefreshArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnBackground, 0.08) : Themes.m3Colors.m3OnBackground
+                            color: Themes.m3Colors.m3OnBackground
                             font.pointSize: Appearance.fonts.extraLarge * 0.8
                             opacity: Network.wifiEnabled ? 1.0 : 0.5
                             antialiasing: true
@@ -258,7 +258,7 @@ Loader {
 
                             width: ListView.view.width
                             implicitHeight: networkLayout.implicitHeight + 20
-                            color: mouseArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainer, 0.12) : mouseArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainer, 0.08) : modelData.active ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainer, 0.08) : Themes.m3Colors.m3SurfaceContainer
+                            color: Themes.m3Colors.m3SurfaceContainer
                             radius: Appearance.rounding.normal
 
                             RowLayout {

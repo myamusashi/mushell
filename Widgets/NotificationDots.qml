@@ -9,7 +9,7 @@ import qs.Modules.Notifications
 StyledRect {
     implicitWidth: root.width
     implicitHeight: parent.height
-    color: mArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : mArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.16) : "transparent"
+    color: "transparent"
 
     Dots {
         id: root

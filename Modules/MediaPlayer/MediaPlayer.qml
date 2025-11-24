@@ -233,7 +233,7 @@ Scope {
                             StyledText {
                                 id: timeTrack
 
-                                text: Players.active == null ? "00:00" : `${root.formatTime(Players.active?.position)}:${root.formatTime(Players.active?.length)}`
+                                text: Players.active == null ? "00:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}`
                                 font.pixelSize: Appearance.fonts.large
                                 color: Themes.m3Colors.m3OnBackground
 
@@ -253,14 +253,7 @@ Scope {
                                 id: pauseButton
 
                                 icon: Players.active === null ? "pause_circle" : Players.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
-                                color: {
-                                    if (pauseMArea.pressed)
-                                        return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
-                                    else if (pauseMArea.containsMouse)
-                                        return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.12);
-                                    else
-                                        return Themes.m3Colors.m3Primary;
-                                }
+                                color: Themes.m3Colors.m3Primary
                                 font.pointSize: Appearance.fonts.extraLarge * 1.5
 
                                 MArea {
@@ -281,7 +274,7 @@ Scope {
 
                             StyledButton {
                                 iconButton: "skip_previous"
-                                iconSize: 10
+                                iconSize: Appearance.fonts.large
                                 onClicked: Players.active ? Players.active.previous() : {}
                             }
 
@@ -305,7 +298,7 @@ Scope {
 
                             StyledButton {
                                 iconButton: "skip_next"
-                                iconSize: 10
+                                iconSize: Appearance.fonts.large
                                 onClicked: Players.active ? Players.active.next() : {}
                             }
                         }

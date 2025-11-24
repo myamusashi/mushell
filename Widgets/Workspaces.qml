@@ -19,7 +19,7 @@ RowLayout {
 
         Layout.preferredWidth: workspaceRow.width + 20
         implicitHeight: 25
-        color: workspaceMBarArea.containsPress ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainerHighest, 0.08) : workspaceMBarArea.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3SurfaceContainerHighest, 0.1) : Themes.m3Colors.m3SurfaceContainer
+        color: Themes.m3Colors.m3SurfaceContainer
 
         MArea {
             id: workspaceMBarArea
@@ -59,14 +59,7 @@ RowLayout {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         text: (wsItem.index + 1).toString()
-                        color: {
-                            if (workspaceMArea.containsMouse)
-                                return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.5);
-                            if (wsItem.focused)
-                                return Themes.m3Colors.m3Primary;
-                            else
-                                return Themes.m3Colors.m3OnBackground;
-                        }
+                        color: Themes.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.medium * 1.3
                         font.bold: wsItem.focused
                     }

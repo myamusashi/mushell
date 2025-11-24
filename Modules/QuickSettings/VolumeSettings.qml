@@ -65,11 +65,9 @@ ScrollView {
                     textRole: "readable"
                     implicitWidth: 350
                     currentIndex: {
-                        for (var i = 0; i < Audio.models.length; i++) {
-                            if (Audio.models[i].index === Audio.activeProfileIndex) {
+                        for (var i = 0; i < Audio.models.length; i++) 
+                            if (Audio.models[i].index === Audio.activeProfileIndex) 
                                 return i;
-                            }
-                        }
                         return -1;
                     }
                     height: contentItem.implicitHeight * 2
@@ -168,7 +166,6 @@ ScrollView {
                             height: 40
                             radius: Appearance.rounding.large
                             color: Themes.m3Colors.m3Primary
-                            opacity: profilesComboBox.pressed ? 0.12 : profilesComboBox.hovered ? 0.08 : 0
 
                             Behavior on opacity {
                                 NAnim {}

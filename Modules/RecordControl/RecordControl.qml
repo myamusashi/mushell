@@ -143,7 +143,7 @@ Scope {
                             Layout.preferredWidth: 28
                             Layout.preferredHeight: 28
                             radius: Appearance.rounding.large
-                            color: closeButtonMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : closeButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : "transparent"
+                            color: "transparent"
 
                             Behavior on color {
                                 CAnim {

@@ -64,14 +64,7 @@ LazyLoader {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
                         radius: Appearance.rounding.full
-                        color: {
-                            if (prevMArea.containsMouse && prevMArea.containsPress)
-                                return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.12);
-                            else if (prevMArea.containsMouse)
-                                return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
-                            else
-                                return "transparent";
-                        }
+                        color: "transparent"
 
                         MaterialIcon {
                             id: prevIcon
@@ -120,14 +113,7 @@ LazyLoader {
                         Layout.preferredWidth: 40
                         Layout.preferredHeight: 40
                         radius: Appearance.rounding.full
-                        color: {
-                            if (nextMArea.containsMouse && nextMArea.containsPress)
-                                return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.12);
-                            else if (nextMArea.containsMouse)
-                                return Themes.withAlpha(Themes.m3Colors.m3Primary, 0.08);
-                            else
-                                return "transparent";
-                        }
+                        color: "transparent"
 
                         MaterialIcon {
                             id: nextIcon

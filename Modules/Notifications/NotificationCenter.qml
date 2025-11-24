@@ -415,7 +415,7 @@ Scope {
                                                     Layout.preferredHeight: 32
 
                                                     radius: Appearance.rounding.large
-                                                    color: expandButtonMouse.pressed ? Themes.m3Colors.m3SecondaryContainer : expandButtonMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.08) : "transparent"
+                                                    color: "transparent"
 
                                                     MaterialIcon {
                                                         id: expandIcon
@@ -511,7 +511,7 @@ Scope {
                                                             anchors.fill: parent
 
                                                             anchors.topMargin: 1
-                                                            color: actionMouse.pressed ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.12) : actionMouse.containsMouse ? Themes.withAlpha(Themes.m3Colors.m3OnSecondaryContainer, 0.08) : "transparent"
+                                                            color: "transparent"
                                                             radius: parent.radius
                                                             visible: !actionMouse.pressed
                                                         }

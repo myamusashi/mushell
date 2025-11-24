@@ -60,34 +60,13 @@ StyledRect {
                 required property var modelData
                 required property int index
 
-                buttonTitle: modelData.title
-                Layout.fillWidth: true
+				buttonTitle: modelData.title
+				iconButton: modelData.icon
+				iconSize: Appearance.fonts.large * root.scaleFactor
+				Layout.fillWidth: true
+				buttonTextColor: root.state === modelData.index ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnBackground
                 buttonColor: "transparent"
-                highlighted: root.state === modelData.index
-                flat: root.state !== modelData.index
                 onClicked: root.tabClicked(settingButton.index)
-
-                contentItem: RowLayout {
-                    id: content
-
-                    anchors.centerIn: parent
-                    spacing: Appearance.spacing.small
-
-                    MaterialIcon {
-                        icon: settingButton.modelData.icon
-                        color: root.state === settingButton.index ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnSurfaceVariant
-
-                        font.pointSize: Appearance.fonts.large * root.scaleFactor
-                    }
-
-                    StyledText {
-                        text: settingButton.modelData.title
-                        color: root.state === settingButton.index ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnSurfaceVariant
-
-                        font.pixelSize: Appearance.fonts.large * root.scaleFactor
-                        elide: Text.ElideRight
-                    }
-                }
             }
         }
     }

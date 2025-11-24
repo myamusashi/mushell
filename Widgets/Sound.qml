@@ -38,7 +38,7 @@ StyledRect {
             color: Themes.m3Colors.m3OnBackground
             icon: root.icon
             Layout.alignment: Qt.AlignVCenter
-            font.pixelSize: Appearance.fonts.large * 1.2
+            font.pixelSize: Appearance.fonts.large * 1.5
         }
 
         StyledText {
