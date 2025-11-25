@@ -65,8 +65,8 @@ ScrollView {
                     textRole: "readable"
                     implicitWidth: 350
                     currentIndex: {
-                        for (var i = 0; i < Audio.models.length; i++) 
-                            if (Audio.models[i].index === Audio.activeProfileIndex) 
+                        for (var i = 0; i < Audio.models.length; i++)
+                            if (Audio.models[i].index === Audio.activeProfileIndex)
                                 return i;
                         return -1;
                     }
@@ -109,6 +109,7 @@ ScrollView {
 
                         required property var modelData
                         required property int index
+
                         width: profilesComboBox.width
                         padding: Appearance.padding.normal
 
@@ -157,18 +158,6 @@ ScrollView {
                                 context.closePath();
                                 context.fillStyle = Themes.m3Colors.m3OnBackground;
                                 context.fill();
-                            }
-                        }
-
-                        StyledRect {
-                            anchors.centerIn: parent
-                            width: 40
-                            height: 40
-                            radius: Appearance.rounding.large
-                            color: Themes.m3Colors.m3Primary
-
-                            Behavior on opacity {
-                                NAnim {}
                             }
                         }
                     }

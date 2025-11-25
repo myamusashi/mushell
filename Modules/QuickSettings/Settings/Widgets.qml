@@ -45,11 +45,34 @@ RowLayout {
         model: parent.actions
 
         delegate: StyledButton {
-            required property var modelData
+            id: button
 
+            required property var modelData
             iconButton: modelData.icon
             buttonTitle: modelData.title
+            buttonTextColor: Themes.m3Colors.m3OnPrimary
             onClicked: root.executeAction(modelData)
+            mArea.layerColor: "transparent"
+
+            property real originalWidth: implicitWidth
+            width: originalWidth
+
+            states: State {
+                name: "pressed"
+                when: button.mArea.pressed
+                PropertyChanges {
+                    target: button
+                    width: originalWidth * 1.05
+                }
+            }
+
+            transitions: Transition {
+                NAnim {
+                    property: "width"
+                    duration: Appearance.animations.durations.small
+                    easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
+                }
+            }
         }
     }
 }

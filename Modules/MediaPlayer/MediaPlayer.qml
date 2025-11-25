@@ -274,7 +274,9 @@ Scope {
 
                             StyledButton {
                                 iconButton: "skip_previous"
-                                iconSize: Appearance.fonts.large
+                                iconSize: Appearance.fonts.large * 1.2
+                                buttonTextColor: Themes.m3Colors.m3OnPrimary
+                                mArea.layerColor: "transparent"
                                 onClicked: Players.active ? Players.active.previous() : {}
                             }
 
@@ -298,7 +300,9 @@ Scope {
 
                             StyledButton {
                                 iconButton: "skip_next"
-                                iconSize: Appearance.fonts.large
+                                iconSize: Appearance.fonts.large * 1.2
+                                buttonTextColor: Themes.m3Colors.m3OnPrimary
+                                mArea.layerColor: "transparent"
                                 onClicked: Players.active ? Players.active.next() : {}
                             }
                         }
