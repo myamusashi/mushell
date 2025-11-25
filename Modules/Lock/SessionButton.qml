@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import Quickshell
 
 import qs.Configs
-import qs.Helpers
 import qs.Components
 
 RowLayout {
@@ -15,48 +14,35 @@ RowLayout {
 
     ColumnLayout {
         Layout.alignment: Qt.AlignCenter
+        spacing: 0
 
-        StyledRect {
+        StyledButton {
             id: mainButton
 
-            Layout.preferredWidth: 56 + propertySplitButton.width
+            Layout.preferredWidth: implicitWidth
             Layout.preferredHeight: 56
 
-            color: Themes.m3Colors.m3Primary
-            radius: Appearance.rounding.full
+            buttonTitle: "Shutdown"
+            iconButton: "power_settings_circle"
+            iconSize: Appearance.fonts.extraLarge
+            buttonColor: Themes.m3Colors.m3Primary
+            buttonTextColor: Themes.m3Colors.m3OnPrimary
+            buttonHeight: 56
+            isButtonFullRound: true
 
-            RowLayout {
-                id: propertySplitButton
+            scale: mArea.containsMouse ? 1.05 : 1.0
 
-                anchors.centerIn: parent
-                spacing: Appearance.spacing.small
-
-                MaterialIcon {
-                    icon: "power_settings_circle"
-                    color: Themes.m3Colors.m3OnPrimary
-                    font.pointSize: Appearance.fonts.extraLarge
-                }
-
-                StyledText {
-                    text: "Shutdown"
-                    color: Themes.m3Colors.m3OnPrimary
-                    font.pixelSize: Appearance.fonts.large
+            Behavior on scale {
+                NAnim {
+                    duration: Appearance.animations.durations.small
+                    easing.bezierCurve: Appearance.animations.curves.standard
                 }
             }
 
-            MArea {
-                id: mouseAreaMain
-
-                anchors.fill: parent
-
-                hoverEnabled: true
-
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    Quickshell.execDetached({
-                        command: ["sh", "-c", "systemctl poweroff"]
-                    });
-                }
+            onClicked: {
+                Quickshell.execDetached({
+                    command: ["sh", "-c", "systemctl poweroff"]
+                });
             }
         }
 
@@ -91,112 +77,101 @@ RowLayout {
                 }
             ]
 
-            delegate: StyledRect {
+            delegate: StyledButton {
                 id: buttonDelegate
 
                 required property var modelData
+                required property int index
 
                 Layout.preferredWidth: mainButton.width
                 Layout.preferredHeight: root.isOpen ? 56 : 0
                 Layout.topMargin: root.isOpen ? Appearance.spacing.normal : 0
 
-                color: Themes.m3Colors.m3Primary
-                radius: Appearance.rounding.full
-                visible: root.isOpen || Layout.bottomMargin > -height
+                buttonTitle: modelData.name
+                iconButton: modelData.icon
+                iconSize: Appearance.fonts.extraLarge
+                buttonColor: Themes.m3Colors.m3Primary
+                buttonTextColor: Themes.m3Colors.m3OnPrimary
+                buttonHeight: 56
+                isButtonFullRound: true
+
+                visible: root.isOpen || Layout.preferredHeight > 0
+                opacity: root.isOpen ? 1.0 : 0.0
+                scale: root.isOpen ? (mArea.containsMouse ? 1.05 : 1.0) : 0.8
+                transformOrigin: Item.Center
 
                 Behavior on Layout.preferredHeight {
                     NAnim {
-                        duration: Appearance.animations.durations.small
+                        duration: Appearance.animations.durations.normal
                         easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
                     }
                 }
 
                 Behavior on opacity {
                     NAnim {
-                        duration: Appearance.animations.durations.small
+                        duration: Appearance.animations.durations.normal
+                        easing.bezierCurve: Appearance.animations.curves.standard
+                    }
+                }
+
+                Behavior on scale {
+                    NAnim {
+                        duration: Appearance.animations.durations.normal
+                        easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
                     }
                 }
 
                 Behavior on Layout.topMargin {
                     NAnim {
-                        duration: Appearance.animations.durations.small
+                        duration: Appearance.animations.durations.normal
                         easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
                     }
                 }
 
-                RowLayout {
-                    id: propertyButton
-
-                    anchors.centerIn: parent
-                    spacing: Appearance.spacing.small
-
-                    MaterialIcon {
-                        icon: buttonDelegate.modelData.icon
-                        color: Themes.m3Colors.m3OnPrimary
-                        font.pointSize: Appearance.fonts.extraLarge
-                    }
-
-                    StyledText {
-                        text: buttonDelegate.modelData.name
-                        color: Themes.m3Colors.m3OnPrimary
-                        font.pixelSize: Appearance.fonts.large
-                    }
-                }
-
-                MArea {
-                    id: mouseArea
-
-                    anchors.fill: parent
-
-                    hoverEnabled: true
-
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: buttonDelegate.modelData.action()
-                }
+                onClicked: modelData.action()
             }
         }
     }
 
-    StyledRect {
+    StyledButton {
         id: toggleButton
 
         Layout.alignment: Qt.AlignBottom
         Layout.preferredWidth: 56
         Layout.preferredHeight: 56
 
-        color: Themes.m3Colors.m3Primary
-        radius: Appearance.rounding.full
+        iconButton: root.isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"
+        iconSize: Appearance.fonts.extraLarge
+        buttonColor: Themes.m3Colors.m3Primary
+        buttonTextColor: Themes.m3Colors.m3OnPrimary
+        buttonHeight: 56
+        isButtonFullRound: true
+        baseWidth: 56
 
-        MaterialIcon {
-            id: arrowIcon
+		scale: mArea.containsMouse ? 1.1 : 1.0
+		backgroundRounding: Appearance.rounding.full
 
-            anchors.centerIn: parent
-            icon: root.isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"
-            color: Themes.m3Colors.m3OnPrimary
-            font.pointSize: Appearance.fonts.extraLarge
-
-            RotationAnimator on rotation {
-                id: rotateArrowIcon
-
-                from: 0
-                to: 180
-                duration: Appearance.animations.durations.normal
-                easing.type: Easing.BezierSpline
+        Behavior on scale {
+            NAnim {
+                duration: Appearance.animations.durations.small
                 easing.bezierCurve: Appearance.animations.curves.standard
-                running: false
             }
         }
 
-        MArea {
-            id: mouseAreaToggle
-
+        Item {
             anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                root.isOpen = !root.isOpen;
-                rotateArrowIcon.running = !rotateArrowIcon.running;
+            rotation: root.isOpen ? 180 : 0
+
+            Behavior on rotation {
+                NAnim {
+                    duration: Appearance.animations.durations.normal
+                    easing.bezierCurve: Appearance.animations.curves.standard
+                }
             }
+        }
+
+        onClicked: {
+            root.isOpen = !root.isOpen;
         }
     }
 }
