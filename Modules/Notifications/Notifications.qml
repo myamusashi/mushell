@@ -4,9 +4,11 @@ import QtQuick
 
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Services.Notifications
 
 import qs.Configs
 import qs.Services
+import qs.Components
 
 import "Components" as Com
 
@@ -26,12 +28,15 @@ LazyLoader {
             top: 5
         }
 
+        property int monitorWidth: Hypr.focusedMonitor.width * 0.2
+        property int monitorHeight: Hypr.focusedMonitor.height / 2
+
         WlrLayershell.namespace: "shell:notification"
         exclusiveZone: 0
         color: "transparent"
 
-        implicitWidth: 300 * 1.5
-        implicitHeight: Math.min(600, notifColumn.implicitHeight)
+        implicitWidth: monitorWidth
+        implicitHeight: monitorHeight
 
         Flickable {
             id: notifFlickable
@@ -42,8 +47,8 @@ LazyLoader {
                 bottom: parent.bottom
             }
 
-            width: 350
-            contentHeight: notifColumn.height
+            width: parent.width
+            contentHeight: parent.height
             clip: true
             boundsBehavior: Flickable.StopAtBounds
 
@@ -60,7 +65,22 @@ LazyLoader {
                         values: [...Notifs.notifications.popupNotifications.map(a => a)].reverse()
                     }
 
-                    delegate: Com.Wrapper {}
+                    delegate: Com.Wrapper {
+                        id: wrapper
+
+						onEntered: closePopups.stop()
+						onExited: closePopups.start()
+
+                        Timer {
+                            id: closePopups
+
+                            interval: wrapper.modelData.urgency === NotificationUrgency.Critical ? 10000 : 5000
+                            running: true
+                            onTriggered: {
+                                Notifs.notifications.removePopupNotification(wrapper.modelData);
+                            }
+                        }
+                    }
                 }
             }
         }
