@@ -13,15 +13,31 @@ Slider {
     hoverEnabled: true
     Layout.alignment: Qt.AlignHCenter
     implicitWidth: valueWidth || 200
-    implicitHeight: valueHeight || 40
+	implicitHeight: valueHeight
+
+	enum ContainerSize {
+		XS = 16,
+		S = 24,
+		M = 40,
+		L = 56,
+		XL = 96
+	}
+
+	enum HandleSize {
+		XS = 44,
+		S = 44,
+		M = 44,
+		L = 68,
+		XL = 108
+	}
 
     property bool dotEnd: true
     property real trackHeightDiff: 15
     property real handleGap: 6
     property real trackDotSize: 4
     property bool useAnim: true
-    property int valueWidth
-    property int valueHeight
+    property int valueWidth: 200
+    property int valueHeight: StyledSlide.ContainerSize.M
     property string icon
     property int iconSize
 
@@ -55,7 +71,7 @@ Slider {
 
     background: Item {
         implicitWidth: root.valueWidth || 200
-        implicitHeight: root.valueHeight || 40
+        implicitHeight: root.valueHeight
         width: root.availableWidth
         height: root.availableHeight
         x: root.leftPadding
@@ -83,7 +99,7 @@ Slider {
             width: root.handleGap + (root.visualPosition * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
             color: Themes.m3Colors.m3Primary
-            radius: Appearance.rounding.normal
+            radius: Appearance.rounding.small * 0.5
 
             topRightRadius: Appearance.rounding.small * 0.5
             bottomRightRadius: Appearance.rounding.small * 0.5
@@ -97,7 +113,7 @@ Slider {
             width: root.handleGap + ((1 - root.visualPosition) * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
             color: Themes.m3Colors.m3SurfaceContainerHighest
-            radius: Appearance.rounding.normal
+            radius: Appearance.rounding.small * 0.5
 
             topLeftRadius: Appearance.rounding.small * 0.5
             bottomLeftRadius: Appearance.rounding.small * 0.5
@@ -117,7 +133,6 @@ Slider {
         height: root.height
         x: root.handleGap + (root.visualPosition * root.availableTrackWidth) - width / 2
         anchors.verticalCenter: parent.verticalCenter
-        radius: Appearance.rounding.normal
         color: Themes.m3Colors.m3Primary
 
         Behavior on width {
