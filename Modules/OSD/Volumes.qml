@@ -1,9 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
-import Quickshell
-import Quickshell.Wayland
 import Quickshell.Services.Pipewire
 
 import qs.Configs
@@ -11,77 +8,91 @@ import qs.Helpers
 import qs.Services
 import qs.Components
 
-Scope {
-    id: scope
+Item {
+    id: volumeOSD
 
-    property bool active: false
-    required property PwNode node
+	required property bool isVolumeOSDShow
 
-    LazyLoader {
-        active: scope.active
-        component: PanelWindow {
-            id: root
+    width: parent.width
+    height: isVolumeOSDShow ? 80 : 0
+    visible: height > 0
+    clip: true
 
-            anchors.bottom: true
-            WlrLayershell.namespace: "shell:osd:volume"
-            color: "transparent"
-            focusable: false
-            implicitWidth: content.implicitWidth * 1.5
-            implicitHeight: content.implicitHeight * 1.5
-            exclusiveZone: 0
-            margins.bottom: 15
+    Behavior on height {
+        NAnim {
+            duration: Appearance.animations.durations.small
+        }
+    }
 
-            property string icon: Audio.getIcon(scope.node)
+    property string icon: Audio.getIcon(Pipewire.defaultAudioSink)
 
-            StyledRect {
-                anchors.fill: parent
-                radius: Appearance.rounding.full
-                color: Themes.m3Colors.m3Background
+    StyledRect {
+        anchors.fill: parent
+        radius: Appearance.rounding.normal
+        color: "transparent"
 
-                RowLayout {
-                    id: content
+        Item {
+            id: content
 
-                    anchors {
-                        fill: parent
-                        leftMargin: 10
-                        rightMargin: 15
-                    }
+            anchors {
+                fill: parent
+                leftMargin: 15
+                rightMargin: 15
+                topMargin: 10
+                bottomMargin: 10
+            }
+            opacity: volumeOSD.height > 0 ? 1 : 0
 
-                    MaterialIcon {
+            Behavior on opacity {
+                NAnim {
+                    duration: Appearance.animations.durations.small
+                }
+            }
+
+            MaterialIcon {
+                id: volumeIcon
+
+                anchors {
+                    left: parent.left
+                    verticalCenter: parent.verticalCenter
+                }
+                color: Themes.m3Colors.m3OnBackground
+                icon: volumeOSD.icon
+                font.pointSize: Appearance.fonts.extraLarge * 1.2
+            }
+
+            Column {
+                anchors {
+                    left: volumeIcon.right
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: 10
+                }
+                spacing: Appearance.spacing.small
+
+                Row {
+                    spacing: Appearance.spacing.small
+
+                    StyledText {
+                        text: "Volume:"
+                        font.weight: Font.Medium
                         color: Themes.m3Colors.m3OnBackground
-                        icon: root.icon
-                        Layout.alignment: Qt.AlignVCenter
-                        font.pointSize: Appearance.fonts.extraLarge * 1.2
+                        font.pixelSize: Appearance.fonts.large
                     }
 
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        RowLayout {
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignLeft
-                            StyledText {
-                                text: "Volumes:"
-                                font.weight: Font.Medium
-                                color: Themes.m3Colors.m3OnBackground
-                                font.pixelSize: Appearance.fonts.large
-                            }
-                            StyledText {
-                                text: `${Math.round(
-                                          Pipewire.defaultAudioSink?.audio.volume * 100)}%`
-                                font.weight: Font.Medium
-                                color: Themes.m3Colors.m3OnBackground
-                                font.pixelSize: Appearance.fonts.normal
-                            }
-                        }
-                        StyledSlide {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 32
-                            value: scope.node.audio.volume
-                            onValueChanged: scope.node.audio.volume = value
-                        }
+                    StyledText {
+                        text: `${Math.round(Pipewire.defaultAudioSink?.audio.volume * 100)}%`
+                        font.weight: Font.Medium
+                        color: Themes.m3Colors.m3OnBackground
+                        font.pixelSize: Appearance.fonts.normal
                     }
+                }
+
+                StyledSlide {
+                    width: parent.width
+                    height: 32
+                    value: Pipewire.defaultAudioSink.audio.volume
+                    onValueChanged: Pipewire.defaultAudioSink.audio.volume = value
                 }
             }
         }

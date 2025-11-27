@@ -2,9 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Quickshell.Wayland
 import Quickshell.Services.Pipewire
 
+import qs.Configs
+import qs.Helpers
 import qs.Services
+import qs.Components
 
 Scope {
     id: root
@@ -13,23 +17,65 @@ Scope {
     property bool isCapsLockOSDShow: false
     property bool isNumLockOSDShow: false
 
+    property var osdTimers: ({
+            "capslock": null,
+            "numlock": null,
+            "volume": null
+        })
+
+    function startOSDTimer(osdName) {
+        var timer = Qt.createQmlObject('import QtQuick 2.15; Timer { interval: 2000; repeat: false; }', root, "dynamicTimer");
+
+        timer.triggered.connect(function () {
+            closeOSD(osdName);
+            timer.destroy();
+            osdTimers[osdName] = null;
+
+            checkAndClosePanelWindow();
+        });
+
+        if (osdTimers[osdName]) {
+            osdTimers[osdName].stop();
+            osdTimers[osdName].destroy();
+        }
+
+        osdTimers[osdName] = timer;
+        timer.start();
+    }
+
+    function closeOSD(osdName) {
+        if (osdName === "capslock")
+            root.isCapsLockOSDShow = false;
+        else if (osdName === "numlock")
+            root.isNumLockOSDShow = false;
+        else if (osdName === "volume")
+            root.isVolumeOSDShow = false;
+    }
+
+    function checkAndClosePanelWindow() {
+        if (!root.isVolumeOSDShow && !root.isCapsLockOSDShow && !root.isNumLockOSDShow)
+            cleanup.start();
+    }
+
     Connections {
         target: KeyLockState.state
+
         function onCapsLockChanged() {
-            root.isCapsLockOSDShow = true
-            hideOSDTimer.restart()
+            root.isCapsLockOSDShow = true;
+            root.startOSDTimer("capslock");
         }
         function onNumLockChanged() {
-            root.isNumLockOSDShow = true
-            hideOSDTimer.restart()
+            root.isNumLockOSDShow = true;
+            root.startOSDTimer("numlock");
         }
     }
 
     Connections {
         target: Pipewire.defaultAudioSink.audio
+
         function onVolumeChanged() {
-            root.isVolumeOSDShow = true
-            hideOSDTimer.restart()
+            root.isVolumeOSDShow = true;
+            root.startOSDTimer("volume");
         }
     }
 
@@ -38,48 +84,111 @@ Scope {
     }
 
     Timer {
-        id: hideOSDTimer
-
-        interval: 2000
-        onTriggered: {
-            root.isVolumeOSDShow = false
-            root.isCapsLockOSDShow = false
-            root.isNumLockOSDShow = false
-        }
-    }
-
-    Volumes {
-        active: root.isVolumeOSDShow
-		node: Pipewire.defaultAudioSink
-
-		onActiveChanged: {
-			cleanup.start();
-		}
-    }
-
-    CapsLockWidget {
-		active: root.isCapsLockOSDShow
-
-		onActiveChanged: {
-			cleanup.start();
-		}
-    }
-
-    NumLockWidget {
-		active: root.isNumLockOSDShow
-
-		onActiveChanged: {
-			cleanup.start();
-		}
-	}
-
-	Timer {
         id: cleanup
 
         interval: 500
         repeat: false
         onTriggered: {
             gc();
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        delegate: PanelWindow {
+            id: panelWindow
+
+            property int monitorHeight: Hypr.focusedMonitor.height
+
+			anchors.right: true
+			anchors.bottom: true
+            WlrLayershell.namespace: "shell:osd:unified"
+            color: "transparent"
+            exclusionMode: ExclusionMode.Ignore
+            focusable: false
+            implicitWidth: 250
+            implicitHeight: monitorHeight * 0.5
+            exclusiveZone: 0
+			margins.right: 10
+			margins.bottom: 10
+            mask: Region {
+                item: mainRect
+            }
+
+            visible: root.isVolumeOSDShow || root.isCapsLockOSDShow || root.isNumLockOSDShow
+
+            StyledRect {
+                id: mainRect
+
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    bottom: parent.bottom
+                }
+                width: 250
+                height: calculateHeight()
+                radius: 25
+                color: Themes.m3Colors.m3Background
+                clip: true
+
+                Behavior on height {
+                    NAnim {
+                        duration: Appearance.animations.durations.small
+                    }
+                }
+
+                function calculateHeight() {
+                    var totalHeight = 0;
+                    var spacing = 10;
+                    var padding = 10;
+
+                    if (root.isCapsLockOSDShow)
+                        totalHeight += 50;
+                    if (root.isNumLockOSDShow)
+                        totalHeight += 50;
+                    if (root.isVolumeOSDShow)
+                        totalHeight += 80;
+
+                    var activeCount = 0;
+                    if (root.isCapsLockOSDShow)
+                        activeCount++;
+                    if (root.isNumLockOSDShow)
+                        activeCount++;
+                    if (root.isVolumeOSDShow)
+                        activeCount++;
+
+                    if (activeCount > 1)
+                        totalHeight += (activeCount - 1) * spacing;
+
+                    return totalHeight > 0 ? totalHeight + (padding * 2) : 0;
+                }
+
+                Column {
+                    id: osdColumn
+
+                    anchors {
+                        fill: parent
+                        margins: 15
+                    }
+                    spacing: Appearance.spacing.normal
+
+                    CapsLockWidget {
+                        id: capsLockOSD
+                        isCapsLockOSDShow: root.isCapsLockOSDShow
+                    }
+
+                    NumLockWidget {
+                        id: numLockOSD
+                        isNumLockOSDShow: root.isNumLockOSDShow
+                    }
+
+                    Volumes {
+						id: volumeOSD
+
+                        isVolumeOSDShow: root.isVolumeOSDShow
+                    }
+                }
+            }
         }
     }
 }

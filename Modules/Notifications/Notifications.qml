@@ -8,7 +8,6 @@ import Quickshell.Services.Notifications
 
 import qs.Configs
 import qs.Services
-import qs.Components
 
 import "Components" as Com
 

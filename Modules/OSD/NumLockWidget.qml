@@ -9,47 +9,43 @@ import qs.Services
 import qs.Helpers
 import qs.Components
 
-LazyLoader {
-    id: numLockOSDLoader
+Item {
+    id: numLockOSD
 
-    active: false
-    component: PanelWindow {
-        id: root
+	required property bool isNumLockOSDShow
 
-        anchors.bottom: true
-        WlrLayershell.namespace: "shell:osd:numlock"
+    width: parent.width
+    height: isNumLockOSDShow ? 50 : 0
+    visible: height > 0
+    clip: true
+
+    Behavior on height {
+        NAnim {
+            duration: Appearance.animations.durations.small
+        }
+    }
+
+    StyledRect {
+        anchors.fill: parent
+        radius: height / 2
         color: "transparent"
-        exclusionMode: ExclusionMode.Ignore
-        focusable: false
 
-        implicitWidth: 350
-        implicitHeight: 50
-        exclusiveZone: 0
-        margins.bottom: 150
-        mask: Region {}
+        Row {
+            anchors.centerIn: parent
+            spacing: Appearance.spacing.normal
+            opacity: numLockOSD.height / 50
 
-        StyledRect {
-            anchors.fill: parent
+            StyledText {
+                text: "Num Lock"
+                font.weight: Font.Medium
+                color: Themes.m3Colors.m3OnBackground
+                font.pixelSize: Appearance.fonts.large * 1.5
+            }
 
-            radius: height / 2
-            color: Themes.m3Colors.m3Background
-
-            Row {
-                anchors.centerIn: parent
-                spacing: 10
-
-                StyledText {
-                    text: "Num Lock"
-                    font.weight: Font.Medium
-                    color: Themes.m3Colors.m3OnBackground
-                    font.pixelSize: Appearance.fonts.large * 1.5
-                }
-
-                MaterialIcon {
-                    icon: KeyLockState.state.numLock ? "lock" : "lock_open_right"
-                    color: KeyLockState.state.numLock ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Tertiary
-                    font.pointSize: Appearance.fonts.large * 1.5
-                }
+            MaterialIcon {
+                icon: KeyLockState.state.numLock ? "lock" : "lock_open_right"
+                color: KeyLockState.state.numLock ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Tertiary
+                font.pointSize: Appearance.fonts.large * 1.5
             }
         }
     }
