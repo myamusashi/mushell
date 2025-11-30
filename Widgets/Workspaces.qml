@@ -15,8 +15,13 @@ import qs.Components
 StyledRect {
     id: root
 
+    property real workspaceWidth: (Hypr.focusedMonitor.width - (root.reserved[0] + root.reserved[2])) * scaleFactor / Hypr.focusedMonitor.scale
+    property real workspaceHeight: (Hypr.focusedMonitor.height - (root.reserved[1] + root.reserved[3])) * scaleFactor / Hypr.focusedMonitor.scale
+    property real containerWidth: workspaceWidth + borderWidth
+    property real containerHeight: workspaceHeight + borderWidth
     property list<int> reserved: Hypr.focusedMonitor.lastIpcObject.reserved
-    property real scaleFactor: 0.1
+	property real scaleFactor: 0.1
+	property real borderWidth: 2
 
     implicitWidth: workspaceRow.width + 20
     implicitHeight: 40
@@ -48,8 +53,9 @@ StyledRect {
 
                 width: 50
                 height: 30
-                color: Themes.m3Colors.m3OutlineVariant
-                radius: 0
+                color: workspace?.focused ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnPrimary
+				radius: 0
+				clip: true
                 required property int index
                 property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === index + 1) ?? null
                 property bool hasFullscreen: !!(workspace?.toplevels?.values.some(t => t.wayland?.fullscreen))
@@ -95,24 +101,20 @@ StyledRect {
                         property StyledRect visualParent: root
                         property bool isCaught: false
 
-                        captureSource: waylandHandle
+                        captureSource: null
                         live: false
-                        width: (toplevelData?.size[0] ?? sourceSize.width) * root.scaleFactor * 0.25
-                        height: (toplevelData?.size[1] ?? sourceSize.height) * root.scaleFactor * 0.25
+
+                        width: 30 + root.scaleFactor
+                        height: 25 + root.scaleFactor
                         scale: (Drag.active && !toplevelData?.floating) ? 0.98 : 1
 
-                        x: {
-                            const baseX = toplevelData?.at[0] ?? 0;
-                            const offsetX = (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 0 : root.reserved[0];
-                            return (baseX - offsetX) * root.scaleFactor;
+                        Rectangle {
+                            anchors.fill: toplevel
+                            color: Themes.m3Colors.m3Outline
                         }
 
-                        y: {
-                            const baseY = toplevelData?.at[1] ?? 0;
-                            const offsetY = (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 0 : root.reserved[1] * 0.5;
-                            return (baseY - offsetY) * root.scaleFactor;
-                        }
-
+                        x: (toplevelData?.at[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * root.scaleFactor + 3
+                        y: (toplevelData?.at[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * root.scaleFactor + 3
                         z: (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 2 : toplevelData?.floating ? 1 : 0
 
                         Drag.active: mouseArea.drag.active
@@ -132,12 +134,13 @@ StyledRect {
                                     x = mapped.x;
                                     y = mapped.y;
                                 } else {
+                                    // Fixed repositioning logic
                                     const baseX = toplevelData?.at[0] ?? 0;
                                     const baseY = toplevelData?.at[1] ?? 0;
                                     const offsetX = (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 0 : root.reserved[0];
                                     const offsetY = (waylandHandle?.fullscreen || waylandHandle?.maximized) ? 0 : root.reserved[1];
-                                    x = (baseX - offsetX) * root.scaleFactor;
-                                    y = (baseY - offsetY) * root.scaleFactor;
+                                    x = (baseX - offsetX) * root.scaleFactor + 5;
+                                    y = (baseY - offsetY) * root.scaleFactor + 5;
                                 }
                             }
                         }
@@ -172,8 +175,8 @@ StyledRect {
                             onReleased: {
                                 if (dragged && !(toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized)) {
                                     const mapped = toplevel.mapToItem(toplevel.originalParent, 0, 0);
-                                    const x = Math.round(mapped.x / root.scaleFactor + root.reserved[0]);
-                                    const y = Math.round(mapped.y / root.scaleFactor + root.reserved[1]);
+                                    const x = Math.round((mapped.x - 5) / root.scaleFactor + root.reserved[0]);
+                                    const y = Math.round((mapped.y - 5) / root.scaleFactor + root.reserved[1]);
 
                                     Hypr.dispatch(`movewindowpixel exact ${x} ${y}, address:0x${toplevel.modelData.address}`);
                                     toplevel.Drag.drop();
