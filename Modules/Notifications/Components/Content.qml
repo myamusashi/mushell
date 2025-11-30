@@ -15,7 +15,11 @@ Column {
     property bool isShowMoreBody: false
 
     width: parent.width
-    spacing: Appearance.spacing.small
+	spacing: Appearance.spacing.small
+
+	Component.onCompleted: {
+		Notifs.appName = notif.appName
+	}
 
     Row {
         width: parent.width

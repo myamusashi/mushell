@@ -10,62 +10,52 @@ import qs.Services
 import qs.Components
 import qs.Modules.MediaPlayer
 
-Loader {
-    active: true
-    asynchronous: true
+StyledRect {
+    id: root
 
-    Layout.alignment: Qt.AlignCenter
+    anchors.centerIn: parent
+    color: "transparent"
 
-    sourceComponent: StyledRect {
-        id: root
+    readonly property int index: 0
+    property bool playerControlShow: false
 
-        anchors.centerIn: parent
+    function formatTime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = Math.floor(seconds % 60);
 
-        color: "transparent"
+        if (hours > 0)
+            return hours + ":" + minutes.toString().padStart(2, '0') + ":" + secs.toString().padStart(2, '0');
 
-        readonly property int index: 0
-        property bool playerControlShow: false
+        return minutes + ":" + secs.toString().padStart(2, '0');
+    }
 
-        function formatTime(seconds) {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const secs = Math.floor(seconds % 60);
+    RowLayout {
+        id: mediaInfo
 
-            if (hours > 0)
-                return hours + ":" + minutes.toString().padStart(2, '0') + ":" + secs.toString().padStart(2, '0');
+		anchors.centerIn: parent
+        spacing: Appearance.spacing.small
 
-            return minutes + ":" + secs.toString().padStart(2, '0');
+        MaterialIcon {
+            icon: Players.active === null ? "question_mark" : Players.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
+            font.pointSize: Appearance.fonts.large
+            color: Themes.m3Colors.m3OnBackground
         }
 
-        RowLayout {
-            id: mediaInfo
-
-            anchors.centerIn: parent
-            spacing: Appearance.spacing.small
-
-            MaterialIcon {
-                icon: Players.active === null ? "question_mark" : Players.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
-                font.pointSize: Appearance.fonts.large
-                color: Themes.m3Colors.m3OnBackground
-            }
-
-            StyledText {
-                text: Players.active === null ? "null" : Players.active.trackArtist
-                color: Themes.m3Colors.m3OnBackground
-            }
+        StyledText {
+            text: Players.active === null ? "null" : Players.active.trackArtist
+            color: Themes.m3Colors.m3OnBackground
         }
+    }
 
-        MArea {
-            anchors.fill: mediaInfo
+    MArea {
+        anchors.fill: mediaInfo
+        cursorShape: Qt.PointingHandCursor
+        hoverEnabled: true
+        onClicked: root.playerControlShow = !root.playerControlShow
+    }
 
-            cursorShape: Qt.PointingHandCursor
-            hoverEnabled: true
-
-            onClicked: root.playerControlShow = !root.playerControlShow
-        }
-
-        MediaPlayer {
-            isMediaPlayerOpen: root.playerControlShow
-        }
+    MediaPlayer {
+        isMediaPlayerOpen: root.playerControlShow
     }
 }

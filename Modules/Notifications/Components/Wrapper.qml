@@ -22,68 +22,38 @@ Item {
     width: parent.width
     height: isRemoving ? 0 : contentLayout.height * 1.3
     clip: true
-    scale: 0.9
-    opacity: 0
+    x: parent.width
 
     Component.onCompleted: {
-        scaleAnim.start();
-        opacityAnim.start();
+        slideInAnim.start();
     }
 
     NAnim {
-        id: scaleAnim
+        id: slideInAnim
 
         target: root
-        property: "scale"
-        from: 0.9
-        to: 1
+        property: "x"
+        from: root.parent.width
+        to: 0
         duration: Appearance.animations.durations.emphasized
         easing.bezierCurve: Appearance.animations.curves.emphasized
     }
 
     NAnim {
-        id: opacityAnim
+        id: slideOutAnim
 
         target: root
-        property: "opacity"
-        from: 0
-        to: 1
-        duration: Appearance.animations.durations.emphasizedDecel
-        easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
-    }
-
-    NAnim {
-        id: exitScaleAnim
-
-        target: root
-        property: "scale"
-        to: 0.9
-        duration: Appearance.animations.durations.emphasizedAccel
-        easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
-    }
-
-    NAnim {
-        id: exitOpacityAnim
-
-        target: root
-        property: "opacity"
-        to: 0
+        property: "x"
+        to: root.width
         duration: Appearance.animations.durations.emphasizedAccel
         easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
     }
 
     Behavior on x {
+        enabled: !root.isRemoving && !delegateMouseNotif.drag.active
         NAnim {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-        }
-    }
-
-    Behavior on opacity {
-        enabled: !root.isRemoving
-        NAnim {
-            duration: Appearance.animations.durations.emphasizedDecel
-            easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
         }
     }
 
@@ -94,13 +64,6 @@ Item {
         }
     }
 
-    Behavior on scale {
-        enabled: !root.isRemoving
-        NAnim {
-            duration: Appearance.animations.durations.emphasized
-            easing.bezierCurve: Appearance.animations.curves.emphasized
-        }
-    }
     RetainableLock {
         id: retainNotif
 
@@ -110,8 +73,7 @@ Item {
 
     function removeNotificationWithAnimation() {
         isRemoving = true;
-        exitScaleAnim.start();
-        exitOpacityAnim.start();
+        slideOutAnim.start();
 
         Qt.callLater(function () {
             removeTimer.start();
@@ -120,8 +82,12 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-        color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3SurfaceContainerLow
-        radius: Appearance.rounding.large
+        color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3Background
+        topLeftRadius: Appearance.rounding.large
+        bottomLeftRadius: Appearance.rounding.large
+        radius: 0
+        topRightRadius: 0
+        bottomRightRadius: 0
         border.color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : "transparent"
         border.width: root.modelData.urgency === NotificationUrgency.Critical ? 1 : 0
 

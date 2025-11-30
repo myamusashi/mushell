@@ -46,8 +46,9 @@ Loader {
             border.color: Themes.m3Colors.m3Outline
             border.width: 2
 
-            ColumnLayout {
-                id: column
+            Column {
+				id: column
+
                 anchors.fill: parent
                 anchors.margins: 20
                 spacing: Appearance.spacing.large
@@ -82,21 +83,21 @@ Loader {
                     Layout.fillWidth: true
                 }
 
-                RowLayout {
-                    Layout.alignment: Qt.AlignRight
+                Row {
+                    anchors.right: parent.right
                     spacing: Appearance.spacing.normal
 
                     StyledButton {
                         iconButton: "cancel"
                         buttonTitle: "No"
-                        buttonTextColor: Themes.m3Colors.m3OnBackground
                         buttonColor: "transparent"
                         onClicked: root.rejected()
                     }
 
                     StyledButton {
                         iconButton: "check"
-                        buttonTitle: "Yes"
+						buttonTitle: "Yes"
+						buttonTextColor: Themes.m3Colors.m3OnPrimary
                         onClicked: root.accepted()
                     }
                 }

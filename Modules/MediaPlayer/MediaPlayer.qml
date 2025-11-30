@@ -52,46 +52,45 @@ Scope {
         id: cleanup
 
         interval: 500
-        repeat: false
+        repeat: root.isMediaPlayerOpen ? false : true
         onTriggered: {
             root.url = "";
             gc();
         }
     }
 
-    LazyLoader {
-        active: root.isMediaPlayerOpen
-        onActiveChanged: {
-            cleanup.start();
-        }
-
-        component: PanelWindow {
-            anchors {
-                top: true
-            }
-            property real monitorWidth: Hypr.focusedMonitor.width
-            implicitWidth: monitorWidth * 0.25
-            implicitHeight: container.implicitHeight
-            exclusiveZone: 0
-
-            margins.right: (monitorWidth - implicitWidth) / 2
-
-            color: "transparent"
+	OuterShapeItem {
+		content: container
 
             StyledRect {
                 id: container
 
-                implicitWidth: parent.width
-                implicitHeight: contentLayout.implicitHeight + 15
-                color: Themes.m3Colors.m3Surface
-                radius: Appearance.rounding.normal
+                implicitWidth: Hypr.focusedMonitor.width * 0.3
+                implicitHeight: root.isMediaPlayerOpen ? contentLayout.implicitHeight + 20 : 0
+				color: Themes.m3Colors.m3Surface
+				radius: 0
+				bottomLeftRadius: Appearance.rounding.normal
+				bottomRightRadius: bottomLeftRadius
+
+				anchors {
+					top: parent.top
+					horizontalCenter: parent.horizontalCenter
+					topMargin: 0
+				}
+
+				Behavior on implicitHeight {
+					NAnim {
+						duration: Appearance.animations.durations.small
+					}
+				}
 
                 RowLayout {
                     id: contentLayout
 
                     anchors.fill: parent
                     anchors.margins: 10
-                    spacing: Appearance.spacing.normal
+					spacing: Appearance.spacing.normal
+					visible: root.isMediaPlayerOpen && container.implicitHeight !== 0
 
                     Rectangle {
                         Layout.preferredWidth: 120
@@ -309,6 +308,5 @@ Scope {
                     }
                 }
             }
-        }
     }
 }

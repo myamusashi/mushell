@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 
 import qs.Widgets
 
@@ -7,11 +6,9 @@ Loader {
     active: true
     asynchronous: true
 
-    sourceComponent: RowLayout {
-        Layout.alignment: Qt.AlignCenter
-
-        Mpris {
-            Layout.alignment: Qt.AlignCenter
-        }
+    sourceComponent: Mpris {
+        anchors.centerIn: parent
+        height: 40
+        width: 40
     }
 }

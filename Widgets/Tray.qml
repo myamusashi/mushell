@@ -113,10 +113,9 @@ StyledRect {
                             }
 
                             if (validWindow) {
-                                // Thx Hanabi for the best solution to fix tray anchor relative position
                                 menuAnchor.menu = delegateTray.modelData?.menu;
                                 menuAnchor.anchor.window = validWindow;
-                                menuAnchor.anchor.rect = delegateTray.QsWindow.window.contentItem.mapFromItem(delegateTray, 0, delegateTray.height, delegateTray.width, delegateTray.width);
+                                menuAnchor.anchor.rect = validWindow.mapFromItem(delegateTray, 0, delegateTray.height, delegateTray.width, delegateTray.width);
                                 menuAnchor.open();
                             } else {
                                 console.warn("Cannot find valid Quickshell window for tray menu");
@@ -126,7 +125,7 @@ StyledRect {
                 }
             }
         }
-    }
+	}
 
     QsMenuAnchor {
         id: menuAnchor

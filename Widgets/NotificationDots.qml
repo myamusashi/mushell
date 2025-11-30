@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 
 import qs.Configs
 import qs.Helpers
@@ -6,21 +7,22 @@ import qs.Components
 import qs.Services
 import qs.Modules.Notifications
 
-StyledRect {
+Item {
+	id: dots
+
     implicitWidth: root.width
     implicitHeight: parent.height
-    color: "transparent"
 
     Dots {
         id: root
 
         property int notificationCount: Notifs.notifications.listNotifications.length || 0
-        property bool isDndEnable: Notifs.notifications.disabledDnD
+        property bool isDndEnable: Notifs.disabledDnD
 
-        implicitWidth: 50
-        implicitHeight: parent.height - 5
+        implicitWidth: 10
+        implicitHeight: parent.height
 
-        MaterialIcon {
+		MaterialIcon {
             color: {
                 if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
                     Themes.m3Colors.m3Primary;
@@ -30,8 +32,6 @@ StyledRect {
                     Themes.m3Colors.m3OnSurface;
             }
             font.pointSize: Appearance.fonts.large
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
             icon: {
                 if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
                     "notifications_unread";
@@ -45,13 +45,14 @@ StyledRect {
     MArea {
         id: mArea
 
-        anchors.fill: parent
+		anchors.fill: parent
+		layerColor: "transparent"
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         onClicked: notificationCenter.isNotificationCenterOpen = !notificationCenter.isNotificationCenterOpen
     }
 
     NotificationCenter {
-        id: notificationCenter
-    }
+		id: notificationCenter
+	}
 }

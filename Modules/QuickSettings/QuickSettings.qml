@@ -10,6 +10,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Configs
+import qs.Services
 import qs.Components
 
 import "Settings"
@@ -37,162 +38,200 @@ Scope {
         onTriggered: gc()
     }
 
-    LazyLoader {
-        active: scope.isControlCenterOpen
-        onActiveChanged: {
-            cleanup.start();
-        }
-        component: PanelWindow {
-            id: root
+    OuterShapeItem {
+        id: root
 
-            anchors {
-                top: true
-                right: true
+        content: container
+
+        ColumnLayout {
+            id: container
+
+            width: Hypr.focusedMonitor.width * 0.3
+            height: scope.isControlCenterOpen ? contentHeight : 0
+            spacing: 0
+
+            // Calculate total content height
+            property real contentHeight: tabBar.implicitHeight + divider.implicitHeight + 500
+
+            Behavior on height {
+                NAnim {
+                    duration: Appearance.animations.durations.small
+                    easing.type: Easing.OutCubic
+                }
             }
 
-            property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-            property real monitorWidth: monitor.width / monitor.scale
-            property real monitorHeight: monitor.height / monitor.scale
-            property real scaleFactor: Math.min(1.0, monitorWidth / monitor.width)
+            anchors {
+                top: parent.top
+                right: parent.right
+                rightMargin: 60
+            }
 
-            implicitWidth: monitorWidth * 0.3
-            implicitHeight: 500
-            exclusiveZone: 1
-            color: "transparent"
+            clip: true // Important for smooth reveal
 
-            margins.right: (monitorWidth - implicitWidth) / 5.5
+            TabRows {
+                id: tabBar
 
-            ColumnLayout {
-                anchors.fill: parent
-                spacing: 0
+                state: scope.state
+                scaleFactor: Math.min(1.0, container.width / container.width)
+				visible: scope.isControlCenterOpen
+				topLeftRadius: 0
+				topRightRadius: 0
 
-                TabRows {
-                    id: tabBar
+                Layout.fillWidth: true
 
-                    state: scope.state
-                    scaleFactor: root.scaleFactor
+                onTabClicked: index => {
+                    scope.state = index;
+                    controlCenterStackView.currentItem.viewIndex = index;
+                }
+            }
 
-                    onTabClicked: index => {
-                        scope.state = index;
-                        controlCenterStackView.currentItem.viewIndex = index;
+            StyledRect {
+                id: divider
+
+                Layout.fillWidth: true
+                implicitHeight: scope.isControlCenterOpen ? 1 : 0
+                visible: scope.isControlCenterOpen
+                color: Themes.m3Colors.m3OutlineVariant
+
+                Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.small
                     }
                 }
+            }
 
-                StyledRect {
-                    Layout.fillWidth: true
-                    height: 1
-                    color: Themes.m3Colors.m3OutlineVariant
+            StackView {
+                id: controlCenterStackView
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.preferredHeight: 500
+
+                property Component viewComponent: contentView
+
+                initialItem: viewComponent
+
+                onCurrentItemChanged: {
+                    if (currentItem)
+                        currentItem.viewIndex = scope.state;
                 }
 
-                StackView {
-                    id: controlCenterStackView
+                Component {
+                    id: contentView
 
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    Shape {
+                        id: shapeRect
+                        anchors.fill: parent
 
-                    property Component viewComponent: contentView
+                        ShapePath {
+                            strokeWidth: 0
+                            strokeColor: "transparent"
+                            fillColor: Themes.m3Colors.m3Surface
 
-                    initialItem: viewComponent
-                    onCurrentItemChanged: {
-                        if (currentItem)
-                            currentItem.viewIndex = scope.state;
-                    }
+                            startX: topLeftRadius
+                            startY: 0
 
-                    Component {
-                        id: contentView
+                            // Top edge
+                            PathLine {
+                                x: shapeRect.width - topRightRadius
+                                y: 0
+                            }
 
-                        Shape {
-                            id: shapeRect
+                            // Top-right corner
+                            PathArc {
+                                x: shapeRect.width
+                                y: topRightRadius
+                                radiusX: topRightRadius
+                                radiusY: topRightRadius
+                                direction: PathArc.Clockwise
+                            }
+
+                            // Right edge
+                            PathLine {
+                                x: shapeRect.width
+                                y: shapeRect.height - bottomRightRadius
+                            }
+
+                            // Bottom-right corner
+                            PathArc {
+                                x: shapeRect.width - bottomRightRadius
+                                y: shapeRect.height
+                                radiusX: bottomRightRadius
+                                radiusY: bottomRightRadius
+                                direction: PathArc.Clockwise
+                            }
+
+                            // Bottom edge
+                            PathLine {
+                                x: bottomLeftRadius
+                                y: shapeRect.height
+                            }
+
+                            // Bottom-left corner
+                            PathArc {
+                                x: 0
+                                y: shapeRect.height - bottomLeftRadius
+                                radiusX: bottomLeftRadius
+                                radiusY: bottomLeftRadius
+                                direction: PathArc.Clockwise
+                            }
+
+                            // Left edge
+                            PathLine {
+                                x: 0
+                                y: topLeftRadius
+                            }
+
+                            // Top-left corner
+                            PathArc {
+                                x: topLeftRadius
+                                y: 0
+                                radiusX: topLeftRadius
+                                radiusY: topLeftRadius
+                                direction: PathArc.Clockwise
+                            }
+                        }
+
+                        property int viewIndex: 0
+                        property real topLeftRadius: 0
+                        property real topRightRadius: 0
+                        property real bottomLeftRadius: Appearance.rounding.normal
+                        property real bottomRightRadius: Appearance.rounding.normal
+
+                        Loader {
                             anchors.fill: parent
+                            active: parent.viewIndex === 0
+                            asynchronous: true
+                            visible: active
 
-                            ShapePath {
-                                strokeWidth: 0
-                                strokeColor: "transparent"
-                                fillColor: Themes.m3Colors.m3Surface
+                            sourceComponent: Settings {}
+                        }
 
-                                startX: topLeftRadius
-                                startY: 0
+                        Loader {
+                            anchors.fill: parent
+                            active: parent.viewIndex === 1
+                            asynchronous: true
+                            visible: active
 
-                                // Top edge
-                                PathLine {
-                                    x: shapeRect.width - topRightRadius
-                                    y: 0
-                                }
+                            sourceComponent: VolumeSettings {}
+                        }
 
-                                // Top-right corner
-                                PathArc {
-                                    x: shapeRect.width
-                                    y: topRightRadius
-                                    radiusX: topRightRadius
-                                    radiusY: topRightRadius
-                                }
+                        Loader {
+                            anchors.fill: parent
+                            active: parent.viewIndex === 2
+                            asynchronous: true
+                            visible: active
 
-                                // Right edge
-                                PathLine {
-                                    x: shapeRect.width
-                                    y: shapeRect.height
-                                }
+                            sourceComponent: Performances {}
+                        }
 
-                                // Bottom edge
-                                PathLine {
-                                    x: 0
-                                    y: shapeRect.height
-                                }
+                        Loader {
+                            anchors.fill: parent
+                            active: parent.viewIndex === 3
+                            asynchronous: true
+                            visible: active
 
-                                // Left edge
-                                PathLine {
-                                    x: 0
-                                    y: topLeftRadius
-                                }
-
-                                // Top-left corner
-                                PathArc {
-                                    x: topLeftRadius
-                                    y: 0
-                                    radiusX: topLeftRadius
-                                    radiusY: topLeftRadius
-                                }
-                            }
-
-                            property int viewIndex: 0
-                            property real topLeftRadius: 5
-							property real topRightRadius: 5
-
-							Loader {
-                                anchors.fill: parent
-								active: parent.viewIndex === 0
-								asynchronous: true
-                                visible: active
-
-                                sourceComponent: Settings {}
-                            }
-
-                            Loader {
-                                anchors.fill: parent
-								active: parent.viewIndex === 1
-								asynchronous: true
-                                visible: active
-
-                                sourceComponent: VolumeSettings {}
-                            }
-
-                            Loader {
-                                anchors.fill: parent
-								active: parent.viewIndex === 2
-								asynchronous: true
-                                visible: active
-
-                                sourceComponent: Performances {}
-                            }
-
-                            Loader {
-                                anchors.fill: parent
-								active: parent.viewIndex === 3
-								asynchronous: true
-                                visible: active
-
-                                sourceComponent: Weathers {}
-                            }
+                            sourceComponent: Weathers {}
                         }
                     }
                 }

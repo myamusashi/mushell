@@ -1,53 +1,83 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-
+import QtQuick.Shapes
 import Quickshell
-import Quickshell.Wayland
 import Quickshell.Services.Notifications
 
 import qs.Configs
 import qs.Services
+import qs.Components
 
 import "Components" as Com
 
-LazyLoader {
-    activeAsync: Notifs.notifications.popupNotifications.length > 0
+OuterShapeItem {
+    content: item
 
-    component: PanelWindow {
-        id: root
+    Item {
+        id: item
 
         anchors {
-            top: true
-            right: true
+            right: parent.right
+            top: parent.top
+            topMargin: 0
+        }
+        width: Hypr.focusedMonitor.width * 0.2
+        height: Notifs.notifications.popupNotifications.length > 0 ? Math.min(notifColumn.height + 30, parent.height * 0.4) : 0
+
+        Behavior on height {
+            NAnim {
+                duration: Appearance.animations.durations.small
+                easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
+            }
         }
 
-        margins {
-            right: 5
-            top: 5
+        Shape {
+            id: maskShape
+
+            anchors.fill: parent
+
+            ShapePath {
+                fillColor: Themes.m3Colors.m3Background
+                strokeColor: "transparent"
+
+                startX: 0
+                startY: 0
+
+                PathLine {
+                    x: maskShape.width
+                    y: 0
+                }
+
+                PathLine {
+                    x: maskShape.width
+                    y: maskShape.height
+                }
+
+                PathLine {
+                    x: Appearance.rounding.normal
+                    y: maskShape.height
+                }
+
+                PathArc {
+                    x: 0
+                    y: maskShape.height - Appearance.rounding.normal
+                    radiusX: Appearance.rounding.normal
+                    radiusY: Appearance.rounding.normal
+                }
+
+                PathLine {
+                    x: 0
+                    y: Appearance.rounding.normal
+                }
+            }
         }
-
-        property int monitorWidth: Hypr.focusedMonitor.width * 0.2
-        property int monitorHeight: Hypr.focusedMonitor.height / 2
-
-        WlrLayershell.namespace: "shell:notification"
-        exclusiveZone: 0
-        color: "transparent"
-
-        implicitWidth: monitorWidth
-        implicitHeight: monitorHeight
 
         Flickable {
             id: notifFlickable
 
-            anchors {
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-            }
-
-            width: parent.width
-            contentHeight: parent.height
+            anchors.fill: parent
+            contentHeight: notifColumn.height
             clip: true
             boundsBehavior: Flickable.StopAtBounds
 
@@ -67,17 +97,22 @@ LazyLoader {
                     delegate: Com.Wrapper {
                         id: wrapper
 
-						onEntered: closePopups.stop()
-						onExited: closePopups.start()
+                        onEntered: closePopups.stop()
+                        onExited: closePopups.start()
 
                         Timer {
                             id: closePopups
 
                             interval: wrapper.modelData.urgency === NotificationUrgency.Critical ? 10000 : 5000
                             running: true
-                            onTriggered: {
-                                Notifs.notifications.removePopupNotification(wrapper.modelData);
-                            }
+                            onTriggered: wrapper.removeNotificationWithAnimation()
+                        }
+
+                        Timer {
+                            id: removeTimer
+
+                            interval: Appearance.animations.durations.emphasizedAccel + 50
+                            onTriggered: Notifs.notifications.removePopupNotification(wrapper.modelData)
                         }
                     }
                 }

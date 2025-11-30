@@ -9,15 +9,15 @@ RowLayout {
 
     property alias icon: icon
     property alias text: text
-
     anchors.centerIn: parent
     height: parent.height ? parent.height : 1
 
     Item {
         id: iconContainer
 
-        Layout.fillHeight: true
+        Layout.alignment: Qt.AlignVCenter
         implicitWidth: icon.width
+        implicitHeight: icon.height
 
         StyledText {
             id: icon
@@ -31,8 +31,9 @@ RowLayout {
     Item {
         id: textContainer
 
-        Layout.fillHeight: true
+        Layout.alignment: Qt.AlignVCenter
         implicitWidth: text.width
+        implicitHeight: text.height
 
         StyledText {
             id: text

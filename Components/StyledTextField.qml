@@ -13,14 +13,15 @@ TextField {
     Material.theme: Material.System
     Material.accent: Themes.m3Colors.m3Primary
     Material.primary: Themes.m3Colors.m3Primary
-    Material.background: Themes.m3Colors.m3Surface
+	Material.background: "transparent"
     Material.foreground: Themes.m3Colors.m3OnSurface
     Material.containerStyle: Material.Outlined
-    renderType: Text.QtRendering
+	renderType: Text.QtRendering
 
     selectedTextColor: Themes.m3Colors.m3OnSecondaryContainer
     selectionColor: Themes.m3Colors.m3SecondaryContainer
-    placeholderTextColor: Themes.m3Colors.m3Outline
+	placeholderTextColor: Themes.m3Colors.m3Outline
+	wrapMode: TextEdit.Wrap
     clip: true
 
     font {
@@ -32,9 +33,9 @@ TextField {
             "wdth": 100
         }
     }
-    wrapMode: TextEdit.Wrap
 
-    MArea {
+	MArea {
+		layerColor: "transparent"
         anchors.fill: parent
         acceptedButtons: Qt.NoButton
         hoverEnabled: true

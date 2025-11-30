@@ -23,7 +23,7 @@ Loader {
             Layout.maximumWidth: implicitWidth
         }
         NotificationDots {
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignRight
         }
         Tray {}
         StyledRect {

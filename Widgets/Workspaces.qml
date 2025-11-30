@@ -11,94 +11,88 @@ import qs.Configs
 import qs.Components
 import qs.Helpers
 
-RowLayout {
-    id: root
+StyledRect {
+    id: workspaceBar
 
-    StyledRect {
-        id: workspaceBar
+    implicitWidth: workspaceRow.width + 20
+    implicitHeight: 25
+    color: Themes.m3Colors.m3SurfaceContainer
 
-        Layout.preferredWidth: workspaceRow.width + 20
-        implicitHeight: 25
-        color: Themes.m3Colors.m3SurfaceContainer
+    MArea {
+        id: workspaceMBarArea
 
-        MArea {
-            id: workspaceMBarArea
-
-            anchors.fill: parent
-
-            hoverEnabled: true
-
-            cursorShape: Qt.PointingHandCursor
-            onClicked: () => {
-                Quickshell.execDetached({
-                    command: ["sh", "-c", "hyprctl dispatch global quickshell:overview"]
-                });
-            }
+        anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: () => {
+            Quickshell.execDetached({
+                command: ["sh", "-c", "hyprctl dispatch global quickshell:overview"]
+            });
         }
+    }
 
-        Row {
-            id: workspaceRow
+    Row {
+        id: workspaceRow
 
-            anchors.centerIn: parent
-            spacing: Appearance.spacing.small
+        anchors.centerIn: parent
+        spacing: Appearance.spacing.small
 
-            Repeater {
-                model: Workspaces.maxWorkspace || 1
+        Repeater {
+            model: Workspaces.maxWorkspace || 1
 
-                delegate: Item {
-                    id: wsItem
+            delegate: Item {
+                id: wsItem
 
-                    required property int index
-                    property bool focused: Hyprland.focusedMonitor?.activeWorkspace?.id === (index + 1)
-                    width: workspaceText.width + iconGrid.width + 5
-                    height: Math.max(workspaceText.height, iconGrid.height)
+                required property int index
+                property bool focused: Hyprland.focusedMonitor?.activeWorkspace?.id === (index + 1)
+                width: workspaceText.width + iconGrid.width + 5
+                height: Math.max(workspaceText.height, iconGrid.height)
 
-                    StyledText {
-                        id: workspaceText
+                StyledText {
+                    id: workspaceText
 
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: (wsItem.index + 1).toString()
-                        color: Themes.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.medium * 1.3
-                        font.bold: wsItem.focused
-                    }
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: (wsItem.index + 1).toString()
+                    color: Themes.m3Colors.m3OnBackground
+                    font.pixelSize: Appearance.fonts.medium * 1.3
+                    font.bold: wsItem.focused
+                }
 
-                    GridLayout {
-                        id: iconGrid
+                Grid {
+                    id: iconGrid
 
-                        property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === index + 1) ?? null
-                        columns: 6
-                        anchors.left: workspaceText.right
-                        anchors.leftMargin: 5
-                        anchors.verticalCenter: parent.verticalCenter
-                        columnSpacing: 2
-                        rowSpacing: 2
+                    property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === index + 1) ?? null
+                    columns: 6
+                    anchors.left: workspaceText.right
+                    anchors.leftMargin: 5
+					anchors.verticalCenter: parent.verticalCenter
+                    columnSpacing: 2
+                    rowSpacing: 2
 
-                        Repeater {
-                            model: iconGrid.workspace?.toplevels
-                            delegate: IconImage {
-                                required property HyprlandToplevel modelData
-                                readonly property Toplevel waylandHandle: modelData?.wayland
-                                source: Quickshell.iconPath(DesktopEntries.heuristicLookup(waylandHandle?.appId)?.icon, "image-missing")
-                                Layout.preferredWidth: 16
-                                Layout.preferredHeight: 16
-                                backer.cache: true
-                                backer.asynchronous: true
-                            }
+                    Repeater {
+                        model: iconGrid.workspace?.toplevels
+                        delegate: IconImage {
+                            required property HyprlandToplevel modelData
+                            readonly property Toplevel waylandHandle: modelData?.wayland
+                            source: Quickshell.iconPath(DesktopEntries.heuristicLookup(waylandHandle?.appId)?.icon, "image-missing")
+                            implicitWidth: 16
+                            implicitHeight: 16
+                            backer.cache: true
+                            backer.asynchronous: true
                         }
                     }
+                }
 
-                    MArea {
-                        id: workspaceMArea
+                MArea {
+                    id: workspaceMArea
 
-                        anchors.fill: parent
+                    anchors.fill: parent
 
-                        hoverEnabled: true
+                    hoverEnabled: true
 
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Workspaces.switchWorkspace(wsItem.index + 1)
-                    }
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: Workspaces.switchWorkspace(wsItem.index + 1)
                 }
             }
         }

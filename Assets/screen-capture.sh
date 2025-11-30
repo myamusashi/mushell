@@ -53,6 +53,9 @@ create_thumbnail() {
 
 goto_link() {
 	local file="$1"
+	local thumb_path="$2"
+	local show_notification="$3"
+
 	if [ -z "$file" ]; then
 		echo "ERROR: File variable is empty or not set"
 		return 1
@@ -62,12 +65,24 @@ goto_link() {
 		return 1
 	fi
 
-	ACTION=$(notify-send -a "screengrab" \
-		--action="default=open link" \
-		-i "$THUMB_PATH" \
-		"Capture Saved" \
-		"${file}" \
-		--wait)
+	if [ "$show_notification" = "true" ]; then
+		if [ -n "$thumb_path" ] && [ -f "$thumb_path" ]; then
+			ACTION=$(notify-send -a "screengrab" \
+				--action="default=open link" \
+				-i "$thumb_path" \
+				"Capture Saved" \
+				"${file}" \
+				--wait)
+		else
+			ACTION=$(notify-send -a "screengrab" \
+				--action="default=open link" \
+				"Capture Saved" \
+				"${file}" \
+				--wait)
+		fi
+	else
+		ACTION="default"
+	fi
 
 	case "$ACTION" in
 	"default")
@@ -142,13 +157,15 @@ stop_recording() {
 			VIDEO_BASENAME=$(basename "$VID" .mp4)
 			THUMB_PATH="$THUMBNAIL_DIR/${VIDEO_BASENAME}.png"
 
+			# Buat thumbnail dan tampilkan SATU notifikasi saja
 			if create_thumbnail "$VID" "$THUMB_PATH"; then
 				notify-send -a "screenrecord" -i "$THUMB_PATH" "Recording Stopped" "Video saved to $VID"
-				goto_link "$VID"
 			else
 				notify-send -a "screenrecord" -i "video-x-generic" "Recording Stopped" "Video saved to $VID"
-				goto_link "$VID"
 			fi
+
+			# Panggil goto_link tanpa notifikasi (notifikasi sudah ditampilkan di atas)
+			goto_link "$VID" "$THUMB_PATH" "false"
 			return 0
 		else
 			rm "$RECORD_PID_FILE"
@@ -167,9 +184,8 @@ case "$1" in
 	sleep 2
 	output=$(hyprshot -m window -d -s -o "$HOME/Pictures/screenshot/" -f "$(date +%Y-%m-%d_%H-%M-%S).png")
 	if ! [[ "$output" =~ "selection cancelled" ]]; then
-		THUMB_PATH="$IMG"
 		wl-copy <"$IMG"
-		goto_link "$IMG"
+		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
@@ -180,7 +196,7 @@ case "$1" in
 	grim -g "$(slurp)" "$IMG"
 	if [ $? -eq 0 ]; then
 		wl-copy <"$IMG"
-		goto_link "$IMG"
+		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
@@ -191,7 +207,7 @@ case "$1" in
 	grim -c -o eDP-1 "$IMG"
 	if [ $? -eq 0 ]; then
 		wl-copy <"$IMG"
-		goto_link "$IMG"
+		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on eDP-1."
 	fi
@@ -202,7 +218,7 @@ case "$1" in
 	grim -c -o HDMI-A-2 "$IMG"
 	if [ $? -eq 0 ]; then
 		wl-copy <"$IMG"
-		goto_link "$IMG"
+		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on HDMI-A-2."
 	fi
@@ -218,7 +234,7 @@ case "$1" in
 		montage "${IMG//.png/-eDP-1.png}" "${IMG//.png/-HDMI-A-2.png}" -tile 2x1 -geometry +0+0 "$IMG"
 		wl-copy <"$IMG"
 		rm "${IMG//.png/-eDP-1.png}" "${IMG//.png/-HDMI-A-2.png}"
-		goto_link "$IMG"
+		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on both screens."
 	fi

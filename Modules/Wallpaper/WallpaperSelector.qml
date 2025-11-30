@@ -9,6 +9,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 
 import qs.Configs
+import qs.Services
 import qs.Helpers
 import qs.Components
 
@@ -54,164 +55,151 @@ Scope {
         }
     }
 
-    LazyLoader {
-        id: loader
+    OuterShapeItem {
+        id: root
 
-        active: scope.isWallpaperSwitcherOpen
-        onActiveChanged: {
-            if (!active) {
-                scope.searchQuery = "";
-                scope.debouncedSearchQuery = "";
+		content: container
+		needKeyboardFocus: scope.isWallpaperSwitcherOpen
 
-                cleanupTimer.start();
-            }
-        }
+		StyledRect {
+			id: container
 
-        component: PanelWindow {
-            id: root
+			width: Hypr.focusedMonitor.width * 0.5
+			height: scope.isWallpaperSwitcherOpen ? Hypr.focusedMonitor.height * 0.5 : 0
+			color: Themes.m3Colors.m3Surface
+			radius: 0
+			topLeftRadius: Appearance.rounding.normal
+			topRightRadius: Appearance.rounding.normal
 
-            anchors {
-                bottom: true
-            }
+			anchors {
+				bottom: parent.bottom
+				horizontalCenter: parent.horizontalCenter
+			}
 
-            focusable: true
+			Behavior on height {
+				NAnim {
+					duration: Appearance.animations.durations.small
+				}
+			}
 
-            property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-            property real monitorWidth: monitor.width / monitor.scale
-            property real monitorHeight: monitor.height / monitor.scale
-
-            implicitWidth: monitorWidth * 0.5
-            implicitHeight: monitorHeight * 0.5
-            margins.bottom: monitorHeight * 0.05
-            exclusiveZone: 0
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-            color: "transparent"
-
-            StyledRect {
+            ColumnLayout {
                 anchors.fill: parent
-                color: Themes.m3Colors.m3Surface
-                radius: Appearance.rounding.large
+                anchors.margins: Appearance.spacing.normal
+                spacing: Appearance.spacing.normal
 
-                ColumnLayout {
-                    anchors.fill: parent
-                    anchors.margins: Appearance.spacing.normal
-                    spacing: Appearance.spacing.normal
+                StyledTextField {
+                    id: searchField
 
-                    StyledTextField {
-                        id: searchField
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    placeholderText: "Search wallpapers..."
+                    text: scope.searchQuery
+                    focus: true
 
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        placeholderText: "Search wallpapers..."
-                        text: scope.searchQuery
-                        focus: true
+                    onTextChanged: {
+                        scope.searchQuery = text;
+                        searchDebounceTimer.restart();
 
-                        onTextChanged: {
-                            scope.searchQuery = text;
-                            searchDebounceTimer.restart();
-
-                            if (wallpaperGrid.count > 0)
-                                wallpaperGrid.currentIndex = 0;
-                        }
-
-                        Keys.onDownPressed: wallpaperGrid.focus = true
-                        Keys.onEscapePressed: scope.isWallpaperSwitcherOpen = false
+                        if (wallpaperGrid.count > 0)
+                            wallpaperGrid.currentIndex = 0;
                     }
 
-                    GridView {
-                        id: wallpaperGrid
+                    Keys.onDownPressed: wallpaperGrid.focus = true
+                    Keys.onEscapePressed: scope.isWallpaperSwitcherOpen = false
+                }
 
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
+                GridView {
+                    id: wallpaperGrid
 
-                        model: scope.filteredWallpaperList
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
 
-                        cellWidth: width / 3
-                        cellHeight: height / 3
+                    model: scope.filteredWallpaperList
 
-                        clip: true
-                        cacheBuffer: 0
+                    cellWidth: width / 3
+                    cellHeight: height / 3
 
-                        Component.onCompleted: {
-                            const idx = scope.wallpaperList.indexOf(Paths.currentWallpaper);
-                            currentIndex = idx !== -1 ? idx : 0;
-                        }
+                    clip: true
+                    cacheBuffer: 0
 
-                        delegate: Item {
-                            id: delegateItem
+                    Component.onCompleted: {
+                        const idx = scope.wallpaperList.indexOf(Paths.currentWallpaper);
+                        currentIndex = idx !== -1 ? idx : 0;
+                    }
 
-                            width: wallpaperGrid.cellWidth
-                            height: wallpaperGrid.cellHeight
+                    delegate: Item {
+                        id: delegateItem
 
-                            required property var modelData
-                            required property int index
+                        width: wallpaperGrid.cellWidth
+                        height: wallpaperGrid.cellHeight
 
-                            Rectangle {
+                        required property var modelData
+                        required property int index
+
+                        Rectangle {
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            color: "transparent"
+
+                            Image {
                                 anchors.fill: parent
-                                anchors.margins: 4
-                                color: "transparent"
+                                source: "file://" + delegateItem.modelData
+                                fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                smooth: true
+                                cache: true
 
-                                Image {
-                                    anchors.fill: parent
-                                    source: "file://" + delegateItem.modelData
-                                    fillMode: Image.PreserveAspectCrop
-                                    asynchronous: true
-                                    smooth: true
-                                    cache: true
+                                layer.enabled: true
+                                layer.smooth: true
+                            }
 
-                                    layer.enabled: true
-                                    layer.smooth: true
-                                }
+                            StyledLabel {
+                                anchors.centerIn: parent
+                                visible: wallpaperGrid.currentIndex === delegateItem.index ? false : true
+                                text: delegateItem.modelData.split('/').pop()
+                            }
 
-                                StyledLabel {
-                                    anchors.centerIn: parent
-                                    visible: wallpaperGrid.currentIndex === delegateItem.index ? false : true
-                                    text: delegateItem.modelData.split('/').pop()
-                                }
+                            StyledRect {
+                                anchors.fill: parent
+                                color: wallpaperGrid.currentIndex === delegateItem.index ? "transparent" : Themes.withAlpha(Themes.m3Colors.m3Surface, 0.7)
+                                radius: Appearance.rounding.small
+                                border.width: wallpaperGrid.currentIndex === delegateItem.index ? 3 : 1
+                                border.color: wallpaperGrid.currentIndex === delegateItem.index ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OutlineVariant
+                            }
 
-                                StyledRect {
-                                    anchors.fill: parent
-                                    color: wallpaperGrid.currentIndex === delegateItem.index ? "transparent" : Themes.withAlpha(Themes.m3Colors.m3Surface, 0.7)
-                                    radius: Appearance.rounding.small
-                                    border.width: wallpaperGrid.currentIndex === delegateItem.index ? 3 : 1
-                                    border.color: wallpaperGrid.currentIndex === delegateItem.index ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OutlineVariant
-                                }
+                            MArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
 
-                                MArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-
-                                    onClicked: {
-                                        wallpaperGrid.currentIndex = delegateItem.index;
-                                        Quickshell.execDetached({
-                                            command: ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
-                                        });
-                                    }
+                                onClicked: {
+                                    wallpaperGrid.currentIndex = delegateItem.index;
+                                    Quickshell.execDetached({
+                                        command: ["sh", "-c", `shell ipc call img set ${delegateItem.modelData}`]
+                                    });
                                 }
                             }
                         }
+                    }
 
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                Quickshell.execDetached({
-                                    command: ["sh", "-c", `shell ipc call img set ${scope.filteredWallpaperList[currentIndex]}`]
-                                });
-                            }
-                            if (event.key === Qt.Key_Escape)
-                                scope.isWallpaperSwitcherOpen = false;
-                            if (event.key === Qt.Key_Tab)
-                                searchField.focus = true;
+                    Keys.onPressed: event => {
+                        if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                            Quickshell.execDetached({
+                                command: ["sh", "-c", `shell ipc call img set ${scope.filteredWallpaperList[currentIndex]}`]
+                            });
                         }
+                        if (event.key === Qt.Key_Escape)
+                            scope.isWallpaperSwitcherOpen = false;
+                        if (event.key === Qt.Key_Tab)
+                            searchField.focus = true;
                     }
+                }
 
-                    StyledLabel {
-                        Layout.alignment: Qt.AlignHCenter
-                        Layout.bottomMargin: Appearance.spacing.small
-                        text: wallpaperGrid.count > 0 ? (wallpaperGrid.currentIndex + 1) + " / " + wallpaperGrid.count : "0 / 0"
-                        color: Themes.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.small
-                    }
+                StyledLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.bottomMargin: Appearance.spacing.small
+                    text: wallpaperGrid.count > 0 ? (wallpaperGrid.currentIndex + 1) + " / " + wallpaperGrid.count : "0 / 0"
+                    color: Themes.m3Colors.m3OnSurface
+                    font.pixelSize: Appearance.fonts.small
                 }
             }
         }

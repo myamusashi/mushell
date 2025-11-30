@@ -10,6 +10,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Configs
+import qs.Services
 import qs.Helpers
 import qs.Components
 
@@ -43,170 +44,212 @@ Scope {
         }
     }
 
-    LazyLoader {
-        id: appLoader
+    OuterShapeItem {
+        id: launcher
 
-        active: root.isLauncherOpen
-        onActiveChanged: {
-            cleanup.start();
-        }
+        content: rectLauncher
+        needKeyboardFocus: root.isLauncherOpen
 
-        component: PanelWindow {
-            id: launcher
+        StyledRect {
+            id: rectLauncher
 
-            property ShellScreen modelData
+            implicitWidth: Hypr.focusedMonitor.width * 0.3
+            implicitHeight: root.isLauncherOpen ? Hypr.focusedMonitor.height * 0.5 : 0
+            radius: 0
+            topLeftRadius: Appearance.rounding.normal
+            topRightRadius: Appearance.rounding.normal
+            color: Themes.m3Colors.m3Surface
 
-            anchors {
-                left: true
-                right: true
+            Behavior on implicitHeight {
+                NAnim {
+                    duration: Appearance.animations.durations.small
+                }
             }
 
-            WlrLayershell.namespace: "shell:app"
+            anchors {
+                bottom: parent.bottom
+                horizontalCenter: parent.horizontalCenter
+            }
 
-            property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
-            property int monitorWidth: monitor.width / monitor.scale
-            property int monitorHeight: monitor.height / monitor.scale
-
-            visible: root.isLauncherOpen
-            focusable: true
-
-            color: "transparent"
-            screen: modelData
-            exclusiveZone: 0
-            implicitWidth: monitorWidth * 0.5
-            implicitHeight: monitorHeight * 0.5
-            margins.left: monitorWidth * 0.2
-            margins.right: monitorWidth * 0.2
-            WlrLayershell.layer: WlrLayer.Overlay
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-
-            StyledRect {
-                id: rectLauncher
-
+            ColumnLayout {
                 anchors.fill: parent
-                radius: Appearance.rounding.large
-                color: Themes.m3Colors.m3Surface
-                border.color: Themes.m3Colors.m3Outline
-                border.width: 2
+                anchors.margins: Appearance.padding.normal
+                spacing: Appearance.spacing.normal
 
-                ColumnLayout {
-                    anchors.fill: parent
+                StyledTextField {
+                    id: search
 
-                    anchors.margins: Appearance.padding.normal
-                    spacing: Appearance.spacing.normal
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 60
+                    placeholderText: "  Search"
+                    font.family: Appearance.fonts.familySans
+                    focus: true
+                    font.pixelSize: Appearance.fonts.large * 1.2
+                    color: Themes.m3Colors.m3OnBackground
+                    placeholderTextColor: Themes.m3Colors.m3OnSurfaceVariant
 
-                    StyledTextField {
-                        id: search
+                    onTextChanged: {
+                        root.currentIndex = 0;
+                        listView.positionViewAtBeginning();
+                    }
 
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 60
-                        placeholderText: "  Search"
-                        font.family: Appearance.fonts.familySans
-                        focus: true
-                        font.pixelSize: Appearance.fonts.large * 1.2
-                        color: Themes.m3Colors.m3OnBackground
-                        placeholderTextColor: Themes.m3Colors.m3OnSurfaceVariant
+                    Keys.onPressed: function (event) {
+                        switch (event.key) {
+                        case Qt.Key_Return:
+                        case Qt.Key_Tab:
+                        case Qt.Key_Enter:
+                            if (listView.count > 0) {
+                                listView.focus = true;
+                                event.accepted = true;
+                            }
+                            break;
+                        case Qt.Key_Escape:
+                            root.isLauncherOpen = false;
+                            event.accepted = true;
+                            break;
+                        case Qt.Key_Down:
+                            if (listView.count > 0) {
+                                listView.focus = true;
+                                event.accepted = true;
+                            }
+                            break;
+                        }
+                    }
+                }
 
-                        onTextChanged: {
-                            root.currentIndex = 0;
+                ListView {
+                    id: listView
+
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    model: ScriptModel {
+                        values: Fuzzy.fuzzySearch(DesktopEntries.applications.values, search.text, "name")
+                    }
+
+                    clip: true
+                    spacing: 8
+
+                    cacheBuffer: 100
+                    reuseItems: true
+
+                    highlightMoveDuration: 150
+                    highlightMoveVelocity: -1
+
+                    ScrollBar.vertical: ScrollBar {
+                        policy: ScrollBar.AsNeeded
+                    }
+
+                    delegate: ItemDelegate {
+                        id: delegateItem
+
+                        required property DesktopEntry modelData
+                        required property int index
+
+                        width: listView.width
+                        height: 80
+
+                        contentItem: RowLayout {
+                            spacing: Appearance.spacing.normal
+
+                            StyledRect {
+                                Layout.alignment: Qt.AlignVCenter
+                                Layout.preferredWidth: 64
+                                Layout.preferredHeight: 64
+                                Layout.leftMargin: Appearance.padding.normal
+
+                                color: rectLauncher.color
+                                border.width: listView.currentIndex === delegateItem.index ? 3 : 1
+                                border.color: listView.currentIndex === delegateItem.index && !search.focus ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OutlineVariant
+
+                                Behavior on border.width {
+                                    NumberAnimation {
+                                        duration: 100
+                                    }
+                                }
+
+                                Behavior on border.color {
+                                    ColorAnimation {
+                                        duration: 100
+                                    }
+                                }
+
+                                IconImage {
+                                    anchors.centerIn: parent
+                                    width: 48
+                                    height: 48
+                                    source: Quickshell.iconPath(delegateItem.modelData.icon) || ""
+                                    asynchronous: true
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.rightMargin: Appearance.padding.normal
+                                spacing: 2
+
+                                StyledLabel {
+                                    Layout.fillWidth: true
+                                    text: delegateItem.modelData.name || ""
+                                    font.pixelSize: Appearance.fonts.large
+                                    font.weight: Font.Medium
+                                    elide: Text.ElideRight
+                                    color: Themes.m3Colors.m3OnSurface
+                                }
+
+                                StyledLabel {
+                                    Layout.fillWidth: true
+                                    text: delegateItem.modelData.comment
+                                    font.pixelSize: Appearance.fonts.small
+                                    elide: Text.ElideRight
+                                    color: Themes.m3Colors.m3OnSurfaceVariant
+                                    opacity: 0.7
+                                }
+                            }
+                        }
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+
+                            onClicked: {
+                                root.launch(delegateItem.modelData);
+                                root.isLauncherOpen = false;
+                            }
+
+                            onEntered: {
+                                listView.currentIndex = delegateItem.index;
+                            }
                         }
 
                         Keys.onPressed: function (event) {
                             switch (event.key) {
-                            case Qt.Key_Return:
                             case Qt.Key_Tab:
+                                search.focus = true;
+                                event.accepted = true;
+                                break;
+                            case Qt.Key_Return:
                             case Qt.Key_Enter:
-                                gridView.focus = true;
+                                root.launch(delegateItem.modelData);
+                                root.isLauncherOpen = false;
                                 event.accepted = true;
                                 break;
                             case Qt.Key_Escape:
                                 root.isLauncherOpen = false;
                                 event.accepted = true;
                                 break;
-                            case Qt.Key_Down:
-                                gridView.focus = true;
-                                event.accepted = true;
-                                break;
                             }
                         }
                     }
 
-                    GridView {
-                        id: gridView
-
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        model: ScriptModel {
-                            values: Fuzzy.fuzzySearch(DesktopEntries.applications.values, search.text, "name")
-                        }
-
-                        cellWidth: 160
-                        cellHeight: 160
-                        clip: true
-
-                        delegate: ItemDelegate {
-                            id: delegateItem
-
-                            required property DesktopEntry modelData
-                            required property int index
-
-                            width: gridView.cellWidth
-                            height: gridView.cellHeight
-
-                            contentItem: ColumnLayout {
-                                StyledRect {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    Layout.preferredWidth: 68
-                                    Layout.preferredHeight: 68
-
-                                    color: rectLauncher.color
-                                    border.width: gridView.currentIndex === delegateItem.index ? 3 : 1
-                                    border.color: gridView.currentIndex === delegateItem.index && search.focus !== true ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OutlineVariant
-
-                                    IconImage {
-                                        anchors.centerIn: parent
-                                        width: 50
-                                        height: 50
-                                        source: Quickshell.iconPath(delegateItem.modelData.icon) || ""
-                                    }
-                                }
-
-                                StyledLabel {
-                                    Layout.fillWidth: true
-                                    text: delegateItem.modelData.name || "a"
-                                    horizontalAlignment: Text.AlignHCenter
-                                    elide: Text.ElideRight
-                                }
-                            }
-
-                            MArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                hoverEnabled: true
-
-                                onClicked: root.launch(delegateItem.modelData)
-                                onEntered: search.focus = true
-                            }
-
-                            Keys.onPressed: function (event) {
-                                switch (event.key) {
-                                case Qt.Key_Tab:
-                                    search.focus = true;
-                                    event.accepted = true;
-                                    break;
-                                case Qt.Key_Return:
-                                case Qt.Key_Enter:
-                                    root.launch(delegateItem.modelData);
-                                    event.accepted = true;
-                                    break;
-                                case Qt.Key_Escape:
-                                    root.isLauncherOpen = false;
-                                    event.accepted = true;
-                                    break;
-                                }
-                            }
-                        }
+                    Label {
+                        anchors.centerIn: parent
+                        visible: listView.count === 0 && search.text !== ""
+                        text: "No applications found"
+                        color: Themes.m3Colors.m3OnSurfaceVariant
+                        font.pixelSize: Appearance.fonts.large
                     }
                 }
             }
@@ -218,6 +261,11 @@ Scope {
 
         function toggle(): void {
             root.isLauncherOpen = !root.isLauncherOpen;
+            if (root.isLauncherOpen) {
+                search.text = "";
+                search.forceActiveFocus();
+                listView.currentIndex = 0;
+            }
         }
     }
 }

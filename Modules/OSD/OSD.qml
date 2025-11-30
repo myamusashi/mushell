@@ -96,44 +96,35 @@ Scope {
     Variants {
         model: Quickshell.screens
 
-        delegate: PanelWindow {
+        delegate: OuterShapeItem {
             id: panelWindow
 
-            property int monitorHeight: Hypr.focusedMonitor.height
-
-			anchors.right: true
-			anchors.bottom: true
-            WlrLayershell.namespace: "shell:osd:unified"
-            color: "transparent"
-            exclusionMode: ExclusionMode.Ignore
-            focusable: false
-            implicitWidth: 250
-            implicitHeight: monitorHeight * 0.5
-            exclusiveZone: 0
-			margins.right: 10
-			margins.bottom: 10
-            mask: Region {
-                item: mainRect
-            }
-
-            visible: root.isVolumeOSDShow || root.isCapsLockOSDShow || root.isNumLockOSDShow
+            content: mainRect
 
             StyledRect {
                 id: mainRect
 
                 anchors {
-                    horizontalCenter: parent.horizontalCenter
+					right: parent.right
                     bottom: parent.bottom
-                }
-                width: 250
-                height: calculateHeight()
-                radius: 25
+				}
+
+				width: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? 250 : 0
+                height: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? calculateHeight() : 0
+				radius: 0
+				topLeftRadius: Appearance.rounding.normal
                 color: Themes.m3Colors.m3Background
                 clip: true
 
-                Behavior on height {
-                    NAnim {
-                        duration: Appearance.animations.durations.small
+				Behavior on width {
+					NAnim {
+						duration: Appearance.animations.durations.small
+                    }
+				}
+
+                Behavior on height  {
+					NAnim {
+						duration: Appearance.animations.durations.small
                     }
                 }
 
@@ -161,10 +152,10 @@ Scope {
                         totalHeight += (activeCount - 1) * spacing;
 
                     return totalHeight > 0 ? totalHeight + (padding * 2) : 0;
-                }
+				}
 
                 Column {
-                    id: osdColumn
+					id: osdColumn
 
                     anchors {
                         fill: parent
@@ -183,7 +174,7 @@ Scope {
                     }
 
                     Volumes {
-						id: volumeOSD
+                        id: volumeOSD
 
                         isVolumeOSDShow: root.isVolumeOSDShow
                     }

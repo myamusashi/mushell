@@ -16,7 +16,6 @@ RowLayout {
 
         icon: "brightness_5"
         iconSize: Appearance.fonts.large * 1.5
-        from: 0
         to: Brightness.maxValue || 1
         value: Brightness.value
 
@@ -26,7 +25,8 @@ RowLayout {
             id: debounceTimer
 
             interval: 150
-            repeat: false
+			repeat: true
+			running: true
             onTriggered: Brightness.setBrightness(brightnessSlider.value)
         }
     }
