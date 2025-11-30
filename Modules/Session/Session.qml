@@ -71,15 +71,19 @@ Scope {
             content: item
             WlrLayershell.keyboardFocus: session.isSessionOpen ? session.showConfirmDialog ? WlrKeyboardFocus.None : WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-            Item {
+            StyledRect {
                 id: item
 
                 implicitWidth: session.triggerAnimation ? 80 : 0
-                implicitHeight: Hypr.focusedMonitor.height * 0.5
+				implicitHeight: Hypr.focusedMonitor.height * 0.5
+				radius: 0
+				topLeftRadius: Appearance.rounding.normal
+				bottomLeftRadius: Appearance.rounding.normal
+				color: Themes.m3Colors.m3Background
 
                 focus: session.isSessionOpen
                 onFocusChanged: {
-                    if (focus && session.isSessionOpen) 
+                    if (focus && session.isSessionOpen)
                         Qt.callLater(() => {
                             let firstIcon = repeater.itemAt(session.currentIndex);
                             if (firstIcon)
@@ -97,57 +101,7 @@ Scope {
                 anchors {
                     right: parent.right
                     verticalCenter: parent.verticalCenter
-                }
-                Shape {
-                    id: backgroundShape
-
-                    property real cornerRadius: Appearance.rounding.normal
-                    anchors.fill: parent
-
-                    ShapePath {
-                        fillColor: Themes.m3Colors.m3Background
-                        strokeColor: "transparent"
-                        strokeWidth: 2
-                        startX: 0
-                        startY: backgroundShape.cornerRadius
-
-                        PathArc {
-                            x: backgroundShape.cornerRadius
-                            y: 0
-                            radiusX: backgroundShape.cornerRadius
-                            radiusY: backgroundShape.cornerRadius
-                            direction: PathArc.Clockwise
-                        }
-
-                        PathLine {
-                            x: backgroundShape.width
-                            y: 0
-                        }
-
-                        PathLine {
-                            x: backgroundShape.width
-                            y: backgroundShape.height
-                        }
-
-                        PathLine {
-                            x: backgroundShape.cornerRadius
-                            y: backgroundShape.height
-                        }
-
-                        PathArc {
-                            x: 0
-                            y: backgroundShape.height - backgroundShape.cornerRadius
-                            radiusX: backgroundShape.cornerRadius
-                            radiusY: backgroundShape.cornerRadius
-                            direction: PathArc.Clockwise
-                        }
-
-                        PathLine {
-                            x: 0
-                            y: backgroundShape.cornerRadius
-                        }
-                    }
-                }
+				}
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -209,17 +163,16 @@ Scope {
                             id: rectDelegate
 
                             required property var modelData
-							required property int index
-							property int animationDelay: session.isSessionOpen ? (4 - rectDelegate.index) * 50 : rectDelegate.index * 50
-							property real animProgress: 0
+                            required property int index
+                            property int animationDelay: session.isSessionOpen ? (4 - rectDelegate.index) * 50 : rectDelegate.index * 50
+                            property real animProgress: 0
                             property bool isHighlighted: mouseArea.containsMouse || (iconDelegate.focus && rectDelegate.index === session.currentIndex)
 
                             Layout.alignment: Qt.AlignHCenter
                             Layout.preferredWidth: 60
-							Layout.preferredHeight: 70
+                            Layout.preferredHeight: 70
 
-							color: isHighlighted ? Themes.withAlpha(Themes.m3Colors.m3Secondary, 0.2) : "transparent"
-
+                            color: isHighlighted ? Themes.withAlpha(Themes.m3Colors.m3Secondary, 0.2) : "transparent"
 
                             Component.onCompleted: {
                                 rectDelegate.animProgress = 0;

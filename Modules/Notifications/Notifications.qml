@@ -59,7 +59,7 @@ Scope {
         component: OuterShapeItem {
             content: item
 
-            Item {
+            StyledRect {
                 id: item
 
                 anchors {
@@ -70,6 +70,9 @@ Scope {
 
                 implicitWidth: Hypr.focusedMonitor.width * 0.2
                 implicitHeight: notificationScope.triggerAnimation ? Math.min(notifColumn.height + 30, parent.height * 0.4) : 0
+                radius: 0
+				topLeftRadius: Appearance.rounding.normal
+				bottomLeftRadius: Appearance.rounding.normal
 
                 Behavior on implicitHeight {
                     NAnim {
@@ -78,44 +81,6 @@ Scope {
                     }
                 }
 
-                Shape {
-                    id: maskShape
-                    anchors.fill: parent
-
-                    ShapePath {
-                        fillColor: Themes.m3Colors.m3Background
-                        strokeColor: "transparent"
-                        startX: 0
-                        startY: 0
-
-                        PathLine {
-                            x: maskShape.width
-                            y: 0
-                        }
-
-                        PathLine {
-                            x: maskShape.width
-                            y: maskShape.height
-                        }
-
-                        PathLine {
-                            x: Appearance.rounding.normal
-                            y: maskShape.height
-                        }
-
-                        PathArc {
-                            x: 0
-                            y: maskShape.height - Appearance.rounding.normal
-                            radiusX: Appearance.rounding.normal
-                            radiusY: Appearance.rounding.normal
-                        }
-
-                        PathLine {
-                            x: 0
-                            y: Appearance.rounding.normal
-                        }
-                    }
-                }
 
                 Flickable {
                     id: notifFlickable

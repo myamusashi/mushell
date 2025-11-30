@@ -107,7 +107,6 @@ Scope {
                 id: container
 
                 implicitWidth: Hypr.focusedMonitor.width * 0.3
-                // Gunakan triggerAnimation untuk kontrol animasi
                 implicitHeight: root.triggerAnimation ? contentLayout.implicitHeight + 20 : 0
                 color: Themes.m3Colors.m3Surface
                 radius: 0

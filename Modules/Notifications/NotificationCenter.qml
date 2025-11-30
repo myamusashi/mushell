@@ -64,7 +64,7 @@ Scope {
         component: OuterShapeItem {
             content: notifShape
 
-            Shape {
+			StyledRect {
                 id: notifShape
 
                 anchors {
@@ -75,70 +75,17 @@ Scope {
 
                 width: 350
                 height: notifCenterScope.triggerAnimation ? Hypr.focusedMonitor.height * 0.7 : 0
-                clip: true
-                visible: height > 0
+				clip: true
+				radius: 0
+				bottomRightRadius: Appearance.rounding.normal
+				bottomLeftRadius: Appearance.rounding.normal
+				visible: height > 0
+				color: Themes.m3Colors.m3Background
 
                 Behavior on height {
                     NAnim {
                         duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-                    }
-                }
-
-                ShapePath {
-                    strokeWidth: 0
-                    fillColor: outer.top.color
-                    startX: 12
-                    startY: 0
-
-                    PathLine {
-                        x: notifShape.width - 12
-                        y: 0
-                    }
-
-                    PathCubic {
-                        control1X: notifShape.width - 5
-                        control2X: notifShape.width
-                        x: notifShape.width
-                        y: 0
-                    }
-
-                    PathLine {
-                        x: notifShape.width
-                        y: notifShape.height - 12
-                    }
-
-                    PathArc {
-                        x: notifShape.width - 12
-                        y: notifShape.height
-                        radiusX: 12
-                        radiusY: 12
-                    }
-
-                    PathLine {
-                        x: 12
-                        y: notifShape.height
-                    }
-
-                    PathArc {
-                        x: 0
-                        y: notifShape.height - 12
-                        radiusX: 12
-                        radiusY: 12
-                    }
-
-                    PathLine {
-                        x: 0
-                        y: 12
-                    }
-
-                    PathCubic {
-                        control1X: 0
-                        control1Y: -15
-                        control2X: -15
-                        control2Y: 0
-                        x: 12
-                        y: 0
                     }
                 }
 

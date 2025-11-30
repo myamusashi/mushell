@@ -109,22 +109,24 @@ Scope {
                     bottom: parent.bottom
 				}
 
-				width: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? 250 : 0
-                height: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? calculateHeight() : 0
+				implicitWidth: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? 250 : 0
+                implicitHeight: root.isVolumeOSDShow || root.isNumLockOSDShow || root.isCapsLockOSDShow ? calculateHeight() : 0
 				radius: 0
 				topLeftRadius: Appearance.rounding.normal
                 color: Themes.m3Colors.m3Background
                 clip: true
 
-				Behavior on width {
-					NAnim {
-						duration: Appearance.animations.durations.small
+				Behavior on implicitWidth {
+                    NAnim {
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
-				}
+                }
 
-                Behavior on height  {
-					NAnim {
-						duration: Appearance.animations.durations.small
+                Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
 

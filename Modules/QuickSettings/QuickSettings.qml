@@ -155,76 +155,17 @@ Scope {
                     Component {
                         id: contentView
 
-                        Shape {
-                            id: shapeRect
+                        StyledRect {
+							id: shapeRect
+
                             anchors.fill: parent
 
-                            ShapePath {
-                                strokeWidth: 0
-                                strokeColor: "transparent"
-                                fillColor: Themes.m3Colors.m3Surface
+							radius: 0
+							bottomLeftRadius: Appearance.rounding.normal
+                            bottomRightRadius: Appearance.rounding.normal
+							color: Themes.m3Colors.m3Background
 
-                                startX: topLeftRadius
-                                startY: 0
-
-                                PathLine {
-                                    x: shapeRect.width - topRightRadius
-                                    y: 0
-                                }
-
-                                PathArc {
-                                    x: shapeRect.width
-                                    y: topRightRadius
-                                    radiusX: topRightRadius
-                                    radiusY: topRightRadius
-                                    direction: PathArc.Clockwise
-                                }
-
-                                PathLine {
-                                    x: shapeRect.width
-                                    y: shapeRect.height - bottomRightRadius
-                                }
-
-                                PathArc {
-                                    x: shapeRect.width - bottomRightRadius
-                                    y: shapeRect.height
-                                    radiusX: bottomRightRadius
-                                    radiusY: bottomRightRadius
-                                    direction: PathArc.Clockwise
-                                }
-
-                                PathLine {
-                                    x: bottomLeftRadius
-                                    y: shapeRect.height
-                                }
-
-                                PathArc {
-                                    x: 0
-                                    y: shapeRect.height - bottomLeftRadius
-                                    radiusX: bottomLeftRadius
-                                    radiusY: bottomLeftRadius
-                                    direction: PathArc.Clockwise
-                                }
-
-                                PathLine {
-                                    x: 0
-                                    y: topLeftRadius
-                                }
-
-                                PathArc {
-                                    x: topLeftRadius
-                                    y: 0
-                                    radiusX: topLeftRadius
-                                    radiusY: topLeftRadius
-                                    direction: PathArc.Clockwise
-                                }
-                            }
-
-                            property int viewIndex: 0
-                            property real topLeftRadius: 0
-                            property real topRightRadius: 0
-                            property real bottomLeftRadius: Appearance.rounding.normal
-                            property real bottomRightRadius: Appearance.rounding.normal
+							property int viewIndex: 0
 
                             Loader {
                                 anchors.fill: parent
