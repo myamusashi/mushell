@@ -70,17 +70,22 @@ Scope {
                 anchors {
                     right: parent.right
                     top: parent.top
-                    rightMargin: 30
                 }
 
-                width: 350
+				width: 350
                 height: notifCenterScope.triggerAnimation ? Hypr.focusedMonitor.height * 0.7 : 0
 				clip: true
 				radius: 0
-				bottomRightRadius: Appearance.rounding.normal
 				bottomLeftRadius: Appearance.rounding.normal
 				visible: height > 0
 				color: Themes.m3Colors.m3Background
+
+				Behavior on width {
+                    NAnim {
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
 
                 Behavior on height {
                     NAnim {

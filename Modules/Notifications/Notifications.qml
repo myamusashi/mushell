@@ -14,19 +14,16 @@ import "Components" as Com
 Scope {
     id: notificationScope
 
-    // Properties untuk orchestrate animasi
     property bool hasNotifications: Notifs.notifications.popupNotifications.length > 0
     property bool triggerAnimation: false
     property bool shouldDestroy: false
 
     onHasNotificationsChanged: {
         if (hasNotifications) {
-            // Buka: reset → tunggu load → trigger animasi
             shouldDestroy = false;
             triggerAnimation = false;
             animationTriggerTimer.restart();
         } else {
-            // Tutup: trigger animasi → tunggu selesai → destroy
             triggerAnimation = false;
             destroyTimer.restart();
         }
@@ -65,17 +62,22 @@ Scope {
                 anchors {
                     right: parent.right
                     top: parent.top
-                    topMargin: 0
                 }
 
-                implicitWidth: Hypr.focusedMonitor.width * 0.2
-				implicitHeight: notificationScope.triggerAnimation ? Math.min(notifColumn.height + 30, parent.height * 0.4) : 0
+				width: Hypr.focusedMonitor.width * 0.2
+				height: notificationScope.triggerAnimation ? Math.min(notifColumn.height + 30, parent.height * 0.4) : 0
 				color: Themes.m3Colors.m3Background
                 radius: 0
-				topLeftRadius: Appearance.rounding.normal
 				bottomLeftRadius: Appearance.rounding.normal
 
-                Behavior on implicitHeight {
+				Behavior on width {
+                    NAnim {
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
+
+                Behavior on height {
                     NAnim {
                         duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
@@ -84,14 +86,16 @@ Scope {
 
 
                 Flickable {
-                    id: notifFlickable
+					id: notifFlickable
+
                     anchors.fill: parent
                     contentHeight: notifColumn.height
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
 
                     Column {
-                        id: notifColumn
+						id: notifColumn
+
                         width: parent.width
                         spacing: Appearance.spacing.normal
 
@@ -109,7 +113,8 @@ Scope {
                                 onExited: closePopups.start()
 
                                 Timer {
-                                    id: closePopups
+									id: closePopups
+
                                     interval: wrapper.modelData.urgency === NotificationUrgency.Critical ? 10000 : 5000
                                     running: true
                                     onTriggered: wrapper.removeNotificationWithAnimation()

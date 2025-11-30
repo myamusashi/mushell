@@ -28,8 +28,10 @@ Item {
         slideInAnim.start();
     }
 
+    signal animationCompleted
+
     NAnim {
-        id: slideInAnim
+		id: slideInAnim
 
         target: root
         property: "x"
@@ -37,6 +39,8 @@ Item {
         to: 0
         duration: Appearance.animations.durations.emphasized
         easing.bezierCurve: Appearance.animations.curves.emphasized
+
+        onFinished: root.animationCompleted()
     }
 
     NAnim {
@@ -82,7 +86,7 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-        color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3Background
+        color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3SurfaceContainer
         topLeftRadius: Appearance.rounding.large
         bottomLeftRadius: Appearance.rounding.large
         radius: 0
