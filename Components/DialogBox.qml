@@ -20,26 +20,25 @@ Loader {
     asynchronous: true
 
     sourceComponent: PanelWindow {
-        anchors.left: true
-        anchors.right: true
-        anchors.top: true
-        anchors.bottom: true
+        anchors {
+            left: true
+            right: true
+            top: true
+            bottom: true
+        }
 
-        color: "#80000000"
+        color: Themes.withAlpha(Themes.m3Colors.m3Background, 0.3)
 
         MArea {
             anchors.fill: parent
             onClicked: root.rejected()
-
             propagateComposedEvents: false
         }
 
         StyledRect {
             anchors.centerIn: parent
-            implicitWidth: 400
-
-            readonly property real contentHeight: column.implicitHeight + 40
-            implicitHeight: contentHeight
+            implicitWidth: column.implicitWidth + 40
+            implicitHeight: column.implicitHeight + 40
 
             radius: Appearance.rounding.large
             color: Themes.m3Colors.m3Surface
@@ -47,9 +46,10 @@ Loader {
             border.width: 2
 
             Column {
-				id: column
+                id: column
 
-                anchors.fill: parent
+				anchors.centerIn: parent
+				width: 360
                 anchors.margins: 20
                 spacing: Appearance.spacing.large
 
@@ -59,28 +59,26 @@ Loader {
                     elide: Text.ElideMiddle
                     font.pixelSize: Appearance.fonts.extraLarge
                     font.bold: true
-                    Layout.fillWidth: true
                 }
 
                 StyledRect {
-                    implicitHeight: 1
+                    width: parent.width
+                    height: 2
                     color: Themes.m3Colors.m3OutlineVariant
-                    Layout.fillWidth: true
                 }
 
                 StyledText {
+                    width: parent.width
                     text: root.body
                     color: Themes.m3Colors.m3OnBackground
                     font.pixelSize: Appearance.fonts.large
                     wrapMode: Text.Wrap
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
                 }
 
                 StyledRect {
-                    implicitHeight: 1
+                    width: parent.width
+                    height: 2
                     color: Themes.m3Colors.m3OutlineVariant
-                    Layout.fillWidth: true
                 }
 
                 Row {
@@ -96,8 +94,8 @@ Loader {
 
                     StyledButton {
                         iconButton: "check"
-						buttonTitle: "Yes"
-						buttonTextColor: Themes.m3Colors.m3OnPrimary
+                        buttonTitle: "Yes"
+                        buttonTextColor: Themes.m3Colors.m3OnPrimary
                         onClicked: root.accepted()
                     }
                 }
