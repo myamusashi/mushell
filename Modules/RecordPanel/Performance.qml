@@ -1,13 +1,10 @@
 import QtQuick
 import QtGraphs
 import QtQuick.Layouts
-import Quickshell
 import Quickshell.Widgets
 
 import qs.Configs
-import qs.Helpers
 import qs.Services
-import qs.Components
 
 ClippingRectangle {
     id: root
@@ -24,7 +21,7 @@ ClippingRectangle {
 
         anchors.left: parent.left
         anchors.top: parent.top
-        width: 300
+        width: 450
         spacing: 0
 
         Header {
@@ -33,39 +30,44 @@ ClippingRectangle {
             condition: root.visible
         }
 
-        GridLayout {
-            Layout.fillWidth: true
-            Layout.maximumWidth: columnLayout.width
-            Layout.margins: 12
-            rows: 2
-            columns: 2
-            rowSpacing: Appearance.spacing.large
-            columnSpacing: Appearance.spacing.large
+        RowLayout {
+            id: row
 
-            CPU {
-                Layout.fillWidth: true
-                Layout.preferredWidth: 0
-            }
-
-            GPU {
-                Layout.fillWidth: true
-                Layout.preferredWidth: 0
-            }
-
-            VRAM {
-                Layout.fillWidth: true
-                Layout.preferredWidth: 0
-            }
-
-            RAM {
-                Layout.fillWidth: true
-                Layout.preferredWidth: 0
-            }
-        }
-
-        Graph {
-            Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.fillWidth: true
+            GridLayout {
+                Layout.fillWidth: true
+                Layout.margins: 12
+                rows: 2
+                columns: 2
+                rowSpacing: Appearance.spacing.large
+                columnSpacing: Appearance.spacing.large
+
+                CPU {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                }
+
+                GPU {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                }
+
+                VRAM {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                }
+
+                RAM {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 0
+                }
+            }
+
+            Graph {
+                Layout.preferredWidth: parent.width / 2
+                Layout.fillHeight: true
+            }
         }
     }
 

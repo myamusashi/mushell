@@ -36,6 +36,7 @@ Scope {
                 bottom: true
                 top: true
             }
+
             screen: modelData
             color: "transparent"
 
@@ -59,6 +60,7 @@ Scope {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width / 3
+                        Layout.topMargin: 15
                         Layout.leftMargin: 15
                         spacing: Appearance.spacing.large
 
