@@ -20,5 +20,4 @@ StyledTextField {
     rightPadding: 16
 
     placeholderText: "Enter password"
-    onAccepted: okButton.clicked()
 }
