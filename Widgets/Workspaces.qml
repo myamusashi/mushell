@@ -111,8 +111,7 @@ StyledRect {
                             color: Themes.m3Colors.m3SurfaceContainerHigh
                             border.color: Themes.m3Colors.m3Outline
                             border.width: 1
-                        }
-                        anchors.margins: 2
+						}
 
                         x: (toplevelData?.at[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * root.scaleFactor + (root.containerWidth - root.workspaceWidth * root.scaleFactor) / 2
                         y: (toplevelData?.at[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * root.scaleFactor + (root.containerHeight - root.workspaceHeight * root.scaleFactor) / 2
@@ -122,9 +121,9 @@ StyledRect {
                         Drag.hotSpot.x: width / 2
                         Drag.hotSpot.y: height / 2
                         Drag.onActiveChanged: {
-                            if (Drag.active) {
+                            if (Drag.active)
                                 parent = visualParent;
-                            } else {
+                            else {
                                 var mapped = mapToItem(originalParent, 0, 0);
                                 parent = originalParent;
 

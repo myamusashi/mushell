@@ -8,6 +8,7 @@ import qs.Modules.RecordPanel
 import qs.Modules.Overview
 import qs.Modules.Polkit
 import qs.Modules
+import qs.Helpers
 
 import QtQuick
 import Quickshell
@@ -38,6 +39,6 @@ ShellRoot {
 
     GlobalShortcut {
         name: "screencapture"
-        onPressed: screencapture.isOpen = !screencapture.isOpen
+        onPressed: GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen
     }
 }
