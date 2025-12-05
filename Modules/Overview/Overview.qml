@@ -67,6 +67,7 @@ Scope {
             // Overlay Layer
             StyledRect {
                 id: overLayer
+
                 color: "transparent"
                 z: 1
                 anchors.fill: parent
@@ -149,9 +150,10 @@ Scope {
 
                         MArea {
                             anchors.fill: parent
-
-                            onClicked: if (workspaceContainer.workspace !== Hyprland.focusedWorkspace)
-                            Hypr.dispatch("workspace" + parent.index + 1)
+                            onClicked: {
+                                if (workspaceContainer.workspace !== Hyprland.focusedWorkspace)
+                                Hypr.dispatch("workspace" + parent.index + 1);
+                            }
                         }
 
                         // Toplevels
@@ -236,7 +238,6 @@ Scope {
                                     property bool dragged: false
 
                                     drag.target: (toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized) ? undefined : toplevel
-
                                     cursorShape: dragged ? Qt.DragMoveCursor : Qt.ArrowCursor
                                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                                     anchors.fill: parent

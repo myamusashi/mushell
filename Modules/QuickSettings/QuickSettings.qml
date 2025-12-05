@@ -27,7 +27,7 @@ ColumnLayout {
         onPressed: root.toggleControlCenter()
     }
 
-    width: Hypr.focusedMonitor.width * 0.3
+    width: parent.width * 0.3
     height: isControlCenterOpen ? contentHeight : 0
     spacing: 0
 

@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Services.Notifications
 
 import qs.Configs
 import qs.Services
@@ -23,18 +22,10 @@ StyledRect {
     property bool hasNotifications: Notifs.popups.length > 0
 
     width: Hypr.focusedMonitor.width * 0.2
-    height: hasNotifications ? Math.min(notifColumn.height + 30, parent.height * 0.4) : 0
+    height: hasNotifications ? Math.min(notifColumn.height + 30, parent.height * 0.5) : 0
     color: Themes.m3Colors.m3Background
     radius: 0
-    clip: true
     bottomLeftRadius: Appearance.rounding.normal
-
-    Behavior on width {
-        NAnim {
-            duration: Appearance.animations.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-        }
-    }
 
     Behavior on height {
         NAnim {
@@ -48,7 +39,6 @@ StyledRect {
 
         anchors.fill: container
         contentHeight: notifColumn.height
-        clip: true
         boundsBehavior: Flickable.StopAtBounds
 
         Column {

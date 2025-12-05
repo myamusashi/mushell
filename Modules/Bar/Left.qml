@@ -9,8 +9,9 @@ Loader {
     asynchronous: true
 
     sourceComponent: RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: Appearance.margin.small
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.leftMargin: Appearance.margin.small
         spacing: Appearance.spacing.normal
 
         OsText {

@@ -3,9 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import Quickshell
+import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
 import qs.Configs
+import qs.Services
 import qs.Widgets
 
 ScrollView {
@@ -42,10 +45,23 @@ ScrollView {
             Repeater {
                 model: linkTracker.linkGroups
 
-                MixerEntry {
+                delegate: RowLayout {
+                    id: groups
+
                     required property PwLinkGroup modelData
-                    useCustomProperties: false
-                    node: modelData.source
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignLeft
+                    IconImage {
+                        source: Quickshell.iconPath(Players.active.desktopEntry)
+                        asynchronous: true
+                        Layout.preferredWidth: 60
+                        Layout.preferredHeight: 60
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+                    MixerEntry {
+                        useCustomProperties: false
+                        node: groups.modelData.source
+                    }
                 }
             }
         }

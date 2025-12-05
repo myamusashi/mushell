@@ -9,36 +9,26 @@ import QtQuick.Layouts
 
 import qs.Configs
 import qs.Helpers
-import "../RecordControl"
 import qs.Components
 
 Scope {
     id: root
 
-    property int selectedIndex: 0
-    property bool isOpen: false
-    property string scriptPath: `${Quickshell.shellDir}/Assets/screen-capture.sh`
+    IpcHandler {
+        target: "screencapture"
+
+        function toggle(): void {
+            GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen;
+        }
+    }
 
     GlobalShortcut {
         name: "screencaptureLauncher"
-        onPressed: root.isOpen = !root.isOpen
-    }
-
-    Timer {
-        id: cleanup
-
-        interval: 500
-        repeat: false
-        onTriggered: {
-            gc();
-        }
+        onPressed: GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen
     }
 
     LazyLoader {
-        active: root.isOpen
-        onActiveChanged: {
-            cleanup.start();
-        }
+        activeAsync: GlobalStates.isScreenCapturePanelOpen
 
         component: PanelWindow {
             id: window
@@ -46,9 +36,10 @@ Scope {
             property HyprlandMonitor monitor: Hyprland.monitorFor(screen)
             property real monitorWidth: monitor.width / monitor.scale
             property real monitorHeight: monitor.height / monitor.scale
+            property int selectedIndex: 0
             property int selectedTab: 0
 
-            visible: root.isOpen
+            visible: GlobalStates.isScreenCapturePanelOpen
             focusable: true
 
             anchors {
@@ -67,7 +58,7 @@ Scope {
 
             Loader {
                 anchors.fill: parent
-                active: root.isOpen
+                active: GlobalStates.isScreenCapturePanelOpen
                 asynchronous: true
                 sourceComponent: Item {
                     anchors.fill: parent
@@ -203,14 +194,14 @@ Scope {
                                             Layout.fillWidth: true
                                             optionData: modelData
                                             optionIndex: index
-                                            isSelected: index === root.selectedIndex && window.selectedTab === 0
+                                            isSelected: index === window.selectedIndex && window.selectedTab === 0
                                             maxIndex: 4
 
                                             onIndexModel: function (idx) {
-                                                root.selectedIndex = idx;
+                                                window.selectedIndex = idx;
                                             }
 
-                                            onClosed: root.isOpen = false
+                                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
                                         }
                                     }
                                 }
@@ -258,14 +249,14 @@ Scope {
                                             Layout.fillWidth: true
                                             optionData: modelData
                                             optionIndex: index
-                                            isSelected: index === root.selectedIndex && window.selectedTab === 0
+                                            isSelected: index === window.selectedIndex && window.selectedTab === 0
                                             maxIndex: 3
 
                                             onIndexModel: function (idx) {
-                                                root.selectedIndex = idx;
+                                                window.selectedIndex = idx;
                                             }
 
-                                            onClosed: root.isOpen = false
+                                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
                                         }
                                     }
                                 }
@@ -274,18 +265,6 @@ Scope {
                     }
                 }
             }
-        }
-    }
-
-    RecordControl {
-        id: recordControl
-    }
-
-    IpcHandler {
-        target: "screencapture"
-
-        function toggle(): void {
-            root.isOpen = !root.isOpen;
         }
     }
 }

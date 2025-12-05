@@ -128,6 +128,7 @@ Item {
 
                 interval: Appearance.animations.durations.normal
                 onTriggered: {
+                    root.removeNotificationWithAnimation();
                     if (root.notif)
                         root.notif.close();
                 }
@@ -146,6 +147,7 @@ Item {
 
             Icon {
                 id: iconLayout
+
                 modelData: root.notif
             }
 

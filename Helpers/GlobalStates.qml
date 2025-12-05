@@ -10,6 +10,7 @@ Singleton {
     id: root
 
     property bool isCalendarOpen: false
+    property bool isScreenCapturePanelOpen: false
     property bool isLauncherOpen: false
     property bool isBarOpen: false
     property bool isSessionOpen: false
@@ -21,6 +22,8 @@ Singleton {
     property bool isCapsLockOSDShow: false
     property bool isNumLockOSDShow: false
     property bool isOverviewOpen: false
+
+    property string scriptPath: `${Quickshell.shellDir}/Assets/screen-capture.sh`
 
     property var osdTimers: ({
                                  "capslock": null,

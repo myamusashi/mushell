@@ -12,7 +12,7 @@ import qs.Components
 StyledRect {
     id: root
 
-    anchors.centerIn: parent
+    Layout.alignment: Qt.AlignCenter
     color: "transparent"
 
     readonly property int index: 0

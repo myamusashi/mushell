@@ -32,8 +32,8 @@ StyledRect {
         cursorShape: Qt.PointingHandCursor
         onClicked: () => {
             Quickshell.execDetached({
-                "command": ["sh", "-c", "hyprctl dispatch global quickshell:overview"]
-            });
+                                        "command": ["sh", "-c", "hyprctl dispatch global quickshell:overview"]
+                                    });
         }
     }
 
@@ -80,7 +80,7 @@ StyledRect {
                     anchors.fill: parent
                     onClicked: {
                         if (workspaceContainer.workspace !== Hyprland.focusedWorkspace)
-                            Hypr.dispatch("workspace " + (parent.index + 1));
+                        Hypr.dispatch("workspace " + (parent.index + 1));
                     }
                 }
 
@@ -110,9 +110,9 @@ StyledRect {
                             anchors.fill: parent
                             color: Themes.m3Colors.m3SurfaceContainerHigh
                             border.color: Themes.m3Colors.m3Outline
-							border.width: 1
-						}
-						anchors.margins: 2
+                            border.width: 1
+                        }
+                        anchors.margins: 2
 
                         x: (toplevelData?.at[0] - (waylandHandle?.fullscreen ? 0 : root.reserved[0])) * root.scaleFactor + (root.containerWidth - root.workspaceWidth * root.scaleFactor) / 2
                         y: (toplevelData?.at[1] - (waylandHandle?.fullscreen ? 0 : root.reserved[1])) * root.scaleFactor + (root.containerHeight - root.workspaceHeight * root.scaleFactor) / 2
@@ -160,15 +160,15 @@ StyledRect {
 
                             onPositionChanged: {
                                 if (drag.active)
-                                    dragged = true;
+                                dragged = true;
                             }
 
                             onClicked: mouse => {
                                 if (!dragged) {
                                     if (mouse.button === Qt.LeftButton)
-                                        toplevel.waylandHandle.activate();
+                                    toplevel.waylandHandle.activate();
                                     else if (mouse.button === Qt.RightButton)
-                                        toplevel.waylandHandle.close();
+                                    toplevel.waylandHandle.close();
                                 }
                             }
 

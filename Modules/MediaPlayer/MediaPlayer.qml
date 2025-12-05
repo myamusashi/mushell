@@ -12,7 +12,7 @@ import qs.Services
 import qs.Helpers
 import qs.Components
 
-StyledRect {
+ClippingRectangle {
     id: root
 
     property bool isMediaPlayerOpen: GlobalStates.isMediaPlayerOpen
@@ -78,7 +78,6 @@ StyledRect {
             anchors.fill: parent
             anchors.margins: 10
             spacing: Appearance.spacing.normal
-            visible: root.isMediaPlayerOpen && root.implicitHeight !== 0
 
             Rectangle {
                 Layout.preferredWidth: 120
