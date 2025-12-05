@@ -12,6 +12,9 @@ import qs.Components
 ColumnLayout {
     id: root
 
+    anchors.centerIn: parent
+    spacing: Appearance.spacing.normal
+
     required property bool useCustomProperties
     property Component customProperty
     required property PwNode node
@@ -22,21 +25,21 @@ ColumnLayout {
     }
 
     RowLayout {
-        Layout.alignment: Qt.AlignLeft
+        Layout.fillWidth: true
+        spacing: Appearance.spacing.normal
+
         MaterialIcon {
-            Layout.alignment: Qt.AlignLeft
-            visible: icon !== ""
+            Layout.alignment: Qt.AlignVCenter
+            visible: root.icon !== ""
             icon: root.icon
             color: Themes.m3Colors.m3OnSurface
             font.pointSize: Appearance.fonts.extraLarge
         }
 
         Loader {
-            active: true
-
             Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.alignment: Qt.AlignCenter
+            Layout.alignment: Qt.AlignVCenter
+            active: true
             sourceComponent: root.useCustomProperties ? root.customProperty : defaultNode
         }
 
@@ -51,11 +54,11 @@ ColumnLayout {
                 }
                 elide: Text.ElideRight
                 wrapMode: Text.Wrap
-                Layout.fillWidth: true
             }
         }
 
         StyledButton {
+            Layout.alignment: Qt.AlignVCenter
             buttonTitle: root.node.audio.muted ? "unmute" : "mute"
             onClicked: root.node.audio.muted = !root.node.audio.muted
             buttonTextColor: Themes.m3Colors.m3OnSurface
@@ -66,6 +69,9 @@ ColumnLayout {
     }
 
     RowLayout {
+        Layout.fillWidth: true
+        spacing: Appearance.spacing.normal
+
         StyledLabel {
             Layout.preferredWidth: 50
             text: `${Math.floor(root.node.audio.volume * 100)}%`
