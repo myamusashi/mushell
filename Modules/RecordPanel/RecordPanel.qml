@@ -7,19 +7,18 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 
 import qs.Configs
-import qs.Services
+import qs.Helpers
 import qs.Components
 
 import "Capture" as Cap
+import "History"
 
 Scope {
     id: scope
 
-    property bool open: false
-
     GlobalShortcut {
         name: "recordPanel"
-        onPressed: scope.open = !scope.open
+        onPressed: GlobalStates.isRecordPanelOpen = !GlobalStates.isRecordPanelOpen
     }
 
     Variants {
@@ -46,16 +45,14 @@ Scope {
             focusable: true
             exclusiveZone: 0
             surfaceFormat.opaque: false
-            visible: scope.open
+            visible: GlobalStates.isRecordPanelOpen
 
             StyledRect {
                 anchors.fill: parent
                 color: Themes.withAlpha(Themes.m3Colors.m3Surface, 0.3)
-
                 RowLayout {
                     anchors.fill: parent
-                    spacing: Appearance.spacing.large
-
+                    anchors.margins: 15
                     ColumnLayout {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                         Layout.fillWidth: true
@@ -63,74 +60,78 @@ Scope {
                         Layout.topMargin: 15
                         Layout.leftMargin: 15
                         spacing: Appearance.spacing.large
-
                         Loader {
                             id: captureLoader
 
-                            active: scope.open
+                            active: GlobalStates.isRecordPanelOpen
                             asynchronous: true
                             Layout.preferredWidth: item ? item.implicitWidth + 50 : 200
                             Layout.preferredHeight: item ? item.implicitHeight : 0
                             sourceComponent: Cap.Capture {
-                                condition: scope.open
+                                condition: GlobalStates.isRecordPanelOpen
                             }
                         }
-
                         Loader {
                             id: performanceLoader
 
-                            active: scope.open
+                            active: GlobalStates.isRecordPanelOpen
                             asynchronous: true
                             Layout.preferredWidth: item ? item.implicitWidth : 200
                             Layout.preferredHeight: item ? item.implicitHeight : 0
                             sourceComponent: Performance {}
                         }
-
                         Item {
                             Layout.fillHeight: true
                         }
                     }
-
                     ColumnLayout {
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+                        Layout.alignment: Qt.AlignCenter | Qt.AlignTop
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width / 3
                         spacing: Appearance.spacing.large
+                        // Loader {
+                        //     id: controlBarLoader
+                        //
+                        //     active: GlobalStates.isRecordPanelOpen
+                        //     asynchronous: true
+                        //     Layout.alignment: Qt.AlignHCenter
+                        //     Layout.preferredHeight: 80
+                        //     Layout.preferredWidth: parent.width
+                        //     sourceComponent: ControlBar {}
+                        // }
+                        Loader {
+                            id: historyLoader
 
-                        //                  Loader {
-                        // id: controlBarLoader
-                        //                      active: scope.open
-                        //                      asynchronous: true
-                        //                      Layout.fillWidth: true
-                        //                      Layout.preferredHeight: 80
-                        //                      sourceComponent: ControlBar {}
-                        //                  }
+                            active: GlobalStates.isRecordPanelOpen
+                            asynchronous: true
+                            Layout.alignment: Qt.AlignHCenter
+                            Layout.preferredHeight: 80
+                            Layout.preferredWidth: parent.width
+                            sourceComponent: History {}
+                        }
                         Item {
                             Layout.fillHeight: true
                         }
                     }
-
                     ColumnLayout {
-                        Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                        Layout.alignment: Qt.AlignCenter | Qt.AlignTop
                         Layout.fillWidth: true
                         Layout.preferredWidth: parent.width / 3
                         Layout.rightMargin: 15
                         spacing: Appearance.spacing.large
-
                         Rectangle {
+                            Layout.alignment: Qt.AlignHCenter
                             Layout.preferredWidth: 200
                             Layout.preferredHeight: 100
                             color: "transparent"
                             border.color: Themes.m3Colors.m3Primary
                             border.width: 1
-
                             Text {
                                 anchors.centerIn: parent
                                 text: "WIP"
                                 color: Themes.m3Colors.m3OnSurface
                             }
                         }
-
                         Item {
                             Layout.fillHeight: true
                         }

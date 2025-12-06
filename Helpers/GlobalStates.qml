@@ -21,7 +21,8 @@ Singleton {
     property bool isVolumeOSDShow: false
     property bool isCapsLockOSDShow: false
     property bool isNumLockOSDShow: false
-    property bool isOverviewOpen: false
+	property bool isOverviewOpen: false
+	property bool isRecordPanelOpen: false
 
     property string scriptPath: `${Quickshell.shellDir}/Assets/screen-capture.sh`
 
