@@ -23,7 +23,7 @@ StyledRect {
     GlobalShortcut {
         name: "session"
         onPressed: root.isSessionOpen = !root.isSessionOpen
-	}
+    }
 
     implicitWidth: isSessionOpen ? 80 : 0
     implicitHeight: Hypr.focusedMonitor.height * 0.5

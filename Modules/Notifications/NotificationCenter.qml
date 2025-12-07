@@ -134,39 +134,31 @@ StyledRect {
                 Layout.fillHeight: true
                 color: "transparent"
 
-                Flickable {
-                    id: notifFlickable
+                ListView {
+                    id: notifListView
 
                     anchors {
-                        right: parent.right
-                        top: parent.top
-                        bottom: parent.bottom
-                        left: parent.left
+                        fill: parent
                         leftMargin: 15
                         rightMargin: 15
                     }
 
-                    width: parent.width
-                    contentHeight: notifColumn.height + 5
+                    model: ScriptModel {
+                        values: [...Notifs.notClosed]
+                    }
+                    spacing: Appearance.spacing.normal
                     clip: true
                     boundsBehavior: Flickable.StopAtBounds
 
-                    Column {
-                        id: notifColumn
+                    cacheBuffer: 300
+                    reuseItems: true
 
-                        width: parent.width
-                        spacing: Appearance.spacing.normal
+                    delegate: Wrapper {
+                        required property var modelData
+                        required property int index
 
-                        Repeater {
-                            model: ScriptModel {
-                                values: [...Notifs.notClosed]
-                            }
-
-                            delegate: Wrapper {
-                                required property var modelData
-                                notif: modelData
-                            }
-                        }
+                        notif: modelData
+                        width: notifListView.width
                     }
                 }
 

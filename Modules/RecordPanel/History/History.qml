@@ -7,7 +7,7 @@ import qs.Services
 import qs.Components
 
 StyledRect {
-	id: root
+    id: root
 
     color: "transparent"
     implicitWidth: parent.width
@@ -66,16 +66,20 @@ StyledRect {
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-            Column {
-                width: parent.width
+            ListView {
+                implicitWidth: parent.width
                 spacing: Appearance.spacing.small
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
 
-                Repeater {
-                    model: ScriptModel {
-                        values: [...ScreenCaptureHistory.screenrecordFiles]
-                    }
-                    delegate: Wrapper {}
+                cacheBuffer: 200
+                reuseItems: true
+
+                model: ScriptModel {
+                    values: [...ScreenCaptureHistory.screenrecordFiles]
                 }
+
+                delegate: Wrapper {}
             }
         }
     }

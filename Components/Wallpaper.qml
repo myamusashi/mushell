@@ -1,12 +1,14 @@
 import QtQuick
 
 import qs.Helpers
+import qs.Services
 
 Image {
     id: wallpaper
 
     anchors.fill: parent
     source: Paths.currentWallpaper
+    sourceSize: Qt.size(Hypr.focusedMonitor.width, Hypr.focusedMonitor.height)
     fillMode: Image.PreserveAspectCrop
     retainWhileLoading: true
     antialiasing: true

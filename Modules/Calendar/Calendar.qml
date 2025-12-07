@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Quickshell
 
 import qs.Configs
 import qs.Services
@@ -20,6 +19,12 @@ StyledRect {
 
     implicitWidth: isCalendarShow ? Hypr.focusedMonitor.width * 0.2 : 0
     implicitHeight: isCalendarShow ? 350 : 0
+
+    property int cellWidth: Math.floor((width - anchors.margins * 2) / 7.2)
+
+    Behavior on cellWidth {
+        enabled: false
+    }
 
     Behavior on implicitWidth {
         NAnim {
@@ -52,6 +57,12 @@ StyledRect {
             visible: container.isCalendarShow
             spacing: Appearance.spacing.normal
 
+            readonly property var monthNames: {
+                const locale = Qt.locale();
+                return Array.from({
+                                      length: 12
+                                  }, (_, i) => locale.monthName(i));
+            }
             property date currentDate: new Date()
             property int currentYear: currentDate.getFullYear()
             property int currentMonth: currentDate.getMonth()
@@ -97,12 +108,7 @@ StyledRect {
 
                 StyledText {
                     Layout.fillWidth: true
-                    text: {
-                        const monthNames = Array.from({
-                                                          "length": 12
-                                                      }, (_, i) => Qt.locale().monthName(i, Qt.locale().LongFormat));
-                        return monthNames[root.currentMonth] + " " + root.currentYear;
-                    }
+                    text: root.monthNames[root.currentMonth] + " " + root.currentYear
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.weight: 600

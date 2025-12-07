@@ -22,7 +22,7 @@ StyledRect {
     property bool hasNotifications: Notifs.popups.length > 0
 
     width: Hypr.focusedMonitor.width * 0.2
-    height: hasNotifications ? Math.min(notifColumn.height + 30, parent.height * 0.5) : 0
+    height: hasNotifications ? Math.min(notifListView.contentHeight + 30, parent.height * 0.5) : 0
     color: Themes.m3Colors.m3Background
     radius: 0
     bottomLeftRadius: Appearance.rounding.normal
@@ -34,36 +34,33 @@ StyledRect {
         }
     }
 
-    Flickable {
-        id: notifFlickable
+    ListView {
+        id: notifListView
 
         anchors.fill: container
-        contentHeight: notifColumn.height
+        spacing: Appearance.spacing.normal
         boundsBehavior: Flickable.StopAtBounds
+        clip: true
 
-        Column {
-            id: notifColumn
+        model: ScriptModel {
+            values: [...Notifs.popups]
+        }
 
-            width: parent.width
-            spacing: Appearance.spacing.normal
+        cacheBuffer: 200
+        reuseItems: true
 
-            Repeater {
-                model: ScriptModel {
-                    values: [...Notifs.popups]
-                }
+        delegate: Wrapper {
+            required property var modelData
+            required property int index
 
-                delegate: Wrapper {
-                    required property var modelData
-                    notif: modelData
-                    width: notifColumn.width
+            notif: modelData
+            width: notifListView.width
 
-                    onEntered: {
-                        modelData.timer.stop();
-                    }
-                    onExited: {
-                        modelData.timer.restart();
-                    }
-                }
+            onEntered: {
+                modelData.timer.stop();
+            }
+            onExited: {
+                modelData.timer.restart();
             }
         }
     }

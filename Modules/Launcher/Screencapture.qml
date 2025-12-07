@@ -144,11 +144,11 @@ Scope {
                                         focus: GlobalStates.isScreenCapturePanelOpen
                                         onFocusChanged: {
                                             if (focus && GlobalStates.isScreenCapturePanelOpen)
-                                                Qt.callLater(() => {
-                                                    let firstIcon = tabRepeater.itemAt(window.selectedTab);
-                                                    if (firstIcon)
-                                                        firstIcon.children[0].forceActiveFocus();
-                                                });
+                                            Qt.callLater(() => {
+                                                             let firstIcon = tabRepeater.itemAt(window.selectedTab);
+                                                             if (firstIcon)
+                                                             firstIcon.children[0].forceActiveFocus();
+                                                         });
                                         }
 
                                         radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
@@ -189,8 +189,8 @@ Scope {
                                                 "icon": "select_window_2",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-window"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-window"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -198,8 +198,8 @@ Scope {
                                                 "icon": "select",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-selection"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-selection"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -207,8 +207,8 @@ Scope {
                                                 "icon": "monitor",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-eDP-1"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-eDP-1"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -216,8 +216,8 @@ Scope {
                                                 "icon": "monitor",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-HDMI-A-2"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-HDMI-A-2"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -225,8 +225,8 @@ Scope {
                                                 "icon": "dual_screen",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-both-screens"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-both-screens"]
+                                                                            });
                                                 }
                                             }
                                         ]
@@ -263,8 +263,8 @@ Scope {
                                                 "icon": "select",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-selection"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-selection"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -272,8 +272,8 @@ Scope {
                                                 "icon": "monitor",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-eDP-1"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-eDP-1"]
+                                                                            });
                                                 }
                                             },
                                             {
@@ -281,8 +281,8 @@ Scope {
                                                 "icon": "monitor",
                                                 "action": () => {
                                                     Quickshell.execDetached({
-                                                        "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-HDMI-A-2"]
-                                                    });
+                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-HDMI-A-2"]
+                                                                            });
                                                 }
                                             }
                                         ]

@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 
@@ -27,23 +26,6 @@ ClippingRectangle {
             return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
         return `${minutes}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function getTrackUrl(): void {
-        trackUrl.running = true;
-    }
-
-    Process {
-        id: trackUrl
-
-        command: ["sh", "-c", "playerctl metadata | grep xesam:url | awk '{print $3}'"]
-        running: true
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const res = text.trim();
-                root.url = res;
-            }
-        }
     }
 
     implicitWidth: Hypr.focusedMonitor.width * 0.3
@@ -100,6 +82,7 @@ ClippingRectangle {
 
                             anchors.fill: parent
                             source: Players.active && Players.active.trackArtUrl !== "" ? Players.active.trackArtUrl : "root:/Assets/kuru.gif"
+                            sourceSize: Qt.size(120, 120)
                             fillMode: Image.PreserveAspectCrop
                             visible: Players.active !== null
                             opacity: 0.5
@@ -123,7 +106,7 @@ ClippingRectangle {
                             anchors.fill: parent
                             visible: Players.active === null
                             asynchronous: true
-                            cache: false
+                            cache: true
                             source: Players.active === null ? "root:/Assets/kuru.gif" : ""
                         }
                     }
@@ -207,7 +190,7 @@ ClippingRectangle {
                         color: Themes.m3Colors.m3OnBackground
 
                         Timer {
-                            running: Players.active !== null && Players.active.playbackState == MprisPlaybackState.Playing
+                            running: root.isMediaPlayerOpen && Players.active !== null && Players.active.playbackState == MprisPlaybackState.Playing
                             interval: 1000
                             repeat: true
                             onTriggered: Players.active.positionChanged()
@@ -258,7 +241,7 @@ ClippingRectangle {
                         Layout.preferredHeight: 40
 
                         FrameAnimation {
-                            running: Players.active && Players.active.playbackState == MprisPlaybackState.Playing
+                            running: root.isMediaPlayerOpen && Players.active && Players.active.playbackState == MprisPlaybackState.Playing
                             onTriggered: Players.active.positionChanged()
                         }
 

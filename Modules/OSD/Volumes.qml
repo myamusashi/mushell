@@ -13,8 +13,8 @@ Item {
 
     required property bool isVolumeOSDShow
 
-    width: parent.width
-    height: isVolumeOSDShow ? 80 : 0
+    implicitWidth: parent.width
+    implicitHeight: isVolumeOSDShow ? 80 : 0
     visible: height > 0
     clip: true
 

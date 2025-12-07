@@ -27,6 +27,25 @@ Item {
         slideInAnim.start();
     }
 
+    Component.onDestruction: {
+        slideInAnim.stop();
+        slideOutAnim.stop();
+        swipeOutAnim.stop();
+        swipeRemoveTimer.stop();
+    }
+
+    ListView.onPooled: {
+        slideInAnim.stop();
+        slideOutAnim.stop();
+        swipeRemoveTimer.stop();
+    }
+
+    ListView.onReused: {
+        isRemoving = false;
+        x = parent.width;
+        slideInAnim.start();
+    }
+
     NAnim {
         id: slideInAnim
 

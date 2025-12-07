@@ -23,24 +23,13 @@ Scope {
 
     GlobalShortcut {
         name: "overview"
-        onPressed: lazyloader.active = !lazyloader.active
-    }
-
-    Timer {
-        id: cleanup
-
-        interval: 500
-        repeat: false
-        onTriggered: gc()
+        onPressed: lazyloader.activeAsync = !lazyloader.activeAsync
     }
 
     LazyLoader {
         id: lazyloader
 
-        active: false
-        onActiveChanged: {
-            cleanup.start();
-        }
+        activeAsync: false
         component: PanelWindow {
             id: root
 
@@ -88,7 +77,7 @@ Scope {
                 Repeater {
                     model: 8
 
-                    delegate: StyledRect {
+                    delegate: ClippingRectangle {
                         id: workspaceContainer
 
                         required property int index
@@ -121,11 +110,9 @@ Scope {
 
                             sourceComponent: Image {
                                 source: wallid.text().trim()
-                                sourceSize.width: root.workspaceWidth
-                                width: workspaceContainer.width - 10
-                                height: workspaceContainer.height - 10
+                                sourceSize: Qt.size(workspaceContainer.width, workspaceContainer.height)
                                 fillMode: Image.PreserveAspectCrop
-                                smooth: false
+                                asynchronous: true
                                 cache: true
                             }
                         }
@@ -225,11 +212,12 @@ Scope {
                                 }
 
                                 IconImage {
+                                    anchors.centerIn: parent
                                     source: Quickshell.iconPath(DesktopEntries.heuristicLookup(toplevel.waylandHandle?.appId)?.icon, "image-missing")
-                                    implicitSize: 48
+                                    width: 24
+                                    height: 24
                                     backer.cache: true
                                     backer.asynchronous: true
-                                    anchors.centerIn: parent
                                 }
 
                                 MArea {

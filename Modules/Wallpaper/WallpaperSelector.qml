@@ -102,6 +102,14 @@ StyledRect {
             Keys.onEscapePressed: root.isWallpaperSwitcherOpen = false
         }
 
+        Timer {
+            id: searchDebounceTimer
+
+            interval: 300
+            repeat: false
+            onTriggered: root.debouncedSearchQuery = root.searchQuery
+        }
+
         PathView {
             id: wallpaperPath
 
@@ -170,10 +178,12 @@ StyledRect {
                     Image {
                         anchors.fill: parent
                         source: "file://" + delegateItem.modelData
+                        sourceSize.width: 200
+                        sourceSize.height: 200
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                         smooth: true
-                        cache: false
+                        cache: true
                     }
 
                     MArea {
@@ -214,13 +224,5 @@ StyledRect {
             color: Themes.m3Colors.m3OnSurface
             font.pixelSize: Appearance.fonts.small
         }
-    }
-
-    Timer {
-        id: cleanupTimer
-
-        interval: 500
-        repeat: false
-        onTriggered: gc()
     }
 }
