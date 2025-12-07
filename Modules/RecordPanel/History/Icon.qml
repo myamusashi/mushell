@@ -1,9 +1,8 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Controls
 import Quickshell
-import Quickshell.Widgets
+import Quickshell.Io
 
 import qs.Configs
 import qs.Helpers
@@ -11,69 +10,87 @@ import qs.Components
 
 Loader {
     id: root
-
     required property var modelData
+    property string thumbnailPath: ""
+
+    function getFileExtension(filepath) {
+        const filename = filepath.split('/').pop();
+        const lastDot = filename.lastIndexOf('.');
+        if (lastDot === -1 || lastDot === 0)
+            return '';
+        return filename.substring(lastDot + 1).toLowerCase();
+    }
 
     active: GlobalStates.isRecordPanelOpen
     width: 70
     height: 70
+
+    Component.onCompleted: {
+        const ext = getFileExtension(root.modelData.path);
+        const videoFormats = ["mkv", "mp4", "webm", "avi"];
+
+        if (videoFormats.includes(ext))
+            createThumbnails.running = true;
+        else
+            thumbnailPath = "file://" + root.modelData.path;
+    }
+
     sourceComponent: StyledRect {
         width: 70
         height: 70
         radius: Appearance.rounding.full
         color: Themes.m3Colors.m3PrimaryContainer
 
-        Loader {
-            id: icon
-
-            active: root.active
+        Image {
+            id: image
             anchors.centerIn: parent
-            width: 70
-            height: 70
-            sourceComponent: Image {
-                id: image
-                width: 70
-                height: 70
-                fillMode: Image.PreserveAspectFit
-                cache: true
-                asynchronous: true
-                sourceSize: Qt.size(70, 70)
+            width: 60
+            height: 60
+            fillMode: Image.PreserveAspectCrop
+            cache: true
+            asynchronous: true
+            sourceSize: Qt.size(60, 60)
+            source: root.thumbnailPath
 
-                source: {
-                    if (root.modelData.thumbnail) {
-                        return "file://" + root.modelData.thumbnail;
-                    }
-                    if (root.modelData.path) {
-                        return "file://" + root.modelData.path;
-                    }
-                    return "";
-                }
+            Rectangle {
+                anchors.fill: parent
+                color: Themes.m3Colors.m3SurfaceVariant
+                visible: image.status === Image.Error || image.status === Image.Null
+                radius: parent.width / 2
 
-                onStatusChanged: {
-                    if (status === Image.Error) {
-                        console.warn("Failed to load image:", source);
-                    }
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: Themes.m3Colors.m3SurfaceVariant
-                    visible: image.status === Image.Error || image.status === Image.Null
-
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: root.modelData.thumbnail ? "📹" : "🖼️"
-                        font.pixelSize: 16
-                    }
-                }
-
-                BusyIndicator {
+                StyledText {
                     anchors.centerIn: parent
-                    running: image.status === Image.Loading
-                    visible: running
-                    width: 20
-                    height: 20
+                    text: {
+                        const ext = root.getFileExtension(root.modelData.path);
+                        const videoFormats = ["mkv", "mp4", "webm", "avi"];
+                        return videoFormats.includes(ext) ? "📹" : "🖼️";
+                    }
+                    font.pixelSize: 24
                 }
+			}
+
+			LoadingIndicator {
+				status: image.status === Image.Loading
+			}
+        }
+    }
+
+    Process {
+        id: createThumbnails
+
+        running: false
+        command: ["sh", "-c", `${Quickshell.shellDir}/Assets/create-thumbnails.sh "${root.modelData.path}" "${Paths.cacheDir}/video-thumbnails"`]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const data = text.trim();
+                root.thumbnailPath = data;
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (text.trim())
+                    console.error("Thumbnail generation error:", text);
             }
         }
     }

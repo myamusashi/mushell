@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
 import QtQuick
+import Quickshell
 
 import qs.Helpers
 import qs.Configs
@@ -11,6 +11,14 @@ Column {
     id: root
 
     required property var modelData
+
+    function getFileExtension(filepath) {
+        const filename = filepath.split('/').pop();
+        const lastDot = filename.lastIndexOf('.');
+        if (lastDot === -1 || lastDot === 0)
+            return '';
+        return filename.substring(lastDot + 1).toLowerCase();
+    }
 
     width: parent.width
     spacing: Appearance.spacing.small
@@ -43,7 +51,18 @@ Column {
                 }
 
                 StyledText {
-                    text: root.modelData.created
+                    text: {
+                        const timestamp = root.modelData.created;
+                        const date = new Date(timestamp * 1000);
+                        return date.toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                        });
+                    }
                     color: Themes.m3Colors.m3OnSurfaceVariant
                 }
             }
@@ -74,23 +93,40 @@ Column {
         width: (parent.width - parent.children.length - 1) / parent.children.length + 10
         height: 40
         color: Themes.m3Colors.m3SurfaceContainerHigh
-		radius: Appearance.rounding.full
+        radius: Appearance.rounding.full
 
         StyledRect {
             anchors.fill: parent
             radius: parent.radius
             color: "transparent"
         }
+
         MArea {
             anchors.fill: parent
-            hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-			onClicked: () => {
-				Quickshell.execDetached({
-					command: ["sh", "-c", `yazi ${root.modelData.path}`]
-				})
-			}
+            onClicked: {
+                const data = root.getFileExtension(root.modelData.path);
+                switch (data) {
+                case "mkv":
+                case "mp3":
+                case "mp4":
+                    Quickshell.execDetached({
+                        command: ["mpv", root.modelData.path]
+                    });
+                    break;
+                case "png":
+                case "jpg":
+                case "jpeg":
+                case "gif":
+                case "ico":
+                    Quickshell.execDetached({
+                        command: ["lximage-qt", root.modelData.path]
+                    });
+                    break;
+                }
+            }
         }
+
         StyledText {
             anchors.centerIn: parent
             text: "Open files"
