@@ -13,7 +13,7 @@ Singleton {
     readonly property M3TemplateComponent m3GeneratedColors: M3TemplateComponent {}
     readonly property MatugenTemplateComponent matugenColors: MatugenTemplateComponent {}
     readonly property var matugenTemplateColors: isDarkMode ? JSON.parse(matugenDarkFile.text()).colors : JSON.parse(matugenLightFile.text()).colors
-
+    property alias colorQuantizer: colorQuantizer
     property bool isUseMatugen: true
     property bool isDarkMode: true
 

@@ -67,6 +67,7 @@ ShellRoot {
     }
 
     Component.onCompleted: {
+        Themes.colorQuantizer.source = sessionLock.wallpaperPath;
         console.log("[INIT] Current session: " + Sessions.current_session);
         console.log("[INIT] Current user: " + Users.current_user);
     }
