@@ -1,14 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 ClippingRectangle {
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
     height: GlobalStates.isBarOpen ? 40 : 10
     width: parent.width
 

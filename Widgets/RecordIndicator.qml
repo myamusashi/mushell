@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 StyledRect {
     id: root
@@ -29,12 +29,12 @@ StyledRect {
         MaterialIcon {
             icon: "screen_record"
             font.pixelSize: 24
-            color: Themes.m3Colors.m3OnPrimary
+            color: Colours.m3Colors.m3OnPrimary
         }
 
         StyledText {
             text: root.formatTime(Record.recordingSeconds)
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             font.bold: true
         }
     }

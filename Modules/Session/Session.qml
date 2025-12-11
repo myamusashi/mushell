@@ -2,13 +2,14 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Hyprland
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 StyledRect {
     id: root
@@ -30,7 +31,7 @@ StyledRect {
     radius: 0
     topLeftRadius: Appearance.rounding.normal
     bottomLeftRadius: Appearance.rounding.normal
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
 
     Behavior on implicitWidth {
         NAnim {
@@ -117,7 +118,7 @@ StyledRect {
                     Layout.preferredWidth: 60
                     Layout.preferredHeight: 70
 
-                    color: isHighlighted ? Themes.withAlpha(Themes.m3Colors.m3Secondary, 0.2) : "transparent"
+                    color: isHighlighted ? Colours.withAlpha(Colours.m3Colors.m3Secondary, 0.2) : "transparent"
 
                     Component.onCompleted: {
                         rectDelegate.animProgress = 0;
@@ -165,7 +166,7 @@ StyledRect {
                         id: iconDelegate
 
                         anchors.centerIn: parent
-                        color: Themes.m3Colors.m3Primary
+                        color: Colours.m3Colors.m3Primary
                         font.pointSize: Appearance.fonts.large * 3
                         icon: rectDelegate.modelData.icon
 
@@ -231,7 +232,7 @@ StyledRect {
 
         header: StyledText {
             text: "Session"
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             elide: Text.ElideMiddle
             font.pixelSize: Appearance.fonts.extraLarge
             font.bold: true
@@ -239,7 +240,7 @@ StyledRect {
         body: StyledText {
             text: "Do you want to " + root.pendingActionName.toLowerCase() + "?"
             font.pixelSize: Appearance.fonts.large
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             wrapMode: Text.Wrap
             width: parent.width
         }

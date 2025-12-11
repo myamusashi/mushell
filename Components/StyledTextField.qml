@@ -2,25 +2,27 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Material
 import QtQuick.Controls
+
 import Quickshell
 
 import qs.Configs
 import qs.Helpers
+import qs.Services
 
 TextField {
     id: root
 
     Material.theme: Material.System
-    Material.accent: Themes.m3Colors.m3Primary
-    Material.primary: Themes.m3Colors.m3Primary
+    Material.accent: Colours.m3Colors.m3Primary
+    Material.primary: Colours.m3Colors.m3Primary
     Material.background: "transparent"
-    Material.foreground: Themes.m3Colors.m3OnSurface
+    Material.foreground: Colours.m3Colors.m3OnSurface
     Material.containerStyle: Material.Outlined
     renderType: Text.QtRendering
 
-    selectedTextColor: Themes.m3Colors.m3OnSecondaryContainer
-    selectionColor: Themes.m3Colors.m3SecondaryContainer
-    placeholderTextColor: Themes.m3Colors.m3Outline
+    selectedTextColor: Colours.m3Colors.m3OnSecondaryContainer
+    selectionColor: Colours.m3Colors.m3SecondaryContainer
+    placeholderTextColor: Colours.m3Colors.m3Outline
     wrapMode: TextEdit.Wrap
     clip: true
 

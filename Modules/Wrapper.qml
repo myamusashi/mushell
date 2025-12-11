@@ -2,13 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Shapes
+
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Widgets
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 import "Calendar"
 import "Launcher"
@@ -19,7 +21,6 @@ import "Session"
 import "Wallpaper"
 import "OSD"
 import "Bar"
-
 Variants {
     model: Quickshell.screens
 
@@ -27,13 +28,13 @@ Variants {
         id: window
 
         property bool needFocusKeyboard: false
-        property color barColor: Themes.m3Colors.m3Background
+        property color barColor: Colours.m3Colors.m3Background
         property alias top: topBar
         property alias bottom: bottomBar
         property alias left: leftBar
         property alias right: rightBar
 
-        color: session.isSessionOpen ? Themes.withAlpha(Themes.m3Colors.m3Background, 0.7) : "transparent"
+        color: session.isSessionOpen ? Colours.withAlpha(Colours.m3Colors.m3Background, 0.7) : "transparent"
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.keyboardFocus: needFocusKeyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 

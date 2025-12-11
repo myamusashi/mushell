@@ -1,9 +1,11 @@
 import QtQuick
+
 import Quickshell
 import Quickshell.Widgets
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 PopupWindow {
     id: root
@@ -27,7 +29,7 @@ PopupWindow {
     WrapperRectangle {
         id: background
 
-        color: Themes.m3Colors.m3Background
+        color: Colours.m3Colors.m3Background
 
         opacity: 0
         Behavior on opacity {

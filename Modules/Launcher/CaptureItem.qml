@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 StyledRect {
     id: root
@@ -69,7 +70,7 @@ StyledRect {
 
         MaterialIcon {
             icon: root.optionData.icon
-            color: root.isSelected ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Outline
+            color: root.isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Outline
             font.pixelSize: Appearance.fonts.large
             Layout.alignment: Qt.AlignVCenter
 
@@ -81,7 +82,7 @@ StyledRect {
         }
 
         StyledText {
-            color: root.isSelected ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Outline
+            color: root.isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Outline
             font.pixelSize: Appearance.fonts.normal
             text: root.optionData.name
             Layout.fillWidth: true

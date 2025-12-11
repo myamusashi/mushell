@@ -6,6 +6,7 @@ import QtQuick.Controls
 
 import qs.Configs
 import qs.Helpers
+import qs.Services
 
 Slider {
     id: root
@@ -60,7 +61,7 @@ Slider {
         height: root.trackDotSize
         radius: Appearance.rounding.normal
         visible: root.dotEnd && index > 0 && index < root.dotCount - 1
-        color: isActive ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3OnSecondaryContainer
+        color: isActive ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSecondaryContainer
     }
 
     MouseArea {
@@ -86,7 +87,7 @@ Slider {
             }
             sourceComponent: MaterialIcon {
                 icon: root.icon
-                color: Themes.m3Colors.m3OnPrimary
+                color: Colours.m3Colors.m3OnPrimary
                 font.pointSize: root.iconSize || Appearance.fonts.medium
             }
         }
@@ -98,7 +99,7 @@ Slider {
             }
             width: root.handleGap + (root.visualPosition * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
-            color: Themes.m3Colors.m3Primary
+            color: Colours.m3Colors.m3Primary
             radius: Appearance.rounding.small * 0.5
 
             topRightRadius: Appearance.rounding.small * 0.5
@@ -112,7 +113,7 @@ Slider {
             }
             width: root.handleGap + ((1 - root.visualPosition) * root.availableTrackWidth) - (root.handleWidth / 2 + root.handleGap)
             height: root.trackHeight
-            color: Themes.m3Colors.m3SurfaceContainerHighest
+            color: Colours.m3Colors.m3SurfaceContainerHighest
             radius: Appearance.rounding.small * 0.5
 
             topLeftRadius: Appearance.rounding.small * 0.5
@@ -133,7 +134,7 @@ Slider {
         height: root.height
         x: root.handleGap + (root.visualPosition * root.availableTrackWidth) - width / 2
         anchors.verticalCenter: parent.verticalCenter
-        color: Themes.m3Colors.m3Primary
+        color: Colours.m3Colors.m3Primary
 
         Behavior on width {
             NAnim {

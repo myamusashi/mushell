@@ -2,14 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 ClippingRectangle {
     id: root
@@ -30,7 +31,7 @@ ClippingRectangle {
 
     implicitWidth: Hypr.focusedMonitor.width * 0.3
     implicitHeight: isMediaPlayerOpen ? contentLoader.implicitHeight + 20 : 0
-    color: Themes.m3Colors.m3Surface
+    color: Colours.m3Colors.m3Surface
     radius: 0
     bottomLeftRadius: Appearance.rounding.normal
     bottomRightRadius: bottomLeftRadius
@@ -96,7 +97,7 @@ ClippingRectangle {
                             text: "Achievement Unlocked: 🏆 Static Image Starer - You expected the kuru spin but trackArtUrl decided to disconnect. GG."
                             wrapMode: Text.Wrap
                             elide: Text.ElideRight
-                            color: Themes.m3Colors.m3OnSurface
+                            color: Colours.m3Colors.m3OnSurface
                             visible: Players.active && Players.active.trackArtUrl === ""
                         }
 
@@ -126,7 +127,7 @@ ClippingRectangle {
                     StyledLabel {
                         width: parent.width
                         text: Players.active ? Players.active.trackTitle : ""
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.large
                         wrapMode: Text.NoWrap
                         elide: Text.ElideRight
@@ -138,7 +139,7 @@ ClippingRectangle {
                         StyledText {
                             Layout.preferredWidth: width
                             text: Players.active ? Players.active.trackArtist : ""
-                            color: Themes.m3Colors.m3OnSurface
+                            color: Colours.m3Colors.m3OnSurface
                             font.pixelSize: Appearance.fonts.small
                             wrapMode: Text.NoWrap
                             elide: Text.ElideRight
@@ -146,13 +147,13 @@ ClippingRectangle {
 
                         StyledText {
                             text: Players.active ? "•" : ""
-                            color: Themes.m3Colors.m3OnBackground
+                            color: Colours.m3Colors.m3OnBackground
                             font.pixelSize: Appearance.fonts.extraLarge
                         }
 
                         StyledText {
                             text: Players.active ? "Watched on " : ""
-                            color: Themes.m3Colors.m3OnBackground
+                            color: Colours.m3Colors.m3OnBackground
                             font.pixelSize: Appearance.fonts.small
                         }
 
@@ -187,7 +188,7 @@ ClippingRectangle {
 
                         text: Players.active == null ? "00:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}`
                         font.pixelSize: Appearance.fonts.large
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
 
                         Timer {
                             running: root.isMediaPlayerOpen && Players.active !== null && Players.active.playbackState == MprisPlaybackState.Playing
@@ -205,7 +206,7 @@ ClippingRectangle {
                         id: pauseButton
 
                         icon: Players.active === null ? "pause_circle" : Players.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
-                        color: Themes.m3Colors.m3Primary
+                        color: Colours.m3Colors.m3Primary
                         font.pointSize: Appearance.fonts.extraLarge * 1.5
 
                         MArea {
@@ -227,7 +228,7 @@ ClippingRectangle {
                     StyledButton {
                         iconButton: "skip_previous"
                         iconSize: Appearance.fonts.large * 1.2
-                        buttonTextColor: Themes.m3Colors.m3OnPrimary
+                        buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.previous() : {}
                     }
@@ -251,7 +252,7 @@ ClippingRectangle {
                     StyledButton {
                         iconButton: "skip_next"
                         iconSize: Appearance.fonts.large * 1.2
-                        buttonTextColor: Themes.m3Colors.m3OnPrimary
+                        buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.next() : {}
                     }

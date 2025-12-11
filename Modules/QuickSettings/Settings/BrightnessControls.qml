@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 RowLayout {
     spacing: Appearance.spacing.normal
@@ -34,8 +34,8 @@ RowLayout {
     StyledButton {
         iconButton: "bedtime"
         buttonTitle: "Night mode"
-        buttonTextColor: Hyprsunset.isNightModeOn ? Themes.m3Colors.m3OnPrimary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.38)
-        buttonColor: Hyprsunset.isNightModeOn ? Themes.m3Colors.m3Primary : Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.1)
+        buttonTextColor: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3OnPrimary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.38)
+        buttonColor: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3Primary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.1)
         onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down() : Hyprsunset.up()
     }
 }

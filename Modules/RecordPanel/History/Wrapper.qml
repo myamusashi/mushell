@@ -1,8 +1,9 @@
 import QtQuick
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Item {
     id: root
@@ -85,7 +86,7 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-        color: Themes.m3Colors.m3SurfaceContainer
+        color: Colours.m3Colors.m3SurfaceContainer
         radius: Appearance.rounding.normal
         anchors.leftMargin: 10
         clip: true

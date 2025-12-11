@@ -5,6 +5,7 @@ import QtQuick.Controls
 
 import qs.Configs
 import qs.Helpers
+import qs.Services
 
 Switch {
     id: root
@@ -19,9 +20,9 @@ Switch {
         x: root.leftPadding
         y: parent.height / 2 - height / 2
         radius: Appearance.rounding.full
-        color: root.checked ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3SurfaceContainerHighest
+        color: root.checked ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3SurfaceContainerHighest
         border.width: 2
-        border.color: root.checked ? "transparent" : Themes.m3Colors.m3Outline
+        border.color: root.checked ? "transparent" : Colours.m3Colors.m3Outline
 
         StyledRect {
             id: handle
@@ -37,7 +38,7 @@ Switch {
             width: targetWidth
             height: targetHeight
             radius: Appearance.rounding.full
-            color: isActive ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3Outline
+            color: isActive ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
 
             Behavior on x {
                 NAnim {
@@ -64,7 +65,7 @@ Switch {
                 asynchronous: true
                 sourceComponent: MaterialIcon {
                     icon: root.checked ? root.onIcon : root.offIcon
-                    color: root.checked ? Themes.m3Colors.m3OnPrimaryContainer : Themes.m3Colors.m3SurfaceContainerHighest
+                    color: root.checked ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3SurfaceContainerHighest
                     font.pointSize: Appearance.fonts.medium
                 }
             }

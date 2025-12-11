@@ -1,14 +1,15 @@
 import QtQuick
 import QtQuick.Controls
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 Slider {
     id: slider
 
-    property color activeColor: Themes.m3Colors.m3Primary
-    property color inactiveColor: Themes.m3Colors.m3SecondaryContainer
+    property color activeColor: Colours.m3Colors.m3Primary
+    property color inactiveColor: Colours.m3Colors.m3SecondaryContainer
     property int waveAmplitude: 3
     property real waveFrequency: 10
     property int separatorWidth: 8

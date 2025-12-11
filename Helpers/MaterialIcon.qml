@@ -1,7 +1,8 @@
 import QtQuick
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 Text {
     id: root

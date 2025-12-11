@@ -1,10 +1,11 @@
 import QtQuick
 import QtQuick.Controls
+
 import Quickshell
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 StyledRect {
     id: root
@@ -19,7 +20,7 @@ StyledRect {
 
         StyledText {
             width: parent.width
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             text: "Recent screenshot"
             font.pixelSize: Appearance.fonts.extraLarge
             font.bold: true
@@ -52,7 +53,7 @@ StyledRect {
 
         StyledText {
             width: parent.width
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             text: "Recent screen record"
             font.pixelSize: Appearance.fonts.extraLarge
             font.bold: true

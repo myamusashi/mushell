@@ -2,13 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 StyledRect {
     id: root
@@ -66,7 +68,7 @@ StyledRect {
                     width: 25
                     height: 25
                     radius: Appearance.rounding.normal
-                    color: trayItemArea.containsMouse ? Themes.m3Colors.m3Primary : "transparent"
+                    color: trayItemArea.containsMouse ? Colours.m3Colors.m3Primary : "transparent"
 
                     Behavior on color {
                         CAnim {}

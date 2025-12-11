@@ -1,14 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Services.UPower
 
-import qs.Configs
-import qs.Widgets
 import qs.Components
+import qs.Configs
+import qs.Services
+import qs.Widgets
 
 StyledRect {
     Layout.preferredHeight: 140
-    color: Themes.m3Colors.m3SurfaceContainerLow
+    color: Colours.m3Colors.m3SurfaceContainerLow
     radius: Appearance.rounding.normal
 
     ColumnLayout {
@@ -43,21 +45,21 @@ StyledRect {
             {
                 "label": "Current capacity:",
                 "value": UPower.displayDevice.energy.toFixed(2) + " Wh",
-                "color": Themes.m3Colors.m3OnBackground
+                "color": Colours.m3Colors.m3OnBackground
             },
             {
                 "label": "Full capacity:",
                 "value": UPower.displayDevice.energyCapacity.toFixed(2) + " Wh",
-                "color": Themes.m3Colors.m3OnBackground
+                "color": Colours.m3Colors.m3OnBackground
             }
         ]
 
         function getHealthColor(health) {
             if (health > 80)
-                return Themes.m3Colors.m3Primary;
+                return Colours.m3Colors.m3Primary;
             if (health > 50)
-                return Themes.m3Colors.m3Secondary;
-            return Themes.m3Colors.m3Error;
+                return Colours.m3Colors.m3Secondary;
+            return Colours.m3Colors.m3Error;
         }
 
         Repeater {
@@ -72,7 +74,7 @@ StyledRect {
                 StyledText {
                     text: parent.modelData.label
                     font.weight: Font.DemiBold
-                    color: Themes.m3Colors.m3OnBackground
+                    color: Colours.m3Colors.m3OnBackground
                     font.pixelSize: Appearance.fonts.normal
                 }
 

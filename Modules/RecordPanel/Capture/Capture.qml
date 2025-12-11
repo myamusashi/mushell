@@ -2,15 +2,16 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 ClippingRectangle {
     id: root
@@ -39,7 +40,7 @@ ClippingRectangle {
 
     implicitWidth: 350
     implicitHeight: columnLayout.implicitHeight
-    color: Themes.m3Colors.m3SurfaceContainer
+    color: Colours.m3Colors.m3SurfaceContainer
     radius: Appearance.rounding.small
 
     Process {
@@ -105,13 +106,13 @@ ClippingRectangle {
 
             MaterialIcon {
                 icon: "screen_record"
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.extraLarge
             }
 
             StyledText {
                 text: "Capture"
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.weight: Font.DemiBold
                 font.pixelSize: Appearance.fonts.large * 1.5
             }
@@ -122,7 +123,7 @@ ClippingRectangle {
 
             MaterialIcon {
                 icon: "close"
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.extraLarge
 
                 MArea {
@@ -136,7 +137,7 @@ ClippingRectangle {
     }
 
     component Control: StyledRect {
-        color: Themes.m3Colors.m3SurfaceContainerHigh
+        color: Colours.m3Colors.m3SurfaceContainerHigh
         radius: 0
         Layout.fillWidth: true
         Layout.preferredHeight: rowLayout.implicitHeight + 70
@@ -193,7 +194,7 @@ ClippingRectangle {
                         anchors.centerIn: parent
                         implicitWidth: 60
                         implicitHeight: 60
-                        color: controlDelegate.modelData.highlight ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3SurfaceContainerHighest
+                        color: controlDelegate.modelData.highlight ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3SurfaceContainerHighest
                         radius: Appearance.rounding.full
 
                         MaterialIcon {
@@ -201,7 +202,7 @@ ClippingRectangle {
 
                             anchors.centerIn: parent
                             icon: controlDelegate.modelData.icon
-                            color: controlDelegate.modelData.highlight ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3OnSurface
+                            color: controlDelegate.modelData.highlight ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurface
                             font.pixelSize: 24
                         }
 
@@ -221,7 +222,7 @@ ClippingRectangle {
                             horizontalCenter: iconRect.horizontalCenter
                         }
                         text: root.formatTime(Record.recordingSeconds)
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.large
                         font.bold: true
                         font.family: Appearance.fonts.familyMono
@@ -234,7 +235,7 @@ ClippingRectangle {
     component SeeMyCapture: StyledRect {
         Layout.fillWidth: true
         Layout.preferredHeight: seeMyCaptureLayout.implicitHeight + 30
-        color: Themes.m3Colors.m3SurfaceContainerHighest
+        color: Colours.m3Colors.m3SurfaceContainerHighest
         radius: 0
 
         RowLayout {
@@ -247,13 +248,13 @@ ClippingRectangle {
 
             MaterialIcon {
                 icon: "capture"
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.large
             }
 
             StyledText {
                 text: "See my captures"
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.large * 1.2
             }
         }

@@ -1,10 +1,12 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell.Widgets
 
 import qs.Configs
 import qs.Helpers
+import qs.Services
 
 Item {
     id: root
@@ -12,9 +14,9 @@ Item {
     property string buttonTitle
     property string iconButton: ""
     property int iconSize: Appearance.fonts.medium
-    property color buttonColor: Themes.m3Colors.m3Primary
-    property color buttonTextColor: Themes.m3Colors.m3OnBackground
-    property color buttonBorderColor: Themes.m3Colors.m3Outline
+    property color buttonColor: Colours.m3Colors.m3Primary
+    property color buttonTextColor: Colours.m3Colors.m3OnBackground
+    property color buttonBorderColor: Colours.m3Colors.m3Outline
     property int buttonBorderWidth: 2
     property int buttonHeight: 40
     property int iconTextSpacing: 8

@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 pragma Singleton
 
 import QtQuick
+
 import Quickshell
 import Quickshell.Io
 
@@ -14,15 +15,15 @@ Singleton {
     readonly property MatugenTemplateComponent matugenColors: MatugenTemplateComponent {}
     readonly property var matugenTemplateColors: isDarkMode ? JSON.parse(matugenDarkFile.text()).colors : JSON.parse(matugenLightFile.text()).colors
     property alias colorQuantizer: colorQuantizer
-    property bool isUseMatugen: true
-    property bool isDarkMode: true
+    property bool isUseMatugen: false
+    property bool isDarkMode: false
 
     readonly property var m3Colors: isUseMatugen ? matugenColors : m3GeneratedColors
 
     FileView {
         id: matugenDarkFile
 
-        path: Paths.shellDir + "/colors-dark.json"
+        path: Paths.shellDir + "/dark-colors.json"
         watchChanges: true
         blockLoading: true
         onFileChanged: reload()
@@ -31,7 +32,7 @@ Singleton {
     FileView {
         id: matugenLightFile
 
-        path: Paths.shellDir + "/colors-light.json"
+        path: Paths.shellDir + "/light-colors.json"
         watchChanges: true
         blockLoading: true
         onFileChanged: reload()
@@ -250,7 +251,7 @@ Singleton {
 
         readonly property color m3Scrim: root.matugenTemplateColors.scrim
         readonly property color m3Shadow: root.matugenTemplateColors.shadow
-        readonly property color m3SurfaceTint: m3Primary
+        readonly property color m3SurfaceTint: root.matugenTemplateColors.surfaceTint
         readonly property color m3SurfaceVariant: root.matugenTemplateColors.surfaceVariant
 
         readonly property color m3Red: m3Error
@@ -272,68 +273,68 @@ Singleton {
             return root.hctToRgb(hct.h, 8, hct.t);
         }
 
-        readonly property color m3Background: root.createTonalColor(m3NeutralSource, 6)
-        readonly property color m3Surface: root.createTonalColor(m3NeutralSource, 6)
-        readonly property color m3SurfaceDim: root.createTonalColor(m3NeutralSource, 6)
-        readonly property color m3SurfaceBright: root.createTonalColor(m3NeutralSource, 24)
-        readonly property color m3SurfaceContainerLowest: root.createTonalColor(m3NeutralSource, 4)
-        readonly property color m3SurfaceContainerLow: root.createTonalColor(m3NeutralSource, 10)
-        readonly property color m3SurfaceContainer: root.createTonalColor(m3NeutralSource, 12)
-        readonly property color m3SurfaceContainerHigh: root.createTonalColor(m3NeutralSource, 17)
-        readonly property color m3SurfaceContainerHighest: root.createTonalColor(m3NeutralSource, 22)
+        readonly property color m3Background: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 6 : 98)
+        readonly property color m3Surface: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 6 : 98)
+        readonly property color m3SurfaceDim: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 6 : 87)
+        readonly property color m3SurfaceBright: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 24 : 98)
+        readonly property color m3SurfaceContainerLowest: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 4 : 100)
+        readonly property color m3SurfaceContainerLow: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 10 : 96)
+        readonly property color m3SurfaceContainer: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 12 : 94)
+        readonly property color m3SurfaceContainerHigh: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 17 : 92)
+        readonly property color m3SurfaceContainerHighest: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 22 : 90)
 
-        readonly property color m3OnSurface: root.createTonalColor(m3NeutralSource, 90)
-        readonly property color m3OnSurfaceVariant: root.createTonalColor(m3NeutralVariantSource, 80)
-        readonly property color m3OnBackground: root.createTonalColor(m3NeutralSource, 90)
+        readonly property color m3OnSurface: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 90 : 10)
+        readonly property color m3OnSurfaceVariant: root.createTonalColor(m3NeutralVariantSource, root.isDarkMode ? 80 : 30)
+        readonly property color m3OnBackground: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 90 : 10)
 
-        readonly property color m3Primary: root.createTonalColor(m3SourceColor, 80)
-        readonly property color m3OnPrimary: root.createTonalColor(m3SourceColor, 20)
-        readonly property color m3PrimaryContainer: root.createTonalColor(m3SourceColor, 30)
-        readonly property color m3OnPrimaryContainer: root.createTonalColor(m3SourceColor, 90)
+        readonly property color m3Primary: root.createTonalColor(m3SourceColor, root.isDarkMode ? 80 : 40)
+        readonly property color m3OnPrimary: root.createTonalColor(m3SourceColor, root.isDarkMode ? 20 : 100)
+        readonly property color m3PrimaryContainer: root.createTonalColor(m3SourceColor, root.isDarkMode ? 30 : 90)
+        readonly property color m3OnPrimaryContainer: root.createTonalColor(m3SourceColor, root.isDarkMode ? 90 : 10)
         readonly property color m3PrimaryFixed: root.createTonalColor(m3SourceColor, 90)
         readonly property color m3PrimaryFixedDim: root.createTonalColor(m3SourceColor, 80)
         readonly property color m3OnPrimaryFixed: root.createTonalColor(m3SourceColor, 10)
         readonly property color m3OnPrimaryFixedVariant: root.createTonalColor(m3SourceColor, 30)
 
-        readonly property color m3Secondary: root.createTonalColor(m3SecondarySource, 80)
-        readonly property color m3OnSecondary: root.createTonalColor(m3SecondarySource, 20)
-        readonly property color m3SecondaryContainer: root.createTonalColor(m3SecondarySource, 30)
-        readonly property color m3OnSecondaryContainer: root.createTonalColor(m3SecondarySource, 90)
+        readonly property color m3Secondary: root.createTonalColor(m3SecondarySource, root.isDarkMode ? 80 : 40)
+        readonly property color m3OnSecondary: root.createTonalColor(m3SecondarySource, root.isDarkMode ? 20 : 100)
+        readonly property color m3SecondaryContainer: root.createTonalColor(m3SecondarySource, root.isDarkMode ? 30 : 90)
+        readonly property color m3OnSecondaryContainer: root.createTonalColor(m3SecondarySource, root.isDarkMode ? 90 : 10)
         readonly property color m3SecondaryFixed: root.createTonalColor(m3SecondarySource, 90)
         readonly property color m3SecondaryFixedDim: root.createTonalColor(m3SecondarySource, 80)
         readonly property color m3OnSecondaryFixed: root.createTonalColor(m3SecondarySource, 10)
         readonly property color m3OnSecondaryFixedVariant: root.createTonalColor(m3SecondarySource, 30)
 
-        readonly property color m3Tertiary: root.createTonalColor(m3TertiarySource, 80)
-        readonly property color m3OnTertiary: root.createTonalColor(m3TertiarySource, 20)
-        readonly property color m3TertiaryContainer: root.createTonalColor(m3TertiarySource, 30)
-        readonly property color m3OnTertiaryContainer: root.createTonalColor(m3TertiarySource, 90)
+        readonly property color m3Tertiary: root.createTonalColor(m3TertiarySource, root.isDarkMode ? 80 : 40)
+        readonly property color m3OnTertiary: root.createTonalColor(m3TertiarySource, root.isDarkMode ? 20 : 100)
+        readonly property color m3TertiaryContainer: root.createTonalColor(m3TertiarySource, root.isDarkMode ? 30 : 90)
+        readonly property color m3OnTertiaryContainer: root.createTonalColor(m3TertiarySource, root.isDarkMode ? 90 : 10)
         readonly property color m3TertiaryFixed: root.createTonalColor(m3TertiarySource, 90)
         readonly property color m3TertiaryFixedDim: root.createTonalColor(m3TertiarySource, 80)
         readonly property color m3OnTertiaryFixed: root.createTonalColor(m3TertiarySource, 10)
         readonly property color m3OnTertiaryFixedVariant: root.createTonalColor(m3TertiarySource, 30)
 
         readonly property color m3ErrorSource: root.hctToRgb(25, 84, 40)
-        readonly property color m3Error: root.createTonalColor(m3ErrorSource, 80)
-        readonly property color m3ErrorContainer: root.createTonalColor(m3ErrorSource, 30)
-        readonly property color m3OnError: root.createTonalColor(m3ErrorSource, 20)
-        readonly property color m3OnErrorContainer: root.createTonalColor(m3ErrorSource, 90)
+        readonly property color m3Error: root.createTonalColor(m3ErrorSource, root.isDarkMode ? 80 : 40)
+        readonly property color m3ErrorContainer: root.createTonalColor(m3ErrorSource, root.isDarkMode ? 30 : 90)
+        readonly property color m3OnError: root.createTonalColor(m3ErrorSource, root.isDarkMode ? 20 : 100)
+        readonly property color m3OnErrorContainer: root.createTonalColor(m3ErrorSource, root.isDarkMode ? 90 : 10)
 
-        readonly property color m3InverseSurface: root.createTonalColor(m3NeutralSource, 90)
-        readonly property color m3InverseOnSurface: root.createTonalColor(m3NeutralSource, 20)
-        readonly property color m3InversePrimary: root.createTonalColor(m3SourceColor, 40)
+        readonly property color m3InverseSurface: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 90 : 20)
+        readonly property color m3InverseOnSurface: root.createTonalColor(m3NeutralSource, root.isDarkMode ? 20 : 95)
+        readonly property color m3InversePrimary: root.createTonalColor(m3SourceColor, root.isDarkMode ? 40 : 80)
 
-        readonly property color m3Outline: root.createTonalColor(m3NeutralVariantSource, 60)
-        readonly property color m3OutlineVariant: root.createTonalColor(m3NeutralVariantSource, 30)
+        readonly property color m3Outline: root.createTonalColor(m3NeutralVariantSource, root.isDarkMode ? 60 : 50)
+        readonly property color m3OutlineVariant: root.createTonalColor(m3NeutralVariantSource, root.isDarkMode ? 30 : 80)
 
         readonly property color m3Scrim: "#000000"
         readonly property color m3Shadow: "#000000"
         readonly property color m3SurfaceTint: m3Primary
-        readonly property color m3SurfaceVariant: root.createTonalColor(m3NeutralVariantSource, 30)
+        readonly property color m3SurfaceVariant: root.createTonalColor(m3NeutralVariantSource, root.isDarkMode ? 30 : 90)
 
         readonly property color m3Red: m3Error
-        readonly property color m3Green: root.hctToRgb(145, 50, 70)
-        readonly property color m3Blue: root.hctToRgb(220, 50, 70)
-        readonly property color m3Yellow: root.hctToRgb(90, 60, 70)
+        readonly property color m3Green: root.hctToRgb(145, 50, root.isDarkMode ? 70 : 40)
+        readonly property color m3Blue: root.hctToRgb(220, 50, root.isDarkMode ? 70 : 40)
+        readonly property color m3Yellow: root.hctToRgb(90, 60, root.isDarkMode ? 70 : 40)
     }
 }

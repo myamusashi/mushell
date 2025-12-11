@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Services.Pipewire
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 StyledRect {
     id: root
@@ -16,7 +17,7 @@ StyledRect {
     property PwNode node: Pipewire.defaultAudioSink
 
     Layout.fillHeight: true
-    // color: Themes.colors.withAlpha(Themes.m3Colors.m3Background, 0.79)
+    // color: Colours.colors.withAlpha(Colours.m3Colors.m3Background, 0.79)
     color: "transparent"
     implicitWidth: container.width
     radius: 5
@@ -35,14 +36,14 @@ StyledRect {
         spacing: 5
 
         MaterialIcon {
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             icon: root.icon
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.large * 1.5
         }
 
         StyledText {
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             text: (root.node.audio.volume * 100).toFixed(0) + "%"
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.medium

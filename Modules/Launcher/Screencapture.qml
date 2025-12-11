@@ -1,15 +1,17 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
+import QtQuick.Layouts
+
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Io
 import Quickshell
-import QtQuick
-import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Scope {
     id: root
@@ -66,8 +68,8 @@ Scope {
 
                         anchors.fill: parent
                         radius: Appearance.rounding.large
-                        color: Themes.m3Colors.m3Background
-                        border.color: Themes.m3Colors.m3Outline
+                        color: Colours.m3Colors.m3Background
+                        border.color: Colours.m3Colors.m3Outline
                         border.width: 2
 
                         readonly property int contentPadding: Appearance.spacing.normal
@@ -153,12 +155,12 @@ Scope {
 
                                         radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
 
-                                        color: isSelected ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Surface
+                                        color: isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Surface
 
                                         StyledText {
                                             anchors.centerIn: parent
                                             text: tabItem.modelData
-                                            color: tabItem.isSelected ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3Outline
+                                            color: tabItem.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
                                             font.pixelSize: Appearance.fonts.normal * 0.9
                                             font.bold: tabItem.isSelected
                                         }

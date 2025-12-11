@@ -1,7 +1,8 @@
 import QtQuick
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 StyledRect {
     id: root
@@ -46,7 +47,7 @@ StyledRect {
             // Background arc
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.strokeStyle = Themes.m3Colors.m3OutlineVariant;
+            ctx.strokeStyle = Colours.m3Colors.m3OutlineVariant;
             ctx.lineWidth = 8;
             ctx.stroke();
 
@@ -57,7 +58,7 @@ StyledRect {
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
 
             // Color based on value
-            ctx.strokeStyle = value > 80 ? Themes.m3Colors.m3Error : value > 60 ? Themes.m3Colors.m3Tertiary : Themes.m3Colors.m3Primary;
+            ctx.strokeStyle = value > 80 ? Colours.m3Colors.m3Error : value > 60 ? Colours.m3Colors.m3Tertiary : Colours.m3Colors.m3Primary;
             ctx.lineWidth = 8;
             ctx.lineCap = "round";
             ctx.stroke();
@@ -69,7 +70,7 @@ StyledRect {
         text: root.text
         font.pixelSize: Math.max(12, Math.min(24, root.width / 6))
         font.bold: true
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WordWrap

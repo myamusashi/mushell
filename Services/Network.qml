@@ -1,3 +1,10 @@
+pragma Singleton
+
+import QtQuick
+
+import Quickshell
+import Quickshell.Io
+
 // Copyright (C) [2025] [Soramane]
 // This file is part of shell.
 // shell is free software: you can redistribute it and/or modify
@@ -10,11 +17,7 @@
 // GNU General Public License for more details.
 // You should have received a copy of the GNU General Public License
 // along with shell. If not, see https://www.gnu.org/licenses/.
-pragma Singleton
 
-import Quickshell
-import Quickshell.Io
-import QtQuick
 
 Singleton {
     id: root

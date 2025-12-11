@@ -2,9 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-import qs.Helpers
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 Column {
     id: root
@@ -34,7 +35,7 @@ Column {
                     text: root.modelData.appName
                     font.pixelSize: Appearance.fonts.large
                     font.weight: Font.Medium
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     elide: Text.ElideRight
                 }
 
@@ -42,7 +43,7 @@ Column {
                     id: dots
 
                     text: "•"
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     font.pixelSize: Appearance.fonts.large
                 }
 
@@ -51,7 +52,7 @@ Column {
 
                     property date notificationDate: root.modelData.time
                     text: TimeAgo.timeAgoWithIfElse(notificationDate)
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
 
                     Timer {
                         interval: 60000
@@ -76,7 +77,7 @@ Column {
                 anchors.centerIn: parent
                 icon: root.isShowMoreBody ? "expand_less" : "expand_more"
                 font.pixelSize: Appearance.fonts.extraLarge
-                color: Themes.m3Colors.m3OnSurfaceVariant
+                color: Colours.m3Colors.m3OnSurfaceVariant
             }
 
             MArea {
@@ -96,7 +97,7 @@ Column {
         text: root.modelData.summary
         font.pixelSize: Appearance.fonts.medium
         font.weight: Font.DemiBold
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         elide: Text.ElideRight
         wrapMode: Text.Wrap
         maximumLineCount: 2
@@ -108,7 +109,7 @@ Column {
         width: parent.width
         text: root.modelData.body || ""
         font.pixelSize: Appearance.fonts.medium
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         textFormat: Text.StyledText
         maximumLineCount: root.isShowMoreBody ? 0 : 1
         wrapMode: Text.Wrap
@@ -130,7 +131,7 @@ Column {
 
                 width: (parent.width - parent.children.length - 1) / parent.children.length + 10
                 height: 40
-                color: Themes.m3Colors.m3SurfaceContainerHigh
+                color: Colours.m3Colors.m3SurfaceContainerHigh
                 radius: Appearance.rounding.full
                 StyledRect {
                     anchors.fill: parent
@@ -148,7 +149,7 @@ Column {
                     text: actionButton.modelData.text
                     font.pixelSize: Appearance.fonts.medium
                     font.weight: Font.Medium
-                    color: Themes.m3Colors.m3OnBackground
+                    color: Colours.m3Colors.m3OnBackground
                     elide: Text.ElideRight
                 }
             }

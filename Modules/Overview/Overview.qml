@@ -1,18 +1,22 @@
-// Thx M7moud El-zayat for your Overview code
 pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
+
+// Thx M7moud El-zayat for your Overview code
+
+
 
 Scope {
     id: scope
@@ -47,8 +51,8 @@ Scope {
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
             StyledRect {
-                color: Themes.m3Colors.m3Background
-                border.color: Themes.m3Colors.m3Outline
+                color: Colours.m3Colors.m3Background
+                border.color: Colours.m3Colors.m3Outline
                 anchors.fill: contentGrid
                 anchors.margins: -12
             }
@@ -90,7 +94,7 @@ Scope {
                         color: "transparent"
                         clip: true
                         border.width: 2
-                        border.color: hasMaximized ? "red" : workspace?.focused ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnPrimary
+                        border.color: hasMaximized ? "red" : workspace?.focused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnPrimary
 
                         FileView {
                             id: wallid

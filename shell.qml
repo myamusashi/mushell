@@ -1,20 +1,19 @@
 //@ pragma UseQApplication
 //@ pragma IconTheme WhiteSur-dark
 //@ pragma Env QS_NO_RELOAD_POPUP=1
-import qs.Modules.Lock
-import qs.Modules.Wallpaper
-import qs.Modules.Launcher
-import qs.Modules.RecordPanel
-import qs.Modules.Overview
-import qs.Modules.Polkit
-import qs.Modules
-import qs.Helpers
-
-import qs.Components
 
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
+
+import qs.Helpers
+import qs.Modules
+import qs.Modules.Launcher
+import qs.Modules.Lock
+import qs.Modules.Overview
+import qs.Modules.Polkit
+import qs.Modules.RecordPanel
+import qs.Modules.Wallpaper
 
 ShellRoot {
 	id: root

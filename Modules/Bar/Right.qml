@@ -3,10 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Configs
-import qs.Widgets
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
+import qs.Widgets
 
 Loader {
     active: true
@@ -29,7 +30,7 @@ Loader {
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: quickSettingsLayout.implicitWidth * 1.1
             Layout.preferredHeight: 25
-            color: Themes.m3Colors.m3SurfaceContainer
+            color: Colours.m3Colors.m3SurfaceContainer
             radius: Appearance.rounding.normal
 
             Behavior on color {

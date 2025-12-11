@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Configs
+import qs.Services
 
 StyledRect {
     id: root
@@ -10,8 +11,8 @@ StyledRect {
     property real waveAmplitude: 0
     property real waveFrequency: 8
     property real waveAnimationPhase: 0
-    property color trackColor: Themes.m3Colors.m3SurfaceContainerHighest
-    property color indicatorColor: Themes.m3Colors.m3Primary
+    property color trackColor: Colours.m3Colors.m3SurfaceContainerHighest
+    property color indicatorColor: Colours.m3Colors.m3Primary
     property real cornerRadius: 2
 
     Layout.fillWidth: true

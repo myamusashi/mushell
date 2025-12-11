@@ -1,12 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell.Services.Pipewire
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 Item {
     id: volumeOSD
@@ -56,7 +57,7 @@ Item {
                     left: parent.left
                     verticalCenter: parent.verticalCenter
                 }
-                color: Themes.m3Colors.m3OnBackground
+                color: Colours.m3Colors.m3OnBackground
                 icon: volumeOSD.icon
                 font.pointSize: Appearance.fonts.extraLarge * 1.2
             }
@@ -76,14 +77,14 @@ Item {
                     StyledText {
                         text: "Volume:"
                         font.weight: Font.Medium
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.large
                     }
 
                     StyledText {
                         text: `${Math.round(Pipewire.defaultAudioSink?.audio.volume * 100)}%`
                         font.weight: Font.Medium
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.normal
                     }
                 }

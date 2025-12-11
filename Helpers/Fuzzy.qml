@@ -1,7 +1,7 @@
 pragma Singleton
 
-import Quickshell
 import QtQuick
+import Quickshell
 
 Singleton {
     readonly property real prefixWeight: 0.3

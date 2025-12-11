@@ -1,9 +1,11 @@
 import QtQuick
+
 import Quickshell.Services.Notifications
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Item {
     id: root
@@ -95,11 +97,11 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-        color: root.notif.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3ErrorContainer : Themes.m3Colors.m3SurfaceContainer
+        color: root.notif.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3ErrorContainer : Colours.m3Colors.m3SurfaceContainer
         radius: Appearance.rounding.normal
         anchors.leftMargin: 10
         clip: true
-        border.color: root.notif.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : "transparent"
+        border.color: root.notif.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3Error : "transparent"
         border.width: root.notif.urgency === NotificationUrgency.Critical ? 1 : 0
 
         MArea {

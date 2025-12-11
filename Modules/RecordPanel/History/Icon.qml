@@ -1,12 +1,14 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 import Quickshell.Io
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Loader {
     id: root
@@ -41,7 +43,7 @@ Loader {
         width: 70
         height: 70
         radius: Appearance.rounding.full
-        color: Themes.m3Colors.m3PrimaryContainer
+        color: Colours.m3Colors.m3PrimaryContainer
 
         Image {
             id: image
@@ -55,7 +57,7 @@ Loader {
 
             Rectangle {
                 anchors.fill: parent
-                color: Themes.m3Colors.m3SurfaceVariant
+                color: Colours.m3Colors.m3SurfaceVariant
                 visible: image.status === Image.Error || image.status === Image.Null
                 radius: parent.width / 2
 

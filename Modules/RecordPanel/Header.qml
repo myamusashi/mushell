@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Helpers
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 Item {
     id: root
@@ -24,13 +25,13 @@ Item {
 
         MaterialIcon {
             icon: root.icon
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             font.pixelSize: Appearance.fonts.extraLarge
         }
 
         StyledText {
             text: root.text
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             font.weight: Font.DemiBold
             font.pixelSize: Appearance.fonts.large * 1.5
         }
@@ -41,7 +42,7 @@ Item {
 
         MaterialIcon {
             icon: "close"
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             font.pixelSize: Appearance.fonts.extraLarge
 
             MArea {

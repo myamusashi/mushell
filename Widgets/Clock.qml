@@ -1,9 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 StyledRect {
     Layout.fillHeight: true
@@ -17,7 +18,7 @@ StyledRect {
         MaterialIcon {
             id: icon
 
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             font.bold: true
             font.pointSize: Appearance.fonts.large
             icon: "schedule"
@@ -26,7 +27,7 @@ StyledRect {
         StyledText {
             id: text
 
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             font.bold: true
             font.pixelSize: Appearance.fonts.medium
             text: Qt.formatDateTime(Time?.date, "h:mm AP")

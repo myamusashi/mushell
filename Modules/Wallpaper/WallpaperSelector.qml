@@ -2,15 +2,16 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 StyledRect {
     id: root
@@ -53,7 +54,7 @@ StyledRect {
 
     implicitWidth: Hypr.focusedMonitor.width * 0.6
     implicitHeight: isWallpaperSwitcherOpen ? Hypr.focusedMonitor.height * 0.3 : 0
-    color: Themes.m3Colors.m3Surface
+    color: Colours.m3Colors.m3Surface
     radius: 0
     topLeftRadius: Appearance.rounding.normal
     topRightRadius: Appearance.rounding.normal
@@ -221,7 +222,7 @@ StyledRect {
             Layout.alignment: Qt.AlignHCenter
             Layout.bottomMargin: Appearance.spacing.small
             text: wallpaperPath.count > 0 ? (wallpaperPath.currentIndex + 1) + " / " + wallpaperPath.count : "0 / 0"
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
             font.pixelSize: Appearance.fonts.small
         }
     }

@@ -2,11 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Rectangle {
     id: root
@@ -14,7 +16,7 @@ Rectangle {
     required property QsMenuOpener trayMenu
 
     clip: true
-    color: Themes.m3Colors.m3SurfaceContainer
+    color: Colours.m3Colors.m3SurfaceContainer
     radius: 20
 
     Behavior on trayMenu {
@@ -54,7 +56,7 @@ Rectangle {
             }
             required property QsMenuEntry modelData
 
-            color: (modelData?.isSeparator) ? Themes.m3Colors.m3Outline : "transparent"
+            color: (modelData?.isSeparator) ? Colours.m3Colors.m3Outline : "transparent"
             height: (modelData?.isSeparator) ? 2 : 28
             radius: 20
             width: root.width
@@ -86,7 +88,7 @@ Rectangle {
                     MaterialIcon {
                         icon: (entry.modelData?.checkState != Qt.Checked) ? "check_box_outline_blank" : "check_box"
                         anchors.centerIn: parent
-                        color: Themes.m3Colors.m3OnPrimary
+                        color: Colours.m3Colors.m3OnPrimary
                         font.pixelSize: parent.width * 0.8
                     }
                 }
@@ -99,7 +101,7 @@ Rectangle {
                     MaterialIcon {
                         icon: (entry.modelData?.checkState != Qt.Checked) ? "radio_button_unchecked" : "radio_button_checked"
                         anchors.centerIn: parent
-                        color: Themes.m3Colors.m3Primary
+                        color: Colours.m3Colors.m3Primary
                         font.pixelSize: parent.width * 0.8
                     }
                 }
@@ -112,7 +114,7 @@ Rectangle {
                         id: text
 
                         anchors.fill: parent
-                        color: (entry.modelData?.enabled) ? Themes.m3Colors.m3OnSurface : Themes.m3Colors.m3Primary
+                        color: (entry.modelData?.enabled) ? Colours.m3Colors.m3OnSurface : Colours.m3Colors.m3Primary
                         font.pointSize: 11
                         text: entry.modelData?.text ?? ""
                         verticalAlignment: Text.AlignVCenter
@@ -139,7 +141,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        color: Themes.m3Colors.m3OnSurface
+                        color: Colours.m3Colors.m3OnSurface
                         font.pointSize: 11
                         text: ""
                     }

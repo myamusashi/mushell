@@ -1,14 +1,15 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 StyledRect {
     id: root
@@ -51,7 +52,7 @@ StyledRect {
 
                 width: root.containerWidth
                 height: root.containerHeight
-                color: workspace?.focused ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnPrimary
+                color: workspace?.focused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnPrimary
                 radius: 0
                 clip: true
                 required property int index
@@ -108,8 +109,8 @@ StyledRect {
 
                         Rectangle {
                             anchors.fill: parent
-                            color: toplevel.modelData.activated ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OnPrimary
-                            border.color: toplevel.modelData.activated ? Themes.m3Colors.m3Outline : Themes.m3Colors.m3OutlineVariant
+                            color: toplevel.modelData.activated ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnPrimary
+                            border.color: toplevel.modelData.activated ? Colours.m3Colors.m3Outline : Colours.m3Colors.m3OutlineVariant
                             border.width: 1
                         }
 

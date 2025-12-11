@@ -2,8 +2,9 @@ import QtQuick
 
 import qs.Configs
 import qs.Helpers
-import "../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
+import qs.Services
 
+import "../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
 Item {
     id: root
 
@@ -53,7 +54,7 @@ Item {
         anchors.centerIn: parent
         implicitWidth: parent.width
         implicitHeight: parent.height
-        color: Themes.m3Colors.m3OnPrimary
+        color: Colours.m3Colors.m3OnPrimary
         roundedPolygon: root.shapeGetters[root.shapeIndex]()
         onProgressChanged: requestPaint()
 

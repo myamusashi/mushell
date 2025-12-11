@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+
 import Quickshell
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 ComboBox {
     id: profilesComboBox
@@ -35,7 +36,7 @@ ComboBox {
             x: 12
             y: 0
             height: 40
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             visible: false
         }
     }
@@ -52,7 +53,7 @@ ComboBox {
         }
         font.weight: Font.DemiBold
         font.pixelSize: Appearance.fonts.large
-        color: Themes.m3Colors.m3OnBackground
+        color: Colours.m3Colors.m3OnBackground
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
     }
@@ -66,12 +67,12 @@ ComboBox {
         padding: Appearance.padding.normal
 
         background: StyledRect {
-            color: itemDelegate.highlighted ? Themes.m3Colors.m3Primary : itemDelegate.hovered ? itemDelegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1) : "transparent"
+            color: itemDelegate.highlighted ? Colours.m3Colors.m3Primary : itemDelegate.hovered ? itemDelegate.modelData.available !== "yes" ? "transparent" : Colours.withAlpha(Colours.m3Colors.m3Primary, 0.1) : "transparent"
         }
 
         contentItem: StyledText {
             text: itemDelegate.modelData.readable
-            color: itemDelegate.modelData.available !== "yes" ? Themes.m3Colors.m3OutlineVariant : Themes.m3Colors.m3OnBackground
+            color: itemDelegate.modelData.available !== "yes" ? Colours.m3Colors.m3OutlineVariant : Colours.m3Colors.m3OnBackground
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
         }
@@ -108,7 +109,7 @@ ComboBox {
                 context.lineTo(width, 0);
                 context.lineTo(width / 2, height);
                 context.closePath();
-                context.fillStyle = Themes.m3Colors.m3OnBackground;
+                context.fillStyle = Colours.m3Colors.m3OnBackground;
                 context.fill();
             }
         }
@@ -134,7 +135,7 @@ ComboBox {
         padding: Appearance.padding.normal
 
         background: StyledRect {
-            color: Themes.m3Colors.m3SurfaceContainerLow
+            color: Colours.m3Colors.m3SurfaceContainerLow
             radius: Appearance.rounding.small
         }
 
@@ -168,12 +169,12 @@ ComboBox {
                         enabled: modelData.available === "yes"
 
                         background: StyledRect {
-                            color: delegate.highlighted ? Themes.m3Colors.m3Primary : delegate.hovered ? (delegate.modelData.available !== "yes" ? "transparent" : Themes.withAlpha(Themes.m3Colors.m3Primary, 0.1)) : "transparent"
+                            color: delegate.highlighted ? Colours.m3Colors.m3Primary : delegate.hovered ? (delegate.modelData.available !== "yes" ? "transparent" : Colours.withAlpha(Colours.m3Colors.m3Primary, 0.1)) : "transparent"
                         }
 
                         contentItem: StyledText {
                             text: delegate.modelData.readable
-                            color: delegate.modelData.available !== "yes" ? Themes.m3Colors.m3OutlineVariant : delegate.highlighted ? Themes.m3Colors.m3OnPrimary : Themes.m3Colors.m3OnSurface
+                            color: delegate.modelData.available !== "yes" ? Colours.m3Colors.m3OutlineVariant : delegate.highlighted ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurface
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                         }

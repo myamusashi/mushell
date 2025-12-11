@@ -1,18 +1,19 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
-import Quickshell.Widgets
-import Quickshell.Hyprland
-import QtCore
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
-import qs.Components
+import Quickshell
+import Quickshell.Widgets
+import Quickshell.Hyprland
 
+import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
+
+import QtCore
 StyledRect {
 	id: root
 
@@ -115,7 +116,7 @@ StyledRect {
     radius: 0
     topLeftRadius: Appearance.rounding.normal
     topRightRadius: Appearance.rounding.normal
-    color: Themes.m3Colors.m3Surface
+    color: Colours.m3Colors.m3Surface
     implicitWidth: Hypr.focusedMonitor.width * 0.3
     implicitHeight: isLauncherOpen ? Hypr.focusedMonitor.height * 0.5 : 0
     Behavior on implicitHeight {
@@ -150,8 +151,8 @@ StyledRect {
                 font.family: Appearance.fonts.familySans
                 focus: true
                 font.pixelSize: Appearance.fonts.large * 1.2
-                color: Themes.m3Colors.m3OnBackground
-                placeholderTextColor: Themes.m3Colors.m3OnSurfaceVariant
+                color: Colours.m3Colors.m3OnBackground
+                placeholderTextColor: Colours.m3Colors.m3OnSurfaceVariant
                 onTextChanged: {
                     root.currentIndex = 0;
                     listView.positionViewAtBeginning();
@@ -212,7 +213,7 @@ StyledRect {
                             Layout.leftMargin: Appearance.padding.normal
                             color: root.color
                             border.width: listView.currentIndex === delegateItem.index ? 3 : 1
-                            border.color: listView.currentIndex === delegateItem.index && !search.focus ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3OutlineVariant
+                            border.color: listView.currentIndex === delegateItem.index && !search.focus ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
                             Behavior on border.width {
                                 NumberAnimation {
                                     duration: 100
@@ -242,14 +243,14 @@ StyledRect {
                                 font.pixelSize: Appearance.fonts.large
                                 font.weight: Font.Medium
                                 elide: Text.ElideRight
-                                color: Themes.m3Colors.m3OnSurface
+                                color: Colours.m3Colors.m3OnSurface
                             }
                             StyledLabel {
                                 Layout.fillWidth: true
                                 text: delegateItem.modelData.comment
                                 font.pixelSize: Appearance.fonts.small
                                 elide: Text.ElideRight
-                                color: Themes.m3Colors.m3OnSurfaceVariant
+                                color: Colours.m3Colors.m3OnSurfaceVariant
                                 opacity: 0.7
                             }
                         }
@@ -287,7 +288,7 @@ StyledRect {
                     anchors.centerIn: parent
                     visible: listView.count === 0 && search.text !== ""
                     text: "No applications found"
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     font.pixelSize: Appearance.fonts.large
                 }
             }

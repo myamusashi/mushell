@@ -1,11 +1,12 @@
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Widgets
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 RowLayout {
     implicitWidth: parent.width
@@ -15,7 +16,7 @@ RowLayout {
         Layout.preferredHeight: 64
         Layout.topMargin: 8
         radius: Appearance.rounding.full
-        color: Themes.withAlpha(Themes.m3Colors.m3Primary, 0.12)
+        color: Colours.withAlpha(Colours.m3Colors.m3Primary, 0.12)
 
         IconImage {
             id: appIcon
@@ -39,7 +40,7 @@ RowLayout {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Appearance.fonts.extraLarge
             font.weight: Font.Bold
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
         }
 
         StyledLabel {
@@ -50,7 +51,7 @@ RowLayout {
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Appearance.fonts.large
             font.weight: Font.Normal
-            color: Themes.m3Colors.m3OnSurface
+            color: Colours.m3Colors.m3OnSurface
         }
     }
 }

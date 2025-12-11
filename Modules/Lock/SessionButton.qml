@@ -2,10 +2,12 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 RowLayout {
     id: root
@@ -25,8 +27,8 @@ RowLayout {
             buttonTitle: "Shutdown"
             iconButton: "power_settings_circle"
             iconSize: Appearance.fonts.extraLarge
-            buttonColor: Themes.m3Colors.m3Primary
-            buttonTextColor: Themes.m3Colors.m3OnPrimary
+            buttonColor: Colours.m3Colors.m3Primary
+            buttonTextColor: Colours.m3Colors.m3OnPrimary
             buttonHeight: 56
 
             scale: mArea.containsMouse ? 1.05 : 1.0
@@ -89,8 +91,8 @@ RowLayout {
                 buttonTitle: modelData.name
                 iconButton: modelData.icon
                 iconSize: Appearance.fonts.extraLarge
-                buttonColor: Themes.m3Colors.m3Primary
-                buttonTextColor: Themes.m3Colors.m3OnPrimary
+                buttonColor: Colours.m3Colors.m3Primary
+                buttonTextColor: Colours.m3Colors.m3OnPrimary
                 buttonHeight: 56
 
                 visible: root.isOpen || Layout.preferredHeight > 0
@@ -140,8 +142,8 @@ RowLayout {
 
         iconButton: root.isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"
         iconSize: Appearance.fonts.extraLarge
-        buttonColor: Themes.m3Colors.m3Primary
-        buttonTextColor: Themes.m3Colors.m3OnPrimary
+        buttonColor: Colours.m3Colors.m3Primary
+        buttonTextColor: Colours.m3Colors.m3OnPrimary
         buttonHeight: 56
         baseWidth: 56
 

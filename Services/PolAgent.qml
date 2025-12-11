@@ -1,8 +1,9 @@
 pragma Singleton
 
+import QtQuick
+
 import Quickshell
 import Quickshell.Services.Polkit
-import QtQuick
 
 Singleton {
     readonly property Agent agent: Agent {}

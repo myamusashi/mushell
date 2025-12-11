@@ -3,8 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 StyledRect {
     id: root
@@ -15,10 +16,10 @@ StyledRect {
     property int tabSpacing: 15
     property real widthRatio: 0.95
     property int preferredHeight: 60
-    property color backgroundColor: Themes.m3Colors.m3Surface
-    property color activeColor: Themes.m3Colors.m3Primary
-    property color inactiveColor: Themes.m3Colors.m3OnBackground
-    property color indicatorColor: Themes.m3Colors.m3Primary
+    property color backgroundColor: Colours.m3Colors.m3Surface
+    property color activeColor: Colours.m3Colors.m3Primary
+    property color inactiveColor: Colours.m3Colors.m3OnBackground
+    property color indicatorColor: Colours.m3Colors.m3Primary
     property int indicatorHeight: 2
     property int indicatorRadius: Appearance.rounding.large
     property bool showIndicator: true

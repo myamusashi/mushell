@@ -1,9 +1,9 @@
 import QtQuick
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 Item {
     id: capsLockOSD
@@ -34,13 +34,13 @@ Item {
             StyledText {
                 text: "Caps Lock"
                 font.weight: Font.Medium
-                color: Themes.m3Colors.m3OnBackground
+                color: Colours.m3Colors.m3OnBackground
                 font.pixelSize: Appearance.fonts.large * 1.5
             }
 
             MaterialIcon {
                 icon: KeyLockState.state.capsLock ? "lock" : "lock_open_right"
-                color: KeyLockState.state.capsLock ? Themes.m3Colors.m3Primary : Themes.m3Colors.m3Tertiary
+                color: KeyLockState.state.capsLock ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Tertiary
                 font.pointSize: Appearance.fonts.large * 1.5
             }
         }

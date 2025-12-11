@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Services.Pipewire
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 ColumnLayout {
     id: root
@@ -59,7 +60,7 @@ ColumnLayout {
                 anchors.centerIn: parent
                 visible: icon !== ""
                 icon: root.icon
-                color: Themes.m3Colors.m3OnSurface
+                color: Colours.m3Colors.m3OnSurface
                 font.pointSize: Appearance.fonts.large * 1.5
             }
 

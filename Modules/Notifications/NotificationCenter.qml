@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 import "Components"
 
@@ -28,7 +29,7 @@ StyledRect {
     anchors.leftMargin: 15
     bottomLeftRadius: Appearance.rounding.normal
     visible: height > 0
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
 
     Behavior on width {
         NAnim {
@@ -75,7 +76,7 @@ StyledRect {
                     StyledText {
                         Layout.fillWidth: true
                         text: "Notifications"
-                        color: Themes.m3Colors.m3OnBackground
+                        color: Colours.m3Colors.m3OnBackground
                         font.pixelSize: Appearance.fonts.large * 1.2
                         font.weight: Font.Medium
                     }
@@ -99,7 +100,7 @@ StyledRect {
 
                             Layout.preferredWidth: 32
                             Layout.preferredHeight: 32
-                            color: iconMouse.containsMouse ? Themes.m3Colors.m3SurfaceContainerHigh : "transparent"
+                            color: iconMouse.containsMouse ? Colours.m3Colors.m3SurfaceContainerHigh : "transparent"
 
                             required property var modelData
 
@@ -107,7 +108,7 @@ StyledRect {
                                 anchors.centerIn: parent
                                 icon: notifHeaderDelegate.modelData.icon
                                 font.pointSize: Appearance.fonts.extraLarge * 0.6
-                                color: Themes.m3Colors.m3OnSurface
+                                color: Colours.m3Colors.m3OnSurface
                             }
 
                             MArea {
@@ -124,7 +125,7 @@ StyledRect {
             }
 
             StyledRect {
-                color: Themes.m3Colors.m3OutlineVariant
+                color: Colours.m3Colors.m3OutlineVariant
                 Layout.fillWidth: true
                 implicitHeight: 1
             }
@@ -165,7 +166,7 @@ StyledRect {
                 StyledText {
                     anchors.centerIn: parent
                     text: "No notifications"
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     font.pixelSize: Appearance.fonts.medium
                     visible: Notifs.notClosed.length === 0
                     opacity: 0.6

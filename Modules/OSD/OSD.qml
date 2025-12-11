@@ -2,9 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 StyledRect {
     id: mainRect
@@ -18,7 +19,7 @@ StyledRect {
     implicitHeight: GlobalStates.isVolumeOSDShow || GlobalStates.isNumLockOSDShow || GlobalStates.isCapsLockOSDShow ? calculateHeight() : 0
     radius: 0
     topLeftRadius: Appearance.rounding.normal
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
     clip: true
 
     Behavior on implicitWidth {

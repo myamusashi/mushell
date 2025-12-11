@@ -1,13 +1,15 @@
 pragma ComponentBehavior: Bound
 
+import QtQuick
+
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import QtQuick
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Variants {
     model: Quickshell.screens

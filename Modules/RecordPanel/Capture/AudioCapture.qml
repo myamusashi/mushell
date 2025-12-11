@@ -3,13 +3,14 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 ClippingRectangle {
     id: root
@@ -19,7 +20,7 @@ ClippingRectangle {
 
     Layout.fillWidth: true
     Layout.preferredHeight: columnContent.implicitHeight
-    color: Themes.m3Colors.m3SurfaceContainerHigh
+    color: Colours.m3Colors.m3SurfaceContainerHigh
 
     ColumnLayout {
         id: columnContent
@@ -36,7 +37,7 @@ ClippingRectangle {
 		StyledRect {
 			Layout.fillWidth: true
             implicitHeight: 1
-            color: Themes.m3Colors.m3OutlineVariant
+            color: Colours.m3Colors.m3OutlineVariant
         }
 
         View {
@@ -141,7 +142,7 @@ ClippingRectangle {
 
                     Rectangle {
                         Layout.fillWidth: true
-                        color: Themes.m3Colors.m3Outline
+                        color: Colours.m3Colors.m3Outline
                         implicitHeight: 1
                     }
 

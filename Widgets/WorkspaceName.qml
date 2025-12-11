@@ -2,10 +2,12 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Wayland
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 StyledRect {
     id: root
@@ -28,7 +30,7 @@ StyledRect {
         readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
 
         anchors.centerIn: parent
-        color: Themes.m3Colors.m3OnBackground
+        color: Colours.m3Colors.m3OnBackground
         elide: Text.ElideMiddle
         font.weight: Font.Light
         font.pixelSize: Appearance.fonts.large

@@ -2,14 +2,16 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Services.Greetd
 
-import qs.Configs
-import qs.Helpers
-import qs.Greeter
 import qs.Components
+import qs.Configs
+import qs.Greeter
+import qs.Helpers
+import qs.Services
 
 ShellRoot {
     id: root
@@ -67,7 +69,7 @@ ShellRoot {
     }
 
     Component.onCompleted: {
-        Themes.colorQuantizer.source = sessionLock.wallpaperPath;
+        Colours.colorQuantizer.source = sessionLock.wallpaperPath;
         console.log("[INIT] Current session: " + Sessions.current_session);
         console.log("[INIT] Current user: " + Users.current_user);
     }
@@ -175,7 +177,7 @@ ShellRoot {
                         }
 
                         if (kevent.key === Qt.Key_A && (kevent.modifiers & Qt.ControlModifier)) {
-                            passwordBuffer.color = Themes.m3GeneratedColors.m3Blue;
+                            passwordBuffer.color = Colours.m3GeneratedColors.m3Blue;
                             sessionLock.isAllSelected = true;
                             kevent.accepted = true;
                             return;
@@ -183,7 +185,7 @@ ShellRoot {
 
                         if (kevent.key === Qt.Key_Backspace) {
                             if (kevent.modifiers & Qt.ControlModifier) {
-                                passwordBuffer.color = Themes.m3GeneratedColors.m3OnBackground;
+                                passwordBuffer.color = Colours.m3GeneratedColors.m3OnBackground;
                                 sessionLock.inputBuffer = "";
                                 sessionLock.maskedBuffer = "";
                                 sessionLock.isAllSelected = false;
@@ -193,7 +195,7 @@ ShellRoot {
                             if (sessionLock.isAllSelected) {
                                 sessionLock.inputBuffer = "";
                                 sessionLock.maskedBuffer = "";
-                                passwordBuffer.color = Themes.m3GeneratedColors.m3OnSurfaceVariant;
+                                passwordBuffer.color = Colours.m3GeneratedColors.m3OnSurfaceVariant;
                                 sessionLock.isAllSelected = false;
                                 return;
                             }
@@ -204,7 +206,7 @@ ShellRoot {
                             sessionLock.maskedBuffer = sessionLock.maskedBuffer.slice(0, -randomRemove);
 
                             if (sessionLock.maskedBuffer === "")
-                                passwordBuffer.color = Themes.m3GeneratedColors.m3OnSurfaceVariant;
+                                passwordBuffer.color = Colours.m3GeneratedColors.m3OnSurfaceVariant;
 
                             return;
                         }
@@ -216,8 +218,8 @@ ShellRoot {
                                 sessionLock.isAllSelected = false;
                             }
 
-                            if (passwordBuffer.color === Themes.m3GeneratedColors.m3Blue || passwordBuffer.color === Themes.m3GeneratedColors.m3OnBackground)
-                                passwordBuffer.color = sessionLock.maskedBuffer ? Themes.m3GeneratedColors.m3OnSurface : Themes.m3GeneratedColors.m3OnSurfaceVariant;
+                            if (passwordBuffer.color === Colours.m3GeneratedColors.m3Blue || passwordBuffer.color === Colours.m3GeneratedColors.m3OnBackground)
+                                passwordBuffer.color = sessionLock.maskedBuffer ? Colours.m3GeneratedColors.m3OnSurface : Colours.m3GeneratedColors.m3OnSurfaceVariant;
 
                             sessionLock.inputBuffer += kevent.text;
 
@@ -274,7 +276,7 @@ ShellRoot {
                     anchors.centerIn: parent
                     anchors.verticalCenterOffset: -80
                     text: "WRONG PASSWORD"
-                    color: Themes.m3GeneratedColors.m3Error
+                    color: Colours.m3GeneratedColors.m3Error
                     font.pointSize: Appearance.fonts.large * 3
                     visible: sessionLock.showErrorMessage
                     z: 10
@@ -285,7 +287,7 @@ ShellRoot {
 
                     anchors.centerIn: parent
                     text: sessionLock.maskedBuffer
-                    color: sessionLock.maskedBuffer ? Themes.m3GeneratedColors.m3OnSurface : Themes.m3GeneratedColors.m3OnSurfaceVariant
+                    color: sessionLock.maskedBuffer ? Colours.m3GeneratedColors.m3OnSurface : Colours.m3GeneratedColors.m3OnSurfaceVariant
                     font.pointSize: Appearance.fonts.extraLarge * 5
                     font.family: Appearance.fonts.familyMono
                     z: 5
@@ -348,7 +350,7 @@ ShellRoot {
                     anchors.centerIn: parent
                     anchors.verticalCenterOffset: 60
                     text: "Type password and press Enter"
-                    color: Themes.m3GeneratedColors.m3OnSurfaceVariant
+                    color: Colours.m3GeneratedColors.m3OnSurfaceVariant
                     font.pointSize: Appearance.fonts.small
                     opacity: sessionLock.maskedBuffer.length === 0 ? 0.6 : 0
                     visible: opacity > 0
@@ -387,12 +389,12 @@ ShellRoot {
                         Layout.preferredWidth: 120
                         Layout.preferredHeight: 60
                         visible: Users.current_user_index === index
-                        color: Users.current_user_index === index ? Themes.m3GeneratedColors.m3Primary : Themes.m3GeneratedColors.m3SurfaceVariant
+                        color: Users.current_user_index === index ? Colours.m3GeneratedColors.m3Primary : Colours.m3GeneratedColors.m3SurfaceVariant
 
                         StyledLabel {
                             anchors.centerIn: parent
                             text: Users.users_list[delegateUser.index] || ""
-                            color: Users.current_user_index === delegateUser.index ? Themes.m3GeneratedColors.m3OnPrimary : Themes.m3GeneratedColors.m3OnSurfaceVariant
+                            color: Users.current_user_index === delegateUser.index ? Colours.m3GeneratedColors.m3OnPrimary : Colours.m3GeneratedColors.m3OnSurfaceVariant
                         }
 
                         MArea {
@@ -439,12 +441,12 @@ ShellRoot {
                         Layout.preferredWidth: 150
                         Layout.preferredHeight: 60
                         visible: Sessions.current_ses_index === index
-                        color: Sessions.current_ses_index === index ? Themes.m3GeneratedColors.m3Primary : Themes.m3GeneratedColors.m3SurfaceVariant
+                        color: Sessions.current_ses_index === index ? Colours.m3GeneratedColors.m3Primary : Colours.m3GeneratedColors.m3SurfaceVariant
 
                         StyledLabel {
                             anchors.centerIn: parent
                             text: Sessions.session_names[delegateSession.index] || ""
-                            color: Sessions.current_ses_index === delegateSession.index ? Themes.m3GeneratedColors.m3OnPrimary : Themes.m3GeneratedColors.m3OnSurfaceVariant
+                            color: Sessions.current_ses_index === delegateSession.index ? Colours.m3GeneratedColors.m3OnPrimary : Colours.m3GeneratedColors.m3OnSurfaceVariant
                         }
 
                         MArea {

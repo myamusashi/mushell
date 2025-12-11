@@ -1,14 +1,15 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell.Hyprland
-import Quickshell
 import QtQuick.Layouts
 import QtQuick
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
+import Quickshell.Hyprland
+import Quickshell
+
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 LazyLoader {
     activeAsync: Record.isRecordingControlOpen
@@ -34,9 +35,9 @@ LazyLoader {
 
         StyledRect {
             anchors.fill: parent
-            color: Themes.m3Colors.m3SurfaceContainerHigh
+            color: Colours.m3Colors.m3SurfaceContainerHigh
             radius: Appearance.rounding.large
-            border.color: Themes.m3Colors.m3Outline
+            border.color: Colours.m3Colors.m3Outline
             border.width: 1
 
             ColumnLayout {
@@ -54,7 +55,7 @@ LazyLoader {
                         Layout.preferredWidth: 12
                         Layout.preferredHeight: 12
                         radius: 6
-                        color: Themes.m3Colors.m3Error
+                        color: Colours.m3Colors.m3Error
 
                         SequentialAnimation on opacity {
                             loops: Animation.Infinite
@@ -75,7 +76,7 @@ LazyLoader {
                         id: header
 
                         text: "Screen Recording"
-                        color: Themes.m3Colors.m3OnSurface
+                        color: Colours.m3Colors.m3OnSurface
                         font.pixelSize: Appearance.fonts.normal
                         font.bold: true
                     }
@@ -104,7 +105,7 @@ LazyLoader {
                             anchors.centerIn: parent
                             icon: "close"
                             font.pointSize: Appearance.fonts.large
-                            color: Themes.m3Colors.m3OnSurfaceVariant
+                            color: Colours.m3Colors.m3OnSurfaceVariant
                         }
 
                         MArea {
@@ -127,7 +128,7 @@ LazyLoader {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 45
                         radius: Appearance.rounding.normal
-                        color: Themes.m3Colors.m3SurfaceContainer
+                        color: Colours.m3Colors.m3SurfaceContainer
 
                         RowLayout {
                             anchors.centerIn: parent
@@ -136,12 +137,12 @@ LazyLoader {
                             MaterialIcon {
                                 icon: "schedule"
                                 font.pointSize: Appearance.fonts.large
-                                color: Themes.m3Colors.m3Primary
+                                color: Colours.m3Colors.m3Primary
                             }
 
                             StyledText {
                                 text: root.formatTime(Record.recordingSeconds)
-                                color: Themes.m3Colors.m3OnSurface
+                                color: Colours.m3Colors.m3OnSurface
                                 font.pixelSize: Appearance.fonts.large * 1.2
                                 font.bold: true
                                 font.family: Appearance.fonts.familyMono
@@ -155,7 +156,7 @@ LazyLoader {
                         Layout.preferredWidth: 100
                         Layout.preferredHeight: 45
                         radius: Appearance.rounding.normal
-                        color: stopButtonMouse.pressed ? Themes.withAlpha(Themes.m3Colors.m3Error, 0.8) : stopButtonMouse.containsMouse ? Themes.m3Colors.m3Error : Themes.withAlpha(Themes.m3Colors.m3Error, 0.9)
+                        color: stopButtonMouse.pressed ? Colours.withAlpha(Colours.m3Colors.m3Error, 0.8) : stopButtonMouse.containsMouse ? Colours.m3Colors.m3Error : Colours.withAlpha(Colours.m3Colors.m3Error, 0.9)
 
                         Behavior on color {
                             CAnim {
@@ -189,12 +190,12 @@ LazyLoader {
                             MaterialIcon {
                                 icon: "stop"
                                 font.pointSize: Appearance.fonts.large
-                                color: Themes.m3Colors.m3OnError
+                                color: Colours.m3Colors.m3OnError
                             }
 
                             StyledText {
                                 text: "Stop"
-                                color: Themes.m3Colors.m3OnError
+                                color: Colours.m3Colors.m3OnError
                                 font.pixelSize: Appearance.fonts.normal
                                 font.bold: true
                             }

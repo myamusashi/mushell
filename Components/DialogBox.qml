@@ -1,11 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 import Quickshell.Wayland
 
 import qs.Configs
 import qs.Helpers
+import qs.Services
 
 LazyLoader {
     id: root
@@ -29,7 +31,7 @@ LazyLoader {
             bottom: true
         }
 
-        color: Themes.withAlpha(Themes.m3Colors.m3Background, 0.3)
+        color: Colours.withAlpha(Colours.m3Colors.m3Background, 0.3)
         WlrLayershell.keyboardFocus: root.needKeyboardFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
         MArea {
@@ -44,8 +46,8 @@ LazyLoader {
             implicitHeight: column.height + 40
 
             radius: Appearance.rounding.large
-            color: Themes.m3Colors.m3Surface
-            border.color: Themes.m3Colors.m3Outline
+            color: Colours.m3Colors.m3Surface
+            border.color: Colours.m3Colors.m3Outline
             border.width: 2
 
             Column {
@@ -68,7 +70,7 @@ LazyLoader {
                 StyledRect {
                     width: parent.width
                     height: 2
-                    color: Themes.m3Colors.m3OutlineVariant
+                    color: Colours.m3Colors.m3OutlineVariant
                 }
 
                 Loader {
@@ -83,7 +85,7 @@ LazyLoader {
                 StyledRect {
                     width: parent.width
                     height: 2
-                    color: Themes.m3Colors.m3OutlineVariant
+                    color: Colours.m3Colors.m3OutlineVariant
                 }
 
                 Row {
@@ -102,7 +104,7 @@ LazyLoader {
                     StyledButton {
                         iconButton: "check"
                         buttonTitle: "Yes"
-                        buttonTextColor: Themes.m3Colors.m3OnPrimary
+                        buttonTextColor: Colours.m3Colors.m3OnPrimary
                         onClicked: root.accepted()
                     }
                 }

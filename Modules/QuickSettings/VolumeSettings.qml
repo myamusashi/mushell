@@ -3,13 +3,14 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
 import qs.Configs
-import qs.Widgets
 import qs.Services
+import qs.Widgets
 
 ScrollView {
     anchors.fill: parent
@@ -38,7 +39,7 @@ ScrollView {
 
             Rectangle {
                 Layout.fillWidth: true
-                color: Themes.m3Colors.m3Outline
+                color: Colours.m3Colors.m3Outline
                 implicitHeight: 1
             }
 

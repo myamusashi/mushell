@@ -1,14 +1,14 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 import "Components"
-
 StyledRect {
     id: container
 
@@ -23,7 +23,7 @@ StyledRect {
 
     width: Hypr.focusedMonitor.width * 0.2
     height: hasNotifications ? Math.min(notifListView.contentHeight + 30, parent.height * 0.5) : 0
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
     radius: 0
     bottomLeftRadius: Appearance.rounding.normal
 

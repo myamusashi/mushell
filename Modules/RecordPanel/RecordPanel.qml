@@ -2,17 +2,18 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 import "Capture" as Cap
 import "History"
-
 Scope {
     id: scope
 
@@ -49,7 +50,7 @@ Scope {
 
             StyledRect {
                 anchors.fill: parent
-                color: Themes.withAlpha(Themes.m3Colors.m3Surface, 0.3)
+                color: Colours.withAlpha(Colours.m3Colors.m3Surface, 0.3)
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 15
@@ -124,12 +125,12 @@ Scope {
                             Layout.preferredWidth: 200
                             Layout.preferredHeight: 100
                             color: "transparent"
-                            border.color: Themes.m3Colors.m3Primary
+                            border.color: Colours.m3Colors.m3Primary
                             border.width: 1
                             Text {
                                 anchors.centerIn: parent
                                 text: "WIP"
-                                color: Themes.m3Colors.m3OnSurface
+                                color: Colours.m3Colors.m3OnSurface
                             }
                         }
                         Item {

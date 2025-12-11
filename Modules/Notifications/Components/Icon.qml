@@ -1,13 +1,15 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Notifications
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
-import qs.Components
+import qs.Services
 
 Item {
     id: root
@@ -29,7 +31,7 @@ Item {
             width: 40
             height: 40
             radius: Appearance.rounding.full
-            color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3Error : root.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3SecondaryContainer : Themes.m3Colors.m3PrimaryContainer
+            color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3Error : root.modelData.urgency === NotificationUrgency.Low ? Colours.m3Colors.m3SecondaryContainer : Colours.m3Colors.m3PrimaryContainer
 
             Loader {
                 id: icon
@@ -54,7 +56,7 @@ Item {
                 anchors.centerIn: parent
                 sourceComponent: MaterialIcon {
                     icon: "notifications_active"
-                    color: root.modelData.urgency === NotificationUrgency.Critical ? Themes.m3Colors.m3OnError : root.modelData.urgency === NotificationUrgency.Low ? Themes.m3Colors.m3OnSecondaryContainer : Themes.m3Colors.m3OnPrimaryContainer
+                    color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3OnError : root.modelData.urgency === NotificationUrgency.Low ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnPrimaryContainer
                     font.pointSize: Appearance.fonts.normal
                 }
             }
@@ -76,8 +78,8 @@ Item {
             width: 20
             height: 20
             radius: 10
-            color: Themes.m3Colors.m3Surface
-            border.color: Themes.m3Colors.m3OutlineVariant
+            color: Colours.m3Colors.m3Surface
+            border.color: Colours.m3Colors.m3OutlineVariant
             border.width: 1.5
 
             ClippingRectangle {

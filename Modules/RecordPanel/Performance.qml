@@ -1,21 +1,22 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtGraphs
 import QtQuick.Layouts
+
 import Quickshell.Widgets
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
+import QtGraphs
 ClippingRectangle {
     id: root
 
     implicitWidth: columnLayout.width
     implicitHeight: columnLayout.implicitHeight
-    color: Themes.m3Colors.m3SurfaceContainer
+    color: Colours.m3Colors.m3SurfaceContainer
     radius: Appearance.rounding.small
 
     property alias content: columnLayout
@@ -81,7 +82,7 @@ ClippingRectangle {
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 50
-                        color: root.currentTab === modelData.index ? Themes.m3Colors.m3PrimaryContainer : "transparent"
+                        color: root.currentTab === modelData.index ? Colours.m3Colors.m3PrimaryContainer : "transparent"
                         radius: Appearance.rounding.small
 
                         ColumnLayout {
@@ -94,7 +95,7 @@ ClippingRectangle {
                                 text: tabDelegate.modelData.name
                                 font.pixelSize: Appearance.fonts.small
                                 font.weight: Font.Medium
-                                color: root.currentTab === tabDelegate.modelData.index ? Themes.m3Colors.m3OnPrimaryContainer : Themes.m3Colors.m3OnSurfaceVariant
+                                color: root.currentTab === tabDelegate.modelData.index ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurfaceVariant
                             }
 
                             StyledText {
@@ -102,7 +103,7 @@ ClippingRectangle {
                                 text: tabDelegate.modelData.value
                                 font.pixelSize: Appearance.fonts.large
                                 font.weight: Font.Bold
-                                color: root.currentTab === tabDelegate.modelData.index ? Themes.m3Colors.m3OnPrimaryContainer : Themes.m3Colors.m3OnSurface
+                                color: root.currentTab === tabDelegate.modelData.index ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurface
                             }
                         }
 
@@ -194,7 +195,7 @@ ClippingRectangle {
         Rectangle {
             anchors.fill: parent
             border {
-                color: Themes.m3Colors.m3Primary
+                color: Colours.m3Colors.m3Primary
                 width: 1
             }
             color: "transparent"
@@ -215,13 +216,13 @@ ClippingRectangle {
                     color: {
                         switch (graph.metricType) {
                             case 0:
-                            return Themes.m3Colors.m3Blue;
+                            return Colours.m3Colors.m3Blue;
                             case 1:
-                            return Themes.m3Colors.m3Green;
+                            return Colours.m3Colors.m3Green;
                             case 2:
-                            return Themes.m3Colors.m3Red;
+                            return Colours.m3Colors.m3Red;
                             case 3:
-                            return Themes.m3Colors.m3Yellow;
+                            return Colours.m3Colors.m3Yellow;
                         }
                     }
                     radius: 2
@@ -244,13 +245,13 @@ ClippingRectangle {
                     color: {
                         switch (graph.metricType) {
                             case 0:
-                            return Themes.m3Colors.m3Blue;
+                            return Colours.m3Colors.m3Blue;
                             case 1:
-                            return Themes.m3Colors.m3Green;
+                            return Colours.m3Colors.m3Green;
                             case 2:
-                            return Themes.m3Colors.m3Red;
+                            return Colours.m3Colors.m3Red;
                             case 3:
-                            return Themes.m3Colors.m3Yellow;
+                            return Colours.m3Colors.m3Yellow;
                         }
                     }
                     font.pixelSize: Appearance.fonts.small
@@ -298,13 +299,13 @@ ClippingRectangle {
                     color: {
                         switch (graph.metricType) {
                             case 0:
-                            return Themes.m3Colors.m3Blue;
+                            return Colours.m3Colors.m3Blue;
                             case 1:
-                            return Themes.m3Colors.m3Green;
+                            return Colours.m3Colors.m3Green;
                             case 2:
-                            return Themes.m3Colors.m3Red;
+                            return Colours.m3Colors.m3Red;
                             case 3:
-                            return Themes.m3Colors.m3Yellow;
+                            return Colours.m3Colors.m3Yellow;
                         }
                     }
                     width: 2

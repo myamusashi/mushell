@@ -2,10 +2,12 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell
 
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Services
 
 RowLayout {
     id: root
@@ -53,7 +55,7 @@ RowLayout {
             required property var modelData
             iconButton: modelData.icon
             buttonTitle: modelData.title
-            buttonTextColor: Themes.m3Colors.m3OnPrimary
+            buttonTextColor: Colours.m3Colors.m3OnPrimary
             onClicked: root.executeAction(modelData)
             enabled: modelData.condition
             mArea.layerColor: "transparent"

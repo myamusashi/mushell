@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 
-import qs.Services
 import qs.Components
+import qs.Services
 
 DialogBox {
     id: root

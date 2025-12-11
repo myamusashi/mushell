@@ -3,15 +3,15 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+
 import Quickshell.Hyprland
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 import "Settings"
-
 ColumnLayout {
     id: root
 
@@ -89,7 +89,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: root.isControlCenterOpen ? 1 : 0
         visible: root.isControlCenterOpen
-        color: Themes.m3Colors.m3OutlineVariant
+        color: Colours.m3Colors.m3OutlineVariant
 
         Behavior on implicitHeight {
             NAnim {
@@ -125,7 +125,7 @@ ColumnLayout {
                 radius: 0
                 bottomLeftRadius: Appearance.rounding.normal
                 bottomRightRadius: Appearance.rounding.normal
-                color: Themes.m3Colors.m3Background
+                color: Colours.m3Colors.m3Background
 
                 property int viewIndex: 0
 

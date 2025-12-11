@@ -1,7 +1,7 @@
 pragma Singleton
 
-import Quickshell
 import QtQuick
+import Quickshell
 
 SystemClock {
     id: clock

@@ -1,11 +1,13 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+
 import Quickshell
 
-import qs.Helpers
-import qs.Configs
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 Column {
     id: root
@@ -40,13 +42,13 @@ Column {
                     text: "Screen capture"
                     font.pixelSize: Appearance.fonts.large
                     font.weight: Font.Medium
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     elide: Text.ElideRight
                 }
 
                 StyledText {
                     text: "•"
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                     font.pixelSize: Appearance.fonts.large
                 }
 
@@ -63,7 +65,7 @@ Column {
                                                        hour12: true
                                                    });
                     }
-                    color: Themes.m3Colors.m3OnSurfaceVariant
+                    color: Colours.m3Colors.m3OnSurfaceVariant
                 }
             }
         }
@@ -74,7 +76,7 @@ Column {
         text: root.modelData.name
         font.pixelSize: Appearance.fonts.medium
         font.weight: Font.DemiBold
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         elide: Text.ElideRight
         wrapMode: Text.Wrap
         maximumLineCount: 2
@@ -84,7 +86,7 @@ Column {
         width: parent.width
         text: root.modelData.path
         font.pixelSize: Appearance.fonts.medium
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         textFormat: Text.StyledText
         wrapMode: Text.Wrap
     }
@@ -92,7 +94,7 @@ Column {
     StyledRect {
         width: (parent.width - parent.children.length - 1) / parent.children.length + 10
         height: 40
-        color: Themes.m3Colors.m3SurfaceContainerHigh
+        color: Colours.m3Colors.m3SurfaceContainerHigh
         radius: Appearance.rounding.full
 
         StyledRect {
@@ -132,7 +134,7 @@ Column {
             text: "Open files"
             font.pixelSize: Appearance.fonts.medium
             font.weight: Font.Medium
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
             elide: Text.ElideRight
         }
     }

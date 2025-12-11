@@ -4,16 +4,16 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import qs.Configs
-import qs.Services
-import qs.Helpers
 import qs.Components
+import qs.Configs
+import qs.Helpers
+import qs.Services
 
 StyledRect {
     id: container
 
     property bool isCalendarShow: GlobalStates.isCalendarOpen
-    color: Themes.m3Colors.m3Background
+    color: Colours.m3Colors.m3Background
     radius: 0
     bottomLeftRadius: Appearance.rounding.normal
 
@@ -85,7 +85,7 @@ StyledRect {
                         anchors.centerIn: parent
                         icon: "chevron_left"
                         font.pointSize: Appearance.fonts.large * 2
-                        color: Themes.m3Colors.m3OnPrimaryContainer
+                        color: Colours.m3Colors.m3OnPrimaryContainer
                     }
 
                     MArea {
@@ -113,7 +113,7 @@ StyledRect {
                     verticalAlignment: Text.AlignVCenter
                     font.weight: 600
 
-                    color: Themes.m3Colors.m3OnBackground
+                    color: Colours.m3Colors.m3OnBackground
                     font.pixelSize: Appearance.fonts.large
                 }
 
@@ -129,7 +129,7 @@ StyledRect {
                         anchors.centerIn: parent
                         icon: "chevron_right"
                         font.pointSize: Appearance.fonts.large * 2
-                        color: Themes.m3Colors.m3Primary
+                        color: Colours.m3Colors.m3Primary
                     }
 
                     MArea {
@@ -172,9 +172,9 @@ StyledRect {
                         text: daysOfWeekDelegate.model.shortName
                         color: {
                             if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName === "Sat")
-                            return Themes.m3Colors.m3Error;
+                            return Colours.m3Colors.m3Error;
                             else
-                            return Themes.m3Colors.m3OnSurface;
+                            return Colours.m3Colors.m3OnSurface;
                         }
                         font.pixelSize: Appearance.fonts.small * 1.2
                         font.weight: 600
@@ -207,9 +207,9 @@ StyledRect {
 
                     color: {
                         if (dayItem.model.today)
-                        return Themes.m3Colors.m3Primary;
+                        return Colours.m3Colors.m3Primary;
                         else if (mouseArea.containsMouse && dayItem.model.month === root.currentMonth)
-                        return Themes.m3Colors.m3SurfaceVariant;
+                        return Colours.m3Colors.m3SurfaceVariant;
 
                         return "transparent";
                     }
@@ -234,16 +234,16 @@ StyledRect {
                         text: Qt.formatDate(dayItem.model.date, "d")
                         color: {
                             if (dayItem.model.today)
-                            return Themes.m3Colors.m3OnPrimary;
+                            return Colours.m3Colors.m3OnPrimary;
                             else if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-                            return Themes.m3Colors.m3Error;
+                            return Colours.m3Colors.m3Error;
                             else if (dayItem.model.month === root.currentMonth)
-                            return Themes.m3Colors.m3OnSurface;
+                            return Colours.m3Colors.m3OnSurface;
                             else {
                                 if (dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6)
-                                return Themes.withAlpha(Themes.m3Colors.m3Error, 0.2);
+                                return Colours.withAlpha(Colours.m3Colors.m3Error, 0.2);
                                 else
-                                return Themes.withAlpha(Themes.m3Colors.m3OnSurface, 0.2);
+                                return Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.2);
                             }
                         }
                         font.pixelSize: Appearance.fonts.small * 1.3

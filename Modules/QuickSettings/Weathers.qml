@@ -1,10 +1,10 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 ColumnLayout {
     anchors.fill: parent
@@ -14,7 +14,7 @@ ColumnLayout {
     StyledText {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.cityData
-        color: Themes.m3Colors.m3OnSurface
+        color: Colours.m3Colors.m3OnSurface
         font.pixelSize: Appearance.fonts.extraLarge
     }
 
@@ -28,14 +28,14 @@ ColumnLayout {
         MaterialIcon {
             Layout.alignment: Qt.AlignHCenter
             font.pointSize: Appearance.fonts.extraLarge * 4
-            color: Themes.m3Colors.m3Primary
+            color: Colours.m3Colors.m3Primary
             icon: Weather.weatherIconData
         }
 
         StyledText {
             Layout.alignment: Qt.AlignVCenter
             text: Weather.tempData + "°C"
-            color: Themes.m3Colors.m3Primary
+            color: Colours.m3Colors.m3Primary
             font.pixelSize: Appearance.fonts.extraLarge * 2.5
             font.weight: Font.Bold
         }
@@ -44,7 +44,7 @@ ColumnLayout {
     StyledText {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.weatherDescriptionData.charAt(0).toUpperCase() + Weather.weatherDescriptionData.slice(1)
-        color: Themes.m3Colors.m3OnSurfaceVariant
+        color: Colours.m3Colors.m3OnSurfaceVariant
         font.pixelSize: Appearance.fonts.normal * 1.5
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
@@ -89,7 +89,7 @@ ColumnLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: weatherPage.modelData.value
-                        color: Themes.m3Colors.m3OnSurface
+                        color: Colours.m3Colors.m3OnSurface
                         font.weight: Font.Bold
                         font.pixelSize: Appearance.fonts.small * 1.5
                     }
@@ -97,7 +97,7 @@ ColumnLayout {
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: weatherPage.modelData.label
-                        color: Themes.m3Colors.m3OnSurfaceVariant
+                        color: Colours.m3Colors.m3OnSurfaceVariant
                         font.pixelSize: Appearance.fonts.small * 1.2
                     }
                 }

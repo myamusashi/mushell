@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 
+import qs.Components
 import qs.Configs
 import qs.Services
-import qs.Components
 
 ColumnLayout {
     property alias passwordInput: passwordInput
@@ -16,7 +16,7 @@ ColumnLayout {
         wrapMode: Text.Wrap
         font.pixelSize: Appearance.fonts.medium
         font.weight: Font.Medium
-        color: Themes.m3Colors.m3OnSurfaceVariant
+        color: Colours.m3Colors.m3OnSurfaceVariant
     }
 
     InputField {
@@ -26,7 +26,7 @@ ColumnLayout {
     StyledLabel {
         Layout.fillWidth: true
         text: "Authentication failed. Please try again."
-        color: Themes.m3Colors.m3Error
+        color: Colours.m3Colors.m3Error
         visible: PolAgent.agent?.flow?.failed || 0
         font.pixelSize: 12
         font.weight: Font.Medium

@@ -2,12 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import Quickshell.Services.Mpris
 
+import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
-import qs.Components
 
 StyledRect {
     id: root
@@ -37,12 +38,12 @@ StyledRect {
         MaterialIcon {
             icon: Players.active === null ? "question_mark" : Players.active.playbackState === MprisPlaybackState.Playing ? "genres" : "play_circle"
             font.pointSize: Appearance.fonts.large
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
         }
 
         StyledText {
             text: Players.active === null ? "null" : Players.active.trackArtist
-            color: Themes.m3Colors.m3OnBackground
+            color: Colours.m3Colors.m3OnBackground
         }
     }
 

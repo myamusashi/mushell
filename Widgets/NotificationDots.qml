@@ -22,11 +22,11 @@ Item {
         MaterialIcon {
             color: {
                 if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
-                    Themes.m3Colors.m3Primary;
+                    Colours.m3Colors.m3Primary;
                 else if (root.isDndEnable)
-                    Themes.m3Colors.m3OnSurface;
+                    Colours.m3Colors.m3OnSurface;
                 else
-                    Themes.m3Colors.m3OnSurface;
+                    Colours.m3Colors.m3OnSurface;
             }
             font.pointSize: Appearance.fonts.large
             icon: {
