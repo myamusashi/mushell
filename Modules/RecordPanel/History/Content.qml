@@ -40,7 +40,7 @@ Column {
 
                 StyledText {
                     text: "Screen capture"
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3OnSurfaceVariant
                     elide: Text.ElideRight
@@ -49,7 +49,7 @@ Column {
                 StyledText {
                     text: "•"
                     color: Colours.m3Colors.m3OnSurfaceVariant
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                 }
 
                 StyledText {
@@ -74,7 +74,7 @@ Column {
     StyledText {
         width: parent.width
         text: root.modelData.name
-        font.pixelSize: Appearance.fonts.medium
+        font.pixelSize: Appearance.fonts.size.medium
         font.weight: Font.DemiBold
         color: Colours.m3Colors.m3OnSurface
         elide: Text.ElideRight
@@ -85,7 +85,7 @@ Column {
     StyledText {
         width: parent.width
         text: root.modelData.path
-        font.pixelSize: Appearance.fonts.medium
+        font.pixelSize: Appearance.fonts.size.medium
         color: Colours.m3Colors.m3OnSurface
         textFormat: Text.StyledText
         wrapMode: Text.Wrap
@@ -132,7 +132,7 @@ Column {
         StyledText {
             anchors.centerIn: parent
             text: "Open files"
-            font.pixelSize: Appearance.fonts.medium
+            font.pixelSize: Appearance.fonts.size.medium
             font.weight: Font.Medium
             color: Colours.m3Colors.m3OnBackground
             elide: Text.ElideRight

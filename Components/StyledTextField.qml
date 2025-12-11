@@ -27,8 +27,8 @@ TextField {
     clip: true
 
     font {
-        family: Appearance.fonts.familySans
-        pixelSize: Appearance.fonts.small ?? 15
+        family: Appearance.fonts.family.sans
+        pixelSize: Appearance.fonts.size.small ?? 15
         hintingPreference: Font.PreferFullHinting
         variableAxes: {
             "wght": 450,

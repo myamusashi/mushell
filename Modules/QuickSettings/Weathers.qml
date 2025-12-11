@@ -15,7 +15,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.cityData
         color: Colours.m3Colors.m3OnSurface
-        font.pixelSize: Appearance.fonts.extraLarge
+        font.pixelSize: Appearance.fonts.size.extraLarge
     }
 
     RowLayout {
@@ -27,7 +27,7 @@ ColumnLayout {
 
         MaterialIcon {
             Layout.alignment: Qt.AlignHCenter
-            font.pointSize: Appearance.fonts.extraLarge * 4
+            font.pointSize: Appearance.fonts.size.extraLarge * 4
             color: Colours.m3Colors.m3Primary
             icon: Weather.weatherIconData
         }
@@ -36,7 +36,7 @@ ColumnLayout {
             Layout.alignment: Qt.AlignVCenter
             text: Weather.tempData + "°C"
             color: Colours.m3Colors.m3Primary
-            font.pixelSize: Appearance.fonts.extraLarge * 2.5
+            font.pixelSize: Appearance.fonts.size.extraLarge * 2.5
             font.weight: Font.Bold
         }
     }
@@ -45,7 +45,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
         text: Weather.weatherDescriptionData.charAt(0).toUpperCase() + Weather.weatherDescriptionData.slice(1)
         color: Colours.m3Colors.m3OnSurfaceVariant
-        font.pixelSize: Appearance.fonts.normal * 1.5
+        font.pixelSize: Appearance.fonts.size.normal * 1.5
         wrapMode: Text.WordWrap
         horizontalAlignment: Text.AlignHCenter
     }
@@ -91,14 +91,14 @@ ColumnLayout {
                         text: weatherPage.modelData.value
                         color: Colours.m3Colors.m3OnSurface
                         font.weight: Font.Bold
-                        font.pixelSize: Appearance.fonts.small * 1.5
+                        font.pixelSize: Appearance.fonts.size.small * 1.5
                     }
 
                     StyledText {
                         Layout.alignment: Qt.AlignHCenter
                         text: weatherPage.modelData.label
                         color: Colours.m3Colors.m3OnSurfaceVariant
-                        font.pixelSize: Appearance.fonts.small * 1.2
+                        font.pixelSize: Appearance.fonts.size.small * 1.2
                     }
                 }
             }

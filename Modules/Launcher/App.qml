@@ -148,9 +148,9 @@ StyledRect {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 placeholderText: "  Search"
-                font.family: Appearance.fonts.familySans
+                font.family: Appearance.fonts.family.sans
                 focus: true
-                font.pixelSize: Appearance.fonts.large * 1.2
+                font.pixelSize: Appearance.fonts.size.large * 1.2
                 color: Colours.m3Colors.m3OnBackground
                 placeholderTextColor: Colours.m3Colors.m3OnSurfaceVariant
                 onTextChanged: {
@@ -240,7 +240,7 @@ StyledRect {
                             StyledLabel {
                                 Layout.fillWidth: true
                                 text: delegateItem.modelData.name || ""
-                                font.pixelSize: Appearance.fonts.large
+                                font.pixelSize: Appearance.fonts.size.large
                                 font.weight: Font.Medium
                                 elide: Text.ElideRight
                                 color: Colours.m3Colors.m3OnSurface
@@ -248,7 +248,7 @@ StyledRect {
                             StyledLabel {
                                 Layout.fillWidth: true
                                 text: delegateItem.modelData.comment
-                                font.pixelSize: Appearance.fonts.small
+                                font.pixelSize: Appearance.fonts.size.small
                                 elide: Text.ElideRight
                                 color: Colours.m3Colors.m3OnSurfaceVariant
                                 opacity: 0.7
@@ -289,7 +289,7 @@ StyledRect {
                     visible: listView.count === 0 && search.text !== ""
                     text: "No applications found"
                     color: Colours.m3Colors.m3OnSurfaceVariant
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                 }
             }
         }

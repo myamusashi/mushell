@@ -68,7 +68,7 @@ Loader {
                         const videoFormats = ["mkv", "mp4", "webm", "avi"];
                         return videoFormats.includes(ext) ? "📹" : "🖼️";
                     }
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                 }
             }
 

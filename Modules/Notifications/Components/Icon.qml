@@ -57,7 +57,7 @@ Item {
                 sourceComponent: MaterialIcon {
                     icon: "notifications_active"
                     color: root.modelData.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3OnError : root.modelData.urgency === NotificationUrgency.Low ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnPrimaryContainer
-                    font.pointSize: Appearance.fonts.normal
+                    font.pointSize: Appearance.fonts.size.normal
                 }
             }
         }

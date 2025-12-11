@@ -14,7 +14,7 @@ ColumnLayout {
         Layout.topMargin: 8
         text: PolAgent.agent?.flow?.inputPrompt || "<no input prompt>"
         wrapMode: Text.Wrap
-        font.pixelSize: Appearance.fonts.medium
+        font.pixelSize: Appearance.fonts.size.medium
         font.weight: Font.Medium
         color: Colours.m3Colors.m3OnSurfaceVariant
     }

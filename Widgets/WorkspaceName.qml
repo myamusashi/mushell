@@ -33,7 +33,7 @@ StyledRect {
         color: Colours.m3Colors.m3OnBackground
         elide: Text.ElideMiddle
         font.weight: Font.Light
-        font.pixelSize: Appearance.fonts.large
+        font.pixelSize: Appearance.fonts.size.large
         horizontalAlignment: Text.AlignHCenter
         text: actWinName.toUpperCase()
     }

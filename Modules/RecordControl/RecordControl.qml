@@ -77,7 +77,7 @@ LazyLoader {
 
                         text: "Screen Recording"
                         color: Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.normal
+                        font.pixelSize: Appearance.fonts.size.normal
                         font.bold: true
                     }
 
@@ -104,7 +104,7 @@ LazyLoader {
 
                             anchors.centerIn: parent
                             icon: "close"
-                            font.pointSize: Appearance.fonts.large
+                            font.pointSize: Appearance.fonts.size.large
                             color: Colours.m3Colors.m3OnSurfaceVariant
                         }
 
@@ -136,16 +136,16 @@ LazyLoader {
 
                             MaterialIcon {
                                 icon: "schedule"
-                                font.pointSize: Appearance.fonts.large
+                                font.pointSize: Appearance.fonts.size.large
                                 color: Colours.m3Colors.m3Primary
                             }
 
                             StyledText {
                                 text: root.formatTime(Record.recordingSeconds)
                                 color: Colours.m3Colors.m3OnSurface
-                                font.pixelSize: Appearance.fonts.large * 1.2
+                                font.pixelSize: Appearance.fonts.size.large * 1.2
                                 font.bold: true
-                                font.family: Appearance.fonts.familyMono
+                                font.family: Appearance.fonts.family.mono
                             }
                         }
                     }
@@ -189,14 +189,14 @@ LazyLoader {
 
                             MaterialIcon {
                                 icon: "stop"
-                                font.pointSize: Appearance.fonts.large
+                                font.pointSize: Appearance.fonts.size.large
                                 color: Colours.m3Colors.m3OnError
                             }
 
                             StyledText {
                                 text: "Stop"
                                 color: Colours.m3Colors.m3OnError
-                                font.pixelSize: Appearance.fonts.normal
+                                font.pixelSize: Appearance.fonts.size.normal
                                 font.bold: true
                             }
                         }

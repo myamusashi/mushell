@@ -73,8 +73,8 @@ ColumnLayout {
             StyledLabel {
                 id: hours
 
-                font.pixelSize: Appearance.fonts.extraLarge * 5
-                font.family: Appearance.fonts.familySans
+                font.pixelSize: Appearance.fonts.size.extraLarge * 5
+                font.family: Appearance.fonts.family.sans
                 font.weight: Font.Medium
                 color: Colours.m3Colors.m3OnSurface
                 renderType: Text.NativeRendering
@@ -115,8 +115,8 @@ ColumnLayout {
 
                 StyledLabel {
                     anchors.centerIn: parent
-                    font.pixelSize: Appearance.fonts.medium * 1.6
-                    font.family: Appearance.fonts.familyMono
+                    font.pixelSize: Appearance.fonts.size.medium * 1.6
+                    font.family: Appearance.fonts.family.mono
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3OnSurface
                     renderType: Text.NativeRendering
@@ -157,8 +157,8 @@ ColumnLayout {
             StyledLabel {
                 id: dayStyledLabel
                 anchors.centerIn: parent
-                font.pixelSize: Appearance.fonts.medium * 2.2
-                font.family: Appearance.fonts.familySans
+                font.pixelSize: Appearance.fonts.size.medium * 2.2
+                font.family: Appearance.fonts.family.sans
                 font.weight: Font.Medium
                 color: Colours.m3Colors.m3OnSurface
                 renderType: Text.NativeRendering
@@ -190,8 +190,8 @@ ColumnLayout {
                 id: dateStyledLabel
 
                 anchors.centerIn: parent
-                font.pixelSize: Appearance.fonts.medium * 1.8
-                font.family: Appearance.fonts.familySans
+                font.pixelSize: Appearance.fonts.size.medium * 1.8
+                font.family: Appearance.fonts.family.sans
                 font.weight: Font.Normal
                 color: Colours.m3Colors.m3OnSurface
                 renderType: Text.NativeRendering

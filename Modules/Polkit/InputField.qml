@@ -11,8 +11,8 @@ StyledTextField {
     Layout.fillWidth: true
     Layout.preferredHeight: 56
 
-    font.family: Appearance.fonts.familySans
-    font.pixelSize: Appearance.fonts.large * 1.2
+    font.family: Appearance.fonts.family.sans
+    font.pixelSize: Appearance.fonts.size.large * 1.2
     echoMode: PolAgent.agent?.flow?.responseVisible ? TextInput.Normal : TextInput.Password
     selectByMouse: true
     verticalAlignment: TextInput.AlignVCenter

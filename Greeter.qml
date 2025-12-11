@@ -69,9 +69,9 @@ ShellRoot {
     }
 
     Component.onCompleted: {
-        Colours.colorQuantizer.source = sessionLock.wallpaperPath;
         console.log("[INIT] Current session: " + Sessions.current_session);
         console.log("[INIT] Current user: " + Users.current_user);
+        Colours.colorQuantizer.source = sessionLock.wallpaperPath;
     }
 
     WlSessionLock {
@@ -277,7 +277,7 @@ ShellRoot {
                     anchors.verticalCenterOffset: -80
                     text: "WRONG PASSWORD"
                     color: Colours.m3GeneratedColors.m3Error
-                    font.pointSize: Appearance.fonts.large * 3
+                    font.pointSize: Appearance.fonts.size.large * 3
                     visible: sessionLock.showErrorMessage
                     z: 10
                 }
@@ -288,8 +288,8 @@ ShellRoot {
                     anchors.centerIn: parent
                     text: sessionLock.maskedBuffer
                     color: sessionLock.maskedBuffer ? Colours.m3GeneratedColors.m3OnSurface : Colours.m3GeneratedColors.m3OnSurfaceVariant
-                    font.pointSize: Appearance.fonts.extraLarge * 5
-                    font.family: Appearance.fonts.familyMono
+                    font.pointSize: Appearance.fonts.size.extraLarge * 5
+                    font.family: Appearance.fonts.family.mono
                     z: 5
 
                     property real randomXOffset: 0
@@ -315,7 +315,7 @@ ShellRoot {
                         repeat: true
                         running: sessionLock.locked && sessionLock.maskedBuffer.length > 0
                         onTriggered: {
-                            const baseFontSize = Appearance.fonts.extraLarge * 5;
+                            const baseFontSize = Appearance.fonts.size.extraLarge * 5;
                             passwordBuffer.font.pointSize = baseFontSize * (0.95 + Math.random() * 0.1);
                         }
                     }
@@ -351,7 +351,7 @@ ShellRoot {
                     anchors.verticalCenterOffset: 60
                     text: "Type password and press Enter"
                     color: Colours.m3GeneratedColors.m3OnSurfaceVariant
-                    font.pointSize: Appearance.fonts.small
+                    font.pixelSize: Appearance.fonts.size.large
                     opacity: sessionLock.maskedBuffer.length === 0 ? 0.6 : 0
                     visible: opacity > 0
 

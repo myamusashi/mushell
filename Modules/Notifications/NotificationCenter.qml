@@ -77,7 +77,7 @@ StyledRect {
                         Layout.fillWidth: true
                         text: "Notifications"
                         color: Colours.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.large * 1.2
+                        font.pixelSize: Appearance.fonts.size.large * 1.2
                         font.weight: Font.Medium
                     }
 
@@ -107,7 +107,7 @@ StyledRect {
                             MaterialIcon {
                                 anchors.centerIn: parent
                                 icon: notifHeaderDelegate.modelData.icon
-                                font.pointSize: Appearance.fonts.extraLarge * 0.6
+                                font.pointSize: Appearance.fonts.size.extraLarge * 0.6
                                 color: Colours.m3Colors.m3OnSurface
                             }
 
@@ -167,7 +167,7 @@ StyledRect {
                     anchors.centerIn: parent
                     text: "No notifications"
                     color: Colours.m3Colors.m3OnSurfaceVariant
-                    font.pixelSize: Appearance.fonts.medium
+                    font.pixelSize: Appearance.fonts.size.medium
                     visible: Notifs.notClosed.length === 0
                     opacity: 0.6
                 }

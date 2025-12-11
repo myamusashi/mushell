@@ -20,7 +20,7 @@ StyledRect {
 
             color: Colours.m3Colors.m3OnBackground
             font.bold: true
-            font.pointSize: Appearance.fonts.large
+            font.pointSize: Appearance.fonts.size.large
             icon: "schedule"
         }
 
@@ -29,7 +29,7 @@ StyledRect {
 
             color: Colours.m3Colors.m3OnBackground
             font.bold: true
-            font.pixelSize: Appearance.fonts.medium
+            font.pixelSize: Appearance.fonts.size.medium
             text: Qt.formatDateTime(Time?.date, "h:mm AP")
         }
     }

@@ -59,7 +59,7 @@ Item {
                 }
                 color: Colours.m3Colors.m3OnBackground
                 icon: volumeOSD.icon
-                font.pointSize: Appearance.fonts.extraLarge * 1.2
+                font.pointSize: Appearance.fonts.size.extraLarge * 1.2
             }
 
             Column {
@@ -78,14 +78,14 @@ Item {
                         text: "Volume:"
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.large
+                        font.pixelSize: Appearance.fonts.size.large
                     }
 
                     StyledText {
                         text: `${Math.round(Pipewire.defaultAudioSink?.audio.volume * 100)}%`
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.normal
+                        font.pixelSize: Appearance.fonts.size.normal
                     }
                 }
 

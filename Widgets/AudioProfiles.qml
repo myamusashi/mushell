@@ -52,7 +52,7 @@ ComboBox {
             return Audio.models[-1].readable;
         }
         font.weight: Font.DemiBold
-        font.pixelSize: Appearance.fonts.large
+        font.pixelSize: Appearance.fonts.size.large
         color: Colours.m3Colors.m3OnBackground
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

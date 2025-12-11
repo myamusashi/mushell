@@ -33,7 +33,7 @@ Column {
                     id: appName
 
                     text: root.modelData.appName
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3OnSurfaceVariant
                     elide: Text.ElideRight
@@ -44,7 +44,7 @@ Column {
 
                     text: "•"
                     color: Colours.m3Colors.m3OnSurfaceVariant
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                 }
 
                 StyledText {
@@ -76,7 +76,7 @@ Column {
 
                 anchors.centerIn: parent
                 icon: root.isShowMoreBody ? "expand_less" : "expand_more"
-                font.pixelSize: Appearance.fonts.extraLarge
+                font.pixelSize: Appearance.fonts.size.extraLarge
                 color: Colours.m3Colors.m3OnSurfaceVariant
             }
 
@@ -95,7 +95,7 @@ Column {
 
         width: parent.width
         text: root.modelData.summary
-        font.pixelSize: Appearance.fonts.medium
+        font.pixelSize: Appearance.fonts.size.medium
         font.weight: Font.DemiBold
         color: Colours.m3Colors.m3OnSurface
         elide: Text.ElideRight
@@ -108,7 +108,7 @@ Column {
 
         width: parent.width
         text: root.modelData.body || ""
-        font.pixelSize: Appearance.fonts.medium
+        font.pixelSize: Appearance.fonts.size.medium
         color: Colours.m3Colors.m3OnSurface
         textFormat: Text.StyledText
         maximumLineCount: root.isShowMoreBody ? 0 : 1
@@ -147,7 +147,7 @@ Column {
                 StyledText {
                     anchors.centerIn: parent
                     text: actionButton.modelData.text
-                    font.pixelSize: Appearance.fonts.medium
+                    font.pixelSize: Appearance.fonts.size.medium
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3OnBackground
                     elide: Text.ElideRight

@@ -39,14 +39,14 @@ StyledRect {
             color: Colours.m3Colors.m3OnBackground
             icon: root.icon
             Layout.alignment: Qt.AlignVCenter
-            font.pixelSize: Appearance.fonts.large * 1.5
+            font.pixelSize: Appearance.fonts.size.large * 1.5
         }
 
         StyledText {
             color: Colours.m3Colors.m3OnBackground
             text: (root.node.audio.volume * 100).toFixed(0) + "%"
             Layout.alignment: Qt.AlignVCenter
-            font.pixelSize: Appearance.fonts.medium
+            font.pixelSize: Appearance.fonts.size.medium
         }
     }
 

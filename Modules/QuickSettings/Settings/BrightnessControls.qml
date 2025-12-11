@@ -15,7 +15,7 @@ RowLayout {
         Layout.preferredHeight: 48
 
         icon: "brightness_5"
-        iconSize: Appearance.fonts.large * 1.5
+        iconSize: Appearance.fonts.size.large * 1.5
         to: Brightness.maxValue || 1
         value: Brightness.value
 

@@ -223,7 +223,7 @@ StyledRect {
             Layout.bottomMargin: Appearance.spacing.small
             text: wallpaperPath.count > 0 ? (wallpaperPath.currentIndex + 1) + " / " + wallpaperPath.count : "0 / 0"
             color: Colours.m3Colors.m3OnSurface
-            font.pixelSize: Appearance.fonts.small
+            font.pixelSize: Appearance.fonts.size.small
         }
     }
 }

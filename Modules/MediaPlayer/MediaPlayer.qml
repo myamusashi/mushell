@@ -128,7 +128,7 @@ ClippingRectangle {
                         width: parent.width
                         text: Players.active ? Players.active.trackTitle : ""
                         color: Colours.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.large
+                        font.pixelSize: Appearance.fonts.size.large
                         wrapMode: Text.NoWrap
                         elide: Text.ElideRight
                     }
@@ -140,7 +140,7 @@ ClippingRectangle {
                             Layout.preferredWidth: width
                             text: Players.active ? Players.active.trackArtist : ""
                             color: Colours.m3Colors.m3OnSurface
-                            font.pixelSize: Appearance.fonts.small
+                            font.pixelSize: Appearance.fonts.size.small
                             wrapMode: Text.NoWrap
                             elide: Text.ElideRight
                         }
@@ -148,13 +148,13 @@ ClippingRectangle {
                         StyledText {
                             text: Players.active ? "•" : ""
                             color: Colours.m3Colors.m3OnBackground
-                            font.pixelSize: Appearance.fonts.extraLarge
+                            font.pixelSize: Appearance.fonts.size.extraLarge
                         }
 
                         StyledText {
                             text: Players.active ? "Watched on " : ""
                             color: Colours.m3Colors.m3OnBackground
-                            font.pixelSize: Appearance.fonts.small
+                            font.pixelSize: Appearance.fonts.size.small
                         }
 
                         IconImage {
@@ -187,7 +187,7 @@ ClippingRectangle {
                         id: timeTrack
 
                         text: Players.active == null ? "00:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}`
-                        font.pixelSize: Appearance.fonts.large
+                        font.pixelSize: Appearance.fonts.size.large
                         color: Colours.m3Colors.m3OnBackground
 
                         Timer {
@@ -207,7 +207,7 @@ ClippingRectangle {
 
                         icon: Players.active === null ? "pause_circle" : Players.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
                         color: Colours.m3Colors.m3Primary
-                        font.pointSize: Appearance.fonts.extraLarge * 1.5
+                        font.pointSize: Appearance.fonts.size.extraLarge * 1.5
 
                         MArea {
                             id: pauseMArea
@@ -227,7 +227,7 @@ ClippingRectangle {
 
                     StyledButton {
                         iconButton: "skip_previous"
-                        iconSize: Appearance.fonts.large * 1.2
+                        iconSize: Appearance.fonts.size.large * 1.2
                         buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.previous() : {}
@@ -251,7 +251,7 @@ ClippingRectangle {
 
                     StyledButton {
                         iconButton: "skip_next"
-                        iconSize: Appearance.fonts.large * 1.2
+                        iconSize: Appearance.fonts.size.large * 1.2
                         buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.next() : {}

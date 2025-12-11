@@ -93,7 +93,7 @@ ClippingRectangle {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: tabDelegate.modelData.name
-                                font.pixelSize: Appearance.fonts.small
+                                font.pixelSize: Appearance.fonts.size.small
                                 font.weight: Font.Medium
                                 color: root.currentTab === tabDelegate.modelData.index ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurfaceVariant
                             }
@@ -101,7 +101,7 @@ ClippingRectangle {
                             StyledText {
                                 Layout.fillWidth: true
                                 text: tabDelegate.modelData.value
-                                font.pixelSize: Appearance.fonts.large
+                                font.pixelSize: Appearance.fonts.size.large
                                 font.weight: Font.Bold
                                 color: root.currentTab === tabDelegate.modelData.index ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurface
                             }
@@ -254,7 +254,7 @@ ClippingRectangle {
                             return Colours.m3Colors.m3Yellow;
                         }
                     }
-                    font.pixelSize: Appearance.fonts.small
+                    font.pixelSize: Appearance.fonts.size.small
                     font.bold: true
                 }
             }

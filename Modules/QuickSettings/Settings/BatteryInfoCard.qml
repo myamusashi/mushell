@@ -75,7 +75,7 @@ StyledRect {
                     text: parent.modelData.label
                     font.weight: Font.DemiBold
                     color: Colours.m3Colors.m3OnBackground
-                    font.pixelSize: Appearance.fonts.normal
+                    font.pixelSize: Appearance.fonts.size.normal
                 }
 
                 Item {
@@ -86,7 +86,7 @@ StyledRect {
                     text: parent.modelData.value
                     color: parent.modelData.color
                     font.weight: Font.DemiBold
-                    font.pixelSize: Appearance.fonts.normal
+                    font.pixelSize: Appearance.fonts.size.normal
                 }
             }
         }

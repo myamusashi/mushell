@@ -161,7 +161,7 @@ Scope {
                                             anchors.centerIn: parent
                                             text: tabItem.modelData
                                             color: tabItem.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
-                                            font.pixelSize: Appearance.fonts.normal * 0.9
+                                            font.pixelSize: Appearance.fonts.size.normal * 0.9
                                             font.bold: tabItem.isSelected
                                         }
 

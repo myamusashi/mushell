@@ -77,8 +77,8 @@ StyledRect {
 
                 IconImage {
                     anchors.centerIn: parent
-                    width: Appearance.fonts.large * 1.2
-                    height: Appearance.fonts.large * 1.2
+                    width: Appearance.fonts.size.large * 1.2
+                    height: Appearance.fonts.size.large * 1.2
                     source: parent.iconSource
                     asynchronous: true
 

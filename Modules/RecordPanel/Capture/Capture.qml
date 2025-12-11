@@ -107,14 +107,14 @@ ClippingRectangle {
             MaterialIcon {
                 icon: "screen_record"
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.extraLarge
+                font.pixelSize: Appearance.fonts.size.extraLarge
             }
 
             StyledText {
                 text: "Capture"
                 color: Colours.m3Colors.m3OnSurface
                 font.weight: Font.DemiBold
-                font.pixelSize: Appearance.fonts.large * 1.5
+                font.pixelSize: Appearance.fonts.size.large * 1.5
             }
 
             Item {
@@ -124,7 +124,7 @@ ClippingRectangle {
             MaterialIcon {
                 icon: "close"
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.extraLarge
+                font.pixelSize: Appearance.fonts.size.extraLarge
 
                 MArea {
                     anchors.fill: parent
@@ -223,9 +223,9 @@ ClippingRectangle {
                         }
                         text: root.formatTime(Record.recordingSeconds)
                         color: Colours.m3Colors.m3OnBackground
-                        font.pixelSize: Appearance.fonts.large
+                        font.pixelSize: Appearance.fonts.size.large
                         font.bold: true
-                        font.family: Appearance.fonts.familyMono
+                        font.family: Appearance.fonts.family.mono
                     }
                 }
             }
@@ -249,13 +249,13 @@ ClippingRectangle {
             MaterialIcon {
                 icon: "capture"
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.large
+                font.pixelSize: Appearance.fonts.size.large
             }
 
             StyledText {
                 text: "See my captures"
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.large * 1.2
+                font.pixelSize: Appearance.fonts.size.large * 1.2
             }
         }
 

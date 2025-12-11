@@ -167,7 +167,7 @@ StyledRect {
 
                         anchors.centerIn: parent
                         color: Colours.m3Colors.m3Primary
-                        font.pointSize: Appearance.fonts.large * 3
+                        font.pointSize: Appearance.fonts.size.large * 3
                         icon: rectDelegate.modelData.icon
 
                         Connections {
@@ -234,12 +234,12 @@ StyledRect {
             text: "Session"
             color: Colours.m3Colors.m3OnSurface
             elide: Text.ElideMiddle
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
             font.bold: true
         }
         body: StyledText {
             text: "Do you want to " + root.pendingActionName.toLowerCase() + "?"
-            font.pixelSize: Appearance.fonts.large
+            font.pixelSize: Appearance.fonts.size.large
             color: Colours.m3Colors.m3OnSurface
             wrapMode: Text.Wrap
             width: parent.width

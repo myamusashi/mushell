@@ -84,7 +84,7 @@ StyledRect {
 
                         anchors.centerIn: parent
                         icon: "chevron_left"
-                        font.pointSize: Appearance.fonts.large * 2
+                        font.pointSize: Appearance.fonts.size.large * 2
                         color: Colours.m3Colors.m3OnPrimaryContainer
                     }
 
@@ -114,7 +114,7 @@ StyledRect {
                     font.weight: 600
 
                     color: Colours.m3Colors.m3OnBackground
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                 }
 
                 StyledRect {
@@ -128,7 +128,7 @@ StyledRect {
 
                         anchors.centerIn: parent
                         icon: "chevron_right"
-                        font.pointSize: Appearance.fonts.large * 2
+                        font.pointSize: Appearance.fonts.size.large * 2
                         color: Colours.m3Colors.m3Primary
                     }
 
@@ -176,7 +176,7 @@ StyledRect {
                             else
                             return Colours.m3Colors.m3OnSurface;
                         }
-                        font.pixelSize: Appearance.fonts.small * 1.2
+                        font.pixelSize: Appearance.fonts.size.small * 1.2
                         font.weight: 600
                     }
                 }
@@ -246,7 +246,7 @@ StyledRect {
                                 return Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.2);
                             }
                         }
-                        font.pixelSize: Appearance.fonts.small * 1.3
+                        font.pixelSize: Appearance.fonts.size.small * 1.3
                         font.weight: {
                             if (dayItem.model.today)
                             return 1000;

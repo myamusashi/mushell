@@ -13,7 +13,7 @@ Item {
 
     property string buttonTitle
     property string iconButton: ""
-    property int iconSize: Appearance.fonts.medium
+    property int iconSize: Appearance.fonts.size.medium
     property color buttonColor: Colours.m3Colors.m3Primary
     property color buttonTextColor: Colours.m3Colors.m3OnBackground
     property color buttonBorderColor: Colours.m3Colors.m3Outline
@@ -124,7 +124,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             sourceComponent: MaterialIcon {
                 icon: root.iconButton
-                font.pointSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.large
+                font.pointSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.size.large
                 font.bold: true
                 color: root.buttonTextColor
             }
@@ -134,7 +134,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             sourceComponent: StyledText {
                 text: root.buttonTitle
-                font.pixelSize: Appearance.fonts.large
+                font.pixelSize: Appearance.fonts.size.large
                 font.weight: Font.Medium
                 color: root.buttonTextColor
             }

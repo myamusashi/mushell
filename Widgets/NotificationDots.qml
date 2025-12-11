@@ -28,7 +28,7 @@ Item {
                 else
                     Colours.m3Colors.m3OnSurface;
             }
-            font.pointSize: Appearance.fonts.large
+            font.pointSize: Appearance.fonts.size.large
             icon: {
                 if (root.notificationCount > 0 && root.notificationCount !== null && root.isDndEnable !== true)
                     "notifications_unread";

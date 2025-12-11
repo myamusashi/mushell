@@ -108,7 +108,7 @@ ClippingRectangle {
         spacing: Appearance.spacing.normal
         StyledLabel {
             text: "LINUX DEFAULT OUTPUT"
-            font.pixelSize: Appearance.fonts.large
+            font.pixelSize: Appearance.fonts.size.large
         }
 
         ScrollView {

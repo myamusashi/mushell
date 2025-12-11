@@ -24,8 +24,8 @@ RowLayout {
             id: icon
 
             anchors.centerIn: parent
-            font.family: Appearance.fonts.familyMaterial
-            font.pixelSize: Appearance.fonts.medium
+            font.family: Appearance.fonts.family.material
+            font.pixelSize: Appearance.fonts.size.medium
         }
     }
 
@@ -40,8 +40,8 @@ RowLayout {
             id: text
 
             anchors.centerIn: parent
-            font.family: Appearance.fonts.familyMono
-            font.pixelSize: Appearance.fonts.small
+            font.family: Appearance.fonts.family.mono
+            font.pixelSize: Appearance.fonts.size.small
         }
     }
 }

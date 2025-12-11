@@ -88,7 +88,7 @@ Slider {
             sourceComponent: MaterialIcon {
                 icon: root.icon
                 color: Colours.m3Colors.m3OnPrimary
-                font.pointSize: root.iconSize || Appearance.fonts.medium
+                font.pointSize: root.iconSize || Appearance.fonts.size.medium
             }
         }
 

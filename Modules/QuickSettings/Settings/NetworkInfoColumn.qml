@@ -41,7 +41,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     icon: "settings_ethernet"
                     color: ethernetCard.isConnected ? Colours.m3Colors.m3OnPrimary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.38)
-                    font.pointSize: Appearance.fonts.extraLarge * 0.8
+                    font.pointSize: Appearance.fonts.size.extraLarge * 0.8
                 }
             }
 
@@ -54,7 +54,7 @@ ColumnLayout {
 
                     StyledText {
                         text: "Ethernet"
-                        font.pixelSize: Appearance.fonts.large
+                        font.pixelSize: Appearance.fonts.size.large
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnSurface
                     }
@@ -62,14 +62,14 @@ ColumnLayout {
                     StyledText {
                         text: `(${SystemUsage.statusVPNInterface})`
                         visible: SystemUsage.statusVPNInterface !== ""
-                        font.pixelSize: Appearance.fonts.small
+                        font.pixelSize: Appearance.fonts.size.small
                         color: Colours.m3Colors.m3OnSurface
                     }
                 }
 
                 StyledText {
                     text: SystemUsage.statusWiredInterface === "connected" ? "Connected" : "Not Connected"
-                    font.pixelSize: Appearance.fonts.normal
+                    font.pixelSize: Appearance.fonts.size.normal
                     color: Colours.m3Colors.m3OnSurfaceVariant
                 }
             }
@@ -130,7 +130,7 @@ ColumnLayout {
                     anchors.centerIn: parent
                     icon: wifiCard.activeNetwork ? wifiCard.getWiFiIcon(wifiCard.activeNetwork.strength) : "wifi_off"
                     color: wifiCard.activeNetwork ? Colours.m3Colors.m3OnPrimary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.38)
-                    font.pointSize: Appearance.fonts.extraLarge * 0.8
+                    font.pointSize: Appearance.fonts.size.extraLarge * 0.8
                 }
             }
 
@@ -140,13 +140,13 @@ ColumnLayout {
 
                 StyledText {
                     text: "Internet"
-                    font.pixelSize: Appearance.fonts.large
+                    font.pixelSize: Appearance.fonts.size.large
                     color: Colours.m3Colors.m3OnSurfaceVariant
                 }
 
                 StyledText {
                     text: wifiCard.activeNetwork ? wifiCard.activeNetwork.ssid : "WiFi Disconnected"
-                    font.pixelSize: Appearance.fonts.normal
+                    font.pixelSize: Appearance.fonts.size.normal
                     font.weight: Font.Medium
                     width: parent.width
                     elide: Text.ElideRight

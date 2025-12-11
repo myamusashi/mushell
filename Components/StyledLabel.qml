@@ -5,7 +5,7 @@ import qs.Configs
 import qs.Services
 
 Label {
-    font.family: Appearance.fonts.familySans
+    font.family: Appearance.fonts.family.sans
     font.hintingPreference: Font.PreferFullHinting
     font.letterSpacing: 0
     renderType: Text.NativeRendering

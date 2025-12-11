@@ -40,13 +40,13 @@ Item {
                 text: "Num Lock"
                 font.weight: Font.Medium
                 color: Colours.m3Colors.m3OnBackground
-                font.pixelSize: Appearance.fonts.large * 1.5
+                font.pixelSize: Appearance.fonts.size.large * 1.5
             }
 
             MaterialIcon {
                 icon: KeyLockState.state.numLock ? "lock" : "lock_open_right"
                 color: KeyLockState.state.numLock ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Tertiary
-                font.pointSize: Appearance.fonts.large * 1.5
+                font.pointSize: Appearance.fonts.size.large * 1.5
             }
         }
     }

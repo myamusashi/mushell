@@ -38,7 +38,7 @@ RowLayout {
             Layout.topMargin: 8
             text: "Authentication Is Required"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
             font.weight: Font.Bold
             color: Colours.m3Colors.m3OnSurface
         }
@@ -49,7 +49,7 @@ RowLayout {
             text: PolAgent.agent?.flow?.message || "<no message>"
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Appearance.fonts.large
+            font.pixelSize: Appearance.fonts.size.large
             font.weight: Font.Normal
             color: Colours.m3Colors.m3OnSurface
         }

@@ -26,7 +26,7 @@ RowLayout {
 
             buttonTitle: "Shutdown"
             iconButton: "power_settings_circle"
-            iconSize: Appearance.fonts.extraLarge
+            iconSize: Appearance.fonts.size.extraLarge
             buttonColor: Colours.m3Colors.m3Primary
             buttonTextColor: Colours.m3Colors.m3OnPrimary
             buttonHeight: 56
@@ -90,7 +90,7 @@ RowLayout {
 
                 buttonTitle: modelData.name
                 iconButton: modelData.icon
-                iconSize: Appearance.fonts.extraLarge
+                iconSize: Appearance.fonts.size.extraLarge
                 buttonColor: Colours.m3Colors.m3Primary
                 buttonTextColor: Colours.m3Colors.m3OnPrimary
                 buttonHeight: 56
@@ -141,7 +141,7 @@ RowLayout {
         Layout.preferredHeight: 56
 
         iconButton: root.isOpen ? "keyboard_arrow_down" : "keyboard_arrow_up"
-        iconSize: Appearance.fonts.extraLarge
+        iconSize: Appearance.fonts.size.extraLarge
         buttonColor: Colours.m3Colors.m3Primary
         buttonTextColor: Colours.m3Colors.m3OnPrimary
         buttonHeight: 56

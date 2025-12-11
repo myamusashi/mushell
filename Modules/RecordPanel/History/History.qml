@@ -22,7 +22,7 @@ StyledRect {
             width: parent.width
             color: Colours.m3Colors.m3OnBackground
             text: "Recent screenshot"
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
             font.bold: true
         }
 
@@ -55,7 +55,7 @@ StyledRect {
             width: parent.width
             color: Colours.m3Colors.m3OnBackground
             text: "Recent screen record"
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
             font.bold: true
         }
 

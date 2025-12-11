@@ -10,8 +10,8 @@ Text {
     required property string icon
 
     font {
-        family: Appearance.fonts.familyMaterial
-        pointSize: Appearance.fonts.medium
+        family: Appearance.fonts.family.material
+        pointSize: Appearance.fonts.size.medium
         hintingPreference: Font.PreferNoHinting
         variableAxes: {
             "FILL": false,

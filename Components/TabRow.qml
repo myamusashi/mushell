@@ -52,9 +52,9 @@ StyledRect {
 				Layout.fillWidth: true
                 buttonTitle: modelData.title || ""
                 iconButton: modelData.icon || ""
-                iconSize: modelData.iconSize || (Appearance.fonts.large * root.scaleFactor)
+                iconSize: modelData.iconSize || (Appearance.fonts.size.large * root.scaleFactor)
                 buttonTextColor: root.currentIndex === index ? root.activeColor : root.inactiveColor
-                buttonColor: modelData.backgroundColor
+                buttonColor: root.backgroundColor
                 enabled: modelData.enabled !== undefined ? modelData.enabled : true
 
                 onClicked: {

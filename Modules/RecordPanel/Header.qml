@@ -26,14 +26,14 @@ Item {
         MaterialIcon {
             icon: root.icon
             color: Colours.m3Colors.m3OnSurface
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
         }
 
         StyledText {
             text: root.text
             color: Colours.m3Colors.m3OnSurface
             font.weight: Font.DemiBold
-            font.pixelSize: Appearance.fonts.large * 1.5
+            font.pixelSize: Appearance.fonts.size.large * 1.5
         }
 
         Item {
@@ -43,7 +43,7 @@ Item {
         MaterialIcon {
             icon: "close"
             color: Colours.m3Colors.m3OnSurface
-            font.pixelSize: Appearance.fonts.extraLarge
+            font.pixelSize: Appearance.fonts.size.extraLarge
 
             MArea {
                 anchors.fill: parent
