@@ -8,6 +8,7 @@ import qs.Services
 
 StyledRect {
     id: root
+
     property var optionData
     property int optionIndex
     property bool isSelected
@@ -45,6 +46,7 @@ StyledRect {
 
     RowLayout {
         id: content
+
         anchors.fill: parent
         anchors.leftMargin: Appearance.spacing.small
         anchors.rightMargin: Appearance.spacing.small

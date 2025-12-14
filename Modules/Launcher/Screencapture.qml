@@ -2,19 +2,21 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-
-import Quickshell.Hyprland
-import Quickshell.Wayland
-import Quickshell.Io
 import Quickshell
+import Quickshell.Io
+import Quickshell.Hyprland
 
-import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
+import qs.Components
 
-Scope {
+StyledRect {
     id: root
+
+    property int isScreenCapturePanelOpen: GlobalStates.isScreenCapturePanelOpen
+    property int selectedIndex: 0
+    property int selectedTab: 0
 
     IpcHandler {
         target: "screenCaptureLauncher"
@@ -35,282 +37,272 @@ Scope {
         onPressed: GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen
     }
 
-    LazyLoader {
-        activeAsync: GlobalStates.isScreenCapturePanelOpen
+    anchors.centerIn: parent
+    visible: true
+    implicitWidth: GlobalStates.isScreenCapturePanelOpen ? 300 : 0
+    implicitHeight: GlobalStates.isScreenCapturePanelOpen ? 400 : 0
+    radius: Appearance.rounding.large
+    color: Colours.m3Colors.m3Background
+    border.color: Colours.m3Colors.m3Outline
+    border.width: 2
 
-        component: PanelWindow {
-            id: window
+    Behavior on implicitHeight {
+        NAnim {
+            duration: Appearance.animations.durations.large
+            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+        }
+    }
 
-            property int selectedIndex: 0
-            property int selectedTab: 0
+    Behavior on implicitWidth {
+        NAnim {
+            duration: Appearance.animations.durations.large
+            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+        }
+    }
 
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-            WlrLayershell.namespace: "shell:capture"
+    Loader {
+        anchors.fill: parent
+        active: GlobalStates.isScreenCapturePanelOpen
+        asynchronous: true
+        sourceComponent: ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Appearance.margin.normal
+            spacing: Appearance.spacing.small
 
-            anchors {
-                right: true
-                left: true
+            Keys.onPressed: function (event) {
+                switch (event.key) {
+                case Qt.Key_Tab:
+                    root.selectedTab = (root.selectedTab + 1) % 2;
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Up:
+                    root.selectedTab === 0 ? 4 : 2;
+                    root.selectedIndex = Math.max(0, root.selectedIndex - 1);
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Backtab:
+                    root.selectedTab = (root.selectedTab - 1 + 2) % 2;
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Down:
+                    const maxIndex = root.selectedTab === 0 ? 4 : 2;
+                    root.selectedIndex = Math.min(maxIndex, root.selectedIndex + 1);
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Return:
+                case Qt.Key_Enter:
+                    const repeater = root.selectedTab === 0 ? screenshotRepeater : recordRepeater;
+                    const item = repeater.itemAt(root.selectedIndex);
+                    if (item && item.optionData.action) {
+                        item.optionData.action();
+                        GlobalStates.isScreenCapturePanelOpen = false;
+                    }
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Escape:
+                    GlobalStates.isScreenCapturePanelOpen = false;
+                    event.accepted = true;
+                    break;
+                }
             }
 
-            implicitWidth: 100
-            implicitHeight: 300
-            margins.right: implicitWidth * 8
-            margins.left: implicitWidth * 8
+            Connections {
+                target: root
 
-            color: "transparent"
+                function onSelectedTabChanged() {
+                    root.selectedIndex = 0;
+                }
+            }
 
-            Loader {
-                anchors.fill: parent
-                active: GlobalStates.isScreenCapturePanelOpen
-                asynchronous: true
-                sourceComponent: Item {
-                    anchors.fill: parent
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 0
 
-                    StyledRect {
-                        id: container
+                Repeater {
+                    id: tabRepeater
 
-                        anchors.fill: parent
-                        radius: Appearance.rounding.large
-                        color: Colours.m3Colors.m3Background
-                        border.color: Colours.m3Colors.m3Outline
-                        border.width: 2
+                    model: ["Screenshot", "Screen record"]
+                    delegate: StyledRect {
+                        id: tabItem
 
-                        readonly property int contentPadding: Appearance.spacing.normal
+                        required property string modelData
+                        required property int index
 
-                        Keys.onPressed: function (event) {
-                            switch (event.key) {
-                            case Qt.Key_Tab:
-                                window.selectedTab = (window.selectedTab + 1) % 2;
-                                event.accepted = true;
-                                break;
-                            case Qt.Key_Up:
-                                window.selectedTab === 0 ? 4 : 2;
-                                window.selectedIndex = Math.max(0, window.selectedIndex - 1);
-                                event.accepted = true;
-                                break;
-                            case Qt.Key_Backtab:
-                                window.selectedTab = (window.selectedTab - 1 + 2) % 2;
-                                event.accepted = true;
-                                break;
-                            case Qt.Key_Down:
-                                const maxIndex = window.selectedTab === 0 ? 4 : 2;
-                                window.selectedIndex = Math.min(maxIndex, window.selectedIndex + 1);
-                                event.accepted = true;
-                                break;
-                            case Qt.Key_Return:
-                            case Qt.Key_Enter:
-                                const repeater = window.selectedTab === 0 ? screenshotRepeater : recordRepeater;
-                                const item = repeater.itemAt(window.selectedIndex);
-                                if (item && item.optionData.action) {
-                                    item.optionData.action();
-                                    GlobalStates.isScreenCapturePanelOpen = false;
-                                }
-                                event.accepted = true;
-                                break;
-                            case Qt.Key_Escape:
-                                GlobalStates.isScreenCapturePanelOpen = false;
-                                event.accepted = true;
-                                break;
-                            }
+                        readonly property bool isSelected: root.selectedTab === index
+
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 32
+
+                        focus: GlobalStates.isScreenCapturePanelOpen
+                        onFocusChanged: {
+                            if (focus && GlobalStates.isScreenCapturePanelOpen)
+                            Qt.callLater(() => {
+                                             let firstIcon = tabRepeater.itemAt(root.selectedTab);
+                                             if (firstIcon)
+                                             firstIcon.children[0].forceActiveFocus();
+                                         });
                         }
 
-                        Connections {
-                            target: window
+                        radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
 
-                            function onSelectedTabChanged() {
-                                window.selectedIndex = 0;
-                            }
+                        color: isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Surface
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: tabItem.modelData
+                            color: tabItem.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
+                            font.pixelSize: Appearance.fonts.size.normal * 0.9
+                            font.bold: tabItem.isSelected
                         }
 
-                        ColumnLayout {
+                        MArea {
                             anchors.fill: parent
-                            anchors.margins: container.contentPadding
-                            spacing: Appearance.spacing.small
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.selectedTab = tabItem.index
+                        }
+                    }
+                }
+            }
 
-                            RowLayout {
-                                Layout.fillWidth: true
-                                spacing: 0
+            StackLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                currentIndex: root.selectedTab
 
-                                Repeater {
-                                    id: tabRepeater
+                ColumnLayout {
+                    id: screenshotLayout
 
-                                    model: ["Screenshot", "Screen record"]
-                                    delegate: StyledRect {
-                                        id: tabItem
+                    spacing: Appearance.spacing.small
 
-                                        required property string modelData
-                                        required property int index
-
-                                        readonly property bool isSelected: window.selectedTab === index
-
-                                        Layout.fillWidth: true
-                                        Layout.preferredHeight: 32
-
-                                        focus: GlobalStates.isScreenCapturePanelOpen
-                                        onFocusChanged: {
-                                            if (focus && GlobalStates.isScreenCapturePanelOpen)
-                                            Qt.callLater(() => {
-                                                             let firstIcon = tabRepeater.itemAt(window.selectedTab);
-                                                             if (firstIcon)
-                                                             firstIcon.children[0].forceActiveFocus();
-                                                         });
-                                        }
-
-                                        radius: index === 0 ? Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0) : Qt.vector4d(Appearance.rounding.normal, Appearance.rounding.normal, 0, 0)
-
-                                        color: isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Surface
-
-                                        StyledText {
-                                            anchors.centerIn: parent
-                                            text: tabItem.modelData
-                                            color: tabItem.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
-                                            font.pixelSize: Appearance.fonts.size.normal * 0.9
-                                            font.bold: tabItem.isSelected
-                                        }
-
-                                        MArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: window.selectedTab = tabItem.index
-                                        }
+                    property var screenshotModel: ScriptModel {
+                        values: {
+                            let options = [
+                                {
+                                    "name": "Window",
+                                    "icon": "select_window_2",
+                                    "action": () => {
+                                        Quickshell.execDetached({
+                                                                    "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-window"]
+                                                                });
+                                    }
+                                },
+                                {
+                                    "name": "Selection",
+                                    "icon": "select",
+                                    "action": () => {
+                                        Quickshell.execDetached({
+                                                                    "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-selection"]
+                                                                });
                                     }
                                 }
+                            ];
+
+                            Quickshell.screens.forEach(screen => {
+                                                           options.push({
+                                                                            "name": screen.name,
+                                                                            "icon": "monitor",
+                                                                            "action": () => {
+                                                                                Quickshell.execDetached({
+                                                                                                            "command": ["sh", "-c", Quickshell.shellDir + `/Assets/screen-capture.sh --screenshot-output ${screen.name}`]
+                                                                                                        });
+                                                                            }
+                                                                        });
+                                                           options.push({
+                                                                            "name": "Merge screens",
+                                                                            "icon": "cell_merge",
+                                                                            "action": () => {
+                                                                                Quickshell.execDetached({
+                                                                                                            "command": ["sh", "-c", Quickshell.shellDir + `/Assets/screen-capture.sh --screenshot-outputs ${screen.name}`]
+                                                                                                        });
+                                                                            }
+                                                                        });
+                                                       });
+
+                            return options;
+                        }
+                    }
+
+                    Repeater {
+                        id: screenshotRepeater
+
+                        model: screenshotLayout.screenshotModel
+
+                        delegate: CaptureItem {
+                            required property var modelData
+                            required property int index
+
+                            Layout.preferredHeight: 38
+                            Layout.fillWidth: true
+                            optionData: modelData
+                            optionIndex: index
+                            isSelected: index === root.selectedIndex && root.selectedTab === 0
+                            maxIndex: screenshotLayout.screenshotModel.values.length - 1
+
+                            onIndexModel: function (idx) {
+                                root.selectedIndex = idx;
                             }
 
-                            StackLayout {
-                                Layout.fillWidth: true
-                                Layout.fillHeight: true
-                                currentIndex: window.selectedTab
+                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
+                        }
+                    }
+                }
 
-                                ColumnLayout {
-                                    spacing: Appearance.spacing.small
+                ColumnLayout {
+                    id: recordLayout
 
-                                    Repeater {
-                                        id: screenshotRepeater
+                    spacing: Appearance.spacing.small
 
-                                        model: [
-                                            {
-                                                "name": "Window",
-                                                "icon": "select_window_2",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-window"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "Selection",
-                                                "icon": "select",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-selection"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "eDP-1",
-                                                "icon": "monitor",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-eDP-1"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "HDMI-A-2",
-                                                "icon": "monitor",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-HDMI-A-2"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "Both Screens",
-                                                "icon": "dual_screen",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenshot-both-screens"]
-                                                                            });
-                                                }
-                                            }
-                                        ]
-
-                                        delegate: CaptureItem {
-                                            required property var modelData
-                                            required property int index
-
-                                            Layout.preferredHeight: 38
-                                            Layout.fillWidth: true
-                                            optionData: modelData
-                                            optionIndex: index
-                                            isSelected: index === window.selectedIndex && window.selectedTab === 0
-                                            maxIndex: 4
-
-                                            onIndexModel: function (idx) {
-                                                window.selectedIndex = idx;
-                                            }
-
-                                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
-                                        }
+                    property var recordModel: ScriptModel {
+                        values: {
+                            let options = [
+                                {
+                                    "name": "Selection",
+                                    "icon": "select",
+                                    "action": () => {
+                                        Quickshell.execDetached({
+                                                                    "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-selection"]
+                                                                });
                                     }
                                 }
+                            ];
 
-                                ColumnLayout {
-                                    spacing: Appearance.spacing.small
+                            Quickshell.screens.forEach(screen => {
+                                                           options.push({
+                                                                            "name": screen.name,
+                                                                            "icon": "monitor",
+                                                                            "action": () => {
+                                                                                Quickshell.execDetached({
+                                                                                                            "command": ["sh", "-c", Quickshell.shellDir + `/Assets/screen-capture.sh --screenrecord-${screen.name}`]
+                                                                                                        });
+                                                                            }
+                                                                        });
+                                                       });
 
-                                    Repeater {
-                                        id: recordRepeater
+                            return options;
+                        }
+                    }
 
-                                        model: [
-                                            {
-                                                "name": "Selection",
-                                                "icon": "select",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-selection"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "eDP-1",
-                                                "icon": "monitor",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-eDP-1"]
-                                                                            });
-                                                }
-                                            },
-                                            {
-                                                "name": "HDMI-A-2",
-                                                "icon": "monitor",
-                                                "action": () => {
-                                                    Quickshell.execDetached({
-                                                                                "command": ["sh", "-c", Quickshell.shellDir + "/Assets/screen-capture.sh --screenrecord-HDMI-A-2"]
-                                                                            });
-                                                }
-                                            }
-                                        ]
+                    Repeater {
+                        id: recordRepeater
 
-                                        delegate: CaptureItem {
-                                            required property var modelData
-                                            required property int index
-                                            Layout.preferredHeight: 38
-                                            Layout.fillWidth: true
-                                            optionData: modelData
-                                            optionIndex: index
-                                            isSelected: index === window.selectedIndex && window.selectedTab === 1
-                                            maxIndex: 2
+                        model: recordLayout.recordModel
 
-                                            onIndexModel: function (idx) {
-                                                window.selectedIndex = idx;
-                                            }
+                        delegate: CaptureItem {
+                            required property var modelData
+                            required property int index
 
-                                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
-                                        }
-                                    }
-                                }
+                            Layout.preferredHeight: 38
+                            Layout.fillWidth: true
+                            optionData: modelData
+                            optionIndex: index
+                            isSelected: index === root.selectedIndex && root.selectedTab === 1
+                            maxIndex: recordLayout.recordModel.values.length - 1
+
+                            onIndexModel: function (idx) {
+                                root.selectedIndex = idx;
                             }
+
+                            onClosed: GlobalStates.isScreenCapturePanelOpen = false
                         }
                     }
                 }

@@ -105,10 +105,17 @@ Variants {
             Rectangle {
                 id: leftBar
 
-                implicitWidth: GlobalStates.hideOuterBorder ? 0 : 10
+                implicitWidth: GlobalStates.hideOuterBorder ? 0 : 5
                 implicitHeight: GlobalStates.hideOuterBorder ? 0 : QsWindow.window?.height ?? 0
                 color: window.barColor
                 anchors.left: parent.left
+
+                Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.large
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
 
                 Behavior on implicitWidth {
                     NAnim {
@@ -122,11 +129,18 @@ Variants {
                 id: topBar
 
                 implicitWidth: GlobalStates.hideOuterBorder ? 0 : QsWindow.window?.width ?? 0
-                implicitHeight: GlobalStates.hideOuterBorder ? 0 : 10
+                implicitHeight: GlobalStates.hideOuterBorder ? 0 : 5
                 color: window.barColor
                 anchors.top: parent.top
 
                 Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.large
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
+
+                Behavior on implicitWidth {
                     NAnim {
                         duration: Appearance.animations.durations.large
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
@@ -137,10 +151,17 @@ Variants {
             Rectangle {
                 id: rightBar
 
-                implicitWidth: GlobalStates.hideOuterBorder ? 0 : 10
+                implicitWidth: GlobalStates.hideOuterBorder ? 0 : 5
                 implicitHeight: GlobalStates.hideOuterBorder ? 0 : QsWindow.window?.height ?? 0
                 color: window.barColor
                 anchors.right: parent.right
+
+                Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.large
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
 
                 Behavior on implicitWidth {
                     NAnim {
@@ -154,11 +175,18 @@ Variants {
                 id: bottomBar
 
                 implicitWidth: GlobalStates.hideOuterBorder ? 0 : QsWindow.window?.width ?? 0
-                implicitHeight: GlobalStates.hideOuterBorder ? 0 : 10
+                implicitHeight: GlobalStates.hideOuterBorder ? 0 : 5
                 color: window.barColor
                 anchors.bottom: parent.bottom
 
                 Behavior on implicitHeight {
+                    NAnim {
+                        duration: Appearance.animations.durations.large
+                        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                    }
+                }
+
+                Behavior on implicitWidth {
                     NAnim {
                         duration: Appearance.animations.durations.large
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
@@ -211,6 +239,12 @@ Variants {
             onIsWallpaperSwitcherOpenChanged: wallpaperSelector.isWallpaperSwitcherOpen ? window.needFocusKeyboard = true : window.needFocusKeyboard = false
         }
 
+        Screencapture {
+            id: screenCapture
+
+            onIsScreenCapturePanelOpenChanged: screenCapture.isScreenCapturePanelOpen ? window.needFocusKeyboard = true : window.needFocusKeyboard = false
+        }
+
         Notifications {
             id: notif
         }
@@ -247,7 +281,7 @@ Variants {
         id: root
 
         property int corner
-        property real radius: 20
+        property real radius: 5
         property color color
 
         Component.onCompleted: {

@@ -4,44 +4,34 @@ SCREENSHOT_DIR="$HOME/Pictures/screenshot"
 VIDEO_DIR="$HOME/Videos/Shell"
 THUMBNAIL_DIR="$HOME/.cache/thumbnails/normal"
 RECORD_PID_FILE="/tmp/wl-screenrec.pid"
-
 mkdir -p "$SCREENSHOT_DIR"
 mkdir -p "$VIDEO_DIR"
 mkdir -p "$THUMBNAIL_DIR"
-
 IMG="$SCREENSHOT_DIR/$(date +%Y-%m-%d_%H-%M-%S).png"
 VID="$VIDEO_DIR/$(date +%Y-%m-%d_%H-%M-%S).mp4"
 
 create_thumbnail() {
 	local file="$1"
 	local output="$2"
-
 	if [[ -z "$file" ]]; then
 		echo "Error: File is empty"
 		return 1
 	fi
-
 	if [ ! -f "$file" ]; then
 		echo "Error: File $file does not exist"
 		return 1
 	fi
-
 	duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$file" 2>/dev/null)
-
 	if [[ -z "$duration" ]] || (($(echo "$duration < 1" | bc -l))); then
 		echo "Error: Cannot get video duration or video too short"
 		return 1
 	fi
-
 	timestamp=$(echo "$duration / 2" | bc -l)
-
 	hours=$(printf "%02d" "$(echo "$timestamp / 3600" | bc)")
 	minutes=$(printf "%02d" "$(echo "($timestamp % 3600) / 60" | bc)")
 	seconds=$(printf "%02d" "$(echo "$timestamp % 60" | bc)")
 	formatted_time="${hours}:${minutes}:${seconds}"
-
 	ffmpeg -ss "$formatted_time" -i "$file" -vframes 1 -q:v 2 -vf "scale=256:-1" "$output" -y -v error 2>/dev/null
-
 	if [ $? -eq 0 ] && [ -f "$output" ]; then
 		echo "Thumbnail created: $output"
 		return 0
@@ -55,7 +45,6 @@ goto_link() {
 	local file="$1"
 	local thumb_path="$2"
 	local show_notification="$3"
-
 	if [ -z "$file" ]; then
 		echo "ERROR: File variable is empty or not set"
 		return 1
@@ -64,7 +53,6 @@ goto_link() {
 		echo "ERROR: File $file does not exist"
 		return 1
 	fi
-
 	if [ "$show_notification" = "true" ]; then
 		if [ -n "$thumb_path" ] && [ -f "$thumb_path" ]; then
 			ACTION=$(notify-send -a "screengrab" \
@@ -83,7 +71,6 @@ goto_link() {
 	else
 		ACTION="default"
 	fi
-
 	case "$ACTION" in
 	"default")
 		if command -v foot >/dev/null 2>&1; then
@@ -113,22 +100,18 @@ RECORD_VIDEO_FILE="/tmp/wl-screenrec.video"
 start_recording() {
 	local geometry="$1"
 	local output="$2"
-
 	if [ -f "$RECORD_PID_FILE" ]; then
 		notify-send -u critical -i dialog-warning -a "Screen Record" "Recording Active" "A recording is already in progress."
 		return 1
 	fi
-
 	VID="$VIDEO_DIR/$(date +%Y-%m-%d_%H-%M-%S).mp4"
-
 	if [ -n "$geometry" ]; then
-		wl-screenrec --codec hevc -g "$geometry" -f "$VID" &
+		wl-screenrec --codec hevc --audio --audio-device default -b "3 MB" --low-power on --max-fps 50 -g "$geometry" -f "$VID" &
 	elif [ -n "$output" ]; then
-		wl-screenrec --codec hevc -o "$output" -f "$VID" &
+		wl-screenrec --codec hevc --audio --audio-device default -b "3 MB" --low-power on --max-fps 50 -o "$output" -f "$VID" &
 	else
-		wl-screenrec --codec hevc -f "$VID" &
+		wl-screenrec --codec hevc --audio --audio-device default -b "3 MB" --low-power on --max-fps 50 -f "$VID" &
 	fi
-
 	echo $! >"$RECORD_PID_FILE"
 	echo "$VID" >"$RECORD_VIDEO_FILE"
 	notify-send -a "screenrecord" "Recording Started" "Press the same keybind again to stop recording."
@@ -137,7 +120,6 @@ start_recording() {
 stop_recording() {
 	if [ -f "$RECORD_PID_FILE" ]; then
 		PID=$(cat "$RECORD_PID_FILE")
-
 		if [ -f "$RECORD_VIDEO_FILE" ]; then
 			VID=$(cat "$RECORD_VIDEO_FILE")
 		else
@@ -145,26 +127,19 @@ stop_recording() {
 			rm "$RECORD_PID_FILE" 2>/dev/null
 			return 1
 		fi
-
 		if ps -p "$PID" >/dev/null 2>&1; then
 			kill -INT "$PID"
 			wait "$PID" 2>/dev/null
 			rm "$RECORD_PID_FILE"
 			rm "$RECORD_VIDEO_FILE"
-
 			sleep 1
-
 			VIDEO_BASENAME=$(basename "$VID" .mp4)
 			THUMB_PATH="$THUMBNAIL_DIR/${VIDEO_BASENAME}.png"
-
-			# Buat thumbnail dan tampilkan SATU notifikasi saja
 			if create_thumbnail "$VID" "$THUMB_PATH"; then
 				notify-send -a "screenrecord" -i "$THUMB_PATH" "Recording Stopped" "Video saved to $VID"
 			else
 				notify-send -a "screenrecord" -i "video-x-generic" "Recording Stopped" "Video saved to $VID"
 			fi
-
-			# Panggil goto_link tanpa notifikasi (notifikasi sudah ditampilkan di atas)
 			goto_link "$VID" "$THUMB_PATH" "false"
 			return 0
 		else
@@ -190,7 +165,6 @@ case "$1" in
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
 	;;
-
 "--screenshot-selection")
 	sleep 2
 	grim -g "$(slurp)" "$IMG"
@@ -201,45 +175,39 @@ case "$1" in
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot."
 	fi
 	;;
-
-"--screenshot-eDP-1")
+"--screenshot-output")
+	if [ -z "$2" ]; then
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "No output specified. Usage: $0 --screenshot-output <OUTPUT_NAME>"
+		exit 1
+	fi
 	sleep 2
-	grim -c -o eDP-1 "$IMG"
+	grim -c -o "$2" "$IMG"
 	if [ $? -eq 0 ]; then
 		wl-copy <"$IMG"
 		goto_link "$IMG" "$IMG" "true"
 	else
-		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on eDP-1."
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on $2."
 	fi
 	;;
-
-"--screenshot-HDMI-A-2")
-	sleep 2
-	grim -c -o HDMI-A-2 "$IMG"
-	if [ $? -eq 0 ]; then
-		wl-copy <"$IMG"
-		goto_link "$IMG" "$IMG" "true"
-	else
-		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on HDMI-A-2."
+"--screenshot-outputs")
+	if [ -z "$2" ] || [ -z "$3" ]; then
+		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Need two outputs. Usage: $0 --screenshot-outputs <OUTPUT1> <OUTPUT2>"
+		exit 1
 	fi
-	;;
-
-"--screenshot-both-screens")
 	sleep 2
-	grim -c -o eDP-1 "${IMG//.png/-eDP-1.png}"
-	GRIM_EDP=$?
-	grim -c -o HDMI-A-2 "${IMG//.png/-HDMI-A-2.png}"
-	GRIM_HDMI=$?
-	if [ $GRIM_EDP -eq 0 ] && [ $GRIM_HDMI -eq 0 ]; then
-		montage "${IMG//.png/-eDP-1.png}" "${IMG//.png/-HDMI-A-2.png}" -tile 2x1 -geometry +0+0 "$IMG"
+	grim -c -o "$2" "${IMG//.png/-${2}.png}"
+	GRIM_OUTPUT1=$?
+	grim -c -o "$3" "${IMG//.png/-${3}.png}"
+	GRIM_OUTPUT2=$?
+	if [ $GRIM_OUTPUT1 -eq 0 ] && [ $GRIM_OUTPUT2 -eq 0 ]; then
+		montage "${IMG//.png/-${2}.png}" "${IMG//.png/-${3}.png}" -tile 2x1 -geometry +0+0 "$IMG"
 		wl-copy <"$IMG"
-		rm "${IMG//.png/-eDP-1.png}" "${IMG//.png/-HDMI-A-2.png}"
+		rm "${IMG//.png/-${2}.png}" "${IMG//.png/-${3}.png}"
 		goto_link "$IMG" "$IMG" "true"
 	else
 		notify-send -u critical -i dialog-error -a "Screen Capture" "Screenshot Failed" "Failed to take screenshot on both screens."
 	fi
 	;;
-
 "--screenrecord-selection")
 	if [ -f "$RECORD_PID_FILE" ]; then
 		stop_recording
@@ -253,26 +221,19 @@ case "$1" in
 		fi
 	fi
 	;;
-
-"--screenrecord-eDP-1")
+"--screenrecord-output")
 	if [ -f "$RECORD_PID_FILE" ]; then
 		stop_recording
 	else
+		if [ -z "$2" ]; then
+			notify-send -u critical -i dialog-error -a "Screen Record" "Recording Failed" "No output specified. Usage: $0 --screenrecord-output <OUTPUT_NAME>"
+			exit 1
+		fi
 		sleep 2
-		start_recording "" "eDP-1"
+		start_recording "" "$2"
 	fi
 	;;
-
-"--screenrecord-HDMI-A-2")
-	if [ -f "$RECORD_PID_FILE" ]; then
-		stop_recording
-	else
-		sleep 2
-		start_recording "" "HDMI-A-2"
-	fi
-	;;
-
-"--screenrecord-both-screens")
+"--screenrecord-all")
 	if [ -f "$RECORD_PID_FILE" ]; then
 		stop_recording
 	else
@@ -280,13 +241,28 @@ case "$1" in
 		start_recording "" ""
 	fi
 	;;
-
 "--stop-recording")
 	stop_recording
 	;;
-
 *)
-	echo "Usage: $0 {--screenshot-window|--screenshot-selection|--screenshot-eDP-1|--screenshot-HDMI-A-2|--screenshot-both-screens|--screenrecord-selection|--screenrecord-eDP-1|--screenrecord-HDMI-A-2|--screenrecord-both-screens|--stop-recording}"
+	echo "Usage: $0 {COMMAND} [ARGS]"
+	echo ""
+	echo "Screenshot Commands:"
+	echo "  --screenshot-window              Take screenshot of active window"
+	echo "  --screenshot-selection           Take screenshot of selected area"
+	echo "  --screenshot-output <OUTPUT>     Take screenshot of specific output (e.g., eDP-1, HDMI-A-2)"
+	echo "  --screenshot-outputs <OUT1> <OUT2>  Take screenshot of two outputs and merge them"
+	echo ""
+	echo "Screenrecord Commands:"
+	echo "  --screenrecord-selection         Record selected area (toggle to stop)"
+	echo "  --screenrecord-output <OUTPUT>   Record specific output (toggle to stop)"
+	echo "  --screenrecord-all               Record all screens (toggle to stop)"
+	echo "  --stop-recording                 Stop active recording"
+	echo ""
+	echo "Examples:"
+	echo "  $0 --screenshot-output eDP-1"
+	echo "  $0 --screenshot-outputs eDP-1 HDMI-A-2"
+	echo "  $0 --screenrecord-output DP-2"
 	exit 1
 	;;
 esac
