@@ -26,20 +26,32 @@ Item {
     property int baseWidth: implicitWidth
     property alias mArea: mouseArea
     property alias bg: background
+    readonly property real normalWidth: contentRow.implicitWidth + 32
 
     signal clicked
 
-    implicitWidth: contentRow.implicitWidth + 32
+    implicitWidth: normalWidth
     implicitHeight: buttonHeight
 
     ClippingRectangle {
         id: background
 
-        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        implicitWidth: root.normalWidth * (mouseArea.pressed && root.enabled ? 1.1 : 1.0)
+        implicitHeight: parent.height
+
+        Behavior on implicitWidth {
+            NAnim {
+                duration: Appearance.animations.durations.expressiveDefaultSpatial
+                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+            }
+        }
+
         border.color: root.isButtonUseBorder ? root.buttonBorderColor : "transparent"
         border.width: root.isButtonUseBorder ? root.buttonBorderWidth : 0
-        radius: Appearance.rounding.full
-        color: root.buttonColor
+		color: root.buttonColor
+		radius: root.enabled ? Appearance.rounding.small : Appearance.rounding.full
         opacity: root.enabled ? (mouseArea.pressed ? 0.8 : (mouseArea.containsMouse ? 0.9 : 1.0)) : 0.5
 
         states: [
@@ -58,18 +70,6 @@ Item {
                     target: background
                     radius: Appearance.rounding.full
                 }
-            },
-            State {
-                name: "pressed"
-                when: mouseArea.pressed && root.enabled
-                PropertyChanges {
-                    target: background
-                    radius: Appearance.rounding.small
-                }
-                PropertyChanges {
-                    target: root
-                    width: root.implicitWidth * 1.05
-                }
             }
         ]
 
@@ -79,9 +79,8 @@ Item {
                 to: "disabled"
                 NAnim {
                     property: "radius"
-                    duration: Appearance.animations.durations.small
+                    duration: Appearance.animations.durations.emphasized
                     easing.bezierCurve: Appearance.animations.curves.emphasized
-                    easing.type: Easing.Linear
                 }
             },
             Transition {
@@ -89,25 +88,8 @@ Item {
                 to: "enabled"
                 NAnim {
                     property: "radius"
-                    duration: Appearance.animations.durations.small
+                    duration: Appearance.animations.durations.emphasized
                     easing.bezierCurve: Appearance.animations.curves.emphasized
-                    easing.type: Easing.Linear
-                }
-            },
-            Transition {
-                to: "pressed"
-                NAnim {
-                    property: "width"
-                    duration: Appearance.animations.durations.expressiveFastSpatial
-                    easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
-                }
-            },
-            Transition {
-                from: "pressed"
-                NAnim {
-                    property: "width"
-                    duration: Appearance.animations.durations.expressiveFastSpatial
-                    easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
                 }
             }
         ]
@@ -119,6 +101,7 @@ Item {
         spacing: root.iconTextSpacing
         anchors.centerIn: parent
         opacity: root.enabled ? 1.0 : 0.5
+
         Loader {
             active: root.iconButton !== ""
             anchors.verticalCenter: parent.verticalCenter
@@ -140,6 +123,7 @@ Item {
             }
         }
     }
+
     MArea {
         id: mouseArea
 
