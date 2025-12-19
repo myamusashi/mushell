@@ -36,6 +36,7 @@ RowLayout {
         buttonTitle: "Night mode"
         buttonTextColor: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3OnPrimary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.38)
         buttonColor: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3Primary : Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.1)
-        onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down() : Hyprsunset.up()
+		onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down() : Hyprsunset.up()
+		enabled: Hyprsunset.isNightModeOn
     }
 }

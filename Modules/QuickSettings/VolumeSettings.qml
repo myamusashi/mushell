@@ -8,7 +8,6 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
-import qs.Configs
 import qs.Services
 import qs.Widgets
 
@@ -53,7 +52,7 @@ ScrollView {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
                     IconImage {
-                        source: Quickshell.iconPath(Players.active.desktopEntry)
+                        source: Quickshell.iconPath(DesktopEntries.heuristicLookup(Players.active.desktopEntry)?.icon, "image-missing") || Players.active.trackArtUrl
                         asynchronous: true
                         Layout.preferredWidth: 60
                         Layout.preferredHeight: 60
