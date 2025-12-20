@@ -138,7 +138,7 @@ Item {
                 implicitWidth: root.showIconBackground ? root.iconBackgroundSize : iconOnly.implicitWidth
                 implicitHeight: root.showIconBackground ? root.iconBackgroundSize : iconOnly.implicitHeight
 
-                Rectangle {
+                StyledRect {
                     visible: root.showIconBackground
                     anchors.fill: parent
                     color: root.iconBackgroundColor

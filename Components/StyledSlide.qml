@@ -80,6 +80,7 @@ Slider {
 
         Loader {
             active: root.icon !== ""
+            z: 10
             anchors {
                 left: parent.left
                 leftMargin: 10

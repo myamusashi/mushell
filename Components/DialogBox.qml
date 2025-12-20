@@ -95,6 +95,9 @@ LazyLoader {
                     spacing: Appearance.spacing.normal
 
                     StyledButton {
+                        implicitWidth: 80
+                        implicitHeight: 40
+                        elideText: false
                         iconButton: "cancel"
                         buttonTitle: "No"
                         buttonColor: "transparent"
@@ -102,6 +105,8 @@ LazyLoader {
                     }
 
                     StyledButton {
+                        implicitWidth: 80
+                        implicitHeight: 40
                         iconButton: "check"
                         buttonTitle: "Yes"
                         buttonTextColor: Colours.m3Colors.m3OnPrimary
