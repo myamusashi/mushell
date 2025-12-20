@@ -12,7 +12,7 @@ Item {
     id: root
 
     property int maxColumns: 3
-    property int maxRows: 2
+    property int maxRows: 3
     property int itemSpacing: Appearance.spacing.normal
     property int pageSpacing: 20
 
@@ -23,7 +23,7 @@ Item {
     readonly property int currentPageIndex: Math.floor(swipeView.contentX / swipeView.width)
 
     implicitWidth: 400
-    implicitHeight: 200
+    implicitHeight: 220
 
     Flickable {
         id: swipeView
