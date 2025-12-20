@@ -4,6 +4,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+import qs.Configs
+
 Singleton {
     id: root
 
@@ -19,7 +21,7 @@ Singleton {
     readonly property string currentWallpaperFile: `${cacheDir}/wall/path.txt`
     readonly property string currentWallpaper: wallpaperPath.text().trim()
 
-    readonly property string wallpaperDir: `${pictures}/wallpapers` || `${pictures}/Wallpapers`
+    readonly property string wallpaperDir: Configs.wallpaper.wallpaperDir
 
     readonly property string recordDir: `${videos}/Shell`
 

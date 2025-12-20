@@ -3,12 +3,12 @@ import Quickshell.Io
 JsonObject {
     id: root
 
+	property AnimationsComponent animations: AnimationsComponent {}
     property FontsComponent fonts: FontsComponent {}
-    property AnimationsComponent animations: AnimationsComponent {}
+	property MarginComponent margin: MarginComponent {}
+	property PaddingComponent padding: PaddingComponent {}
     property RoundingComponent rounding: RoundingComponent {}
     property SpacingComponent spacing: SpacingComponent {}
-    property PaddingComponent padding: PaddingComponent {}
-    property MarginComponent margin: MarginComponent {}
 
     component FontFamily: JsonObject {
         property string material: "Material Symbols Rounded"
