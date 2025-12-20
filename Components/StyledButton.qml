@@ -8,11 +8,8 @@ import qs.Configs
 import qs.Helpers
 import qs.Services
 
-import QtQuick 2.15
-import QtQuick.Layouts 1.15
-
 Item {
-	id: root
+    id: root
 
     property alias mArea: mouseArea
     property alias bg: background
@@ -25,10 +22,11 @@ Item {
     property color buttonColor: Colours.m3Colors.m3Primary
     property color buttonTextColor: Colours.m3Colors.m3OnBackground
     property color buttonBorderColor: Colours.m3Colors.m3Outline
-	property color iconBackgroundColor: Colours.m3Colors.m3Primary
-	property int textSize: Appearance.fonts.size.large
+    property color iconBackgroundColor: Colours.m3Colors.m3Primary
+    property int textSize: Appearance.fonts.size.large
     property int iconSize: Appearance.fonts.size.medium
     property int buttonWidth: 150
+    property int iconOnlyWidth: 60
     property int buttonHeight: 40
     property int iconTextSpacing: 8
     property int buttonBorderWidth: 2
@@ -38,9 +36,8 @@ Item {
     property string iconButton: ""
     property string fontFamily: Appearance.fonts.family.material
     property string buttonTitle: ""
-    readonly property real normalWidth: buttonWidth
+    readonly property real normalWidth: buttonTitle === "" ? iconOnlyWidth : buttonWidth
     readonly property real expandedWidth: normalWidth * 1.1
-
     signal clicked
 
     implicitWidth: useLayoutWidth ? undefined : normalWidth
@@ -68,8 +65,7 @@ Item {
         implicitHeight: parent.height
 
         Behavior on implicitWidth {
-			enabled: !root.useLayoutWidth
-
+            enabled: !root.useLayoutWidth
             NAnim {
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
@@ -126,18 +122,18 @@ Item {
     RowLayout {
 		id: contentRow
 
-        anchors.left: parent.left
-        anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
+        anchors.left: root.buttonTitle === "" ? undefined : parent.left
+        anchors.right: root.buttonTitle === "" ? undefined : parent.right
+        anchors.leftMargin: root.buttonTitle === "" ? 0 : 12
+        anchors.rightMargin: root.buttonTitle === "" ? 0 : 12
+
         spacing: root.iconTextSpacing
         opacity: root.enabled ? 1.0 : 0.5
 
         Loader {
             active: root.iconButton !== ""
             Layout.alignment: Qt.AlignVCenter
-
             sourceComponent: Item {
                 implicitWidth: root.showIconBackground ? root.iconBackgroundSize : iconOnly.implicitWidth
                 implicitHeight: root.showIconBackground ? root.iconBackgroundSize : iconOnly.implicitHeight
@@ -176,7 +172,6 @@ Item {
             active: root.buttonTitle !== ""
             Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true
-
             sourceComponent: StyledText {
                 text: root.buttonTitle
                 font.pixelSize: root.textSize
