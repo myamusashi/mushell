@@ -228,7 +228,8 @@ ClippingRectangle {
 
                     StyledButton {
                         iconButton: "skip_previous"
-                        iconSize: Appearance.fonts.size.large * 1.2
+						iconSize: Appearance.fonts.size.large * 1.2
+						buttonWidth: 60
                         buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.previous() : {}
@@ -253,7 +254,8 @@ ClippingRectangle {
 
                     StyledButton {
                         iconButton: "skip_next"
-                        iconSize: Appearance.fonts.size.large * 1.2
+						iconSize: Appearance.fonts.size.large * 1.2
+						buttonWidth: 60
                         buttonTextColor: Colours.m3Colors.m3OnPrimary
                         mArea.layerColor: "transparent"
                         onClicked: Players.active ? Players.active.next() : {}

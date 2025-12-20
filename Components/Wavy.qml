@@ -27,13 +27,11 @@ Slider {
         }
     }
 
-    onEnableWaveChanged: {
-        waveTransition = enableWave ? 1.0 : 0.0;
-    }
+    onEnableWaveChanged: waveTransition = enableWave ? 1.0 : 0.0
 
     NumberAnimation on waveAnimationPhase {
-        from: 1
-        to: Math.PI * 2 + Math.PI / 2
+        from: 0
+        to: Math.PI * 2 
         duration: 2000
         loops: Animation.Infinite
         running: slider.enableWave
