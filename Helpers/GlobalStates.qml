@@ -9,6 +9,9 @@ import qs.Services
 Singleton {
     id: root
 
+    readonly property int osdDisplayDuration: 2000
+    readonly property int cleanupDelay: 500
+
     property bool isCalendarOpen: false
     property bool isScreenCapturePanelOpen: false
     property bool isLauncherOpen: false
@@ -18,59 +21,208 @@ Singleton {
     property bool isNotificationCenterOpen: false
     property bool isQuickSettingsOpen: false
     property bool isWallpaperSwitcherOpen: false
-    property bool isVolumeOSDShow: false
-    property bool isCapsLockOSDShow: false
-    property bool isNumLockOSDShow: false
     property bool isOverviewOpen: false
     property bool isRecordPanelOpen: false
     property bool hideOuterBorder: false
 
+    readonly property bool isVolumeOSDVisible: _activeOSDs["volume"] || false
+    readonly property bool isCapsLockOSDVisible: _activeOSDs["capslock"] || false
+    readonly property bool isNumLockOSDVisible: _activeOSDs["numlock"] || false
+
+    readonly property alias isVolumeOSDShow: root.isVolumeOSDVisible
+    readonly property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
+    readonly property alias isNumLockOSDShow: root.isNumLockOSDVisible
+
     property string scriptPath: `${Quickshell.shellDir}/Assets/screen-capture.sh`
 
-    property var osdTimers: ({
-                                 "capslock": null,
-                                 "numlock": null,
-                                 "volume": null
-                             })
+    property var _activeOSDs: ({})
+	property var _osdTimers: ({})
 
-    function startOSDTimer(osdName) {
-        var timer = Qt.createQmlObject('import QtQuick 2.15; Timer { interval: 2000; repeat: false; }', root, "dynamicTimer");
+    function showOSD(osdName) {
+        if (!osdName)
+            return;
+
+        _activeOSDs[osdName] = true;
+        _activeOSDsChanged();
+        _startOSDTimer(osdName);
+    }
+
+    function hideOSD(osdName) {
+        if (!osdName)
+            return;
+
+        _activeOSDs[osdName] = false;
+        _activeOSDsChanged();
+        _stopOSDTimer(osdName);
+        _checkAndClosePanelWindow();
+    }
+
+    function toggleOSD(osdName) {
+        if (_activeOSDs[osdName]) {
+            hideOSD(osdName);
+        } else {
+            showOSD(osdName);
+        }
+    }
+
+    function isOSDVisible(osdName) {
+        return _activeOSDs[osdName] || false;
+    }
+
+    function togglePanel(panelName) {
+        switch (panelName) {
+        case "calendar":
+            isCalendarOpen = !isCalendarOpen;
+            break;
+        case "screenCapture":
+            isScreenCapturePanelOpen = !isScreenCapturePanelOpen;
+            break;
+        case "launcher":
+            isLauncherOpen = !isLauncherOpen;
+            break;
+        case "bar":
+            isBarOpen = !isBarOpen;
+            break;
+        case "session":
+            isSessionOpen = !isSessionOpen;
+            break;
+        case "mediaPlayer":
+            isMediaPlayerOpen = !isMediaPlayerOpen;
+            break;
+        case "notificationCenter":
+            isNotificationCenterOpen = !isNotificationCenterOpen;
+            break;
+        case "quickSettings":
+            isQuickSettingsOpen = !isQuickSettingsOpen;
+            break;
+        case "wallpaperSwitcher":
+            isWallpaperSwitcherOpen = !isWallpaperSwitcherOpen;
+            break;
+        case "overview":
+            isOverviewOpen = !isOverviewOpen;
+            break;
+        case "recordPanel":
+            isRecordPanelOpen = !isRecordPanelOpen;
+            break;
+        }
+    }
+
+    function openPanel(panelName) {
+        switch (panelName) {
+        case "calendar":
+            isCalendarOpen = true;
+            break;
+        case "screenCapture":
+            isScreenCapturePanelOpen = true;
+            break;
+        case "launcher":
+            isLauncherOpen = true;
+            break;
+        case "bar":
+            isBarOpen = true;
+            break;
+        case "session":
+            isSessionOpen = true;
+            break;
+        case "mediaPlayer":
+            isMediaPlayerOpen = true;
+            break;
+        case "notificationCenter":
+            isNotificationCenterOpen = true;
+            break;
+        case "quickSettings":
+            isQuickSettingsOpen = true;
+            break;
+        case "wallpaperSwitcher":
+            isWallpaperSwitcherOpen = true;
+            break;
+        case "overview":
+            isOverviewOpen = true;
+            break;
+        case "recordPanel":
+            isRecordPanelOpen = true;
+            break;
+        }
+    }
+
+    function closePanel(panelName) {
+        switch (panelName) {
+        case "calendar":
+            isCalendarOpen = false;
+            break;
+        case "screenCapture":
+            isScreenCapturePanelOpen = false;
+            break;
+        case "launcher":
+            isLauncherOpen = false;
+            break;
+        case "bar":
+            isBarOpen = false;
+            break;
+        case "session":
+            isSessionOpen = false;
+            break;
+        case "mediaPlayer":
+            isMediaPlayerOpen = false;
+            break;
+        case "notificationCenter":
+            isNotificationCenterOpen = false;
+            break;
+        case "quickSettings":
+            isQuickSettingsOpen = false;
+            break;
+        case "wallpaperSwitcher":
+            isWallpaperSwitcherOpen = false;
+            break;
+        case "overview":
+            isOverviewOpen = false;
+            break;
+        case "recordPanel":
+            isRecordPanelOpen = false;
+            break;
+        }
+    }
+
+    function _startOSDTimer(osdName) {
+        _stopOSDTimer(osdName);
+
+        var timer = Qt.createQmlObject('import QtQuick 2.15; Timer {}', root, "osdTimer_" + osdName);
+
+        timer.interval = osdDisplayDuration;
+        timer.repeat = false;
 
         timer.triggered.connect(function () {
-            closeOSD(osdName);
+            hideOSD(osdName);
             timer.destroy();
-            osdTimers[osdName] = null;
-
-            checkAndClosePanelWindow();
+            _osdTimers[osdName] = null;
         });
 
-        if (osdTimers[osdName]) {
-            osdTimers[osdName].stop();
-            osdTimers[osdName].destroy();
-        }
-
-        osdTimers[osdName] = timer;
+        _osdTimers[osdName] = timer;
         timer.start();
     }
 
-    function closeOSD(osdName) {
-        if (osdName === "capslock")
-            isCapsLockOSDShow = false;
-        else if (osdName === "numlock")
-            isNumLockOSDShow = false;
-        else if (osdName === "volume")
-            isVolumeOSDShow = false;
+    function _stopOSDTimer(osdName) {
+        if (_osdTimers[osdName]) {
+            _osdTimers[osdName].stop();
+            _osdTimers[osdName].destroy();
+            _osdTimers[osdName] = null;
+        }
     }
 
-    function checkAndClosePanelWindow() {
-        if (!isVolumeOSDShow && !isCapsLockOSDShow && !isNumLockOSDShow)
-            cleanup.start();
+    function _checkAndClosePanelWindow() {
+        var anyVisible = Object.keys(_activeOSDs).some(function (key) {
+            return _activeOSDs[key] === true;
+        });
+
+        if (!anyVisible) {
+            cleanupTimer.start();
+        }
     }
 
     Timer {
-        id: cleanup
+        id: cleanupTimer
 
-        interval: 500
+        interval: root.cleanupDelay
         repeat: false
         onTriggered: gc()
     }
@@ -79,12 +231,11 @@ Singleton {
         target: KeyLockState.state
 
         function onCapsLockChanged() {
-            root.isCapsLockOSDShow = true;
-            root.startOSDTimer("capslock");
+            root.showOSD("capslock");
         }
+
         function onNumLockChanged() {
-            root.isNumLockOSDShow = true;
-            root.startOSDTimer("numlock");
+            root.showOSD("numlock");
         }
     }
 
@@ -92,8 +243,7 @@ Singleton {
         target: Pipewire.defaultAudioSink.audio
 
         function onVolumeChanged() {
-            root.isVolumeOSDShow = true;
-            root.startOSDTimer("volume");
+            root.showOSD("volume");
         }
     }
 

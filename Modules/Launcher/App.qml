@@ -8,15 +8,15 @@ import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Hyprland
 
-import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
+import qs.Components
 
 StyledRect {
     id: root
 
-    property int currentIndex: 1
+    property int currentIndex: 0
     property bool isLauncherOpen: GlobalStates.isLauncherOpen
 
     GlobalShortcut {
@@ -77,23 +77,21 @@ StyledRect {
         anchors.fill: parent
         active: window.modelData.name === Hypr.focusedMonitor.name && root.isLauncherOpen
         asynchronous: true
+
         sourceComponent: ColumnLayout {
             anchors.fill: parent
             anchors.margins: Appearance.padding.normal
             spacing: Appearance.spacing.normal
-            focus: root.isLauncherOpen
-            onFocusChanged: {
-                if (focus && root.isLauncherOpen)
-                    search.forceActiveFocus();
-            }
+
             StyledTextField {
                 id: search
 
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
-                placeholderText: "  Search"
+				placeholderText: "  Search"
+				focus: root.isPrototypeOf
+				onFocusChanged: forceActiveFocus()
                 font.family: Appearance.fonts.family.sans
-                focus: true
                 font.pixelSize: Appearance.fonts.size.large * 1.2
                 color: Colours.m3Colors.m3OnBackground
                 placeholderTextColor: Colours.m3Colors.m3OnSurfaceVariant
@@ -130,7 +128,12 @@ StyledRect {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 model: ScriptModel {
-                    values: Fuzzy.fuzzySearch(DesktopEntries.applications.values, search.text, "name", 0.55, Fuzzy.getRecencyScore)
+                    values: Fuzzy.fuzzySearch(DesktopEntries.applications.values // get all apps list
+                    , search.text // get input fields
+                    , "name" // keyword
+                    , 0.55 // threshold
+                    , Fuzzy.getRecencyScore // receny score
+                    )
                 }
                 clip: true
                 spacing: 8
@@ -204,32 +207,25 @@ StyledRect {
                     required property DesktopEntry modelData
                     required property int index
                     width: listView.width
-                    height: 80
+                    height: 50
                     contentItem: RowLayout {
                         spacing: Appearance.spacing.normal
                         StyledRect {
                             Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredWidth: 64
-                            Layout.preferredHeight: 64
+                            Layout.preferredWidth: 40
+                            Layout.preferredHeight: 40
                             Layout.leftMargin: Appearance.padding.normal
-                            color: root.color
-                            border.width: listView.currentIndex === delegateItem.index ? 3 : 1
-                            border.color: listView.currentIndex === delegateItem.index && !search.focus ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
+                            clip: true
                             Behavior on border.width {
-                                NAnim {
-                                    duration: 100
-                                }
+                                NAnim {}
                             }
                             Behavior on border.color {
-                                CAnim {
-                                    duration: 100
-                                }
+                                CAnim {}
                             }
                             IconImage {
                                 anchors.centerIn: parent
-                                width: 48
-                                height: 48
-                                source: Quickshell.iconPath(delegateItem.modelData.icon) || ""
+                                implicitSize: parent.height
+                                source: Quickshell.iconPath(delegateItem.modelData.icon, "image-missing")
                                 asynchronous: true
                             }
                         }
@@ -238,13 +234,16 @@ StyledRect {
                             Layout.fillHeight: true
                             Layout.rightMargin: Appearance.padding.normal
                             spacing: 2
-                            StyledLabel {
+                            HighlightText {
                                 Layout.fillWidth: true
-                                text: delegateItem.modelData.name || ""
-                                font.pixelSize: Appearance.fonts.size.large
-                                font.weight: Font.Medium
-                                elide: Text.ElideRight
-                                color: Colours.m3Colors.m3OnSurface
+                                searchText: search.text
+                                fullText: delegateItem.modelData.name || ""
+                                font.pixelSize: Appearance.fonts.size.normal
+								elide: Text.ElideRight
+								font.weight: Font.DemiBold
+								color: Colours.m3Colors.m3OnSurface
+                                normalColor: Colours.m3Colors.m3OnSurface
+                                highlightColor: Colours.m3Colors.m3Primary
                             }
                             StyledLabel {
                                 Layout.fillWidth: true
@@ -252,15 +251,15 @@ StyledRect {
                                 font.pixelSize: Appearance.fonts.size.small
                                 elide: Text.ElideRight
                                 color: Colours.m3Colors.m3OnSurfaceVariant
-                                opacity: 0.7
                             }
                         }
                     }
 
                     background: StyledRect {
                         anchors.fill: parent
-                        color: listView.currentIndex === delegateItem.index ? Colours.m3Colors.m3SurfaceContainer : "transparent"
+                        color: listView.currentIndex === delegateItem.index ? Colours.m3Colors.m3SurfaceContainerHigh : "transparent"
                     }
+
                     MArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor

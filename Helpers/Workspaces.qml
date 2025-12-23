@@ -34,15 +34,15 @@ Singleton {
 
             switch (eventName) {
             case "createworkspacev2":
-            {
-                hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
-                hyprland.maxWorkspace = hyprland.findMaxId();
-            }
+                {
+                    hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
+                    hyprland.maxWorkspace = hyprland.findMaxId();
+                }
             case "destroyworkspacev2":
-            {
-                hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
-                hyprland.maxWorkspace = hyprland.findMaxId();
-            }
+                {
+                    hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
+                    hyprland.maxWorkspace = hyprland.findMaxId();
+                }
             }
         }
     }

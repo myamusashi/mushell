@@ -45,10 +45,10 @@ Singleton {
 
         if (!found) {
             launchHistory.push({
-                                   id: appId,
-                                   timestamp: now,
-                                   count: 1
-                               });
+                id: appId,
+                timestamp: now,
+                count: 1
+            });
         }
 
         if (launchHistory.length > 50) {
@@ -82,19 +82,19 @@ Singleton {
         return 0;
     }
     readonly property var charMap: ({
-                                        "a": 'aàáâãäåāăą4@',
-                                        "e": 'eèéêëēėę3',
-                                        "i": 'iìíîïīįı1!|l',
-                                        "o": 'oòóôõöøōő0',
-                                        "u": 'uùúûüūůű',
-                                        "c": 'cçćč',
-                                        "n": 'nñńň',
-                                        "s": 'sśšş5$',
-                                        "z": 'zźżž2',
-                                        "l": 'l1!|i',
-                                        "g": 'g9',
-                                        "t": 't7+'
-                                    })
+            "a": 'aàáâãäåāăą4@',
+            "e": 'eèéêëēėę3',
+            "i": 'iìíîïīįı1!|l',
+            "o": 'oòóôõöøōő0',
+            "u": 'uùúûüūůű',
+            "c": 'cçćč',
+            "n": 'nñńň',
+            "s": 'sśšş5$',
+            "z": 'zźżž2',
+            "l": 'l1!|i',
+            "g": 'g9',
+            "t": 't7+'
+        })
     function normalizeChar(chars: string): string {
         const lower = chars.toLowerCase();
         for (const key in charMap) {
@@ -109,6 +109,49 @@ Singleton {
         for (var i = 0; i < text.length; i++) {
             result += normalizeChar(text[i]);
         }
+        return result;
+    }
+    function escapeHtml(text) {
+        if (!text)
+            return "";
+        return text.toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function getHighlightedText(text, query, highlightColor) {
+        if (!query || query.trim().length === 0) {
+            return escapeHtml(text);
+        }
+
+        const normalizedQuery = normalizeText(query).trim();
+        if (normalizedQuery.length === 0) {
+            return escapeHtml(text);
+        }
+
+        const normalizedText = normalizeText(text);
+
+        let result = "";
+        let lastIndex = 0;
+        let index = normalizedText.indexOf(normalizedQuery);
+
+        while (index !== -1) {
+            if (index > lastIndex) {
+                result += escapeHtml(text.substring(lastIndex, index));
+            }
+
+            const matchLength = normalizedQuery.length;
+            result += `<span style="color: ${highlightColor}; font-weight: 600;">`;
+            result += escapeHtml(text.substring(index, index + matchLength));
+            result += `</span>`;
+
+            lastIndex = index + matchLength;
+
+            index = normalizedText.indexOf(normalizedQuery, lastIndex);
+        }
+
+        if (lastIndex < text.length) {
+            result += escapeHtml(text.substring(lastIndex));
+        }
+
         return result;
     }
     function levenshteinDistance(a: string, b: string): int {
@@ -208,9 +251,9 @@ Singleton {
                     const item = items[i];
                     const recency = recencyScoreFn(item);
                     results.push({
-                                     "item": item,
-                                     "score": recency
-                                 });
+                        "item": item,
+                        "score": recency
+                    });
                 }
                 results.sort((a, b) => b.score - a.score);
                 return results.map(r => r.item);
@@ -252,21 +295,21 @@ Singleton {
                 }
 
                 results.push({
-                                 "item": item,
-                                 "score": finalScore
-                             });
+                    "item": item,
+                    "score": finalScore
+                });
             }
         }
 
         results.sort((a, b) => {
-                         const scoreDiff = b.score - a.score;
-                         if (Math.abs(scoreDiff) < 0.001) {
-                             const aText = key ? a.item[key] : a.item;
-                             const bText = key ? b.item[key] : b.item;
-                             return aText.length - bText.length;
-                         }
-                         return scoreDiff;
-                     });
+            const scoreDiff = b.score - a.score;
+            if (Math.abs(scoreDiff) < 0.001) {
+                const aText = key ? a.item[key] : a.item;
+                const bText = key ? b.item[key] : b.item;
+                return aText.length - bText.length;
+            }
+            return scoreDiff;
+        });
 
         return results.map(r => r.item);
     }
