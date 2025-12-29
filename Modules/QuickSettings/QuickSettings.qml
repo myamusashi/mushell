@@ -6,25 +6,25 @@ import QtQuick.Controls
 import Quickshell.Io
 import Quickshell.Hyprland
 
-import qs.Components
 import qs.Configs
 import qs.Helpers
 import qs.Services
+import qs.Components
 
 import "Settings"
 
-ColumnLayout {
+StyledRect {
     id: root
 
     property bool isControlCenterOpen: GlobalStates.isQuickSettingsOpen
     property int state: 0
 
     function toggleControlCenter(): void {
-        isControlCenterOpen = !isControlCenterOpen;
+        GlobalStates.isQuickSettingsOpen = !GlobalStates.isQuickSettingsOpen;
     }
 
     GlobalShortcut {
-        name: "ControlCenter"
+        name: "QuickSettings"
         onPressed: root.toggleControlCenter()
     }
 
@@ -42,143 +42,128 @@ ColumnLayout {
         }
     }
 
-    width: parent.width * 0.3
-    height: isControlCenterOpen ? contentHeight : 0
-    spacing: 0
+    color: Colours.m3Colors.m3Surface
+    clip: true
+    radius: 0
+    bottomLeftRadius: Appearance.rounding.small
+    bottomRightRadius: Appearance.rounding.small
+    width: parent.width * 0.8
+    height: isControlCenterOpen ? 400 : 0
     visible: window.modelData.name === Hypr.focusedMonitor.name
-
-    property real contentHeight: tabBar.implicitHeight + divider.implicitHeight + 500
 
     Behavior on height {
         NAnim {
-            duration: Appearance.animations.durations.small
-            easing.type: Easing.OutCubic
+            duration: Appearance.animations.durations.expressiveDefaultSpatial
+            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
     }
 
     anchors {
         top: parent.top
-        right: parent.right
+        horizontalCenter: parent.horizontalCenter
         rightMargin: 60
     }
 
-    clip: true
+    Loader {
+        anchors.fill: parent
+        active: GlobalStates.isQuickSettingsOpen
+        asynchronous: true
+        sourceComponent: RowLayout {
+            anchors.fill: parent
 
-    TabRow {
-        id: tabBar
+            TabColumn {
+                id: tabBar
 
-        state: root.state
-        scaleFactor: Math.min(1.0, root.width / root.width)
-        visible: root.isControlCenterOpen
-        Layout.fillWidth: true
-        tabs: [
-            {
-                "title": "Settings",
-                "icon": "settings",
-                "index": 0
-            },
-            {
-                "title": "Volumes",
-                "icon": "speaker",
-                "index": 1
-            },
-            {
-                "title": "Performance",
-                "icon": "speed",
-                "index": 2
-            },
-            {
-                "title": "Weather",
-                "icon": "cloud",
-                "index": 3
+                state: root.state
+                color: root.color
+                scaleFactor: Math.min(1.0, root.width / root.width)
+                visible: root.isControlCenterOpen
+                Layout.fillWidth: true
+                tabs: [
+                    {
+                        "icon": "settings",
+                        "index": 0
+                    },
+                    {
+                        "icon": "speaker",
+                        "index": 1
+                    },
+                    {
+                        "icon": "speed",
+                        "index": 2
+                    }
+                ]
+                onTabClicked: index => {
+                    root.state = index;
+                    controlCenterStackView.currentItem.viewIndex = index;
+                }
             }
-        ]
-        onTabClicked: index => {
-            root.state = index;
-            controlCenterStackView.currentItem.viewIndex = index;
-        }
-    }
 
-    StyledRect {
-        id: divider
+            ColumnLayout {
+                Layout.preferredWidth: parent.width * 0.5
+                Layout.fillHeight: true
+                spacing: 0
 
-        Layout.fillWidth: true
-        implicitHeight: root.isControlCenterOpen ? 1 : 0
-        visible: root.isControlCenterOpen
-        color: Colours.m3Colors.m3OutlineVariant
+                StackView {
+                    id: controlCenterStackView
 
-        Behavior on implicitHeight {
-            NAnim {
-                duration: Appearance.animations.durations.small
-            }
-        }
-    }
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    Layout.preferredHeight: 500
 
-    StackView {
-        id: controlCenterStackView
+                    property Component viewComponent: contentView
 
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-        Layout.preferredHeight: 500
+                    initialItem: viewComponent
 
-        property Component viewComponent: contentView
+                    onCurrentItemChanged: {
+                        if (currentItem)
+                            currentItem.viewIndex = root.state;
+                    }
 
-        initialItem: viewComponent
+                    Component {
+                        id: contentView
 
-        onCurrentItemChanged: {
-            if (currentItem)
-            currentItem.viewIndex = root.state;
-        }
+                        StyledRect {
+                            id: shapeRect
 
-        Component {
-            id: contentView
+                            anchors.fill: parent
+                            anchors.topMargin: 10
 
-            StyledRect {
-                id: shapeRect
+                            radius: 0
+                            bottomLeftRadius: Appearance.rounding.normal
+                            bottomRightRadius: Appearance.rounding.normal
+                            color: Colours.m3Colors.m3Background
 
-                anchors.fill: parent
+                            property int viewIndex: 0
 
-                radius: 0
-                bottomLeftRadius: Appearance.rounding.normal
-                bottomRightRadius: Appearance.rounding.normal
-                color: Colours.m3Colors.m3Background
+                            Loader {
+                                anchors.fill: parent
+                                active: parent.viewIndex === 0
+                                asynchronous: true
+                                visible: active
 
-                property int viewIndex: 0
+                                sourceComponent: Settings {}
+                            }
 
-                Loader {
-                    anchors.fill: parent
-                    active: parent.viewIndex === 0
-                    asynchronous: true
-                    visible: active
+                            Loader {
+                                anchors.fill: parent
+                                active: parent.viewIndex === 1
+                                asynchronous: true
+                                visible: active
 
-                    sourceComponent: Settings {}
-                }
+                                sourceComponent: VolumeSettings {}
+                            }
 
-                Loader {
-                    anchors.fill: parent
-                    active: parent.viewIndex === 1
-                    asynchronous: true
-                    visible: active
+                            Loader {
+                                anchors.fill: parent
+                                active: parent.viewIndex === 2
+                                asynchronous: true
+                                visible: active
 
-                    sourceComponent: VolumeSettings {}
-                }
-
-                Loader {
-                    anchors.fill: parent
-                    active: parent.viewIndex === 2
-                    asynchronous: true
-                    visible: active
-
-                    sourceComponent: Performances {}
-                }
-
-                Loader {
-                    anchors.fill: parent
-                    active: parent.viewIndex === 3
-                    asynchronous: true
-                    visible: active
-
-                    sourceComponent: Weathers {}
+                                sourceComponent: Performances {}
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -11,18 +11,19 @@ import qs.Components
 Item {
     id: root
 
-    property int maxColumns: 3
+    property int maxColumns: {
+        const w = Hypr.focusedMonitor.width / Hypr.focusedMonitor.scale;
+        return Math.max(1, Math.min(5, Math.floor(w / 512) + 1));
+    }
     property int maxRows: 3
     property int itemSpacing: Appearance.spacing.normal
     property int pageSpacing: 20
-
     property var widgetsList: Configs.widgets.lists
-
     readonly property int itemsPerPage: maxColumns * maxRows
     readonly property int totalPages: Math.ceil(widgetsList.length / itemsPerPage)
     readonly property int currentPageIndex: Math.floor(swipeView.contentX / swipeView.width)
 
-    implicitWidth: 400
+    implicitWidth: parent.width
     implicitHeight: 220
 
     Flickable {
@@ -31,7 +32,7 @@ Item {
         anchors.fill: parent
         contentWidth: root.totalPages * width
         contentHeight: height
-
+        clip: true
         boundsBehavior: Flickable.StopAtBounds
         flickDeceleration: 5000
         maximumFlickVelocity: 2500
@@ -49,7 +50,7 @@ Item {
         }
 
         NAnim {
-			id: snapAnimation
+            id: snapAnimation
 
             target: swipeView
             property: "contentX"
@@ -59,6 +60,7 @@ Item {
 
         Row {
             id: pagesContainer
+
             spacing: root.pageSpacing
             height: parent.height
 
@@ -79,7 +81,6 @@ Item {
                     GridLayout {
                         anchors.left: parent.left
                         anchors.top: parent.top
-                        anchors.margins: root.itemSpacing
                         columns: root.maxColumns
                         rowSpacing: root.itemSpacing
                         columnSpacing: root.itemSpacing
@@ -93,18 +94,18 @@ Item {
                                 required property var modelData
                                 required property int index
 
-								textSize: Appearance.fonts.size.normal
+                                textSize: Appearance.fonts.size.normal
                                 fontFamily: Appearance.fonts.family.mono
-								iconBackgroundColor: Colours.m3Colors.m3Primary
-								buttonHeight: 50
-								buttonWidth: 150
+                                iconBackgroundColor: Colours.m3Colors.m3Primary
+                                buttonHeight: 50
+                                buttonWidth: 165
                                 iconBackgroundSize: height - 10
                                 iconBackgroundRadius: Appearance.rounding.small
                                 showIconBackground: true
                                 useLayoutWidth: true
                                 iconButton: modelData.icon
-								buttonTitle: modelData.title
-								buttonColor: Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.1)
+                                buttonTitle: modelData.title
+                                buttonColor: Colours.withAlpha(Colours.m3Colors.m3OnSurface, 0.1)
                                 buttonTextColor: Colours.m3Colors.m3OnSurface
                                 enabled: modelData.condition
                                 mArea.layerColor: "transparent"
@@ -134,10 +135,9 @@ Item {
 
                 width: root.currentPageIndex === index ? 24 : 8
                 height: 8
-                radius: 4
+                radius: Appearance.rounding.small
 
                 color: root.currentPageIndex === index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
-
                 opacity: root.currentPageIndex === index ? 1.0 : 0.5
 
                 Behavior on width {
