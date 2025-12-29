@@ -22,9 +22,6 @@ Loader {
             Layout.alignment: Qt.AlignVCenter
             Layout.maximumWidth: implicitWidth
         }
-        NotificationDots {
-            Layout.alignment: Qt.AlignRight
-        }
         Tray {}
         StyledRect {
             Layout.alignment: Qt.AlignVCenter
@@ -53,6 +50,8 @@ Loader {
                     widthBattery: 33
                     heightBattery: 18
                 }
+
+                NotificationDots {}
             }
 
             MArea {
