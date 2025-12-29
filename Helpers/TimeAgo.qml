@@ -23,4 +23,52 @@ Singleton {
         else
             return date.toLocaleString();
     }
+
+    function convertTo12Hour(time24) {
+        if (!time24)
+            return "";
+
+        const timeStr = time24.includes(" ") ? time24.split(" ")[1] : time24;
+
+        const parts = timeStr.split(":");
+        if (parts.length < 2)
+            return timeStr;
+
+        let hours = parseInt(parts[0]);
+        const minutes = parts[1];
+
+        const period = hours >= 12 ? "PM" : "AM";
+
+        if (hours === 0) {
+            hours = 12;
+        } else if (hours > 12) {
+            hours = hours - 12;
+        }
+
+        return hours + ":" + minutes + " " + period;
+	}
+
+	function convertTo12HourCompact(time24) {
+        if (!time24)
+            return "";
+
+        const timeStr = time24.includes(" ") ? time24.split(" ")[1] : time24;
+
+        const parts = timeStr.split(":");
+        if (parts.length < 2)
+            return timeStr;
+
+        let hours = parseInt(parts[0]);
+        const minutes = parts[1];
+
+        const period = hours >= 12 ? "PM" : "AM";
+
+        if (hours === 0) {
+            hours = 12;
+        } else if (hours > 12) {
+            hours = hours - 12;
+        }
+
+        return hours + period;
+    }
 }
