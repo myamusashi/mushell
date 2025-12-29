@@ -89,8 +89,7 @@ StyledRect {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 60
                 placeholderText: "  Search"
-                focus: root.isPrototypeOf
-                onFocusChanged: forceActiveFocus()
+				focus: root.isLauncherOpen
                 font.family: Appearance.fonts.family.sans
                 font.pixelSize: Appearance.fonts.size.large * 1.2
                 color: Colours.m3Colors.m3OnBackground
@@ -106,6 +105,7 @@ StyledRect {
                     case Qt.Key_Enter:
                         if (listView.count > 0) {
                             listView.focus = true;
+                            listView.currentItem.forceActiveFocus();
                             event.accepted = true;
                         }
                         break;
@@ -120,7 +120,9 @@ StyledRect {
                         }
                         break;
                     }
-                }
+				}
+
+				Component.onCompleted: forceActiveFocus()
             }
             ListView {
                 id: listView
@@ -238,7 +240,7 @@ StyledRect {
                                 Layout.fillWidth: true
                                 searchText: search.text
                                 fullText: delegateItem.modelData.name || ""
-                                font.pixelSize: Appearance.fonts.size.normal
+                                font.pixelSize: Appearance.fonts.size.large
                                 elide: Text.ElideRight
                                 font.weight: Font.DemiBold
                                 color: Colours.m3Colors.m3OnSurface
