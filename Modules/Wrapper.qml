@@ -248,7 +248,7 @@ Variants {
             id: screenCapture
         }
 
-        OverviewV2 {
+        Overview {
             GlobalShortcut {
                 name: "overview"
                 onPressed: GlobalStates.isOverviewOpen = !GlobalStates.isOverviewOpen

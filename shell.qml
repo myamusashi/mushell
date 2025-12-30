@@ -7,7 +7,6 @@ import Quickshell
 
 import qs.Modules
 import qs.Modules.Lock
-import qs.Modules.Overview
 import qs.Modules.Polkit
 import qs.Modules.RecordPanel
 import qs.Modules.Wallpaper
@@ -22,7 +21,6 @@ ShellRoot {
     Wrapper {
         id: wrapper
     }
-    // Overview {}
 
     Connections {
         target: Quickshell
