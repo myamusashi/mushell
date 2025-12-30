@@ -19,7 +19,7 @@ ShapeCanvas {
 
     Wave {
         anchors.fill: parent
-        fillPercentage: 60
+        fillPercentage: Weather.humidity
         z: 1
     }
 
@@ -140,13 +140,12 @@ ShapeCanvas {
             ctx.fillStyle = waveColor;
             ctx.beginPath();
 
-            var amplitude = 8;
-            var wavelength = width / 1.2;
+            var amplitude = 3;
+            var wavelength = width / 5;
+            var points = 100;
 
             ctx.moveTo(0, height);
             ctx.lineTo(0, waveY);
-
-            var points = 50;
 
             for (var i = 0; i <= points; i++) {
                 var x = (i / points) * width;
@@ -158,10 +157,12 @@ ShapeCanvas {
                     var prevX = ((i - 1) / points) * width;
                     var prevY = waveY + Math.sin((prevX / wavelength * Math.PI * 2)) * amplitude;
 
-                    var cpX = (prevX + x) / 2;
-                    var cpY = (prevY + y) / 2;
+                    var cpX1 = prevX + (x - prevX) / 3;
+                    var cpY1 = prevY;
+                    var cpX2 = prevX + 2 * (x - prevX) / 3;
+                    var cpY2 = y;
 
-                    ctx.quadraticCurveTo(prevX, prevY, cpX, cpY);
+                    ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, x, y);
                 }
             }
 
