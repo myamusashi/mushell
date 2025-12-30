@@ -124,14 +124,14 @@ Variants {
 
                 Behavior on implicitHeight {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
 
                 Behavior on implicitWidth {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
@@ -147,14 +147,14 @@ Variants {
 
                 Behavior on implicitHeight {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
 
                 Behavior on implicitWidth {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
@@ -170,14 +170,14 @@ Variants {
 
                 Behavior on implicitHeight {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
 
                 Behavior on implicitWidth {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
@@ -193,14 +193,14 @@ Variants {
 
                 Behavior on implicitHeight {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
 
                 Behavior on implicitWidth {
                     NAnim {
-                        duration: Appearance.animations.durations.large
+                        duration: Appearance.animations.durations.expressiveDefaultSpatial
                         easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                     }
                 }
@@ -219,7 +219,8 @@ Variants {
                 cal.anchors.topMargin = bar.height;
                 mediaPlayer.anchors.topMargin = bar.height;
                 quickSettings.anchors.topMargin = bar.height;
-                notif.anchors.topMargin = bar.height;
+				notif.anchors.topMargin = bar.height;
+				weathers.anchors.topMargin = bar.height;
                 // notifCenter.anchors.topMargin = bar.height;
             }
         }
@@ -260,7 +261,7 @@ Variants {
         }
 
         Weathers {
-            id: weathers
+			id: weathers
         }
 
         OSD {
