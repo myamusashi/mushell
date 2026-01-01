@@ -12,26 +12,6 @@ RowLayout {
     Layout.fillWidth: true
     spacing: Appearance.spacing.normal
 
-    property string lastUpdateText: TimeAgo.timeAgoWithIfElse(Weather.lastUpdateWeather)
-
-    Timer {
-        interval: 60000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            root.lastUpdateText = TimeAgo.timeAgoWithIfElse(Weather.lastUpdateWeather);
-        }
-    }
-
-    Connections {
-        target: Weather
-
-        function onLastUpdateWeatherChanged() {
-            root.lastUpdateText = TimeAgo.timeAgoWithIfElse(Weather.lastUpdateWeather);
-        }
-    }
-
     ColumnLayout {
         Layout.preferredWidth: 240
         Layout.fillHeight: true
@@ -126,9 +106,10 @@ RowLayout {
             }
 
             StyledText {
-                text: root.lastUpdateText
+                text: TimeAgo.formatTimestampRelative(parseInt(Weather.lastUpdateWeather))
                 font.pixelSize: Appearance.fonts.size.small
-                color: Colours.m3Colors.m3OnSurface
+				color: Colours.m3Colors.m3OnSurface
+				Component.onCompleted: console.log(Weather.lastUpdateWeather)
             }
         }
     }
