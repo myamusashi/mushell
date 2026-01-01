@@ -179,12 +179,6 @@ Singleton {
         property bool hasActionIcons: false
         property list<var> actions: []
 
-        readonly property Timer timer: Timer {
-            running: notif.popup
-            interval: notif.expireTimeout > 0 ? notif.expireTimeout : 5000
-            onTriggered: notif.popup = false
-        }
-
         readonly property Connections conn: Connections {
             target: notif.notification
 

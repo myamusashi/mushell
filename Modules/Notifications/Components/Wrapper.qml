@@ -10,7 +10,6 @@ Item {
     id: root
 
     required property var notif
-    property bool isRemoving: false
     property alias contentLayout: contentLayout
     property alias iconLayout: iconLayout
     property alias mArea: delegateMouseNotif
@@ -19,32 +18,45 @@ Item {
     signal exited
     signal animationCompleted
 
-    implicitWidth: isRemoving ? 0 : parent.width
-    implicitHeight: isRemoving ? 0 : contentLayout.height * 1.3
+    implicitWidth: parent.width
+    implicitHeight: contentLayout.height * 1.3
     clip: true
     x: parent.width
 
-    Component.onCompleted: slideInAnim.start()
+    Timer {
+		id: timer
+
+        interval: root.notif.expireTimeout > 0 ? root.notif.expireTimeout : 5000
+        running: !delegateMouseNotif.containsMouse
+        onTriggered: root.removeNotificationWithAnimation()
+    }
+
+    Component.onCompleted: {
+        slideInAnim.start();
+        timer.start();
+    }
 
     Component.onDestruction: {
         slideInAnim.stop();
         slideOutAnim.stop();
         swipeOutAnim.stop();
+        timer.stop();
     }
 
     ListView.onPooled: {
         slideInAnim.stop();
         slideOutAnim.stop();
+        timer.stop();
     }
 
     ListView.onReused: {
-        isRemoving = false;
         x = parent.width;
         slideInAnim.start();
+        timer.restart();
     }
 
     NAnim {
-        id: slideInAnim
+		id: slideInAnim
 
         target: root
         property: "x"
@@ -56,18 +68,21 @@ Item {
     }
 
     NAnim {
-        id: slideOutAnim
+		id: slideOutAnim
 
         target: root
         property: "x"
         to: root.parent.width
         duration: Appearance.animations.durations.emphasizedAccel
         easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
-        onFinished: root.isRemoving = true
+        onFinished: {
+            root.notif.popup = false;
+            root.notif.close();
+        }
     }
 
     NAnim {
-        id: swipeOutAnim
+		id: swipeOutAnim
 
         target: root
         property: "x"
@@ -75,16 +90,7 @@ Item {
         easing.bezierCurve: Appearance.animations.curves.standardAccel
         onFinished: {
             root.notif.popup = false;
-            if (root.notif)
-                root.notif.close();
-        }
-    }
-
-    Behavior on x {
-        enabled: !root.isRemoving && !delegateMouseNotif.drag.active
-        NAnim {
-            duration: Appearance.animations.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+            root.notif.close();
         }
     }
 
@@ -103,6 +109,7 @@ Item {
     }
 
     function removeNotificationWithAnimation() {
+        timer.stop();
         slideOutAnim.start();
     }
 
@@ -127,8 +134,15 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
 
-            onEntered: root.entered()
-            onExited: root.exited()
+            onEntered: {
+                root.entered();
+                timer.stop();
+            }
+
+            onExited: {
+                root.exited();
+                timer.restart();
+            }
 
             drag {
                 axis: Drag.XAxis
@@ -137,13 +151,16 @@ Item {
                 maximumX: root.width
 
                 onActiveChanged: {
-                    if (drag.active)
+                    if (drag.active) {
+                        timer.stop();
                         return;
+                    }
                     if (Math.abs(root.x) > root.width * 0.45) {
                         swipeOutAnim.to = root.x > 0 ? root.width : -root.width;
                         swipeOutAnim.start();
                     } else {
                         root.x = 0;
+                        timer.restart();
                     }
                 }
             }

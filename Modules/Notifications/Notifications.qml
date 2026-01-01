@@ -64,7 +64,6 @@ Item {
 
     StyledRect {
         anchors.fill: parent
-
         color: Colours.m3Colors.m3Background
         radius: 0
         bottomLeftRadius: Appearance.rounding.normal
@@ -88,8 +87,8 @@ Item {
                 required property int index
 
                 notif: modelData
-                onEntered: modelData.timer.stop()
-                onExited: modelData.timer.restart()
+                onEntered: modelData.timer?.stop()
+                onExited: modelData.timer?.restart()
             }
         }
     }
