@@ -96,7 +96,7 @@ Singleton {
     property real longitude: 0.0
     property string timezone: ""
     property real elevation: 0.0
-    property string lastUpdateWeather: ""
+    property string lastUpdateWeather
     property string weatherCondition: ""
     property string weatherDescription: ""
     property string weatherIcon: "air"
@@ -117,7 +117,7 @@ Singleton {
     property int cloudCover: 0
     property real precipitation: 0.0
     property real precipitationDaily: 0.0
-    property string lastUpdateAstronomy: ""
+    property string lastUpdateAstronomy
     property string sunRise: ""
     property string sunSet: ""
     property string dayLength: ""
@@ -133,7 +133,7 @@ Singleton {
     property var dailyForecast: []
 
     // AQI properties
-    property string lastUpdateAQI: ""
+    property string lastUpdateAQI
     property int europeanAQI: 0
     property string europeanAQICategory: ""
     property string europeanAQIColor: ""
@@ -255,7 +255,7 @@ Singleton {
             const humidity = details.humidity || {};
             const wind = details.wind || {};
 
-            root.lastUpdateWeather = new Date().toISOString();
+            root.lastUpdateWeather = current.last_update || Date.now();
 
             root.latitude = location.latitude || 0.0;
             root.longitude = location.longitude || 0.0;
@@ -336,7 +336,7 @@ Singleton {
             const current = json.current || {};
             const hourly = json.hourly_forecast || [];
 
-            root.lastUpdateAQI = new Date().toISOString();
+            root.lastUpdateAQI = current.last_update || Date.now();
 
             // Update location if not set by weather
             if (!root.latitude) {
@@ -388,6 +388,7 @@ Singleton {
     function updateAstronomyData(json) {
         try {
             const astro = json.astro || {};
+            const location = json.location || {};
 
             root.sunRise = parseAstronomyTime(astro.sunrise);
             root.sunSet = parseAstronomyTime(astro.sunset);
@@ -399,7 +400,7 @@ Singleton {
             root.isSunUp = astro.is_sun_up === 1;
             root.dayLength = "";
 
-            root.lastUpdateAstronomy = new Date().toISOString();
+            root.lastUpdateAstronomy = location.localtime || Date.now();
             root.astronomyLoaded = true;
             root.astronomyLoading = false;
             saveTimer.restart();
@@ -689,7 +690,12 @@ Singleton {
                 moonIllumination: root.moonIllumination,
                 isMoonUp: root.isMoonUp,
                 isSunUp: root.isSunUp,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+
+                // last update
+                lastUpdateWeather: root.lastUpdateWeather,
+                lastUpdateAQI: root.lastUpdateAQI,
+                lastUpdateAstronomy: root.lastUpdateAstronomy
             };
             storage.setText(JSON.stringify(data, null, 2));
         }
@@ -771,6 +777,11 @@ Singleton {
                 root.moonIllumination = data.moonIllumination || 0;
                 root.isMoonUp = data.isMoonUp || false;
                 root.isSunUp = data.isSunUp || false;
+
+                // restore lastupdate
+                root.lastUpdateWeather = data.lastUpdateWeather || "";
+                root.lastUpdateAQI = data.lastUpdateAQI || "";
+                root.lastUpdateAstronomy = data.lastUpdateAstronomy || "";
 
                 root.weatherLoaded = true;
                 root.aqiLoaded = true;
