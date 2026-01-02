@@ -18,6 +18,10 @@ Singleton {
     property alias dnd: persistentProps.dnd
     property bool loaded: false
 
+    // Memory management properties
+    property int maxNotifications: 100
+    property int maxNotificationAge: 604800000 // 7 days in milliseconds
+
     onListChanged: {
         if (loaded)
             saveTimer.restart();
@@ -45,6 +49,16 @@ Singleton {
         }
     }
 
+    Timer {
+        id: cleanupTimer
+
+        interval: 3600000 // Run cleanup every hour
+        running: true
+        repeat: true
+        triggeredOnStart: false
+        onTriggered: root.cleanupOldNotifications()
+    }
+
     PersistentProperties {
         id: persistentProps
 
@@ -67,6 +81,9 @@ Singleton {
 
         onNotification: notif => {
             notif.tracked = true;
+
+            // Check if we need to clean up before adding a new notification
+            root.enforceNotificationLimit();
 
             const comp = notifComponent.createObject(root, {
                 popup: !persistentProps.dnd,
@@ -100,7 +117,15 @@ Singleton {
                     return;
                 }
 
+                const now = Date.now();
+                let loadedCount = 0;
+
                 for (const notifData of data) {
+                    // Skip notifications that are too old
+                    const notifAge = now - notifData.time;
+                    if (notifAge > root.maxNotificationAge)
+                        continue;
+
                     const notif = notifComponent.createObject(root, {
                         time: new Date(notifData.time),
                         id: notifData.id,
@@ -118,11 +143,16 @@ Singleton {
 
                     if (notif) {
                         root.list.push(notif);
+                        loadedCount++;
                     }
+
+                    // Stop loading if we've reached the max limit
+                    if (loadedCount >= root.maxNotifications)
+                        break;
                 }
 
                 root.list.sort((a, b) => b.time - a.time);
-                console.log(`Loaded ${root.list.length} notification(s) from cache`);
+                console.log(`Loaded ${loadedCount} notification(s) from cache`);
                 root.loaded = true;
             } catch (error) {
                 console.error("Failed to load notifications:", error);
@@ -140,6 +170,37 @@ Singleton {
     function clearAll() {
         for (const notif of root.list.slice())
             notif.close();
+    }
+
+    function cleanupOldNotifications() {
+        const now = Date.now();
+        const oldNotifications = root.list.filter(n => {
+            const age = now - n.time.getTime();
+            return age > root.maxNotificationAge;
+        });
+
+        if (oldNotifications.length > 0) {
+            console.log(`Cleaning up ${oldNotifications.length} old notification(s)`);
+            for (const notif of oldNotifications)
+                notif.close();
+        }
+    }
+
+    function enforceNotificationLimit() {
+        cleanupOldNotifications();
+
+        // check if we're at the limit
+        const currentCount = root.notClosed.length;
+
+        if (currentCount >= root.maxNotifications) {
+            // Sort by time (oldest first) and remove excess
+            const sortedNotifs = root.notClosed.slice().sort((a, b) => a.time - b.time);
+            const toRemove = currentCount - root.maxNotifications + 1; // +1 to make room for new one
+
+            console.log(`Removing ${toRemove} oldest notification(s) to enforce limit`);
+            for (let i = 0; i < toRemove && i < sortedNotifs.length; i++)
+                sortedNotifs[i].close();
+        }
     }
 
     component Notif: QtObject {
@@ -241,6 +302,10 @@ Singleton {
                 root.list = root.list.filter(n => n !== this);
                 if (notification)
                     notification.dismiss();
+
+                // Clean up connections
+                conn.target = null;
+
                 destroy();
             }
         }
@@ -265,11 +330,29 @@ Singleton {
                         invoke: () => a.invoke()
                     }));
         }
+
+        Component.onDestruction: {
+            // Ensure connections are cleaned up
+            if (conn.target) {
+                conn.target = null;
+            }
+        }
     }
 
     Component {
         id: notifComponent
 
         Notif {}
+    }
+
+    Component.onDestruction: {
+        cleanupTimer.stop();
+        for (const notif of root.list.slice()) {
+            try {
+                notif.close();
+            } catch (e) {
+                console.error("Error cleaning up notification:", e);
+            }
+        }
     }
 }
