@@ -156,6 +156,17 @@ Singleton {
     property bool astronomyLoaded: false
     property bool astronomyLoading: false
     property bool loaded: weatherLoaded && aqiLoaded && astronomyLoaded
+    readonly property bool isLoading: weatherLoading || aqiLoading || astronomyLoading
+    readonly property bool isRefreshing: (weatherLoading || aqiLoading || astronomyLoading) && loaded
+    readonly property bool isInitialLoading: (weatherLoading || aqiLoading || astronomyLoading) && !loaded
+    readonly property bool canRefresh: !isLoading
+    readonly property bool hasData: loaded
+
+    // Locations
+    property string locationName: ""
+    property string locationRegion: ""
+    property string locationCountry: ""
+    property string timeZoneIdentifier: ""
 
     property string configLatitude: Configs.weather.latitude
     property string configLongitude: Configs.weather.longitude
@@ -255,6 +266,9 @@ Singleton {
             const humidity = details.humidity || {};
             const wind = details.wind || {};
 
+            root.weatherLoaded = true;
+            root.weatherLoading = false;
+
             root.lastUpdateWeather = current.last_update || Date.now();
 
             root.latitude = location.latitude || 0.0;
@@ -336,6 +350,9 @@ Singleton {
             const current = json.current || {};
             const hourly = json.hourly_forecast || [];
 
+            root.aqiLoaded = true;
+            root.aqiLoading = false;
+
             root.lastUpdateAQI = current.last_update || Date.now();
 
             // Update location if not set by weather
@@ -390,6 +407,9 @@ Singleton {
             const astro = json.astro || {};
             const location = json.location || {};
 
+            root.astronomyLoaded = true;
+            root.astronomyLoading = false;
+
             root.sunRise = parseAstronomyTime(astro.sunrise);
             root.sunSet = parseAstronomyTime(astro.sunset);
             root.moonRise = parseAstronomyTime(astro.moonrise);
@@ -400,6 +420,10 @@ Singleton {
             root.isSunUp = astro.is_sun_up === 1;
             root.dayLength = "";
 
+            root.locationName = location.name || "";
+            root.locationRegion = location.region || "";
+            root.locationCountry = location.country || "";
+            root.timeZoneIdentifier = location.tz_id || "";
             root.lastUpdateAstronomy = location.localtime || Date.now();
             root.astronomyLoaded = true;
             root.astronomyLoading = false;
@@ -621,6 +645,17 @@ Singleton {
         reloadAstronomy();
     }
 
+    function refresh() {
+        if (canRefresh) {
+            console.log("[WEATHER SERVICES] Refresh/reload weather data");
+            reload();
+            return true;
+        } else {
+            console.log("[WEATHER SERVICES] Cannot refresh: already loading");
+            return false;
+        }
+    }
+
     Timer {
         id: reloadTimer
 
@@ -691,6 +726,12 @@ Singleton {
                 isMoonUp: root.isMoonUp,
                 isSunUp: root.isSunUp,
                 timestamp: Date.now(),
+
+                // Locations
+                locationName: root.locationName,
+                locationRegion: root.locationRegion,
+                locationCountry: root.locationCountry,
+                timeZoneIdentifier: root.timeZoneIdentifier,
 
                 // last update
                 lastUpdateWeather: root.lastUpdateWeather,
@@ -782,6 +823,12 @@ Singleton {
                 root.lastUpdateWeather = data.lastUpdateWeather || "";
                 root.lastUpdateAQI = data.lastUpdateAQI || "";
                 root.lastUpdateAstronomy = data.lastUpdateAstronomy || "";
+
+                // Locations
+                root.locationName = data.locationName;
+                root.locationRegion = data.locationRegion;
+                root.locationCountry = data.locationCountry;
+                root.timeZoneIdentifier = data.timeZoneIdentifier;
 
                 root.weatherLoaded = true;
                 root.aqiLoaded = true;
