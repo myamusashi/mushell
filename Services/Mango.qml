@@ -101,9 +101,8 @@ Singleton {
 
         interval: 1000
         onTriggered: {
-            if (root._initialized) {
+            if (root._initialized)
                 eventStream.running = true;
-            }
         }
     }
 
@@ -155,12 +154,11 @@ Singleton {
                     const property = parts[1];
                     const value = parts.slice(2).join(' ');
 
-                    if (!windowsProcess.currentWindow[outputName]) {
+                    if (!windowsProcess.currentWindow[outputName])
                         windowsProcess.currentWindow[outputName] = {
                             "id": outputName,
                             "output": outputName
                         };
-                    }
 
                     switch (property) {
                     case "title":
@@ -258,11 +256,10 @@ Singleton {
         }
 
         onExited: function (exitCode) {
-            if (exitCode === 0) {
+            if (exitCode === 0)
                 root._updateDisplayScales();
-            } else {
+            else
                 console.error("MangoService", "Outputs query failed:", exitCode);
-            }
         }
     }
 
@@ -309,14 +306,13 @@ Singleton {
                 try {
                     const trimmed = line.trim();
                     const outputName = trimmed.replace(/^\+\s*/, '');
-                    if (outputName && !root._monitorCache[outputName]) {
+                    if (outputName && !root._monitorCache[outputName])
                         root._monitorCache[outputName] = {
                             "name": outputName,
                             "scale": 1.0,
                             "active": false,
                             "focused": false
                         };
-                    }
                 } catch (e) {
                     console.error("MangoService", "Output enumeration error:", e, line);
                 }
@@ -324,9 +320,8 @@ Singleton {
         }
 
         onExited: function (exitCode) {
-            if (exitCode !== 0) {
+            if (exitCode !== 0)
                 console.error("MangoService", "Output enumeration failed:", exitCode);
-            }
         }
     }
 

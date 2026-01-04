@@ -1,13 +1,13 @@
 import QtQuick
 
-import qs.Components
 import qs.Configs
-import qs.Services
+import qs.Components
 
 import "../Submodules/rounded-polygon-qmljs/shapes/morph.js" as Morph
 
 Canvas {
     id: root
+
     property color color: "#685496"
     property var roundedPolygon: null
     property bool polygonIsNormalized: true

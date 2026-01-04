@@ -40,11 +40,10 @@ Singleton {
 
         const period = hours >= 12 ? "PM" : "AM";
 
-        if (hours === 0) {
+        if (hours === 0)
             hours = 12;
-        } else if (hours > 12) {
+        else if (hours > 12)
             hours = hours - 12;
-        }
 
         return hours + ":" + minutes + " " + period;
     }
@@ -64,11 +63,10 @@ Singleton {
 
         const period = hours >= 12 ? "PM" : "AM";
 
-        if (hours === 0) {
+        if (hours === 0)
             hours = 12;
-        } else if (hours > 12) {
+        else if (hours > 12)
             hours = hours - 12;
-        }
 
         return hours + period;
     }
@@ -108,11 +106,10 @@ Singleton {
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const period = hours >= 12 ? "PM" : "AM";
 
-        if (hours === 0) {
+        if (hours === 0)
             hours = 12;
-        } else if (hours > 12) {
+        else if (hours > 12)
             hours = hours - 12;
-        }
 
         return `${day} ${month} ${year}, ${hours}:${minutes} ${period}`;
     }

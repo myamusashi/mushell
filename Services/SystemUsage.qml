@@ -158,9 +158,8 @@ Singleton {
         }
         stderr: StdioCollector {
             onStreamFinished: {
-                if (text.trim().length > 0) {
+                if (text.trim().length > 0)
                     console.log("intel_gpu_top error:", text.trim());
-                }
             }
         }
     }
@@ -320,12 +319,11 @@ Singleton {
                         const used = parseInt(parts[1], 10) || 0;
                         const avail = parseInt(parts[2], 10) || 0;
 
-                        if (!deviceMap.has(device) || (used + avail) > (deviceMap.get(device).used + deviceMap.get(device).avail)) {
+                        if (!deviceMap.has(device) || (used + avail) > (deviceMap.get(device).used + deviceMap.get(device).avail))
                             deviceMap.set(device, {
                                 "used": used,
                                 "avail": avail
                             });
-                        }
                     }
                 }
 

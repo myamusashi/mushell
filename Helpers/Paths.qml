@@ -25,6 +25,33 @@ Singleton {
 
     readonly property string recordDir: `${videos}/Shell`
 
+    function pathToBreadcrumb(path) {
+        if (!path || typeof path !== 'string')
+            return '';
+
+        let cleanPath = path;
+
+        // Remove file:// protocol
+        if (cleanPath.startsWith('file://'))
+            cleanPath = cleanPath.substring(7);
+
+        // Remove qrc:// protocol
+        if (cleanPath.startsWith('qrc://'))
+            cleanPath = cleanPath.substring(6);
+
+        // Remove qrc:/ protocol
+        if (cleanPath.startsWith('qrc:/'))
+            cleanPath = cleanPath.substring(5);
+
+        // Remove leading slashes (handles //, ///, etc.)
+        cleanPath = cleanPath.replace(/^\/+/, '');
+
+        // Split by forward slashes or backslashes
+        const parts = cleanPath.split(/[\/\\]+/).filter(part => part.length > 0);
+
+        return parts.join(' > ');
+    }
+
     FileView {
         id: wallpaperPath
 

@@ -7,9 +7,9 @@ import qs.Helpers
 import qs.Services
 
 StyledRect {
-    Layout.fillHeight: true
-    color: "transparent"
     implicitWidth: timeContainer.width + 15
+    implicitHeight: parent.height
+    color: "transparent"
     radius: Appearance.rounding.small
 
     Dots {

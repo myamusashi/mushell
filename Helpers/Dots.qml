@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Widgets
 
 import qs.Components
 import qs.Configs
-import qs.Services
 
 RowLayout {
     id: root
@@ -13,7 +13,7 @@ RowLayout {
     anchors.centerIn: parent
     height: parent.height ? parent.height : 1
 
-    Item {
+    WrapperItem {
         id: iconContainer
 
         Layout.alignment: Qt.AlignVCenter
@@ -23,13 +23,12 @@ RowLayout {
         StyledText {
             id: icon
 
-            anchors.centerIn: parent
             font.family: Appearance.fonts.family.material
             font.pixelSize: Appearance.fonts.size.medium
         }
     }
 
-    Item {
+    WrapperItem {
         id: textContainer
 
         Layout.alignment: Qt.AlignVCenter
@@ -39,7 +38,6 @@ RowLayout {
         StyledText {
             id: text
 
-            anchors.centerIn: parent
             font.family: Appearance.fonts.family.mono
             font.pixelSize: Appearance.fonts.size.small
         }

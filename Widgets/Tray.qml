@@ -15,18 +15,16 @@ import qs.Services
 StyledRect {
     id: root
 
-    property real widgetHeight: 25
+    property real widgetHeight: 35
     readonly property real horizontalPadding: Appearance.spacing.normal
 
-    Layout.preferredWidth: systemTrayRow.width + horizontalPadding * 1.2
-    Layout.minimumWidth: visible ? horizontalPadding * 1.2 : 0
-
-    height: widgetHeight
+    implicitWidth: visible ? systemTrayRow.width + horizontalPadding * 1.2 : 0
+    implicitHeight: widgetHeight
     radius: Appearance.rounding.small
     color: "transparent"
     visible: SystemTray.items.values.length > 0
 
-    Behavior on Layout.preferredWidth {
+    Behavior on implicitWidth {
         NAnim {}
     }
 

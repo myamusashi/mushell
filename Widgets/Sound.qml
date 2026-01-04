@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-
 import Quickshell.Services.Pipewire
 
 import qs.Components
@@ -13,14 +12,13 @@ import qs.Services
 StyledRect {
     id: root
 
+    implicitWidth: container.width
+    implicitHeight: parent.height
+    color: "transparent"
+    radius: Appearance.rounding.small
+
     property string icon: Audio.getIcon(root.node)
     property PwNode node: Pipewire.defaultAudioSink
-
-    Layout.fillHeight: true
-    // color: Colours.colors.withAlpha(Colours.m3Colors.m3Background, 0.79)
-    color: "transparent"
-    implicitWidth: container.width
-    radius: 5
 
     Behavior on implicitWidth {
         NAnim {}

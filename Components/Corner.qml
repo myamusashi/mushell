@@ -25,15 +25,14 @@ Shape {
     preferredRendererType: Shape.CurveRenderer
 
     rotation: {
-        if (location === Qt.TopRightCorner) {
+        if (location === Qt.TopRightCorner)
             return extensionSide === Qt.Vertical ? 0 : 180;
-        } else if (location === Qt.TopLeftCorner) {
+        else if (location === Qt.TopLeftCorner)
             return extensionSide === Qt.Vertical ? 90 : 270;
-        } else if (location === Qt.BottomRightCorner) {
+        else if (location === Qt.BottomRightCorner)
             return extensionSide === Qt.Vertical ? 270 : 90;
-        } else if (location === Qt.BottomLeftCorner) {
+        else if (location === Qt.BottomLeftCorner)
             return extensionSide === Qt.Vertical ? 180 : 0;
-        }
         return 0;
     }
 

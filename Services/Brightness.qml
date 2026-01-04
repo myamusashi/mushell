@@ -24,9 +24,8 @@ Singleton {
                 for (let line of lines) {
                     if (line.includes("Current brightness:")) {
                         const match = line.match(/Current brightness:\s*(\d+)\s*\((\d+)%\)/);
-                        if (match) {
+                        if (match)
                             root.value = parseInt(match[1]); // Hanya satu assignment
-                        }
                     } else if (line.includes("Max brightness:")) {
                         const match = line.match(/Max brightness:\s*(\d+)/);
                         if (match)

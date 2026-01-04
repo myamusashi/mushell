@@ -66,9 +66,8 @@ Singleton {
                                     "available": profile.available,
                                     "readable": root.formatProfileName(profile.name)
                                 }));
-                    } else {
+                    } else
                         root.models = [];
-                    }
                 } catch (e) {
                     console.error("Failed to parse profiles:", e);
                     root.models = [];

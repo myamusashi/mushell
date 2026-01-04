@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell.Widgets
 import Quickshell.Services.UPower
 
 import qs.Components
@@ -24,21 +23,24 @@ Item {
             root.chargeFillIndex = root.batPercentage * 100;
     }
 
-    ClippingRectangle {
+    StyledRect {
         id: batteryBody
 
         implicitWidth: root.widthBattery
         implicitHeight: root.heightBattery
+        clip: true
+        color: "transparent"
+        radius: Appearance.rounding.small * 0.5
+
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter
         }
+
         border {
             width: 2
             color: root.batPercentage <= 0.2 && !root.batCharging ? Colours.m3Colors.m3Error : Colours.withAlpha(Colours.m3Colors.m3Outline, 0.5)
         }
-        color: "transparent"
-        radius: Appearance.rounding.small * 0.5
 
         StyledRect {
             id: batteryFill

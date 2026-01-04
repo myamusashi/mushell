@@ -46,9 +46,8 @@ Singleton {
     }
 
     function disconnectFromNetwork(): void {
-        if (active) {
+        if (active)
             disconnectProc.exec(["nmcli", "connection", "down", active.ssid]);
-        }
     }
 
     function getWifiStatus(): void {
@@ -149,13 +148,11 @@ Singleton {
                     const existing = networkMap.get(network.ssid);
                     if (!existing)
                         networkMap.set(network.ssid, network);
-                    else {
-                        if (network.active && !existing.active)
+                    else if (network.active && !existing.active)
+                        networkMap.set(network.ssid, network);
+                    else if (!network.active && !existing.active)
+                        if (network.strength > existing.strength)
                             networkMap.set(network.ssid, network);
-                        else if (!network.active && !existing.active)
-                            if (network.strength > existing.strength)
-                                networkMap.set(network.ssid, network);
-                    }
                 }
 
                 const networks = Array.from(networkMap.values());
@@ -168,13 +165,12 @@ Singleton {
 
                 for (const network of networks) {
                     const match = rNetworks.find(n => n.frequency === network.frequency && n.ssid === network.ssid && n.bssid === network.bssid);
-                    if (match) {
+                    if (match)
                         match.lastIpcObject = network;
-                    } else {
+                    else
                         rNetworks.push(apComp.createObject(root, {
                             "lastIpcObject": network
                         }));
-                    }
                 }
             }
         }

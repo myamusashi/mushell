@@ -333,9 +333,8 @@ Singleton {
 
         Component.onDestruction: {
             // Ensure connections are cleaned up
-            if (conn.target) {
+            if (conn.target)
                 conn.target = null;
-            }
         }
     }
 

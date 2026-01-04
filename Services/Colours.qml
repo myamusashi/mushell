@@ -56,10 +56,9 @@ Singleton {
     }
 
     function overlayColor(baseColor, targetColor, overlayOpacity) {
-        if (overlayOpacity <= 0) {
+        if (overlayOpacity <= 0)
             // Impossible to influence the base
             return Qt.rgba(0, 0, 0, 0);
-        }
 
         let invA = 1.0 - overlayOpacity;
 

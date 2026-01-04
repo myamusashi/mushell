@@ -215,11 +215,10 @@ Singleton {
             const minutes = match[2];
             const period = match[3].toUpperCase();
 
-            if (period === "PM" && hours !== 12) {
+            if (period === "PM" && hours !== 12)
                 hours += 12;
-            } else if (period === "AM" && hours === 12) {
+            else if (period === "AM" && hours === 12)
                 hours = 0;
-            }
 
             return `${String(hours).padStart(2, '0')}:${minutes}`;
         } catch (e) {
@@ -437,9 +436,8 @@ Singleton {
 
         request.onreadystatechange = function () {
             if (request.readyState === XMLHttpRequest.DONE) {
-                if (request === _activeWeatherRequest) {
+                if (request === _activeWeatherRequest)
                     _activeWeatherRequest = null;
-                }
                 if (request.status === 200) {
                     try {
                         const json = JSON.parse(request.responseText);
@@ -459,9 +457,8 @@ Singleton {
 
         request.onerror = function () {
             console.error("Weather network error - keeping cached data");
-            if (request === _activeWeatherRequest) {
+            if (request === _activeWeatherRequest)
                 _activeWeatherRequest = null;
-            }
             weatherLoading = false;
             // Clean up handlers
             _cleanupRequest(request);
@@ -469,9 +466,8 @@ Singleton {
 
         request.ontimeout = function () {
             console.error("Weather request timeout - keeping cached data");
-            if (request === _activeWeatherRequest) {
+            if (request === _activeWeatherRequest)
                 _activeWeatherRequest = null;
-            }
             weatherLoading = false;
             // Clean up handlers
             _cleanupRequest(request);
@@ -512,9 +508,8 @@ Singleton {
 
         request.onreadystatechange = function () {
             if (request.readyState === XMLHttpRequest.DONE) {
-                if (request === _activeAQIRequest) {
+                if (request === _activeAQIRequest)
                     _activeAQIRequest = null;
-                }
                 if (request.status === 200) {
                     try {
                         const json = JSON.parse(request.responseText);
@@ -534,9 +529,8 @@ Singleton {
 
         request.onerror = function () {
             console.error("AQI network error - keeping cached data");
-            if (request === _activeAQIRequest) {
+            if (request === _activeAQIRequest)
                 _activeAQIRequest = null;
-            }
             aqiLoading = false;
             // Clean up handlers
             _cleanupRequest(request);
@@ -544,9 +538,8 @@ Singleton {
 
         request.ontimeout = function () {
             console.error("AQI request timeout - keeping cached data");
-            if (request === _activeAQIRequest) {
+            if (request === _activeAQIRequest)
                 _activeAQIRequest = null;
-            }
             aqiLoading = false;
             // Clean up handlers
             _cleanupRequest(request);
@@ -587,9 +580,8 @@ Singleton {
 
         request.onreadystatechange = function () {
             if (request.readyState === XMLHttpRequest.DONE) {
-                if (request === _activeAstronomyRequest) {
+                if (request === _activeAstronomyRequest)
                     _activeAstronomyRequest = null;
-                }
                 if (request.status === 200) {
                     try {
                         const json = JSON.parse(request.responseText);
@@ -609,9 +601,8 @@ Singleton {
 
         request.onerror = function () {
             console.error("Astronomy network error - keeping cached data");
-            if (request === _activeAstronomyRequest) {
+            if (request === _activeAstronomyRequest)
                 _activeAstronomyRequest = null;
-            }
             astronomyLoading = false;
             // Clean up handlers
             _cleanupRequest(request);
@@ -619,9 +610,8 @@ Singleton {
 
         request.ontimeout = function () {
             console.error("Astronomy request timeout - keeping cached data");
-            if (request === _activeAstronomyRequest) {
+            if (request === _activeAstronomyRequest)
                 _activeAstronomyRequest = null;
-            }
             astronomyLoading = false;
             // Clean up handlers
             _cleanupRequest(request);

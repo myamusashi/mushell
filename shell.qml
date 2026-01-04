@@ -5,7 +5,7 @@
 import QtQuick
 import Quickshell
 
-import qs.Modules
+import qs.Modules.Drawers
 import qs.Modules.Lock
 import qs.Modules.Polkit
 import qs.Modules.RecordPanel
@@ -18,9 +18,7 @@ ShellRoot {
     Wall {}
     RecordPanel {}
     Polkit {}
-    Wrapper {
-        id: wrapper
-    }
+    Drawers {}
 
     Connections {
         target: Quickshell

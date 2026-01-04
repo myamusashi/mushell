@@ -5,8 +5,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 
-import qs.Services
+import qs.Configs
 import qs.Helpers
+import qs.Services
 
 Singleton {
     id: root
@@ -31,6 +32,7 @@ Singleton {
     readonly property bool isVolumeOSDVisible: _activeOSDs["volume"] || false
     readonly property bool isCapsLockOSDVisible: _activeOSDs["capslock"] || false
     readonly property bool isNumLockOSDVisible: _activeOSDs["numlock"] || false
+    readonly property color drawerColors: Configs.generals.transparent ? Colours.withAlpha(Colours.m3Colors.m3Background, Configs.generals.alpha) : Colours.m3Colors.m3Background
 
     readonly property alias isVolumeOSDShow: root.isVolumeOSDVisible
     readonly property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
@@ -204,11 +206,11 @@ Singleton {
                 "interval": osdDisplayDuration
             });
 
-			// qmllint disable
+            // qmllint disable
             if (timer) {
                 _osdTimerRefs[osdName] = timer;
-				timer.start();
-			// qmllint enable
+                timer.start();
+                // qmllint enable
             } else {
                 console.error("Failed to create OSD timer for:", osdName);
             }

@@ -43,13 +43,12 @@ Singleton {
             }
         }
 
-        if (!found) {
+        if (!found)
             launchHistory.push({
                 id: appId,
                 timestamp: now,
                 count: 1
             });
-        }
 
         if (launchHistory.length > 50) {
             launchHistory.sort((a, b) => b.timestamp - a.timestamp);
@@ -98,9 +97,8 @@ Singleton {
     function normalizeChar(chars: string): string {
         const lower = chars.toLowerCase();
         for (const key in charMap) {
-            if (charMap[key].indexOf(lower) !== -1) {
+            if (charMap[key].indexOf(lower) !== -1)
                 return key;
-            }
         }
         return lower;
     }
@@ -118,14 +116,12 @@ Singleton {
     }
 
     function getHighlightedText(text, query, highlightColor) {
-        if (!query || query.trim().length === 0) {
+        if (!query || query.trim().length === 0)
             return escapeHtml(text);
-        }
 
         const normalizedQuery = normalizeText(query).trim();
-        if (normalizedQuery.length === 0) {
+        if (normalizedQuery.length === 0)
             return escapeHtml(text);
-        }
 
         const normalizedText = normalizeText(text);
 
@@ -134,9 +130,8 @@ Singleton {
         let index = normalizedText.indexOf(normalizedQuery);
 
         while (index !== -1) {
-            if (index > lastIndex) {
+            if (index > lastIndex)
                 result += escapeHtml(text.substring(lastIndex, index));
-            }
 
             const matchLength = normalizedQuery.length;
             result += `<span style="color: ${highlightColor}; font-weight: 600;">`;
@@ -148,9 +143,8 @@ Singleton {
             index = normalizedText.indexOf(normalizedQuery, lastIndex);
         }
 
-        if (lastIndex < text.length) {
+        if (lastIndex < text.length)
             result += escapeHtml(text.substring(lastIndex));
-        }
 
         return result;
     }
@@ -163,9 +157,8 @@ Singleton {
         const longer = a.length <= b.length ? b : a;
         let prevRow = new Array(shorter.length + 1);
         let currRow = new Array(shorter.length + 1);
-        for (var i = 0; i <= shorter.length; i++) {
+        for (var i = 0; i <= shorter.length; i++)
             prevRow[i] = i;
-        }
         for (var i = 1; i <= longer.length; i++) {
             currRow[0] = i;
             for (var j = 1; j <= shorter.length; j++) {
@@ -185,14 +178,11 @@ Singleton {
         return Math.pow(normalized, 1.5);
     }
     function prefixScore(q: string, t: string, tWords: var): real {
-        if (t.indexOf(q) === 0) {
+        if (t.indexOf(q) === 0)
             return q.length === t.length ? 1.0 : 0.95;
-        }
-        for (var i = 0; i < tWords.length; i++) {
-            if (tWords[i].indexOf(q) === 0) {
+        for (var i = 0; i < tWords.length; i++)
+            if (tWords[i].indexOf(q) === 0)
                 return q.length === tWords[i].length ? 0.9 : 0.85;
-            }
-        }
         return 0;
     }
     function consecutiveScore(q: string, t: string): real {
@@ -206,9 +196,8 @@ Singleton {
                 current++;
                 qIdx++;
                 best = Math.max(best, current);
-            } else {
+            } else
                 current = 0;
-            }
         }
         const ratio = best / q.length;
         return ratio * ratio;
@@ -226,9 +215,8 @@ Singleton {
     }
     function getScore(q: string, t: string, tWords: var): real {
         const lenRatio = Math.min(q.length, t.length) / Math.max(q.length, t.length);
-        if (lenRatio < 0.3) {
+        if (lenRatio < 0.3)
             return 0;
-        }
         const distance = distanceScore(q, t) * distanceWeight;
         const prefix = prefixScore(q, t, tWords) * prefixWeight;
         const consecutive = consecutiveScore(q, t) * consecutiveWeight;
@@ -237,9 +225,8 @@ Singleton {
     }
 
     function fuzzySearch(items: var, query: string, key: string, threshold: real, recencyScoreFn: var): var {
-        if (typeof threshold === 'undefined') {
+        if (typeof threshold === 'undefined')
             threshold = 0.55;
-        }
 
         const hasQuery = query && query.length > 0;
 
@@ -262,25 +249,23 @@ Singleton {
         }
 
         const normalizedQuery = normalizeText(query).trim();
-        if (normalizedQuery.length === 0) {
+        if (normalizedQuery.length === 0)
             return items;
-        }
 
         let results = [];
         for (var i = 0; i < items.length; i++) {
             const item = items[i];
             const searchText = key ? item[key] : item;
-            if (typeof searchText !== 'string') {
+            if (typeof searchText !== 'string')
                 continue;
-            }
             const normalizedText = normalizeText(searchText);
 
             let fuzzyScore = 0;
-            if (normalizedText === normalizedQuery) {
+            if (normalizedText === normalizedQuery)
                 fuzzyScore = 1.0;
-            } else if (normalizedText.indexOf(normalizedQuery) !== -1) {
+            else if (normalizedText.indexOf(normalizedQuery) !== -1)
                 fuzzyScore = 0.95;
-            } else {
+            else {
                 const words = normalizedText.split(/\s+/);
                 fuzzyScore = getScore(normalizedQuery, normalizedText, words);
             }

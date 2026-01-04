@@ -13,8 +13,9 @@ import qs.Services
 StyledRect {
     id: root
 
-    Layout.alignment: Qt.AlignCenter
     color: "transparent"
+    implicitHeight: parent.height
+    implicitWidth: mediaInfo.width
 
     readonly property int index: 0
 

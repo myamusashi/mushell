@@ -7,17 +7,14 @@ import qs.Services
 Item {
     id: dots
 
-    implicitWidth: root.width
-    implicitHeight: parent.height
-
     Dots {
         id: root
 
         property int notificationCount: Notifs.notClosed.length
         property bool isDndEnable: Notifs.dnd
 
-        implicitWidth: 10
-        implicitHeight: parent.height
+        width: 30
+        height: parent.height
 
         Icon {
             type: Icon.Material
