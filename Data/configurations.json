@@ -1,0 +1,209 @@
+{
+	// ============================================================
+	// APPEARANCE SETTINGS
+	// Configure visual elements like animations and fonts
+	// ============================================================
+	"appearance": {
+		// Animation settings
+		"animations": {
+			"durations": {
+				// Scale factor for animation speed (1 = normal, <1 = faster, >1 = slower)
+				"scale": 1
+			}
+		},
+		// Font configuration
+		"fonts": {
+			"family": {
+				// Font for Material Design icons
+				"material": "Material Symbols Rounded",
+				// Monospace font for code/terminal text
+				"mono": "Hack",
+				// Sans-serif font for general UI text
+				"sans": "Google Sans Flex"
+			},
+			"size": {
+				// Scale factor for all font sizes (1 = normal, >1 = larger, <1 = smaller)
+				"scale": 1
+			}
+		}
+	},
+
+	// ============================================================
+	// BAR SETTINGS
+	// Configure the status bar appearance
+	// ============================================================
+	"bar": {
+		// Enable compact mode for a smaller bar height
+		"compact": false
+	},
+
+	// ============================================================
+	// COLOR SETTINGS
+	// Configure color scheme and theme management
+	// ============================================================
+	"colors": {
+		// Enable dark mode theme
+		"isDarkMode": true,
+		
+		// Path to Matugen dark color configuration file
+		// Matugen generates Material You colors from wallpapers
+		"matugenConfigPathForDarkColor": "/home/myamusashi/.config/shell/dark-colors.json",
+		
+		// Path to Matugen light color configuration file
+		"matugenConfigPathForLightColor": "/home/myamusashi/.config/shell/light-colors.json",
+		
+		// Path to static color configuration file
+		// Used when useStaticColors is true
+		"staticColorsPath": "/home/myamusashi/.config/shell/colors.json",
+		
+		// Use Matugen-generated colors from wallpaper
+		// If false, uses static colors instead
+		"useMatugenColor": true,
+		
+		// Use predefined static colors instead of dynamic colors
+		"useStaticColors": false
+	},
+
+	// ============================================================
+	// GENERAL SETTINGS
+	// System-wide configuration options
+	// ============================================================
+	"generals": {
+		// Enable transparency effects in the UI
+		"transparent": true,
+		
+		// Transparency level (0.0 = fully transparent, 1.0 = fully opaque)
+		"alpha": 0.8,
+		
+		// Default applications for various tasks
+		"apps": {
+			// Audio mixer/volume control application
+			"audio": "pavucontrol-qt",
+			
+			// File manager application
+			"fileExplorer": "pcmanfm-qt",
+			
+			// Image viewer application
+			"imageViewer": "lximage-qt",
+			
+			// Media playback application
+			"playback": "mpv",
+			
+			// Terminal emulator
+			"terminal": "foot",
+			
+			// Video player application
+			"videoViewer": "mpv"
+		},
+		
+		// Battery monitoring and notification settings
+		"battery": {
+			// Critical battery level percentage (system will take emergency action)
+			"criticalLevel": 3,
+			
+			// Array of warning levels with custom notifications
+			"warnLevels": [
+				{
+					// Battery icon to display
+					"icon": "battery_android_frame_2",
+					
+					// Battery percentage to trigger this warning
+					"level": 20,
+					
+					// Notification message body
+					"message": "You might want to plug in a charger",
+					
+					// Notification title
+					"title": "Low battery"
+				},
+				{
+					"icon": "battery_android_frame_1",
+					"level": 10,
+					"message": "You should probably plug in a charger <b>now</b>",
+					"title": "Did you see the previous message?"
+				},
+				{
+					// Mark as critical (may trigger urgent notification style)
+					"critical": true,
+					"icon": "battery_android_alert",
+					"level": 5,
+					"message": "PLUG THE CHARGER RIGHT NOW!!",
+					"title": "Critical battery level"
+				}
+			]
+		}
+	},
+
+	// ============================================================
+	// WALLPAPER SETTINGS
+	// Configure wallpaper management
+	// ============================================================
+	"wallpaper": {
+		// Enable automatic wallpaper features
+		"enabledWallpaper": true,
+		
+		// Directory containing wallpaper images
+		// The system will randomly select wallpapers from this directory
+		"wallpaperDir": "/home/myamusashi/Pictures/wallpapers"
+	},
+
+	// ============================================================
+	// WEATHER SETTINGS
+	// Configure weather widget data source
+	// ============================================================
+	"weather": {
+		// Latitude coordinate for weather location
+		// This example is set to Depok, Indonesia
+		"latitude": "-6.4028",
+		
+		// Longitude coordinate for weather location
+		"longitude": "106.7744",
+		
+		// Weather data refresh interval in milliseconds
+		// 180000 ms = 3 minutes
+		"reloadTime": 180000
+	},
+
+	// ============================================================
+	// CUSTOM WIDGETS
+	// Define quick action buttons/widgets in the UI
+	// ============================================================
+	"widgets": [
+		{
+			// Command to execute when widget is clicked
+			"action": "/home/myamusashi/.config/quickshell/lock/Assets/screen-capture.sh --screenshot-selection",
+			
+			// Whether this widget is enabled/visible
+			"condition": true,
+			
+			// Icon to display (using Nerd Font icon)
+			"icon": "󰹑",
+			
+			// Widget label/tooltip text
+			"title": "Screenshot"
+		},
+		{
+			// Screen recording widget
+			"action": "/home/myamusashi/.config/quickshell/lock/Assets/screen-capture.sh --screenrecord-selection",
+			"condition": true,
+			"icon": "",
+			"title": "Screen record"
+		},
+		{
+			// Clipboard manager widget
+			// Opens clipse clipboard manager in kitty terminal
+			"action": "kitty --class clipse -e clipse",
+			"condition": true,
+			"icon": "󰅇",
+			"title": "Clipboard"
+		},
+		{
+			// Discord client widget (Vesktop)
+			// Launched with Wayland support enabled
+			"action": "vesktop --enable-features=UseOzonePlatform --ozone-platform=wayland",
+			"condition": true,
+			"icon": "",
+			"title": "Vesktop"
+		}
+	]
+}
