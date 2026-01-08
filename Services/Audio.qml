@@ -1,7 +1,6 @@
 pragma Singleton
 
 import QtQuick
-
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pipewire
@@ -41,6 +40,32 @@ Singleton {
 
         if (node.audio.volume < 0)
             node.audio.volume = 0.0;
+    }
+
+    function formatProfileName(name) {
+        if (name === "off")
+            return "Off";
+        if (name === "pro-audio")
+            return "Pro Audio";
+
+        const parts = name.split("+");
+        const formatted = [];
+
+        for (let part of parts) {
+            part = part.trim();
+
+            // Remove prefixes
+            part = part.replace(/^output:/, "").replace(/^input:/, "");
+
+            // Replace hyphens with spaces and capitalize
+            part = part.split("-").map(word => {
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            }).join(" ");
+
+            formatted.push(part);
+        }
+
+        return formatted.join(" + ");
     }
 
     Process {
@@ -109,31 +134,5 @@ Singleton {
                 root.activeProfileIndex = data.length > 0 ? data[0].index : -1;
             }
         }
-    }
-
-    function formatProfileName(name) {
-        if (name === "off")
-            return "Off";
-        if (name === "pro-audio")
-            return "Pro Audio";
-
-        const parts = name.split("+");
-        const formatted = [];
-
-        for (let part of parts) {
-            part = part.trim();
-
-            // Remove prefixes
-            part = part.replace(/^output:/, "").replace(/^input:/, "");
-
-            // Replace hyphens with spaces and capitalize
-            part = part.split("-").map(word => {
-                return word.charAt(0).toUpperCase() + word.slice(1);
-            }).join(" ");
-
-            formatted.push(part);
-        }
-
-        return formatted.join(" + ");
     }
 }

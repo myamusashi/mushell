@@ -8,9 +8,10 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    property alias recordingTimer: recordingTimer
+
     property bool isRecordingControlOpen: false
     property int recordingSeconds: 0
-    property alias recordingTimer: recordingTimer
 
     Process {
         id: pidStatusRecording

@@ -10,6 +10,16 @@ Singleton {
 
     property bool isNightModeOn: false
 
+    function up(): void {
+        root.isNightModeOn = true;
+        hyprsunset.running = true;
+    }
+
+    function down(): void {
+        root.isNightModeOn = false;
+        killHyprsunset.running = true;
+    }
+
     Process {
         id: hyprsunset
 
@@ -20,15 +30,5 @@ Singleton {
         id: killHyprsunset
 
         command: ["sh", "-c", "kill $(pgrep hyprsunset)"]
-    }
-
-    function up(): void {
-        root.isNightModeOn = true;
-        hyprsunset.running = true;
-    }
-
-    function down(): void {
-        root.isNightModeOn = false;
-        killHyprsunset.running = true;
     }
 }

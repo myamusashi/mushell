@@ -12,9 +12,10 @@ import qs.Services
 LazyLoader {
     id: root
 
-    property bool needKeyboardFocus: false
     required property Component header
     required property Component body
+
+    property bool needKeyboardFocus: false
 
     signal accepted
     signal rejected

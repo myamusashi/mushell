@@ -10,15 +10,16 @@ import qs.Services
 PopupWindow {
     id: root
 
-    property bool opened: false
-    property int animationDuration: 200
     property alias margins: background.margin
     property alias backgroundColor: background.color
     property alias radius: background.radius
+
     required property Component content
 
-    color: "transparent"
+    property bool opened: false
+    property int animationDuration: 200
 
+    color: "transparent"
     implicitWidth: background.width
     implicitHeight: background.height
 

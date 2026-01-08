@@ -14,6 +14,11 @@ import "Components"
 Item {
     id: root
 
+    anchors {
+        right: parent.right
+        top: parent.top
+    }
+
     property bool hasNotifications: Notifs.popups.length > 0
 
     implicitWidth: parent.width * 0.2
@@ -25,11 +30,6 @@ Item {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
-    }
-
-    anchors {
-        right: parent.right
-        top: parent.top
     }
 
     Corner {

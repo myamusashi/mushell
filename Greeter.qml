@@ -18,6 +18,23 @@ ShellRoot {
 
     property var sessions: Sessions.sessions
 
+    function authenticate() {
+        console.log("[AUTH START] User: " + Users.current_user);
+        console.log("[AUTH START] Session: " + Sessions.current_session);
+
+        if (!Users.current_user) {
+            console.log("[ERROR] No user selected!");
+            return;
+        }
+
+        Greetd.createSession(Users.current_user);
+    }
+
+    Component.onCompleted: {
+        console.log("[INIT] Current session: " + Sessions.current_session);
+        console.log("[INIT] Current user: " + Users.current_user);
+    }
+
     Connections {
         target: Greetd
 
@@ -56,36 +73,18 @@ ShellRoot {
         }
     }
 
-    function authenticate() {
-        console.log("[AUTH START] User: " + Users.current_user);
-        console.log("[AUTH START] Session: " + Sessions.current_session);
-
-        if (!Users.current_user) {
-            console.log("[ERROR] No user selected!");
-            return;
-        }
-
-        Greetd.createSession(Users.current_user);
-    }
-
-    Component.onCompleted: {
-        console.log("[INIT] Current session: " + Sessions.current_session);
-        console.log("[INIT] Current user: " + Users.current_user);
-        Colours.colorQuantizer.source = sessionLock.wallpaperPath;
-    }
-
     WlSessionLock {
         id: sessionLock
 
+        readonly property list<string> maskChars: ["m", "y", "a", "m", "u", "s", "a", "s", "h", "i"]
+        readonly property string wallpaperPath: "root:/Assets/wallpaper.png"
+        readonly property bool unlocking: Greetd.state == GreetdState.Authenticating
         property string inputBuffer: ""
         property string maskedBuffer: ""
-        readonly property list<string> maskChars: ["m", "y", "a", "m", "u", "s", "a", "s", "h", "i"]
         property bool showErrorMessage: false
         property bool isAllSelected: false
         property int fakeTypingTimer: 0
         property var lastKeystrokeTime: 0
-        readonly property string wallpaperPath: "root:/Assets/wallpaper.png"
-        readonly property bool unlocking: Greetd.state == GreetdState.Authenticating
 
         locked: true
 

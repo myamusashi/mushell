@@ -10,6 +10,7 @@ import qs.Helpers
 Singleton {
     id: root
 
+    readonly property KeyStateComponent state: KeyStateComponent {}
     readonly property var keystate: JSON.parse(keyStateFile.text().trim())
 
     Process {
@@ -32,6 +33,4 @@ Singleton {
         readonly property bool numLock: root.keystate.numLock
         readonly property bool capsLock: root.keystate.capsLock
     }
-
-    readonly property KeyStateComponent state: KeyStateComponent {}
 }

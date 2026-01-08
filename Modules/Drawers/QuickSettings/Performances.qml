@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-
 import qs.Components
 import qs.Configs
 import qs.Services
@@ -106,6 +105,7 @@ GridLayout {
 
             RowLayout {
                 id: speedDelegate
+
                 required property var modelData
                 Layout.fillWidth: true
                 spacing: Appearance.spacing.small

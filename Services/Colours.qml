@@ -18,38 +18,6 @@ Singleton {
     readonly property var staticTemplateColors: JSON.parse(staticColorFile.text())
     readonly property M3TemplateColors m3Colors: Configs.colors.useMatugenColor ? matugenColors : Configs.colors.useStaticColors ? staticColors : m3GeneratedColors
 
-    FileView {
-        id: matugenDarkFile
-
-        path: Configs.colors.matugenConfigPathForDarkColor
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    FileView {
-        id: matugenLightFile
-
-        path: Configs.colors.matugenConfigPathForLightColor
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    FileView {
-        id: staticColorFile
-
-        path: Configs.colors.staticColorsPath
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    ColorQuantizer {
-        id: colorQuantizer
-
-        source: Qt.resolvedUrl(Paths.currentWallpaper) || "root:/Assets/wallpaper.png"
-        depth: 2
-        rescaleSize: 32
-    }
-
     // Thx end-4
     function clamp01(x) {
         return Math.min(1, Math.max(0, x));
@@ -217,6 +185,38 @@ Singleton {
 
     function withAlpha(color, alpha) {
         return Qt.rgba(color.r, color.g, color.b, alpha);
+    }
+
+    FileView {
+        id: matugenDarkFile
+
+        path: Configs.colors.matugenConfigPathForDarkColor
+        watchChanges: true
+        onFileChanged: reload()
+    }
+
+    FileView {
+        id: matugenLightFile
+
+        path: Configs.colors.matugenConfigPathForLightColor
+        watchChanges: true
+        onFileChanged: reload()
+    }
+
+    FileView {
+        id: staticColorFile
+
+        path: Configs.colors.staticColorsPath
+        watchChanges: true
+        onFileChanged: reload()
+    }
+
+    ColorQuantizer {
+        id: colorQuantizer
+
+        source: Qt.resolvedUrl(Paths.currentWallpaper) || "root:/Assets/wallpaper.png"
+        depth: 2
+        rescaleSize: 32
     }
 
     component StaticColorTemplateComponent: M3TemplateColors {

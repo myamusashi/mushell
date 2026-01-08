@@ -154,6 +154,7 @@ ComboBox {
 
             Column {
                 id: itemColumn
+
                 width: parent.width
 
                 Repeater {
@@ -161,6 +162,7 @@ ComboBox {
 
                     delegate: ItemDelegate {
                         id: delegate
+
                         required property var modelData
                         required property int index
                         width: parent.width

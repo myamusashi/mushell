@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-
 import qs.Components
 import qs.Configs
 import qs.Helpers
@@ -17,6 +16,7 @@ StyledRect {
 
         Icon {
             id: icon
+
             type: Icon.Material
 
             color: Colours.m3Colors.m3OnBackground

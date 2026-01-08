@@ -9,15 +9,33 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    readonly property real diskProp: diskUsed / 1048576
+    readonly property real diskPercent: diskTotal > 0 ? (diskUsed / diskTotal) * 100 : 0
+    readonly property real memProp: memUsed / 1048576
+    readonly property real memPercent: memTotal > 0 ? (memUsed / memTotal) * 100 : 0
+    readonly property string gpuPowerText: gpuPower + " W"
+    readonly property string gpuFreqText: gpuFreqActual + " MHz"
+    readonly property string gpuRc6Text: gpuRc6 + "%"
+    readonly property string gpuBandwidthText: `R: ${gpuMemBandwidthRead} MiB/s W: ${gpuMemBandwidthWrite} MiB/s`
+    readonly property var speedThresholds: [
+        {
+            "limit": 0.01,
+            "format": () => "0.00 MB/s"
+        },
+        {
+            "limit": 1,
+            "format": s => (s * 1024).toFixed(2) + " KB/s"
+        },
+        {
+            "limit": Infinity,
+            "format": s => s.toFixed(2) + " MB/s"
+        }
+    ]
+
     property int memTotal: 0
     property int memUsed: 0
     property int diskUsed: 0
     property int diskTotal: 0
-
-    readonly property real diskProp: diskUsed / 1048576
-    readonly property real memProp: memUsed / 1048576
-    readonly property real diskPercent: diskTotal > 0 ? (diskUsed / diskTotal) * 100 : 0
-    readonly property real memPercent: memTotal > 0 ? (memUsed / memTotal) * 100 : 0
 
     property string wiredInterface: ""
     property string wirelessInterface: ""
@@ -34,27 +52,101 @@ Singleton {
     property double totalWiredDownloadUsage: 0
     property double totalWiredUploadUsage: 0
 
+    property string gpuPower: "0.00"
+    property string gpuRc6: "0.0"
     property int cpuPerc: 0
-
     property int gpuUsage: 0
     property int vramUsed: 0
-    property string gpuPower: "0.00"
     property int gpuFreqActual: 0
     property int gpuFreqRequested: 0
-    property string gpuRc6: "0.0"
     property int gpuMemBandwidthRead: 0
     property int gpuMemBandwidthWrite: 0
 
-    readonly property string gpuPowerText: gpuPower + " W"
-    readonly property string gpuFreqText: gpuFreqActual + " MHz"
-    readonly property string gpuRc6Text: gpuRc6 + "%"
-    readonly property string gpuBandwidthText: `R: ${gpuMemBandwidthRead} MiB/s W: ${gpuMemBandwidthWrite} MiB/s`
-
-    property var previousData: null
-    property double lastUpdateTime: 0
-    property int lastCpuIdle: 0
-    property int lastCpuTotal: 0
     property bool initialized: false
+    property double lastUpdateTime: 0
+    property int lastCpuTotal: 0
+    property int lastCpuIdle: 0
+    property var previousData: null
+
+    function parseNetworkData(data) {
+        const lines = data.split('\n');
+        const interfaces = {};
+
+        for (var i = 2; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line)
+                continue;
+            const parts = line.split(/\s+/);
+            if (parts.length < 17)
+                continue;
+            const ifaceName = parts[0].replace(':', '');
+
+            if (ifaceName !== root.wirelessInterface && ifaceName !== root.wiredInterface)
+                continue;
+            interfaces[ifaceName] = {
+                "rxBytes": parseInt(parts[1]) || 0,
+                "txBytes": parseInt(parts[9]) || 0
+            };
+        }
+
+        return interfaces;
+    }
+
+    function calculateNetworkStats(data) {
+        const currentTime = Date.now();
+        const currentData = parseNetworkData(data);
+
+        const wirelessData = currentData[wirelessInterface];
+        const wiredData = currentData[wiredInterface];
+
+        if (wirelessData) {
+            totalWirelessDownloadUsage = wirelessData.rxBytes / 1048576;
+            totalWirelessUploadUsage = wirelessData.txBytes / 1048576;
+        }
+
+        if (wiredData) {
+            totalWiredDownloadUsage = wiredData.rxBytes / 1048576;
+            totalWiredUploadUsage = wiredData.txBytes / 1048576;
+        }
+
+        if (previousData && lastUpdateTime > 0) {
+            const timeDiffSec = (currentTime - lastUpdateTime) / 1000;
+
+            if (timeDiffSec > 0.1) {
+                const prevWireless = previousData[wirelessInterface];
+                const prevWired = previousData[wiredInterface];
+
+                if (wirelessData && prevWireless) {
+                    const rxDiff = wirelessData.rxBytes - prevWireless.rxBytes;
+                    const txDiff = wirelessData.txBytes - prevWireless.txBytes;
+
+                    wirelessDownloadSpeed = Math.max(0, rxDiff / 1048576 / timeDiffSec);
+                    wirelessUploadSpeed = Math.max(0, txDiff / 1048576 / timeDiffSec);
+                }
+
+                if (wiredData && prevWired) {
+                    const rxDiff = wiredData.rxBytes - prevWired.rxBytes;
+                    const txDiff = wiredData.txBytes - prevWired.txBytes;
+
+                    wiredDownloadSpeed = Math.max(0, rxDiff / 1048576 / timeDiffSec);
+                    wiredUploadSpeed = Math.max(0, txDiff / 1048576 / timeDiffSec);
+                }
+            }
+        }
+
+        previousData = currentData;
+        lastUpdateTime = currentTime;
+    }
+
+    function formatSpeed(speedMBps) {
+        for (const threshold of speedThresholds)
+            if (speedMBps < threshold.limit)
+                return threshold.format(speedMBps);
+    }
+
+    function formatUsage(usageMB) {
+        return usageMB < 1024 ? usageMB.toFixed(2) + " MB" : (usageMB / 1024).toFixed(2) + " GB";
+    }
 
     FileView {
         id: netDevFileView
@@ -193,101 +285,6 @@ Singleton {
         }
     }
 
-    function parseNetworkData(data) {
-        const lines = data.split('\n');
-        const interfaces = {};
-
-        for (var i = 2; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line)
-                continue;
-            const parts = line.split(/\s+/);
-            if (parts.length < 17)
-                continue;
-            const ifaceName = parts[0].replace(':', '');
-
-            if (ifaceName !== root.wirelessInterface && ifaceName !== root.wiredInterface)
-                continue;
-            interfaces[ifaceName] = {
-                "rxBytes": parseInt(parts[1]) || 0,
-                "txBytes": parseInt(parts[9]) || 0
-            };
-        }
-
-        return interfaces;
-    }
-
-    function calculateNetworkStats(data) {
-        const currentTime = Date.now();
-        const currentData = parseNetworkData(data);
-
-        const wirelessData = currentData[wirelessInterface];
-        const wiredData = currentData[wiredInterface];
-
-        if (wirelessData) {
-            totalWirelessDownloadUsage = wirelessData.rxBytes / 1048576;
-            totalWirelessUploadUsage = wirelessData.txBytes / 1048576;
-        }
-
-        if (wiredData) {
-            totalWiredDownloadUsage = wiredData.rxBytes / 1048576;
-            totalWiredUploadUsage = wiredData.txBytes / 1048576;
-        }
-
-        if (previousData && lastUpdateTime > 0) {
-            const timeDiffSec = (currentTime - lastUpdateTime) / 1000;
-
-            if (timeDiffSec > 0.1) {
-                const prevWireless = previousData[wirelessInterface];
-                const prevWired = previousData[wiredInterface];
-
-                if (wirelessData && prevWireless) {
-                    const rxDiff = wirelessData.rxBytes - prevWireless.rxBytes;
-                    const txDiff = wirelessData.txBytes - prevWireless.txBytes;
-
-                    wirelessDownloadSpeed = Math.max(0, rxDiff / 1048576 / timeDiffSec);
-                    wirelessUploadSpeed = Math.max(0, txDiff / 1048576 / timeDiffSec);
-                }
-
-                if (wiredData && prevWired) {
-                    const rxDiff = wiredData.rxBytes - prevWired.rxBytes;
-                    const txDiff = wiredData.txBytes - prevWired.txBytes;
-
-                    wiredDownloadSpeed = Math.max(0, rxDiff / 1048576 / timeDiffSec);
-                    wiredUploadSpeed = Math.max(0, txDiff / 1048576 / timeDiffSec);
-                }
-            }
-        }
-
-        previousData = currentData;
-        lastUpdateTime = currentTime;
-    }
-
-    readonly property var speedThresholds: [
-        {
-            "limit": 0.01,
-            "format": () => "0.00 MB/s"
-        },
-        {
-            "limit": 1,
-            "format": s => (s * 1024).toFixed(2) + " KB/s"
-        },
-        {
-            "limit": Infinity,
-            "format": s => s.toFixed(2) + " MB/s"
-        }
-    ]
-
-    function formatSpeed(speedMBps) {
-        for (const threshold of speedThresholds)
-            if (speedMBps < threshold.limit)
-                return threshold.format(speedMBps);
-    }
-
-    function formatUsage(usageMB) {
-        return usageMB < 1024 ? usageMB.toFixed(2) + " MB" : (usageMB / 1024).toFixed(2) + " GB";
-    }
-
     FileView {
         id: meminfoFileView
 
@@ -383,12 +380,12 @@ Singleton {
     Timer {
         id: mainTimer
 
+        property int updateCycle: 0
+
         running: true
         interval: 2000
         repeat: true
         triggeredOnStart: true
-
-        property int updateCycle: 0
 
         onTriggered: {
             cpuStatFileView.reload();

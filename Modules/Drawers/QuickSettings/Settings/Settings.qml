@@ -9,6 +9,7 @@ Item {
     anchors.fill: parent
     RowLayout {
         id: content
+
         anchors.fill: parent
 
         ColumnLayout {
@@ -44,6 +45,7 @@ Item {
 
             WifiList {
                 id: wifiList
+
                 anchors.fill: parent
             }
         }

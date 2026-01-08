@@ -20,6 +20,12 @@ StyledRect {
 
     focus: root.isSelected
 
+    function executeAction() {
+        root.forceActiveFocus();
+        root.optionData.action();
+        root.executed();
+    }
+
     Keys.onPressed: function (event) {
         switch (event.key) {
         case Qt.Key_Return:
@@ -98,11 +104,5 @@ StyledRect {
         hoverEnabled: true
         onClicked: root.executeAction()
         onEntered: root.forceActiveFocus()
-    }
-
-    function executeAction() {
-        root.forceActiveFocus();
-        root.optionData.action();
-        root.executed();
     }
 }

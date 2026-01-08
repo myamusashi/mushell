@@ -8,43 +8,9 @@ import Quickshell.Io
 Singleton {
     id: root
 
-    property int value: 0
-    property int maxValue: 100
     property bool available: false
-
-    Process {
-        id: getBrightness
-
-        command: ["brightnessctl", "info"]
-        running: true
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const lines = this.text.trim().split("\n");
-                for (let line of lines) {
-                    if (line.includes("Current brightness:")) {
-                        const match = line.match(/Current brightness:\s*(\d+)\s*\((\d+)%\)/);
-                        if (match)
-                            root.value = parseInt(match[1]); // Hanya satu assignment
-                    } else if (line.includes("Max brightness:")) {
-                        const match = line.match(/Max brightness:\s*(\d+)/);
-                        if (match)
-                            root.maxValue = parseInt(match[1]);
-                    }
-                }
-                root.available = true;
-            }
-        }
-
-        stderr: StdioCollector {
-            onStreamFinished: {
-                if (this.text.trim() !== "") {
-                    console.warn("brightnessctl error:", this.text.trim());
-                    root.available = false;
-                }
-            }
-        }
-    }
+    property int maxValue: 100
+    property int value: 0
 
     function setBrightness(newValue) {
         if (!root.available)
@@ -79,11 +45,43 @@ Singleton {
     }
 
     Process {
+        id: getBrightness
+
+        command: ["brightnessctl", "info"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const lines = this.text.trim().split("\n");
+                for (let line of lines) {
+                    if (line.includes("Current brightness:")) {
+                        const match = line.match(/Current brightness:\s*(\d+)\s*\((\d+)%\)/);
+                        if (match)
+                            root.value = parseInt(match[1]); // Hanya satu assignment
+                    } else if (line.includes("Max brightness:")) {
+                        const match = line.match(/Max brightness:\s*(\d+)/);
+                        if (match)
+                            root.maxValue = parseInt(match[1]);
+                    }
+                }
+                root.available = true;
+            }
+        }
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                if (this.text.trim() !== "") {
+                    console.warn("brightnessctl error:", this.text.trim());
+                    root.available = false;
+                }
+            }
+        }
+    }
+
+    Process {
         id: setBrightnessProcess
+
         running: false
-
         stdout: StdioCollector {}
-
         stderr: StdioCollector {
             onStreamFinished: {
                 if (this.text.trim() !== "")

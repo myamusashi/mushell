@@ -12,7 +12,6 @@ Text {
     }
 
     required property string icon
-    property int type: Icon.Material
 
     readonly property string fontFamily: {
         switch (root.type) {
@@ -27,6 +26,17 @@ Text {
         }
     }
 
+    property int type: Icon.Material
+
+    antialiasing: true
+    color: "transparent"
+    renderType: Text.NativeRendering
+    text: root.icon
+
+    Behavior on color {
+        CAnim {}
+    }
+
     font {
         family: root.fontFamily
         pointSize: Appearance.fonts.size.medium
@@ -37,14 +47,5 @@ Text {
             "GRAD": 0,
             "opsz": 48
         }
-    }
-
-    antialiasing: true
-    color: "transparent"
-    renderType: Text.NativeRendering
-    text: root.icon
-
-    Behavior on color {
-        CAnim {}
     }
 }

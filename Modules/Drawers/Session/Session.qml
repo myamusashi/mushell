@@ -15,6 +15,11 @@ import qs.Services
 Item {
     id: root
 
+    anchors {
+        right: parent.right
+        verticalCenter: parent.verticalCenter
+    }
+
     property alias dialog: boxConfirmation
     property int currentIndex: 0
     property bool isSessionOpen: GlobalStates.isSessionOpen
@@ -30,11 +35,6 @@ Item {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
-    }
-
-    anchors {
-        right: parent.right
-        verticalCenter: parent.verticalCenter
     }
 
     IpcHandler {
@@ -202,6 +202,12 @@ Item {
                             font.pointSize: Appearance.fonts.size.large * 3
                             icon: rectDelegate.modelData.icon
 
+                            function handleAction() {
+                                root.pendingAction = rectDelegate.modelData.action;
+                                root.pendingActionName = rectDelegate.modelData.name + "?";
+                                root.showConfirmDialog = true;
+                            }
+
                             Connections {
                                 target: root
                                 function onCurrentIndexChanged() {
@@ -226,12 +232,6 @@ Item {
 
                             Behavior on scale {
                                 NAnim {}
-                            }
-
-                            function handleAction() {
-                                root.pendingAction = rectDelegate.modelData.action;
-                                root.pendingActionName = rectDelegate.modelData.name + "?";
-                                root.showConfirmDialog = true;
                             }
 
                             MArea {

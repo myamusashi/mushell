@@ -32,6 +32,11 @@ Slider {
         XL = 108
     }
 
+    readonly property real availableTrackWidth: availableWidth - handleGap * 2
+    readonly property real trackHeight: height - trackHeightDiff
+    readonly property real handleWidth: pressed ? 2 : 4
+    readonly property int dotCount: stepSize > 0 ? Math.floor((to - from) / stepSize) + 1 : 0
+
     property bool dotEnd: true
     property real trackHeightDiff: 15
     property real handleGap: 6
@@ -41,11 +46,6 @@ Slider {
     property int valueHeight: StyledSlide.ContainerSize.M
     property string icon
     property int iconSize
-
-    readonly property real availableTrackWidth: availableWidth - handleGap * 2
-    readonly property real trackHeight: height - trackHeightDiff
-    readonly property real handleWidth: pressed ? 2 : 4
-    readonly property int dotCount: stepSize > 0 ? Math.floor((to - from) / stepSize) + 1 : 0
 
     component TrackDot: Rectangle {
         required property int index

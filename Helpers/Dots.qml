@@ -8,9 +8,10 @@ import qs.Configs
 RowLayout {
     id: root
 
+    anchors.centerIn: parent
+
     property alias icon: icon
     property alias text: text
-    anchors.centerIn: parent
     height: parent.height ? parent.height : 1
 
     WrapperItem {

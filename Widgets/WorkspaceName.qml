@@ -26,10 +26,11 @@ StyledRect {
     StyledText {
         id: windowNameText
 
-        property string actWinName: activeWindow?.activated ? activeWindow?.appId : "desktop"
-        readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
-
         anchors.centerIn: parent
+
+        readonly property Toplevel activeWindow: ToplevelManager.activeToplevel
+        property string actWinName: activeWindow?.activated ? activeWindow?.appId : "desktop"
+
         color: Colours.m3Colors.m3OnBackground
         elide: Text.ElideMiddle
         font.weight: Font.Light

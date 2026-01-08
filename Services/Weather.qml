@@ -226,6 +226,19 @@ Singleton {
         }
     }
 
+    // clean up XMLHttpRequest handlers
+    function _cleanupRequest(request) {
+        if (request) {
+            try {
+                request.onreadystatechange = null;
+                request.onerror = null;
+                request.ontimeout = null;
+            } catch (e) {
+                console.error("Error cleaning up request handlers:", e);
+            }
+        }
+    }
+
     function updateWeatherData(json) {
         try {
             const location = json.location || {};
@@ -828,19 +841,6 @@ Singleton {
             console.log("Weather cache doesn't exist, creating it and fetching data");
             setText("{}");
             root.reload();
-        }
-    }
-
-    // clean up XMLHttpRequest handlers
-    function _cleanupRequest(request) {
-        if (request) {
-            try {
-                request.onreadystatechange = null;
-                request.onerror = null;
-                request.ontimeout = null;
-            } catch (e) {
-                console.error("Error cleaning up request handlers:", e);
-            }
         }
     }
 

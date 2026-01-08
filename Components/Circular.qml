@@ -1,25 +1,26 @@
 import QtQuick
 
 import qs.Components
-import qs.Configs
 import qs.Services
 
 StyledRect {
     id: root
 
     required property real value
+
+    readonly property real calculatedWidth: Math.max(minSize, Math.max(textMetrics.width, textMetrics.height) + textPadding * 4)
+
     property string text
     property real size
     property real textPadding: 20
     property real minSize: 120 + size
-
-    readonly property real calculatedWidth: Math.max(minSize, Math.max(textMetrics.width, textMetrics.height) + textPadding * 4)
 
     width: calculatedWidth
     height: width
 
     TextMetrics {
         id: textMetrics
+
         text: root.text
         font.pixelSize: 16
         font.bold: true
@@ -27,6 +28,7 @@ StyledRect {
 
     Canvas {
         id: canvas
+
         anchors.fill: parent
 
         onValueChanged: requestPaint()

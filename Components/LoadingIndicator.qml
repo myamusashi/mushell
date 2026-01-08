@@ -1,5 +1,4 @@
 import QtQuick
-
 import qs.Helpers
 import qs.Services
 
@@ -8,20 +7,20 @@ import "../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShape
 Item {
     id: root
 
+    anchors.centerIn: parent
+
     property bool status: false
     property double radius: 50
     property double padding: 50
     property double shapePadding: 12
-    anchors.centerIn: parent
-    implicitWidth: 30
-    implicitHeight: 30
-    visible: status
-
     property var shapeGetters: [MaterialShapes.getOval, MaterialShapes.getSoftBurst, MaterialShapes.getPentagon, MaterialShapes.getPill, MaterialShapes.getSunny, MaterialShapes.getCookie4Sided]
     property int shapeIndex: 0
     property int rotationSpeed: 5000
 
-    // Automatic morphing
+    implicitWidth: 30
+    implicitHeight: 30
+    visible: status
+
     Timer {
         id: morphTimer
 
@@ -60,6 +59,7 @@ Item {
 
         RotationAnimator {
             id: rotationAnim
+
             target: shapeCanvas
             loops: Animation.Infinite
             from: shapeCanvas.rotation

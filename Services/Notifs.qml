@@ -12,15 +12,52 @@ import qs.Helpers
 Singleton {
     id: root
 
-    property list<Notif> list: []
+    property alias dnd: persistentProps.dnd
+
     readonly property list<Notif> notClosed: list.filter(n => !n.closed)
     readonly property list<Notif> popups: list.filter(n => n.popup)
-    property alias dnd: persistentProps.dnd
-    property bool loaded: false
 
+    property list<Notif> list: []
+    property bool loaded: false
     // Memory management properties
     property int maxNotifications: 100
     property int maxNotificationAge: 604800000 // 7 days in milliseconds
+
+    function clearAll() {
+        for (const notif of root.list.slice())
+            notif.close();
+    }
+
+    function cleanupOldNotifications() {
+        const now = Date.now();
+        const oldNotifications = root.list.filter(n => {
+            const age = now - n.time.getTime();
+            return age > root.maxNotificationAge;
+        });
+
+        if (oldNotifications.length > 0) {
+            console.log(`Cleaning up ${oldNotifications.length} old notification(s)`);
+            for (const notif of oldNotifications)
+                notif.close();
+        }
+    }
+
+    function enforceNotificationLimit() {
+        cleanupOldNotifications();
+
+        // check if we're at the limit
+        const currentCount = root.notClosed.length;
+
+        if (currentCount >= root.maxNotifications) {
+            // Sort by time (oldest first) and remove excess
+            const sortedNotifs = root.notClosed.slice().sort((a, b) => a.time - b.time);
+            const toRemove = currentCount - root.maxNotifications + 1; // +1 to make room for new one
+
+            console.log(`Removing ${toRemove} oldest notification(s) to enforce limit`);
+            for (let i = 0; i < toRemove && i < sortedNotifs.length; i++)
+                sortedNotifs[i].close();
+        }
+    }
 
     onListChanged: {
         if (loaded)
@@ -164,42 +201,6 @@ Singleton {
             console.log("Notification cache doesn't exist, creating it");
             setText("[]");
             root.loaded = true;
-        }
-    }
-
-    function clearAll() {
-        for (const notif of root.list.slice())
-            notif.close();
-    }
-
-    function cleanupOldNotifications() {
-        const now = Date.now();
-        const oldNotifications = root.list.filter(n => {
-            const age = now - n.time.getTime();
-            return age > root.maxNotificationAge;
-        });
-
-        if (oldNotifications.length > 0) {
-            console.log(`Cleaning up ${oldNotifications.length} old notification(s)`);
-            for (const notif of oldNotifications)
-                notif.close();
-        }
-    }
-
-    function enforceNotificationLimit() {
-        cleanupOldNotifications();
-
-        // check if we're at the limit
-        const currentCount = root.notClosed.length;
-
-        if (currentCount >= root.maxNotifications) {
-            // Sort by time (oldest first) and remove excess
-            const sortedNotifs = root.notClosed.slice().sort((a, b) => a.time - b.time);
-            const toRemove = currentCount - root.maxNotifications + 1; // +1 to make room for new one
-
-            console.log(`Removing ${toRemove} oldest notification(s) to enforce limit`);
-            for (let i = 0; i < toRemove && i < sortedNotifs.length; i++)
-                sortedNotifs[i].close();
         }
     }
 

@@ -16,6 +16,11 @@ import "Settings"
 Item {
     id: root
 
+    anchors {
+        top: parent.top
+        horizontalCenter: parent.horizontalCenter
+    }
+
     property bool isControlCenterOpen: GlobalStates.isQuickSettingsOpen
     property int state: 0
 
@@ -23,20 +28,15 @@ Item {
     implicitHeight: isControlCenterOpen ? 450 : 0
     visible: window.modelData.name === Hypr.focusedMonitor.name
 
+    function toggleControlCenter(): void {
+        GlobalStates.isQuickSettingsOpen = !GlobalStates.isQuickSettingsOpen;
+    }
+
     Behavior on implicitHeight {
         NAnim {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
-    }
-
-    anchors {
-        top: parent.top
-        horizontalCenter: parent.horizontalCenter
-    }
-
-    function toggleControlCenter(): void {
-        GlobalStates.isQuickSettingsOpen = !GlobalStates.isQuickSettingsOpen;
     }
 
     Corner {

@@ -21,10 +21,11 @@ import Quickshell.Io
 Singleton {
     id: root
 
+    readonly property bool scanning: rescanProc.running
     readonly property list<AccessPoint> networks: []
     readonly property AccessPoint active: networks.find(n => n.active) ?? null
+
     property bool wifiEnabled: true
-    readonly property bool scanning: rescanProc.running
 
     function enableWifi(enabled: bool): void {
         const cmd = enabled ? "on" : "off";

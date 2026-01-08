@@ -9,11 +9,13 @@ import qs.Services
 Item {
     id: root
 
-    required property var notif
-    property bool isPopup: false
     property alias contentLayout: contentLayout
     property alias iconLayout: iconLayout
     property alias mArea: delegateMouseNotif
+
+    required property var notif
+
+    property bool isPopup: false
 
     signal entered
     signal exited

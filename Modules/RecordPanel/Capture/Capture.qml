@@ -23,9 +23,10 @@ ClippingRectangle {
     property bool isExpandSeeMyCaptureOpen: false
     property bool isRecording: false
 
-    PwObjectTracker {
-        objects: [root.node]
-    }
+    implicitWidth: 350
+    implicitHeight: columnLayout.implicitHeight
+    color: Colours.m3Colors.m3SurfaceContainer
+    radius: Appearance.rounding.small
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
@@ -38,10 +39,9 @@ ClippingRectangle {
         return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     }
 
-    implicitWidth: 350
-    implicitHeight: columnLayout.implicitHeight
-    color: Colours.m3Colors.m3SurfaceContainer
-    radius: Appearance.rounding.small
+    PwObjectTracker {
+        objects: [root.node]
+    }
 
     Process {
         id: pidStatusRecording

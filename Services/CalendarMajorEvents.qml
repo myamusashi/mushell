@@ -11,25 +11,6 @@ Singleton {
 
     readonly property date currentDate: new Date()
 
-    FileView {
-        id: file
-
-        path: Paths.cacheDir + "/events/events.json"
-        watchChanges: true
-        blockLoading: true
-        blockWrites: true
-        onFileChanged: reload()
-        onAdapterChanged: writeAdapter()
-
-        JsonAdapter {
-            id: adapter
-
-            property JsonObject subObject: JsonObject {
-                property string subObjectProperty: "default value"
-            }
-        }
-    }
-
     function sendRequest(url, callback) {
         let request = new XMLHttpRequest();
         request.onreadystatechange = function () {
@@ -66,5 +47,24 @@ Singleton {
                     console.error("Request failed with status:", response.status);
             }
         });
+    }
+
+    FileView {
+        id: file
+
+        path: Paths.cacheDir + "/events/events.json"
+        watchChanges: true
+        blockLoading: true
+        blockWrites: true
+        onFileChanged: reload()
+        onAdapterChanged: writeAdapter()
+
+        JsonAdapter {
+            id: adapter
+
+            property JsonObject subObject: JsonObject {
+                property string subObjectProperty: "default value"
+            }
+        }
     }
 }

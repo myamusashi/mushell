@@ -16,27 +16,6 @@ Singleton {
     readonly property string currentLayoutSymbol: _currentLayoutSymbol
     readonly property string selectedMonitor: _selectedMonitor
     readonly property var displayScales: _displayScales
-
-    // Signals
-    signal workspaceChanged
-    signal activeWindowChanged
-    signal windowListChanged
-
-    // Internal state (prefixed with _)
-    property bool _initialized: false
-    property bool _overviewActive: false
-    property int _focusedWindowIndex: -1
-    property string _currentLayoutSymbol: ""
-    property string _selectedMonitor: ""
-    property var _displayScales: ({})
-    property var _workspaceCache: ({})
-    property var _windowCache: ({})
-    property var _monitorCache: ({})
-
-    // Internal models
-    property ListModel workspacesModel: ListModel {}
-    property var windowsList: []
-
     // Constants
     readonly property var mmsgCommands: ({
             "query": {
@@ -62,270 +41,30 @@ Singleton {
     readonly property string overviewLayoutSymbol: "󰃇"
     readonly property int defaultWorkspaceId: 1
 
-    // Debounce timer
-    Timer {
-        id: updateTimer
+    // Internal state (prefixed with _)
+    property bool _initialized: false
+    property bool _overviewActive: false
+    property int _focusedWindowIndex: -1
+    property string _currentLayoutSymbol: ""
+    property string _selectedMonitor: ""
+    property var _displayScales: ({})
+    property var _workspaceCache: ({})
+    property var _windowCache: ({})
+    property var _monitorCache: ({})
+    // Internal models
+    property ListModel workspacesModel: ListModel {}
+    property var windowsList: []
 
-        interval: 50
-        repeat: false
-        onTriggered: root._safeUpdate()
+    // Signals
+    signal workspaceChanged
+    signal activeWindowChanged
+    signal windowListChanged
+
+    // Initialization
+    Component.onCompleted: {
+        _initialize();
     }
 
-    // Event stream process
-    Process {
-        id: eventStream
-
-        running: false
-        command: root.mmsgCommands.query.eventStream
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                try {
-                    root._handleEvent(line.trim());
-                } catch (e) {
-                    console.error("MangoService", "Event parsing error:", e, line);
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode !== 0) {
-                console.error("MangoService", "Event stream exited, restarting...");
-                restartTimer.start();
-            }
-        }
-    }
-
-    Timer {
-        id: restartTimer
-
-        interval: 1000
-        onTriggered: {
-            if (root._initialized)
-                eventStream.running = true;
-        }
-    }
-
-    // Workspaces process
-    Process {
-        id: workspacesProcess
-
-        running: false
-        command: root.mmsgCommands.query.workspaces
-        property string accumulatedOutput: ""
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                workspacesProcess.accumulatedOutput += line + "\n";
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode === 0)
-                root._parseWorkspaces(accumulatedOutput);
-            else
-                console.error("MangoService", "Workspaces query failed:", exitCode);
-
-            accumulatedOutput = "";
-        }
-    }
-
-    // Windows process
-    Process {
-        id: windowsProcess
-
-        running: false
-        command: root.mmsgCommands.query.windows
-        property var currentWindow: ({})
-
-        onRunningChanged: {
-            if (running)
-                windowsProcess.currentWindow = {};
-        }
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                const trimmed = line.trim();
-                if (!trimmed)
-                    return;
-                const parts = trimmed.split(' ');
-                if (parts.length >= 3) {
-                    const outputName = parts[0];
-                    const property = parts[1];
-                    const value = parts.slice(2).join(' ');
-
-                    if (!windowsProcess.currentWindow[outputName])
-                        windowsProcess.currentWindow[outputName] = {
-                            "id": outputName,
-                            "output": outputName
-                        };
-
-                    switch (property) {
-                    case "title":
-                        windowsProcess.currentWindow[outputName].title = value;
-                        break;
-                    case "appid":
-                        windowsProcess.currentWindow[outputName].appId = value;
-                        windowsProcess.currentWindow[outputName].class = value;
-                        break;
-                    case "fullscreen":
-                        windowsProcess.currentWindow[outputName].fullscreen = (value === "1");
-                        break;
-                    case "floating":
-                        windowsProcess.currentWindow[outputName].floating = (value === "1");
-                        break;
-                    case "x":
-                        windowsProcess.currentWindow[outputName].x = parseInt(value);
-                        break;
-                    case "y":
-                        windowsProcess.currentWindow[outputName].y = parseInt(value);
-                        break;
-                    case "width":
-                        windowsProcess.currentWindow[outputName].width = parseInt(value);
-                        break;
-                    case "height":
-                        windowsProcess.currentWindow[outputName].height = parseInt(value);
-                        break;
-                    }
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode === 0)
-                root._parseWindows(windowsProcess.currentWindow);
-            else
-                console.error("MangoService", "Windows query failed:", exitCode);
-
-            windowsProcess.currentWindow = {};
-        }
-    }
-
-    // Layout process
-    Process {
-        id: layoutProcess
-
-        running: false
-        command: root.mmsgCommands.query.layout
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                try {
-                    const parts = line.trim().split(/\s+/);
-                    if (parts.length >= 2) {
-                        const layoutSymbol = parts.slice(1).join(' ');
-                        root._handleLayoutChange(layoutSymbol);
-                    }
-                } catch (e) {
-                    console.error("MangoService", "Layout parsing error:", e, line);
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode !== 0)
-                console.error("MangoService", "Layout query failed:", exitCode);
-        }
-    }
-
-    // Outputs process
-    Process {
-        id: outputsProcess
-
-        running: false
-        command: root.mmsgCommands.query.outputs
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                try {
-                    const parts = line.trim().split(/\s+/);
-                    if (parts.length >= 3 && parts[1] === "scale_factor") {
-                        const outputName = parts[0];
-                        const scaleFactor = parseFloat(parts[2]);
-
-                        if (!root._monitorCache[outputName])
-                            root._monitorCache[outputName] = {};
-
-                        root._monitorCache[outputName].scale = scaleFactor;
-                        root._monitorCache[outputName].name = outputName;
-                    }
-                } catch (e) {
-                    console.error("MangoService", "Output parsing error:", e, line);
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode === 0)
-                root._updateDisplayScales();
-            else
-                console.error("MangoService", "Outputs query failed:", exitCode);
-        }
-    }
-
-    // Monitor state process
-    Process {
-        id: monitorStateProcess
-
-        running: false
-        command: root.mmsgCommands.query.monitors
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                try {
-                    const parts = line.trim().split(/\s+/);
-                    if (parts.length >= 3 && parts[1] === "selmon") {
-                        const outputName = parts[0];
-                        const isSelected = parts[2] === "1";
-                        if (isSelected) {
-                            root._selectedMonitor = outputName;
-                            console.log("MangoService", `Initial selected monitor: ${outputName}`);
-                        }
-                    }
-                } catch (e) {
-                    console.error("MangoService", "Monitor state parsing error:", e, line);
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode !== 0)
-                console.error("MangoService", "Monitor state query failed:", exitCode);
-        }
-    }
-
-    // Output enumeration process
-    Process {
-        id: outputEnumProcess
-
-        running: false
-        command: root.mmsgCommands.query.outputEnum
-
-        stdout: SplitParser {
-            onRead: function (line) {
-                try {
-                    const trimmed = line.trim();
-                    const outputName = trimmed.replace(/^\+\s*/, '');
-                    if (outputName && !root._monitorCache[outputName])
-                        root._monitorCache[outputName] = {
-                            "name": outputName,
-                            "scale": 1.0,
-                            "active": false,
-                            "focused": false
-                        };
-                } catch (e) {
-                    console.error("MangoService", "Output enumeration error:", e, line);
-                }
-            }
-        }
-
-        onExited: function (exitCode) {
-            if (exitCode !== 0)
-                console.error("MangoService", "Output enumeration failed:", exitCode);
-        }
-    }
-
-    // Public API functions (like Hypr.dispatch)
     function dispatch(action: string): void {
         try {
             const parts = action.split(' ');
@@ -437,11 +176,6 @@ Singleton {
         } catch (e) {
             console.error("MangoService", "Failed to logout:", e);
         }
-    }
-
-    // Initialization
-    Component.onCompleted: {
-        _initialize();
     }
 
     // Internal functions (prefixed with _)
@@ -706,6 +440,269 @@ Singleton {
             monitorStateProcess.running = true;
         } catch (e) {
             console.error("MangoService", "Safe update failed:", e);
+        }
+    }
+
+    // Debounce timer
+    Timer {
+        id: updateTimer
+
+        interval: 50
+        repeat: false
+        onTriggered: root._safeUpdate()
+    }
+
+    // Event stream process
+    Process {
+        id: eventStream
+
+        running: false
+        command: root.mmsgCommands.query.eventStream
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                try {
+                    root._handleEvent(line.trim());
+                } catch (e) {
+                    console.error("MangoService", "Event parsing error:", e, line);
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode !== 0) {
+                console.error("MangoService", "Event stream exited, restarting...");
+                restartTimer.start();
+            }
+        }
+    }
+
+    Timer {
+        id: restartTimer
+
+        interval: 1000
+        onTriggered: {
+            if (root._initialized)
+                eventStream.running = true;
+        }
+    }
+
+    // Workspaces process
+    Process {
+        id: workspacesProcess
+
+        running: false
+        command: root.mmsgCommands.query.workspaces
+        property string accumulatedOutput: ""
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                workspacesProcess.accumulatedOutput += line + "\n";
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode === 0)
+                root._parseWorkspaces(accumulatedOutput);
+            else
+                console.error("MangoService", "Workspaces query failed:", exitCode);
+
+            accumulatedOutput = "";
+        }
+    }
+
+    // Windows process
+    Process {
+        id: windowsProcess
+
+        running: false
+        command: root.mmsgCommands.query.windows
+        property var currentWindow: ({})
+
+        onRunningChanged: {
+            if (running)
+                windowsProcess.currentWindow = {};
+        }
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                const trimmed = line.trim();
+                if (!trimmed)
+                    return;
+                const parts = trimmed.split(' ');
+                if (parts.length >= 3) {
+                    const outputName = parts[0];
+                    const property = parts[1];
+                    const value = parts.slice(2).join(' ');
+
+                    if (!windowsProcess.currentWindow[outputName])
+                        windowsProcess.currentWindow[outputName] = {
+                            "id": outputName,
+                            "output": outputName
+                        };
+
+                    switch (property) {
+                    case "title":
+                        windowsProcess.currentWindow[outputName].title = value;
+                        break;
+                    case "appid":
+                        windowsProcess.currentWindow[outputName].appId = value;
+                        windowsProcess.currentWindow[outputName].class = value;
+                        break;
+                    case "fullscreen":
+                        windowsProcess.currentWindow[outputName].fullscreen = (value === "1");
+                        break;
+                    case "floating":
+                        windowsProcess.currentWindow[outputName].floating = (value === "1");
+                        break;
+                    case "x":
+                        windowsProcess.currentWindow[outputName].x = parseInt(value);
+                        break;
+                    case "y":
+                        windowsProcess.currentWindow[outputName].y = parseInt(value);
+                        break;
+                    case "width":
+                        windowsProcess.currentWindow[outputName].width = parseInt(value);
+                        break;
+                    case "height":
+                        windowsProcess.currentWindow[outputName].height = parseInt(value);
+                        break;
+                    }
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode === 0)
+                root._parseWindows(windowsProcess.currentWindow);
+            else
+                console.error("MangoService", "Windows query failed:", exitCode);
+
+            windowsProcess.currentWindow = {};
+        }
+    }
+
+    // Layout process
+    Process {
+        id: layoutProcess
+
+        running: false
+        command: root.mmsgCommands.query.layout
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                try {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length >= 2) {
+                        const layoutSymbol = parts.slice(1).join(' ');
+                        root._handleLayoutChange(layoutSymbol);
+                    }
+                } catch (e) {
+                    console.error("MangoService", "Layout parsing error:", e, line);
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode !== 0)
+                console.error("MangoService", "Layout query failed:", exitCode);
+        }
+    }
+
+    // Outputs process
+    Process {
+        id: outputsProcess
+
+        running: false
+        command: root.mmsgCommands.query.outputs
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                try {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length >= 3 && parts[1] === "scale_factor") {
+                        const outputName = parts[0];
+                        const scaleFactor = parseFloat(parts[2]);
+
+                        if (!root._monitorCache[outputName])
+                            root._monitorCache[outputName] = {};
+
+                        root._monitorCache[outputName].scale = scaleFactor;
+                        root._monitorCache[outputName].name = outputName;
+                    }
+                } catch (e) {
+                    console.error("MangoService", "Output parsing error:", e, line);
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode === 0)
+                root._updateDisplayScales();
+            else
+                console.error("MangoService", "Outputs query failed:", exitCode);
+        }
+    }
+
+    // Monitor state process
+    Process {
+        id: monitorStateProcess
+
+        running: false
+        command: root.mmsgCommands.query.monitors
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                try {
+                    const parts = line.trim().split(/\s+/);
+                    if (parts.length >= 3 && parts[1] === "selmon") {
+                        const outputName = parts[0];
+                        const isSelected = parts[2] === "1";
+                        if (isSelected) {
+                            root._selectedMonitor = outputName;
+                            console.log("MangoService", `Initial selected monitor: ${outputName}`);
+                        }
+                    }
+                } catch (e) {
+                    console.error("MangoService", "Monitor state parsing error:", e, line);
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode !== 0)
+                console.error("MangoService", "Monitor state query failed:", exitCode);
+        }
+    }
+
+    // Output enumeration process
+    Process {
+        id: outputEnumProcess
+
+        running: false
+        command: root.mmsgCommands.query.outputEnum
+
+        stdout: SplitParser {
+            onRead: function (line) {
+                try {
+                    const trimmed = line.trim();
+                    const outputName = trimmed.replace(/^\+\s*/, '');
+                    if (outputName && !root._monitorCache[outputName])
+                        root._monitorCache[outputName] = {
+                            "name": outputName,
+                            "scale": 1.0,
+                            "active": false,
+                            "focused": false
+                        };
+                } catch (e) {
+                    console.error("MangoService", "Output enumeration error:", e, line);
+                }
+            }
+        }
+
+        onExited: function (exitCode) {
+            if (exitCode !== 0)
+                console.error("MangoService", "Output enumeration failed:", exitCode);
         }
     }
 }

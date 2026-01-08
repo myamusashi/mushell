@@ -11,6 +11,10 @@ import qs.Components
 Item {
     id: root
 
+    readonly property int itemsPerPage: maxColumns * maxRows
+    readonly property int totalPages: Math.ceil(widgetsList.length / itemsPerPage)
+    readonly property int currentPageIndex: Math.floor(swipeView.contentX / swipeView.width)
+
     property int maxColumns: {
         const w = Hypr.focusedMonitor.width / Hypr.focusedMonitor.scale;
         return Math.max(1, Math.min(5, Math.floor(w / 512) + 1));
@@ -19,9 +23,6 @@ Item {
     property int itemSpacing: Appearance.spacing.normal
     property int pageSpacing: 20
     property var widgetsList: Configs.widgets
-    readonly property int itemsPerPage: maxColumns * maxRows
-    readonly property int totalPages: Math.ceil(widgetsList.length / itemsPerPage)
-    readonly property int currentPageIndex: Math.floor(swipeView.contentX / swipeView.width)
 
     implicitWidth: parent.width
     implicitHeight: 220

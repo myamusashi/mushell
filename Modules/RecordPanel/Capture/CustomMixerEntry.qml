@@ -14,8 +14,9 @@ ColumnLayout {
     id: root
 
     required property bool useCustomProperties
-    property Component customProperty
     required property PwNode node
+
+    property Component customProperty
     property string icon: Audio.getIcon(node)
 
     PwObjectTracker {

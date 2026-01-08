@@ -10,6 +10,20 @@ Singleton {
     readonly property real consecutiveWeight: 0.25
     readonly property real wordBoundaryWeight: 0.15
     readonly property real recencyWeight: 0.4  // Weight for recency boost
+    readonly property var charMap: ({
+            "a": 'aàáâãäåāăą4@',
+            "e": 'eèéêëēėę3',
+            "i": 'iìíîïīįı1!|l',
+            "o": 'oòóôõöøōő0',
+            "u": 'uùúûüūůű',
+            "c": 'cçćč',
+            "n": 'nñńň',
+            "s": 'sśšş5$',
+            "z": 'zźżž2',
+            "l": 'l1!|i',
+            "g": 'g9',
+            "t": 't7+'
+        })
     property var launchHistory: []
 
     Settings {
@@ -80,35 +94,24 @@ Singleton {
 
         return 0;
     }
-    readonly property var charMap: ({
-            "a": 'aàáâãäåāăą4@',
-            "e": 'eèéêëēėę3',
-            "i": 'iìíîïīįı1!|l',
-            "o": 'oòóôõöøōő0',
-            "u": 'uùúûüūůű',
-            "c": 'cçćč',
-            "n": 'nñńň',
-            "s": 'sśšş5$',
-            "z": 'zźżž2',
-            "l": 'l1!|i',
-            "g": 'g9',
-            "t": 't7+'
-        })
+
     function normalizeChar(chars: string): string {
         const lower = chars.toLowerCase();
-        for (const key in charMap) {
+        for (const key in charMap)
             if (charMap[key].indexOf(lower) !== -1)
                 return key;
-        }
+
         return lower;
     }
+
     function normalizeText(text: string): string {
         let result = '';
-        for (var i = 0; i < text.length; i++) {
+        for (var i = 0; i < text.length; i++)
             result += normalizeChar(text[i]);
-        }
+
         return result;
     }
+
     function escapeHtml(text) {
         if (!text)
             return "";

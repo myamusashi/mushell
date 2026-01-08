@@ -148,21 +148,18 @@ StyledRect {
                         MArea {
                             id: mouseArea
 
+                            anchors.fill: parent
+
                             property bool dragged: false
 
                             drag.target: (toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized) ? undefined : toplevel
-
                             cursorShape: dragged ? Qt.DragMoveCursor : Qt.ArrowCursor
                             acceptedButtons: Qt.LeftButton | Qt.RightButton
-                            anchors.fill: parent
-
                             onPressed: dragged = false
-
                             onPositionChanged: {
                                 if (drag.active)
                                     dragged = true;
                             }
-
                             onClicked: mouse => {
                                 if (!dragged) {
                                     if (mouse.button === Qt.LeftButton)
@@ -171,7 +168,6 @@ StyledRect {
                                         toplevel.waylandHandle.close();
                                 }
                             }
-
                             onReleased: {
                                 if (dragged && !(toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized)) {
                                     const mapped = toplevel.mapToItem(toplevel.originalParent, 0, 0);

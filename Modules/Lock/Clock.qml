@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
-
 import qs.Components
 import qs.Configs
 import qs.Services
@@ -156,6 +155,7 @@ ColumnLayout {
 
             StyledLabel {
                 id: dayStyledLabel
+
                 anchors.centerIn: parent
                 font.pixelSize: Appearance.fonts.size.medium * 2.2
                 font.family: Appearance.fonts.family.sans

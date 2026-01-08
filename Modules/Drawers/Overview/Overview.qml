@@ -16,10 +16,14 @@ import qs.Components
 StyledRect {
     id: root
 
+    anchors.verticalCenter: parent.verticalCenter
+
     property bool isOverviewOpen: GlobalStates.isOverviewOpen
+    property bool wallpaperEnabled: true
     property real scaleFactor: 0.2
     property real borderWidth: 2
-    property bool wallpaperEnabled: true
+    property real containerWidth: workspaceWidth + borderWidth
+    property real containerHeight: workspaceHeight + borderWidth
     property real workspaceWidth: {
         if (!Hypr.focusedMonitor || !Hypr.focusedMonitor.scale)
             return 0;
@@ -34,11 +38,8 @@ StyledRect {
         var reserved3 = reserved[3] || 0;
         return (parent.height - (reserved1 + reserved3)) * scaleFactor / Hypr.focusedMonitor.scale;
     }
-    property real containerWidth: workspaceWidth + borderWidth
-    property real containerHeight: workspaceHeight + borderWidth
     property list<int> reserved: Hypr.focusedMonitor.lastIpcObject.reserved
 
-    anchors.verticalCenter: parent.verticalCenter
     x: isOverviewOpen ? (parent.width - width) / 2 : -width
     implicitWidth: contentGrid.implicitWidth * 2.5
     implicitHeight: contentGrid.implicitHeight * 2.5
@@ -56,10 +57,10 @@ StyledRect {
     }
 
     StyledRect {
-        color: GlobalStates.drawerColors
-        border.color: Colours.m3Colors.m3Outline
         anchors.fill: contentGrid
         anchors.margins: -12
+        color: GlobalStates.drawerColors
+        border.color: Colours.m3Colors.m3Outline
 
         opacity: root.isOverviewOpen ? 1 : 0
         scale: root.isOverviewOpen ? 1 : 0.95
@@ -81,19 +82,19 @@ StyledRect {
     StyledRect {
         id: overLayer
 
+        anchors.fill: parent
         color: "transparent"
         z: 1
-        anchors.fill: parent
     }
 
     GridLayout {
         id: contentGrid
 
+        anchors.centerIn: parent
         rows: 2
         columns: 4
         rowSpacing: 12
         columnSpacing: 12
-        anchors.centerIn: parent
 
         opacity: root.isOverviewOpen ? 1 : 0
         scale: root.isOverviewOpen ? 1 : 0.9
@@ -112,6 +113,7 @@ StyledRect {
                 id: workspaceContainer
 
                 required property int index
+
                 property HyprlandWorkspace workspace: Hyprland.workspaces.values.find(w => w.id === index + 1) ?? null
                 property bool hasFullscreen: !!(workspace?.toplevels?.values.some(t => t.wayland?.fullscreen))
                 property bool hasMaximized: !!(workspace?.toplevels?.values.some(t => t.wayland?.maximized))
@@ -122,7 +124,6 @@ StyledRect {
                 clip: true
                 border.width: 2
                 border.color: hasMaximized ? "red" : workspace?.focused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnPrimary
-
                 opacity: root.isOverviewOpen ? 1 : 0
                 scale: root.isOverviewOpen ? 1 : 0.85
 
@@ -143,9 +144,9 @@ StyledRect {
                 }
 
                 Loader {
+                    anchors.centerIn: parent
                     active: root.wallpaperEnabled
                     visible: active
-                    anchors.centerIn: parent
                     sourceComponent: Image {
                         source: wallid.text().trim()
                         sourceSize: Qt.size(workspaceContainer.width, workspaceContainer.height)
@@ -189,6 +190,7 @@ StyledRect {
                             id: toplevel
 
                             required property HyprlandToplevel modelData
+
                             property Toplevel waylandHandle: modelData?.wayland
                             property var toplevelData: modelData.lastIpcObject
                             property int initX: toplevelData.at[0] ?? 0
@@ -249,19 +251,18 @@ StyledRect {
                             MArea {
                                 id: mouseArea
 
+                                anchors.fill: parent
+
                                 property bool dragged: false
+
                                 drag.target: (toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized) ? undefined : toplevel
                                 cursorShape: dragged ? Qt.DragMoveCursor : Qt.ArrowCursor
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                anchors.fill: parent
-
                                 onPressed: dragged = false
-
                                 onPositionChanged: {
                                     if (drag.active)
                                         dragged = true;
                                 }
-
                                 onClicked: mouse => {
                                     if (!dragged) {
                                         if (mouse.button === Qt.LeftButton)
@@ -270,7 +271,6 @@ StyledRect {
                                             toplevel.waylandHandle.close();
                                     }
                                 }
-
                                 onReleased: {
                                     if (dragged && !(toplevel.waylandHandle?.fullscreen || toplevel.waylandHandle?.maximized)) {
                                         const mapped = toplevel.mapToItem(toplevel.originalParent, 0, 0);

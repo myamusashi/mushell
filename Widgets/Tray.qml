@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
-
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
@@ -15,8 +13,8 @@ import qs.Services
 StyledRect {
     id: root
 
-    property real widgetHeight: 35
     readonly property real horizontalPadding: Appearance.spacing.normal
+    property real widgetHeight: 35
 
     implicitWidth: visible ? systemTrayRow.width + horizontalPadding * 1.2 : 0
     implicitHeight: widgetHeight

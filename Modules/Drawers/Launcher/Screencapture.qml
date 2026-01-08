@@ -14,30 +14,12 @@ import qs.Components
 StyledRect {
     id: root
 
+    anchors.centerIn: parent
+
     property int isScreenCapturePanelOpen: GlobalStates.isScreenCapturePanelOpen
     property int selectedIndex: 0
     property int selectedTab: 0
 
-    IpcHandler {
-        target: "screenCaptureLauncher"
-
-        function open(): void {
-            GlobalStates.isScreenCapturePanelOpen = true;
-        }
-        function close(): void {
-            GlobalStates.isScreenCapturePanelOpen = false;
-        }
-        function toggle(): void {
-            GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen;
-        }
-    }
-
-    GlobalShortcut {
-        name: "screencaptureLauncher"
-        onPressed: GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen
-    }
-
-    anchors.centerIn: parent
     visible: true
     implicitWidth: GlobalStates.isScreenCapturePanelOpen ? 300 : 0
     implicitHeight: GlobalStates.isScreenCapturePanelOpen ? 400 : 0
@@ -58,6 +40,25 @@ StyledRect {
             duration: Appearance.animations.durations.large
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
+    }
+
+    IpcHandler {
+        target: "screenCaptureLauncher"
+
+        function open(): void {
+            GlobalStates.isScreenCapturePanelOpen = true;
+        }
+        function close(): void {
+            GlobalStates.isScreenCapturePanelOpen = false;
+        }
+        function toggle(): void {
+            GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen;
+        }
+    }
+
+    GlobalShortcut {
+        name: "screencaptureLauncher"
+        onPressed: GlobalStates.isScreenCapturePanelOpen = !GlobalStates.isScreenCapturePanelOpen
     }
 
     Loader {

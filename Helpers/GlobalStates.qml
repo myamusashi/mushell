@@ -15,6 +15,15 @@ Singleton {
     readonly property int osdDisplayDuration: 2000
     readonly property int cleanupDelay: 500
 
+    readonly property bool isVolumeOSDVisible: _activeOSDs["volume"] || false
+    readonly property bool isCapsLockOSDVisible: _activeOSDs["capslock"] || false
+    readonly property bool isNumLockOSDVisible: _activeOSDs["numlock"] || false
+    readonly property color drawerColors: Configs.generals.transparent ? Colours.withAlpha(Colours.m3Colors.m3Background, Configs.generals.alpha) : Colours.m3Colors.m3Background
+
+    readonly property alias isVolumeOSDShow: root.isVolumeOSDVisible
+    readonly property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
+    readonly property alias isNumLockOSDShow: root.isNumLockOSDVisible
+
     property bool isCalendarOpen: false
     property bool isScreenCapturePanelOpen: false
     property bool isLauncherOpen: false
@@ -28,18 +37,7 @@ Singleton {
     property bool isRecordPanelOpen: false
     property bool isWeatherPanelOpen: false
     property bool hideOuterBorder: false
-
-    readonly property bool isVolumeOSDVisible: _activeOSDs["volume"] || false
-    readonly property bool isCapsLockOSDVisible: _activeOSDs["capslock"] || false
-    readonly property bool isNumLockOSDVisible: _activeOSDs["numlock"] || false
-    readonly property color drawerColors: Configs.generals.transparent ? Colours.withAlpha(Colours.m3Colors.m3Background, Configs.generals.alpha) : Colours.m3Colors.m3Background
-
-    readonly property alias isVolumeOSDShow: root.isVolumeOSDVisible
-    readonly property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
-    readonly property alias isNumLockOSDShow: root.isNumLockOSDVisible
-
     property string scriptPath: `${Paths.rootDir}/Assets/screen-capture.sh`
-
     property var _activeOSDs: ({})
     property var _osdTimerRefs: ({})
 

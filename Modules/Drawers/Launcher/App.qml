@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
@@ -17,6 +16,11 @@ import qs.Components
 Item {
     id: root
 
+    anchors {
+        bottom: parent.bottom
+        horizontalCenter: parent.horizontalCenter
+    }
+
     property int currentIndex: 0
     property bool isLauncherOpen: GlobalStates.isLauncherOpen
 
@@ -24,16 +28,24 @@ Item {
     implicitHeight: isLauncherOpen ? parent.height * 0.5 : 0
     visible: window.modelData.name === Hypr.focusedMonitor.name
 
+    // Thx caelestia
+    function launch(entry: DesktopEntry): void {
+        Fuzzy.updateLaunchHistory(entry);
+
+        entry.runInTerminal ? Quickshell.execDetached({
+            "command": ["app2unit", "--", Configs.generals.apps.terminal, `${Paths.rootDir}/Assets/wrap_term_launch.sh`, ...entry.command],
+            "workingDirectory": entry.workingDirectory
+        }) : Quickshell.execDetached({
+            "command": ["app2unit", "--", ...entry.command],
+            "workingDirectory": entry.workingDirectory
+        });
+    }
+
     Behavior on implicitHeight {
         NAnim {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
-    }
-
-    anchors {
-        bottom: parent.bottom
-        horizontalCenter: parent.horizontalCenter
     }
 
     GlobalShortcut {
@@ -57,19 +69,6 @@ Item {
 
     Component.onCompleted: {
         Fuzzy.loadLaunchHistory();
-    }
-
-    // Thx caelestia
-    function launch(entry: DesktopEntry): void {
-        Fuzzy.updateLaunchHistory(entry);
-
-        entry.runInTerminal ? Quickshell.execDetached({
-            "command": ["app2unit", "--", Configs.generals.apps.terminal, `${Paths.rootDir}/Assets/wrap_term_launch.sh`, ...entry.command],
-            "workingDirectory": entry.workingDirectory
-        }) : Quickshell.execDetached({
-            "command": ["app2unit", "--", ...entry.command],
-            "workingDirectory": entry.workingDirectory
-        });
     }
 
     Corner {

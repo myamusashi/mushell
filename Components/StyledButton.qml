@@ -13,6 +13,10 @@ Item {
 
     property alias mArea: mouseArea
     property alias bg: background
+
+    readonly property real normalWidth: buttonTitle === "" ? iconOnlyWidth : buttonWidth
+    readonly property real expandedWidth: normalWidth * 1.1
+
     property bool enabled: true
     property bool useLayoutWidth: true
     property bool isButtonUseBorder: false
@@ -36,8 +40,7 @@ Item {
     property string iconButton: ""
     property string fontFamily: Appearance.fonts.family.material
     property string buttonTitle: ""
-    readonly property real normalWidth: buttonTitle === "" ? iconOnlyWidth : buttonWidth
-    readonly property real expandedWidth: normalWidth * 1.1
+
     signal clicked
 
     implicitWidth: useLayoutWidth ? undefined : normalWidth
@@ -157,6 +160,7 @@ Item {
 
                 Icon {
                     id: iconOnly
+
                     type: Icon.Material
 
                     visible: !root.showIconBackground

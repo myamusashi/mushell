@@ -15,11 +15,12 @@ WlSessionLockSurface {
     required property WlSessionLock lock
     required property Pam pam
 
+    readonly property list<string> maskChars: ["m", "y", "a", "m", "u", "s", "a", "s", "h", "i"]
+
     property string inputBuffer: ""
     property string maskedBuffer: ""
     property bool showErrorMessage: false
     property bool isAllSelected: false
-    readonly property list<string> maskChars: ["m", "y", "a", "m", "u", "s", "a", "s", "h", "i"]
     property int fakeTypingTimer: 0
     property var lastKeystrokeTime: 0
 

@@ -16,11 +16,26 @@ import qs.Services
 Item {
     id: root
 
+    anchors {
+        bottom: parent.bottom
+        horizontalCenter: parent.horizontalCenter
+    }
+
     property bool isWallpaperSwitcherOpen: GlobalStates.isWallpaperSwitcherOpen
     property string currentWallpaper: Paths.currentWallpaper
-    property var wallpaperList: []
     property string searchQuery: ""
     property string debouncedSearchQuery: ""
+    property var wallpaperList: []
+    property var filteredWallpaperList: {
+        if (debouncedSearchQuery === "")
+            return wallpaperList;
+
+        const query = debouncedSearchQuery.toLowerCase();
+        return wallpaperList.filter(path => {
+            const fileName = path.split('/').pop().toLowerCase();
+            return fileName.includes(query);
+        });
+    }
 
     implicitWidth: parent.width * 0.6
     implicitHeight: isWallpaperSwitcherOpen ? parent.height * 0.3 : 0
@@ -30,11 +45,6 @@ Item {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
-    }
-
-    anchors {
-        bottom: parent.bottom
-        horizontalCenter: parent.horizontalCenter
     }
 
     Corner {
@@ -68,17 +78,6 @@ Item {
     GlobalShortcut {
         name: "wallpaperSwitcher"
         onPressed: GlobalStates.isWallpaperSwitcherOpen = !GlobalStates.isWallpaperSwitcherOpen
-    }
-
-    property var filteredWallpaperList: {
-        if (debouncedSearchQuery === "")
-            return wallpaperList;
-
-        const query = debouncedSearchQuery.toLowerCase();
-        return wallpaperList.filter(path => {
-            const fileName = path.split('/').pop().toLowerCase();
-            return fileName.includes(query);
-        });
     }
 
     StyledRect {

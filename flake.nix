@@ -46,17 +46,16 @@
           [
             packages.default
             quickshell.packages.${system}.default
+            pkgs.kdePackages.qtdeclarative
             pkgs.qt6.qtgraphs
             pkgs.go
-            pkgs.roboto
-            pkgs.roboto-flex
-            (pkgs.callPackage ./nix/qmlfmt.nix {})
+            pkgs.python3
           ]
           ++ packages.runtimeDeps;
 
         shellHook = ''
           go build -o ./Assets/keystate-bin ./Assets/keystate.go
-                echo "Quickshell development environment"
+          echo "mushell environment"
         '';
       };
     });

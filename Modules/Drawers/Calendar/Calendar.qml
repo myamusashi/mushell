@@ -12,17 +12,17 @@ import qs.Services
 Item {
     id: container
 
-    property int cellWidth: Math.floor((width - anchors.margins * 2) / 7.2)
-    property bool isCalendarShow: GlobalStates.isCalendarOpen
-
-    implicitWidth: parent.width * 0.2
-    implicitHeight: isCalendarShow ? 350 : 0
-    visible: window.modelData.name === Hypr.focusedMonitor.name
-
     anchors {
         top: parent.top
         right: parent.right
     }
+
+    property bool isCalendarShow: GlobalStates.isCalendarOpen
+    property int cellWidth: Math.floor((width - anchors.margins * 2) / 7.2)
+
+    implicitWidth: parent.width * 0.2
+    implicitHeight: isCalendarShow ? 350 : 0
+    visible: window.modelData.name === Hypr.focusedMonitor.name
 
     Behavior on cellWidth {
         enabled: false

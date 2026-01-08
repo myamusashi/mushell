@@ -7,16 +7,17 @@ import qs.Services
 MouseArea {
     id: area
 
+    anchors.fill: parent
+
+    property alias layerRect: layer
+
     property real clickOpacity: 0.2
     property real hoverOpacity: 0.08
     property color layerColor: Colours.m3Colors.m3Primary
     property NumberAnimation layerOpacityAnimation: NAnim {}
     property int layerRadius: parent?.radius ?? Appearance.rounding.small
-    property alias layerRect: layer
 
-    anchors.fill: parent
     hoverEnabled: true
-
     onContainsMouseChanged: layer.opacity = (area.containsMouse) ? area.hoverOpacity : 0
     onContainsPressChanged: layer.opacity = (area.containsPress) ? area.clickOpacity : area.hoverOpacity
 

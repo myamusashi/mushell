@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-
 import qs.Configs
 import qs.Services
 
@@ -28,6 +27,7 @@ StyledRect {
 
     Canvas {
         id: indicatorCanvas
+
         anchors.fill: parent
         antialiasing: true
 

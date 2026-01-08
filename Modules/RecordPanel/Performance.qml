@@ -262,6 +262,7 @@ ClippingRectangle {
 
             GraphsView {
                 id: graphView
+
                 anchors.fill: parent
 
                 marginBottom: 1
@@ -278,6 +279,7 @@ ClippingRectangle {
 
                 axisX: ValueAxis {
                     id: axisX
+
                     visible: false
                     lineVisible: false
                     gridVisible: false
@@ -286,6 +288,7 @@ ClippingRectangle {
 
                 axisY: ValueAxis {
                     id: axisY
+
                     visible: false
                     lineVisible: false
                     gridVisible: false

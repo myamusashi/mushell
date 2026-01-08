@@ -15,6 +15,12 @@ import qs.Components
 Item {
     id: root
 
+    anchors {
+        top: parent.top
+        horizontalCenter: parent.horizontalCenter
+        topMargin: 0
+    }
+
     property string url: ""
     property bool isMediaPlayerOpen: GlobalStates.isMediaPlayerOpen
     property real targetHeight: GlobalStates.isMediaPlayerOpen ? contentLoader.implicitHeight + 20 : 0
@@ -24,12 +30,6 @@ Item {
 
     implicitWidth: parent.width * 0.3
     implicitHeight: targetHeight
-
-    anchors {
-        top: parent.top
-        horizontalCenter: parent.horizontalCenter
-        topMargin: 0
-    }
 
     function formatTime(seconds) {
         const hours = Math.floor(seconds / 3600);
