@@ -11,6 +11,7 @@
   weather-icons,
   libnotify,
   quickshell,
+  m3Shapes,
   util-linux,
   networkmanager,
   matugen,
@@ -19,6 +20,7 @@
   wl-screenrec,
   ffmpeg,
   foot,
+  kdePackages,
   polkit,
   hyprland,
   qt6,
@@ -52,7 +54,9 @@
     ffmpeg
     foot
     polkit
+    m3Shapes
     hyprland
+    kdePackages.qtmultimedia
     qt6.qtgraphs
     material-symbols
     (lucide.overrideAttrs rec {

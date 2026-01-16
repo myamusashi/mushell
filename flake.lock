@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "m3Shapes": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1768374620,
+        "narHash": "sha256-aLMj10UaFEBGHDw75+3QFvvk2wjokkXRQyRjs1guVGI=",
+        "owner": "myamusashi",
+        "repo": "m3shapes",
+        "rev": "1c8e6751febf230d7f94bf8015eaeb643bb4521e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "myamusashi",
+        "repo": "m3shapes",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1764667669,
@@ -23,11 +43,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1764663772,
-        "narHash": "sha256-sHqLmm0wAt3PC4vczJeBozI1/f4rv9yp3IjkClHDXDs=",
+        "lastModified": 1768203349,
+        "narHash": "sha256-CAf2k6rWJtZe1XHi+JpuFZSWyJtIp0W/GT0bx8TZ5ZY=",
         "ref": "refs/heads/master",
-        "rev": "26531fc46ef17e9365b03770edd3fb9206fcb460",
-        "revCount": 713,
+        "rev": "658f0fc215681eb3d6dd6575551d35b770fe15f2",
+        "revCount": 723,
         "type": "git",
         "url": "https://git.outfoxxed.me/outfoxxed/quickshell"
       },
@@ -38,6 +58,7 @@
     },
     "root": {
       "inputs": {
+        "m3Shapes": "m3Shapes",
         "nixpkgs": "nixpkgs",
         "quickshell": "quickshell"
       }
