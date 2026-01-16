@@ -2,19 +2,16 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     color: Colours.m3Colors.m3SurfaceContainer
-    clip: true
-    roundedPolygon: MaterialShapes.getSquare()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Square
 
     ColumnLayout {
         anchors {
@@ -28,7 +25,7 @@ ShapeCanvas {
             Icon {
                 type: Icon.Lucide
                 icon: Lucide.icon_cloud_rain
-                font.pointSize: Appearance.fonts.size.large
+                font.pixelSize: Appearance.fonts.size.large * 1.5
                 color: Colours.m3Colors.m3OnSurface
             }
 
@@ -78,7 +75,7 @@ ShapeCanvas {
             Icon {
                 type: Icon.Lucide
                 icon: Lucide.icon_cloud_rain_wind
-                font.pointSize: Appearance.fonts.size.normal
+                font.pixelSize: Appearance.fonts.size.normal
                 color: Colours.m3Colors.m3OnSurface
             }
         }

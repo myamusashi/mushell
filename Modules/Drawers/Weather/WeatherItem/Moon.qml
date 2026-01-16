@@ -2,23 +2,21 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Widgets
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: canvas
 
     property real moonriseProgress: calculateMoonProgress()
 
     color: Colours.m3Colors.m3SurfaceContainer
-    clip: true
-    roundedPolygon: MaterialShapes.getSquare()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Square
 
     function calculateMoonProgress() {
         var now = new Date();
@@ -48,7 +46,13 @@ ShapeCanvas {
         onTriggered: canvas.moonriseProgress = canvas.calculateMoonProgress()
     }
 
-    Moon {}
+    ClippingWrapperRectangle {
+        anchors.fill: parent
+        color: "transparent"
+        bottomLeftRadius: Appearance.rounding.large * 1.87
+        bottomRightRadius: bottomLeftRadius
+        Moon {}
+    }
 
     RowLayout {
         implicitWidth: parent.width
@@ -61,7 +65,7 @@ ShapeCanvas {
         Icon {
             type: Icon.Lucide
             icon: Lucide.icon_moon
-            font.pointSize: Appearance.fonts.size.large * 1.2
+            font.pixelSize: Appearance.fonts.size.large * 1.5
             color: Colours.m3Colors.m3OnSurface
         }
 
@@ -72,7 +76,7 @@ ShapeCanvas {
         }
     }
 
-    Item {
+    WrapperItem {
         anchors {
             left: parent.left
             right: parent.right
@@ -84,11 +88,6 @@ ShapeCanvas {
         ColumnLayout {
             id: contentLayout
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                bottom: parent.bottom
-            }
             spacing: 1
 
             StyledRect {
@@ -117,7 +116,7 @@ ShapeCanvas {
                         Icon {
                             type: Icon.Material
                             icon: "vertical_align_top"
-                            font.pointSize: Appearance.fonts.size.normal
+                            font.pixelSize: Appearance.fonts.size.normal
                             color: Colours.m3Colors.m3OnSurface
                         }
 
@@ -138,7 +137,7 @@ ShapeCanvas {
 
                             type: Icon.Material
                             icon: "vertical_align_bottom"
-                            font.pointSize: Appearance.fonts.size.normal
+                            font.pixelSize: Appearance.fonts.size.normal
                             color: Colours.m3Colors.m3OnSurface
                         }
                         StyledText {
@@ -164,37 +163,16 @@ ShapeCanvas {
         property color moonColor: Colours.m3Colors.m3OnSurfaceVariant
         property real moonSize: 20
 
-        anchors.fill: parent
-
         onPaint: {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
-
-            var morph = canvas.morph;
-            if (!morph)
-                return;
-            var cubics = morph.asCubics(canvas.progress);
-            if (cubics.length === 0)
-                return;
 
             var size = Math.min(width, height);
             var offsetX = width / 2 - size / 2;
             var offsetY = height / 2 - size / 2;
 
             ctx.save();
-
             ctx.translate(offsetX, offsetY);
-            if (canvas.polygonIsNormalized)
-                ctx.scale(size, size);
-            ctx.beginPath();
-            ctx.moveTo(cubics[0].anchor0X, cubics[0].anchor0Y);
-            for (var i = 0; i < cubics.length; i++) {
-                var cubic = cubics[i];
-                ctx.bezierCurveTo(cubic.control0X, cubic.control0Y, cubic.control1X, cubic.control1Y, cubic.anchor1X, cubic.anchor1Y);
-            }
-            ctx.closePath();
-            ctx.clip();
-
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
             var hillHeight = height * 0.6;
@@ -241,10 +219,6 @@ ShapeCanvas {
         }
         Connections {
             target: canvas
-
-            function onProgressChanged() {
-                moonCanvas.requestPaint();
-            }
 
             function onMoonriseProgressChanged() {
                 moonCanvas.requestPaint();

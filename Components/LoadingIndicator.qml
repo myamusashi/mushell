@@ -1,8 +1,7 @@
 import QtQuick
-import qs.Helpers
-import qs.Services
+import M3Shapes
 
-import "../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
+import qs.Services
 
 Item {
     id: root
@@ -13,7 +12,7 @@ Item {
     property double radius: 50
     property double padding: 50
     property double shapePadding: 12
-    property var shapeGetters: [MaterialShapes.getOval, MaterialShapes.getSoftBurst, MaterialShapes.getPentagon, MaterialShapes.getPill, MaterialShapes.getSunny, MaterialShapes.getCookie4Sided]
+    property var shapeGetters: [MaterialShape.Oval, MaterialShape.SoftBurst, MaterialShape.Pentagon, MaterialShape.Pill, MaterialShape.Sunny, MaterialShape.Cookie4Sided]
     property int shapeIndex: 0
     property int rotationSpeed: 5000
 
@@ -47,15 +46,14 @@ Item {
         }
     }
 
-    ShapeCanvas {
+    MaterialShape {
         id: shapeCanvas
 
         anchors.centerIn: parent
         implicitWidth: parent.width
         implicitHeight: parent.height
         color: Colours.m3Colors.m3OnPrimary
-        roundedPolygon: root.shapeGetters[root.shapeIndex]()
-        onProgressChanged: requestPaint()
+        shape: root.shapeGetters[root.shapeIndex]
 
         RotationAnimator {
             id: rotationAnim

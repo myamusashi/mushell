@@ -2,21 +2,22 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Widgets
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: canvas
 
-    color: "#1a1a1a"
-    roundedPolygon: MaterialShapes.getSquare()
     property real sunriseProgress: calculateSunProgress()
-    clip: true
+
+    color: "#1a1a1a"
+    shape: MaterialShape.Square
+    animationDuration: 0
 
     function calculateSunProgress() {
         var now = new Date();
@@ -46,7 +47,13 @@ ShapeCanvas {
         onTriggered: canvas.sunriseProgress = canvas.calculateSunProgress()
     }
 
-    Sun {}
+    ClippingWrapperRectangle {
+        anchors.fill: parent
+        color: "transparent"
+        bottomLeftRadius: Appearance.rounding.large * 1.87
+        bottomRightRadius: bottomLeftRadius
+        Sun {}
+    }
 
     RowLayout {
         implicitWidth: parent.width
@@ -59,7 +66,7 @@ ShapeCanvas {
         Icon {
             type: Icon.Material
             icon: "wb_twilight"
-            font.pointSize: Appearance.fonts.size.large * 1.2
+            font.pixelSize: Appearance.fonts.size.large * 1.5
             color: Colours.m3Colors.m3OnSurface
 
             font.variableAxes: {
@@ -121,7 +128,7 @@ ShapeCanvas {
                         Icon {
                             type: Icon.Material
                             icon: "vertical_align_top"
-                            font.pointSize: Appearance.fonts.size.normal
+                            font.pixelSize: Appearance.fonts.size.normal
                             color: Colours.m3Colors.m3OnSurface
                         }
 
@@ -139,7 +146,7 @@ ShapeCanvas {
                         Icon {
                             type: Icon.Material
                             icon: "vertical_align_bottom"
-                            font.pointSize: Appearance.fonts.size.normal
+                            font.pixelSize: Appearance.fonts.size.normal
                             color: Colours.m3Colors.m3OnSurface
                         }
 
@@ -157,7 +164,6 @@ ShapeCanvas {
     component Sun: Canvas {
         id: sunCanvas
 
-        anchors.fill: parent
         property color hillColor: Colours.m3Colors.m3Primary
         property color sunColor: Colours.m3Colors.m3Yellow
         property real sunSize: 20
@@ -166,32 +172,11 @@ ShapeCanvas {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
 
-            // Get the parent's morph and create clipping path
-            var morph = canvas.morph;
-            if (!morph)
-                return;
-            var cubics = morph.asCubics(canvas.progress);
-            if (cubics.length === 0)
-                return;
-
             var size = Math.min(width, height);
             var offsetX = width / 2 - size / 2;
             var offsetY = height / 2 - size / 2;
 
             ctx.save();
-
-            // Apply clipping path
-            ctx.translate(offsetX, offsetY);
-            if (canvas.polygonIsNormalized)
-                ctx.scale(size, size);
-            ctx.beginPath();
-            ctx.moveTo(cubics[0].anchor0X, cubics[0].anchor0Y);
-            for (var i = 0; i < cubics.length; i++) {
-                var cubic = cubics[i];
-                ctx.bezierCurveTo(cubic.control0X, cubic.control0Y, cubic.control1X, cubic.control1Y, cubic.anchor1X, cubic.anchor1Y);
-            }
-            ctx.closePath();
-            ctx.clip();
 
             // Reset transform to draw in canvas coordinates
             ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -246,10 +231,6 @@ ShapeCanvas {
 
         Connections {
             target: canvas
-
-            function onProgressChanged() {
-                sunCanvas.requestPaint();
-            }
 
             function onSunriseProgressChanged() {
                 sunCanvas.requestPaint();

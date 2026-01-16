@@ -2,26 +2,24 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     color: Colours.m3Colors.m3SurfaceContainer
-    roundedPolygon: MaterialShapes.getCircle()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Circle
 
-    ShapeCanvas {
+    MaterialShape {
         anchors.centerIn: parent
         implicitWidth: 135
         implicitHeight: 135
-        color: Colours.withAlpha(Colours.m3Colors.m3Primary, 0.6)
-        roundedPolygon: MaterialShapes.getCookie6Sided()
-        onProgressChanged: requestPaint()
+        color: Colours.m3Colors.m3Primary
+        opacity: 0.6
+        shape: MaterialShape.Cookie6Sided
     }
 
     RowLayout {
@@ -34,7 +32,7 @@ ShapeCanvas {
         Icon {
             type: Icon.Lucide
             icon: Lucide.icon_cloud
-            font.pointSize: Appearance.fonts.size.large
+            font.pixelSize: Appearance.fonts.size.large * 1.5
             color: Colours.m3Colors.m3OnSurface
 
             font.variableAxes: {

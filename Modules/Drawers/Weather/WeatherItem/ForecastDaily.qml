@@ -30,7 +30,7 @@ StyledRect {
             Icon {
                 type: Icon.Lucide
                 icon: Lucide.icon_calendar_days
-                font.pointSize: Appearance.fonts.size.normal
+                font.pixelSize: Appearance.fonts.size.normal
                 color: Colours.m3Colors.m3Primary
             }
 
@@ -99,7 +99,7 @@ StyledRect {
                             Icon {
                                 type: Icon.Weather
                                 Layout.alignment: Qt.AlignHCenter
-                                font.pointSize: Appearance.fonts.size.extraLarge
+                                font.pixelSize: Appearance.fonts.size.extraLarge
                                 color: Colours.m3Colors.m3Primary
                                 icon: delegate.modelData.weatherIcon
                             }

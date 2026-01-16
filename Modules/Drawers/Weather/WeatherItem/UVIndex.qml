@@ -2,15 +2,14 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: canvas
 
     property int uvIndex: Weather.uvIndex
@@ -23,8 +22,7 @@ ShapeCanvas {
     property var uvLabels: ["Low", "Moderate", "High", "Very High", "Extreme"]
 
     color: Colours.m3Colors.m3SurfaceContainer
-    roundedPolygon: MaterialShapes.getCookie12Sided()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Cookie12Sided
 
     function getUVCategory(index) {
         if (index <= 2)
@@ -48,7 +46,7 @@ ShapeCanvas {
         Icon {
             type: Icon.Material
             icon: "sunny"
-            font.pointSize: Appearance.fonts.size.large * 1.2
+            font.pixelSize: Appearance.fonts.size.large * 1.5
             color: Colours.m3Colors.m3OnSurface
             font.variableAxes: {
                 "FILL": 10,
@@ -105,10 +103,6 @@ ShapeCanvas {
 
                 x: parent.width / 2 + Math.cos(angle * Math.PI / 180) * distance - width / 2
                 y: parent.height / 2 + Math.sin(angle * Math.PI / 180) * distance - height / 2
-
-                Behavior on color {
-                    CAnim {}
-                }
             }
         }
     }

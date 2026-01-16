@@ -2,18 +2,16 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     color: Colours.m3Colors.m3SurfaceContainer
-    roundedPolygon: MaterialShapes.getCircle()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Circle
 
     Cookie {
         ColumnLayout {
@@ -30,7 +28,7 @@ ShapeCanvas {
                 Icon {
                     type: Icon.Material
                     icon: "visibility"
-                    font.pointSize: Appearance.fonts.size.large
+                    font.pixelSize: Appearance.fonts.size.large * 1.5
                     color: Colours.m3Colors.m3OnSurface
                 }
 
@@ -62,34 +60,34 @@ ShapeCanvas {
         implicitWidth: 135
         implicitHeight: 135
 
-        ShapeCanvas {
+        MaterialShape {
             anchors.centerIn: parent
             implicitWidth: 135
             implicitHeight: 135
-            color: Colours.withAlpha(Colours.m3Colors.m3Primary, 0.6)
-            roundedPolygon: MaterialShapes.getCookie12Sided()
-            onProgressChanged: requestPaint()
+            color: Colours.m3Colors.m3Primary
+            opacity: 0.5
+            shape: MaterialShape.Cookie12Sided
             z: 3
         }
 
-        ShapeCanvas {
+        MaterialShape {
             anchors.centerIn: parent
             implicitWidth: 135
             implicitHeight: 135
-            color: Colours.withAlpha(Colours.m3Colors.m3Primary, 0.5)
-            roundedPolygon: MaterialShapes.getCookie12Sided()
-            onProgressChanged: requestPaint()
+            color: Colours.m3Colors.m3Primary
+            opacity: 0.3
+            shape: MaterialShape.Cookie12Sided
             rotation: 7
             z: 2
         }
 
-        ShapeCanvas {
+        MaterialShape {
             anchors.centerIn: parent
             implicitWidth: 135
             implicitHeight: 135
-            color: Colours.withAlpha(Colours.m3Colors.m3Primary, 0.2)
-            roundedPolygon: MaterialShapes.getCookie12Sided()
-            onProgressChanged: requestPaint()
+            color: Colours.m3Colors.m3Primary
+            opacity: 0.2
+            shape: MaterialShape.Cookie12Sided
             rotation: 10
             z: 1
         }

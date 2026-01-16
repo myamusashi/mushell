@@ -2,21 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: canvas
-
-    color: Colours.m3Colors.m3SurfaceContainer
-    clip: true
-    roundedPolygon: MaterialShapes.getSquare()
-    onProgressChanged: requestPaint()
 
     property int aqi: Weather.usAQI
     property var aqiCategories: [
@@ -52,6 +46,9 @@ ShapeCanvas {
         }
     ]
 
+    color: Colours.m3Colors.m3SurfaceContainer
+    shape: MaterialShape.Square
+
     function getAQICategory(value) {
         for (var i = 0; i < aqiCategories.length; i++)
             if (value <= aqiCategories[i].max)
@@ -77,7 +74,7 @@ ShapeCanvas {
             Icon {
                 type: Icon.Lucide
                 icon: Lucide.icon_waves
-                font.pointSize: Appearance.fonts.size.large
+                font.pixelSize: Appearance.fonts.size.large * 1.5
                 font.weight: Font.DemiBold
                 color: Colours.m3Colors.m3OnSurface
             }

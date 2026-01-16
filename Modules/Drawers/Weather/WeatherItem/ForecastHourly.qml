@@ -7,7 +7,7 @@ import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
+import M3Shapes
 
 StyledRect {
     implicitWidth: parent.width
@@ -32,7 +32,7 @@ StyledRect {
                 type: Icon.Material
                 icon: "schedule"
                 color: Colours.m3Colors.m3Primary
-                font.pointSize: Appearance.fonts.size.large
+                font.pixelSize: Appearance.fonts.size.large
                 font.variableAxes: {
                     "FILL": 10,
                     "opsz": fontInfo.pixelSize,
@@ -99,19 +99,12 @@ StyledRect {
                                 Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
 
-                                ShapeCanvas {
+                                MaterialShape {
                                     anchors.fill: parent
                                     anchors.rightMargin: 3
                                     color: Colours.m3Colors.m3Primary
-                                    roundedPolygon: MaterialShapes.getCookie4Sided()
+                                    shape: MaterialShape.Cookie4Sided
                                     visible: delegate.isCurrentHour
-                                    onProgressChanged: requestPaint()
-
-                                    // force if shape failed to paint
-                                    Component.onCompleted: {
-                                        roundedPolygon = MaterialShapes.getCookie4Sided();
-                                        requestPaint();
-                                    }
                                 }
 
                                 StyledText {
@@ -137,7 +130,7 @@ StyledRect {
                             Icon {
                                 type: Icon.Weather
                                 Layout.alignment: Qt.AlignHCenter
-                                font.pointSize: Appearance.fonts.size.large * 1.3
+                                font.pixelSize: Appearance.fonts.size.large * 1.3
                                 color: Colours.m3Colors.m3Primary
                                 icon: delegate.modelData.weatherIcon
                             }

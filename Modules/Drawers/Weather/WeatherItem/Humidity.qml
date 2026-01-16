@@ -2,25 +2,29 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Widgets
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: shape
 
     color: Colours.m3Colors.m3SurfaceContainer
-    roundedPolygon: MaterialShapes.getSquare()
-    onProgressChanged: requestPaint()
+    shape: MaterialShape.Square
+    animationDuration: 0
 
-    Wave {
-        anchors.fill: parent
-        fillPercentage: Weather.humidity
-        z: 1
+    ClippingWrapperRectangle {
+        anchors.fill: shape
+        color: "transparent"
+        radius: Appearance.rounding.large * 1.87
+
+        Wave {
+            fillPercentage: Weather.humidity
+        }
     }
 
     ColumnLayout {
@@ -38,7 +42,7 @@ ShapeCanvas {
                 type: Icon.Lucide
                 icon: Lucide.icon_droplet
                 color: Colours.m3Colors.m3OnSurface
-                font.pointSize: Appearance.fonts.size.large * 1.2
+                font.pixelSize: Appearance.fonts.size.large * 1.5
             }
 
             StyledText {
@@ -66,12 +70,12 @@ ShapeCanvas {
             implicitHeight: 30
             implicitWidth: 30
 
-            ShapeCanvas {
+            MaterialShape {
                 implicitWidth: 30
                 implicitHeight: 30
                 color: Colours.m3Colors.m3Primary
-                roundedPolygon: MaterialShapes.getCircle()
-                onProgressChanged: requestPaint()
+                shape: MaterialShape.Circle
+                animationDuration: 0
 
                 StyledText {
                     anchors.centerIn: parent
@@ -104,87 +108,31 @@ ShapeCanvas {
             var ctx = getContext("2d");
             ctx.clearRect(0, 0, width, height);
 
-            var morph = shape.morph;
-            if (!morph)
-                return;
-
-            var cubics = morph.asCubics(shape.progress);
-            if (cubics.length === 0)
-                return;
-
-            var size = Math.min(width, height);
-            var offsetX = width / 2 - size / 2;
-            var offsetY = height / 2 - size / 2;
-
-            ctx.save();
-
-            ctx.translate(offsetX, offsetY);
-            if (shape.polygonIsNormalized)
-                ctx.scale(size, size);
-
-            ctx.beginPath();
-            ctx.moveTo(cubics[0].anchor0X, cubics[0].anchor0Y);
-            for (var i = 0; i < cubics.length; i++) {
-                var cubic = cubics[i];
-                ctx.bezierCurveTo(cubic.control0X, cubic.control0Y, cubic.control1X, cubic.control1Y, cubic.anchor1X, cubic.anchor1Y);
-            }
-            ctx.closePath();
-            ctx.clip();
-
-            ctx.restore();
-            ctx.save();
-            ctx.clip();
-
             var fillHeight = height * (fillPercentage / 100);
             var waveY = height - fillHeight;
 
             ctx.fillStyle = waveColor;
             ctx.beginPath();
 
+            ctx.moveTo(0, height);
+            ctx.lineTo(0, waveY);
+
             var amplitude = 3;
             var wavelength = width / 5;
             var points = 100;
 
-            ctx.moveTo(0, height);
-            ctx.lineTo(0, waveY);
-
             for (var i = 0; i <= points; i++) {
                 var x = (i / points) * width;
                 var y = waveY + Math.sin((x / wavelength * Math.PI * 2)) * amplitude;
-
-                if (i === 0) {
-                    ctx.lineTo(x, y);
-                } else {
-                    var prevX = ((i - 1) / points) * width;
-                    var prevY = waveY + Math.sin((prevX / wavelength * Math.PI * 2)) * amplitude;
-
-                    var cpX1 = prevX + (x - prevX) / 3;
-                    var cpY1 = prevY;
-                    var cpX2 = prevX + 2 * (x - prevX) / 3;
-                    var cpY2 = y;
-
-                    ctx.bezierCurveTo(cpX1, cpY1, cpX2, cpY2, x, y);
-                }
+                ctx.lineTo(x, y);
             }
 
-            ctx.lineTo(width, waveY + Math.sin((width / wavelength * Math.PI * 2)) * amplitude);
             ctx.lineTo(width, height);
             ctx.closePath();
             ctx.fill();
-
-            ctx.restore();
         }
 
         onFillPercentageChanged: requestPaint()
-        onWidthChanged: requestPaint()
-        onHeightChanged: requestPaint()
-
-        Connections {
-            target: shape
-
-            function onProgressChanged() {
-                waveCanvas.requestPaint();
-            }
-        }
+        Component.onCompleted: requestPaint()
     }
 }

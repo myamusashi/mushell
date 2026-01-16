@@ -2,23 +2,23 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import M3Shapes
 
 import qs.Configs
 import qs.Helpers
 import qs.Services
 import qs.Components
 
-import "../../../../Submodules/rounded-polygon-qmljs/material-shapes.js" as MaterialShapes
-
-ShapeCanvas {
+MaterialShape {
     id: canvas
 
     property real pressure: Weather.pressure
     property real minPressure: 0
     property real maxPressure: 2000
 
+    animationDuration: 0
     color: Colours.m3Colors.m3SurfaceContainer
-    roundedPolygon: MaterialShapes.getCircle()
+    shape: MaterialShape.Circle
 
     Pressure {
         ColumnLayout {
@@ -32,7 +32,7 @@ ShapeCanvas {
                 Icon {
                     type: Icon.Material
                     icon: "vertical_align_center"
-                    font.pointSize: Appearance.fonts.size.normal
+                    font.pixelSize: Appearance.fonts.size.large * 1.5
                     font.weight: Font.DemiBold
                     color: Colours.m3Colors.m3OnSurface
                 }
@@ -104,14 +104,6 @@ ShapeCanvas {
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, startAngle, progressAngle, false);
             ctx.stroke();
-        }
-
-        Connections {
-            target: canvas
-
-            function onProgressChanged() {
-                gaugeCanvas.requestPaint();
-            }
         }
     }
 }
