@@ -294,7 +294,11 @@ Singleton {
                     weatherIcon: getWeatherIconFromCode(hour.weather_code, hour.is_day),
                     isDay: hour.is_day,
                     precipitation: hour.precipitation_mm || 0.0,
-                    probability: hour.probability_percent || 0
+                    probability: hour.probability_percent || 0,
+                    pressure: hour.pressure_hpa || 0.0,
+                    windSpeed: hour.wind.speed_kmh || 0.0,
+                    windDirectionDegrees: hour.wind.direction_degrees || 0,
+                    windDirectionText: hour.wind.direction_text || ""
                 };
             });
 
