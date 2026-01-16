@@ -1,19 +1,18 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
-import qs.Components
 import qs.Configs
 import qs.Helpers
+import qs.Components
 
 Variants {
     model: Quickshell.screens
 
-    delegate: WlrLayershell {
+    delegate: PanelWindow {
         id: root
 
         required property ShellScreen modelData
@@ -27,19 +26,17 @@ Variants {
 
         color: "transparent"
         screen: modelData
-        layer: WlrLayer.Background
-        focusable: false
-        exclusiveZone: 1
         exclusionMode: ExclusionMode.Ignore
-        surfaceFormat.opaque: false
-        namespace: "shell:wallpaper"
+        surfaceFormat.opaque: true
+        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.namespace: "shell:wallpaper"
 
         Wallpaper {
             id: img
 
             anchors.fill: parent
-            sourceSize: Qt.size(root.modelData.width, root.modelData.height)
             source: ""
+            sourceSize: Qt.size(root.modelData.width, root.modelData.height)
 
             Component.onCompleted: {
                 source = Paths.currentWallpaper;
@@ -49,6 +46,7 @@ Variants {
                         walAnimation.complete();
                     animatingWal.source = Paths.currentWallpaper;
                 });
+
                 animatingWal.statusChanged.connect(() => {
                     if (animatingWal.status == Image.Ready)
                         walAnimation.start();
@@ -57,7 +55,7 @@ Variants {
                 walAnimation.finished.connect(() => {
                     img.source = animatingWal.source;
                     animatingWal.source = "";
-                    animatinRect.width = 0;
+                    animatinRect.opacity = 0;
                 });
             }
         }
@@ -65,28 +63,28 @@ Variants {
         Rectangle {
             id: animatinRect
 
-            anchors.right: parent.right
+            anchors.fill: parent
             color: "transparent"
-            height: root.screen.height
-            width: 0
+            opacity: 0
+            visible: opacity > 0
 
             NAnim {
                 id: walAnimation
 
                 duration: Appearance.animations.durations.expressiveDefaultSpatial * 2
+                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                 from: 0
-                property: "width"
+                property: "opacity"
                 target: animatinRect
-                to: Math.max(root.screen.width)
+                to: 1
             }
 
             Wallpaper {
                 id: animatingWal
 
-                anchors.right: parent.right
-                height: root.height
+                anchors.fill: parent
                 source: ""
-                width: root.width
+                sourceSize: Qt.size(root.modelData.width, root.modelData.height)
             }
         }
 
