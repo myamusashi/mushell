@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
@@ -73,8 +75,8 @@ StyledRect {
             }
 
             StyledRect {
-                width: parent.width
-                height: parent.height - (Notifs.notClosed.length > 0 ? 60 : 10)
+                implicitWidth: parent.width
+                implicitHeight: parent.height - (Notifs.notClosed.length > 0 ? 60 : 10)
                 clip: true
                 color: "transparent"
 
@@ -107,10 +109,10 @@ StyledRect {
                         signal entered
                         signal exited
 
-                        implicitWidth: parent.width
+                        implicitWidth: notifListView.width
                         implicitHeight: contentLayout.height * 1.3
                         clip: true
-                        x: parent.width
+                        x: width
 
                         Component.onCompleted: {
                             slideInAnim.start();
@@ -132,7 +134,7 @@ StyledRect {
 
                             target: root
                             property: "x"
-                            from: root.parent.width
+                            from: root.width
                             to: 0
                             duration: Appearance.animations.durations.emphasized
                             easing.bezierCurve: Appearance.animations.curves.emphasized
@@ -143,7 +145,7 @@ StyledRect {
 
                             target: root
                             property: "x"
-                            to: root.parent.width
+                            to: root.width
                             duration: Appearance.animations.durations.emphasizedAccel
                             easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
                             onFinished: {

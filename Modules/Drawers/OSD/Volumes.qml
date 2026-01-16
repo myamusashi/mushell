@@ -57,7 +57,7 @@ Item {
                 }
                 color: Colours.m3Colors.m3OnBackground
                 icon: volumeOSD.icon
-                font.pointSize: Appearance.fonts.size.extraLarge * 1.2
+                font.pixelSize: Appearance.fonts.size.extraLarge * 1.5
             }
 
             Column {

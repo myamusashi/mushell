@@ -58,8 +58,8 @@ Column {
         StyledRect {
             id: expandButton
 
-            width: 32
-            height: 32
+            implicitWidth: 32
+            implicitHeight: 32
             radius: Appearance.rounding.large
             color: "transparent"
 
@@ -115,12 +115,12 @@ Column {
                 required property var modelData
                 required property int index
 
-                width: {
+                implicitWidth: {
                     const count = root.modelData.actions.length;
                     const totalSpacing = (count - 1) * Appearance.spacing.normal;
                     return (parent.width - totalSpacing) / count;
                 }
-                height: 40
+                implicitHeight: 40
                 radius: Appearance.rounding.full
                 color: Colours.m3Colors.m3SurfaceContainerHigh
 

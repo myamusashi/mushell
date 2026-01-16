@@ -43,7 +43,7 @@ Item {
 
     signal clicked
 
-    implicitWidth: useLayoutWidth ? undefined : normalWidth
+    implicitWidth: useLayoutWidth ? 0 : normalWidth
     implicitHeight: buttonHeight
 
     Layout.preferredWidth: useLayoutWidth ? (mouseArea.pressed ? expandedWidth : normalWidth) : undefined
@@ -148,11 +148,11 @@ Item {
                     radius: root.iconBackgroundRadius
 
                     Icon {
-                        type: Icon.Material
                         anchors.centerIn: parent
+                        type: Icon.Material
                         icon: root.iconButton
                         font.family: root.fontFamily
-                        font.pointSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.size.large
+                        font.pixelSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.size.large
                         font.bold: true
                         color: root.iconColor
                     }
@@ -167,7 +167,7 @@ Item {
                     anchors.centerIn: parent
                     icon: root.iconButton
                     font.family: root.fontFamily
-                    font.pointSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.size.large
+                    font.pixelSize: root.iconSize > 0 ? root.iconSize : Appearance.fonts.size.large
                     font.bold: true
                     color: root.iconColor
                 }

@@ -155,7 +155,7 @@ Item {
                                             Layout.alignment: Qt.AlignHCenter
                                             icon: tabItem.modelData.icon
                                             type: Icon.Material
-                                            font.pointSize: Appearance.fonts.size.large
+                                            font.pixelSize: Appearance.fonts.size.large
                                             color: tabBar.currentIndex === tabItem.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnBackground
                                         }
 

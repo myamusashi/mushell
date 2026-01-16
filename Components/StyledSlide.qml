@@ -89,7 +89,7 @@ Slider {
             sourceComponent: Icon {
                 icon: root.icon
                 color: Colours.m3Colors.m3OnPrimary
-                font.pointSize: root.iconSize || Appearance.fonts.size.medium
+                font.pixelSize: root.iconSize || Appearance.fonts.size.large
             }
         }
 

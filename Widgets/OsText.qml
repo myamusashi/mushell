@@ -21,7 +21,7 @@ StyledRect {
             Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
             color: Colours.m3Colors.m3Primary
             font.family: Appearance.fonts.family.mono
-            font.pointSize: Appearance.fonts.size.extraLarge * 0.8
+            font.pixelSize: Appearance.fonts.size.extraLarge
             icon: "󱄅"
         }
     }

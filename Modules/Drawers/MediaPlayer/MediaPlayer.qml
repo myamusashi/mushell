@@ -75,7 +75,6 @@ Item {
 
             anchors.fill: parent
             active: window.modelData.name === Hypr.focusedMonitor.name && GlobalStates.isMediaPlayerOpen
-            asynchronous: true
 
             sourceComponent: RowLayout {
                 id: contentLayout
@@ -115,7 +114,7 @@ Item {
 
                             StyledText {
                                 anchors.centerIn: parent
-                                width: 120
+                                width: contentWidth + 20
                                 text: "Achievement Unlocked: 🏆 Static Image Starer - You expected the kuru spin but trackArtUrl decided to disconnect. GG."
                                 wrapMode: Text.Wrap
                                 elide: Text.ElideRight
@@ -229,7 +228,7 @@ Item {
 
                             icon: Players.active === null ? "pause_circle" : Players.active.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
                             color: Colours.m3Colors.m3Primary
-                            font.pointSize: Appearance.fonts.size.extraLarge * 1.5
+                            font.pixelSize: Appearance.fonts.size.extraLarge * 1.5
 
                             MArea {
                                 id: pauseMArea
@@ -251,8 +250,8 @@ Item {
                             iconButton: "skip_previous"
                             iconBackgroundColor: "transparent"
                             showIconBackground: true
-                            iconSize: Appearance.fonts.size.large * 1.2
-                            buttonWidth: 50
+                            iconSize: Appearance.fonts.size.large * 1.5
+                            buttonWidth: 30
                             buttonTextColor: Colours.m3Colors.m3OnPrimary
                             mArea.layerColor: "transparent"
                             onClicked: Players.active ? Players.active.previous() : {}
@@ -264,7 +263,7 @@ Item {
                             value: Players.active === null ? 0 : Players.active.length > 0 ? Players.active.position / Players.active.length : 0
                             Layout.fillWidth: true
                             Layout.preferredHeight: 40
-                            enableWave: Players.active.playbackState === MprisPlaybackState.Playing
+                            enableWave: Players.active.playbackState === MprisPlaybackState.Playing && !pressed
 
                             FrameAnimation {
                                 running: GlobalStates.isMediaPlayerOpen && Players.active && Players.active.playbackState == MprisPlaybackState.Playing
@@ -276,10 +275,10 @@ Item {
 
                         StyledButton {
                             iconButton: "skip_next"
-                            iconSize: Appearance.fonts.size.large * 1.2
+                            iconSize: Appearance.fonts.size.large * 1.5
                             iconBackgroundColor: "transparent"
                             showIconBackground: true
-                            buttonWidth: 50
+                            buttonWidth: 30
                             buttonTextColor: Colours.m3Colors.m3OnPrimary
                             mArea.layerColor: "transparent"
                             onClicked: Players.active ? Players.active.next() : {}

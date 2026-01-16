@@ -94,7 +94,7 @@ Item {
 
                             anchors.centerIn: parent
                             icon: "chevron_left"
-                            font.pointSize: Appearance.fonts.size.large * 2
+                            font.pixelSize: Appearance.fonts.size.large * 2
                             color: Colours.m3Colors.m3OnPrimaryContainer
                         }
 
@@ -138,7 +138,7 @@ Item {
 
                             anchors.centerIn: parent
                             icon: "chevron_right"
-                            font.pointSize: Appearance.fonts.size.large * 2
+                            font.pixelSize: Appearance.fonts.size.large * 2
                             color: Colours.m3Colors.m3Primary
                         }
 

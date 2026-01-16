@@ -21,7 +21,7 @@ StyledRect {
 
             color: Colours.m3Colors.m3OnBackground
             font.bold: true
-            font.pointSize: Appearance.fonts.size.large
+            font.pixelSize: Appearance.fonts.size.large
             icon: "schedule"
         }
 

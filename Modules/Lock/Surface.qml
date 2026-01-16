@@ -183,7 +183,7 @@ WlSessionLockSurface {
             anchors.verticalCenterOffset: -60
             text: "WRONG"
             color: Colours.m3Colors.m3Error
-            font.pointSize: Appearance.fonts.size.large * 5
+            font.pixelSize: Appearance.fonts.size.large * 5
             opacity: root.showErrorMessage ? 1 : 0
             visible: opacity > 0
             z: 2
@@ -201,7 +201,7 @@ WlSessionLockSurface {
             anchors.centerIn: parent
             text: root.showErrorMessage ? "" : root.maskedBuffer
             color: root.maskedBuffer ? (root.pam.showFailure ? Colours.m3Colors.m3OnErrorContainer : Colours.m3Colors.m3OnSurface) : Colours.m3Colors.m3OnSurfaceVariant
-            font.pointSize: Appearance.fonts.size.extraLarge * 5
+            font.pixelSize: Appearance.fonts.size.extraLarge * 5
             font.family: Appearance.fonts.family.mono
             z: 0
 
@@ -229,7 +229,7 @@ WlSessionLockSurface {
                 }
             }
 
-            Behavior on font.pointSize {
+            Behavior on font.pixelSize {
                 NAnim {
                     duration: 100
                 }
@@ -241,7 +241,7 @@ WlSessionLockSurface {
                 running: root.lock.locked && root.maskedBuffer.length > 0
                 onTriggered: {
                     const baseFontSize = Appearance.fonts.size.extraLarge * 5;
-                    passwordBuffer.font.pointSize = baseFontSize * (0.95 + Math.random() * 0.1);
+                    passwordBuffer.font.pixelSize = baseFontSize * (0.95 + Math.random() * 0.1);
                 }
             }
         }

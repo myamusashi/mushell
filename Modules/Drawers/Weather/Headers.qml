@@ -33,7 +33,7 @@ ColumnLayout {
                 type: Icon.Lucide
                 icon: Lucide.icon_map_pin
                 color: Colours.m3Colors.m3OnSurface
-                font.pointSize: Appearance.fonts.size.normal
+                font.pixelSize: Appearance.fonts.size.normal
             }
             StyledText {
                 text: Weather.locationName + ", " + Weather.locationRegion + ", " + Weather.locationCountry
@@ -49,7 +49,7 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignRight
                 icon: "refresh"
                 color: Colours.m3Colors.m3OnSurface
-                font.pointSize: Appearance.fonts.size.large
+                font.pixelSize: Appearance.fonts.size.large
 
                 MouseArea {
                     anchors.fill: parent
@@ -100,7 +100,7 @@ ColumnLayout {
                         type: Icon.Lucide
                         icon: Lucide.icon_arrow_up
                         color: Colours.m3Colors.m3OnSurface
-                        font.pointSize: Appearance.fonts.size.small
+                        font.pixelSize: Appearance.fonts.size.small
                     }
                     StyledText {
                         text: Weather.tempMax + "°"
@@ -114,7 +114,7 @@ ColumnLayout {
                         type: Icon.Lucide
                         icon: Lucide.icon_arrow_down
                         color: Colours.m3Colors.m3OnSurface
-                        font.pointSize: Appearance.fonts.size.small
+                        font.pixelSize: Appearance.fonts.size.small
                     }
                     StyledText {
                         text: Weather.tempMin + "°"
@@ -154,7 +154,7 @@ ColumnLayout {
                 Icon {
                     type: Icon.Material
                     icon: "update"
-                    font.pointSize: Appearance.fonts.size.small
+                    font.pixelSize: Appearance.fonts.size.small
                     color: Colours.m3Colors.m3OnSurface
                 }
                 StyledText {

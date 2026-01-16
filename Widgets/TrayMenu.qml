@@ -117,7 +117,7 @@ Rectangle {
 
                         anchors.fill: parent
                         color: (entry.modelData?.enabled) ? Colours.m3Colors.m3OnSurface : Colours.m3Colors.m3Primary
-                        font.pointSize: 11
+                        font.pixelSize: 11
                         text: entry.modelData?.text ?? ""
                         verticalAlignment: Text.AlignVCenter
                     }
@@ -144,7 +144,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         color: Colours.m3Colors.m3OnSurface
-                        font.pointSize: 11
+                        font.pixelSize: 11
                         text: ""
                     }
                 }

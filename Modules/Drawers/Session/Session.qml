@@ -199,7 +199,7 @@ Item {
 
                             anchors.centerIn: parent
                             color: Colours.m3Colors.m3Primary
-                            font.pointSize: Appearance.fonts.size.large * 3
+                            font.pixelSize: Appearance.fonts.size.large * 3
                             icon: rectDelegate.modelData.icon
 
                             function handleAction() {

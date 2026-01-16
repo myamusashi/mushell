@@ -39,7 +39,7 @@ Text {
 
     font {
         family: root.fontFamily
-        pointSize: Appearance.fonts.size.medium
+        pixelSize: Appearance.fonts.size.medium
         hintingPreference: Font.PreferNoHinting
         variableAxes: {
             "FILL": false,

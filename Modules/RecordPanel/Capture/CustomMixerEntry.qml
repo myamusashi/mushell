@@ -63,7 +63,7 @@ ColumnLayout {
                 visible: icon !== ""
                 icon: root.icon
                 color: Colours.m3Colors.m3OnSurface
-                font.pointSize: Appearance.fonts.size.large * 1.5
+                font.pixelSize: Appearance.fonts.size.large * 1.5
             }
 
             MArea {

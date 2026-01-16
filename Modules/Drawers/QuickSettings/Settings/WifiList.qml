@@ -67,7 +67,7 @@ Item {
                             anchors.centerIn: parent
                             icon: "arrow_back"
                             color: Colours.m3Colors.m3OnBackground
-                            font.pointSize: Appearance.fonts.size.large
+                            font.pixelSize: Appearance.fonts.size.large
                         }
 
                         MArea {
@@ -105,7 +105,7 @@ Item {
                             anchors.centerIn: parent
                             icon: "refresh"
                             color: Colours.m3Colors.m3OnBackground
-                            font.pointSize: Appearance.fonts.size.large
+                            font.pixelSize: Appearance.fonts.size.large
                             opacity: Network.wifiEnabled ? 1.0 : 0.3
 
                             RotationAnimation on rotation {
@@ -150,7 +150,7 @@ Item {
                             Layout.alignment: Qt.AlignVCenter
                             icon: Network.active ? root.getWiFiIcon(Network.active.strength) : "wifi_off"
                             color: Colours.m3Colors.m3Primary
-                            font.pointSize: Appearance.fonts.size.extraLarge * 1.2
+                            font.pixelSize: Appearance.fonts.size.extraLarge * 1.2
                         }
 
                         ColumnLayout {
@@ -184,7 +184,7 @@ Item {
                                 anchors.centerIn: parent
                                 icon: "close"
                                 color: Colours.m3Colors.m3Error
-                                font.pointSize: Appearance.fonts.size.large
+                                font.pixelSize: Appearance.fonts.size.large
                             }
 
                             MArea {
@@ -227,7 +227,7 @@ Item {
                             Layout.alignment: Qt.AlignHCenter
                             icon: "wifi_off"
                             color: Colours.m3Colors.m3OnSurfaceVariant
-                            font.pointSize: Appearance.fonts.size.extraLarge * 2
+                            font.pixelSize: Appearance.fonts.size.extraLarge * 2
                             opacity: 0.6
                         }
 
@@ -289,7 +289,7 @@ Item {
                                 Layout.alignment: Qt.AlignVCenter
                                 icon: root.getWiFiIcon(networkDelegate.modelData.strength)
                                 color: networkDelegate.modelData.active ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
-                                font.pointSize: Appearance.fonts.size.extraLarge
+                                font.pixelSize: Appearance.fonts.size.extraLarge
                             }
 
                             ColumnLayout {
@@ -311,7 +311,7 @@ Item {
                                         type: Icon.Material
                                         icon: "lock"
                                         color: Colours.m3Colors.m3OnSurfaceVariant
-                                        font.pointSize: Appearance.fonts.size.small
+                                        font.pixelSize: Appearance.fonts.size.small
                                         visible: networkDelegate.modelData.isSecure
                                     }
                                 }
@@ -344,7 +344,7 @@ Item {
                                 Layout.alignment: Qt.AlignVCenter
                                 icon: "chevron_right"
                                 color: Colours.m3Colors.m3OnSurfaceVariant
-                                font.pointSize: Appearance.fonts.size.large
+                                font.pixelSize: Appearance.fonts.size.large
                                 visible: !networkDelegate.modelData.active
                                 opacity: 0.5
                             }
@@ -379,7 +379,7 @@ Item {
                             Layout.alignment: Qt.AlignHCenter
                             icon: "wifi_find"
                             color: Colours.m3Colors.m3OnSurfaceVariant
-                            font.pointSize: Appearance.fonts.size.extraLarge * 2
+                            font.pixelSize: Appearance.fonts.size.extraLarge * 2
                             opacity: 0.6
                         }
 

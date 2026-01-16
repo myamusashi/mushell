@@ -86,7 +86,7 @@ LazyLoader {
                             type: Icon.Material
                             anchors.centerIn: parent
                             icon: "close"
-                            font.pointSize: Appearance.fonts.size.large
+                            font.pixelSize: Appearance.fonts.size.large
                             color: Colours.m3Colors.m3OnSurfaceVariant
                         }
 
@@ -117,7 +117,7 @@ LazyLoader {
                             Icon {
                                 type: Icon.Material
                                 icon: "schedule"
-                                font.pointSize: Appearance.fonts.size.large
+                                font.pixelSize: Appearance.fonts.size.large
                                 color: Colours.m3Colors.m3Primary
                             }
 
@@ -171,7 +171,7 @@ LazyLoader {
                             Icon {
                                 type: Icon.Material
                                 icon: "stop"
-                                font.pointSize: Appearance.fonts.size.large
+                                font.pixelSize: Appearance.fonts.size.large
                                 color: Colours.m3Colors.m3OnError
                             }
 
