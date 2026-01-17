@@ -33,7 +33,7 @@ ColumnLayout {
                 type: Icon.Lucide
                 icon: Lucide.icon_map_pin
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.size.normal
+                font.pixelSize: Appearance.fonts.size.large
             }
             StyledText {
                 text: Weather.locationName + ", " + Weather.locationRegion + ", " + Weather.locationCountry
@@ -49,7 +49,7 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignRight
                 icon: "refresh"
                 color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.size.large
+                font.pixelSize: Appearance.fonts.size.large * 1.5
 
                 MouseArea {
                     anchors.fill: parent
@@ -74,11 +74,14 @@ ColumnLayout {
             RowLayout {
                 Layout.alignment: Qt.AlignTop | Qt.AlignLeft
                 spacing: Appearance.spacing.small
+
                 StyledText {
                     text: Weather.temp + "°"
                     color: Colours.m3Colors.m3Primary
                     font.pixelSize: Appearance.fonts.size.extraLarge * 1.5
+                    font.weight: Font.DemiBold
                 }
+
                 Icon {
                     type: Icon.Weather
                     icon: Weather.weatherIcon
@@ -94,32 +97,37 @@ ColumnLayout {
             RowLayout {
                 Layout.alignment: Qt.AlignBottom | Qt.AlignLeft
                 spacing: Appearance.spacing.normal
-                RowLayout {
-                    spacing: Appearance.spacing.small
-                    Icon {
-                        type: Icon.Lucide
-                        icon: Lucide.icon_arrow_up
-                        color: Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.small
-                    }
-                    StyledText {
-                        text: Weather.tempMax + "°"
-                        color: Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.small
-                    }
-                }
-                RowLayout {
-                    spacing: Appearance.spacing.small
-                    Icon {
-                        type: Icon.Lucide
-                        icon: Lucide.icon_arrow_down
-                        color: Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.small
-                    }
-                    StyledText {
-                        text: Weather.tempMin + "°"
-                        color: Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.small
+
+                Repeater {
+                    model: [
+                        {
+                            text: Weather.tempMax + "°",
+                            icon: Lucide.icon_arrow_up
+                        },
+                        {
+                            text: Weather.tempMin + "°",
+                            icon: Lucide.icon_arrow_down
+                        }
+                    ]
+
+                    delegate: RowLayout {
+                        required property var modelData
+
+                        spacing: Appearance.spacing.small
+
+                        Icon {
+                            type: Icon.Lucide
+                            icon: parent.modelData.icon
+                            color: Colours.m3Colors.m3OnSurface
+                            font.pixelSize: Appearance.fonts.size.normal
+                        }
+
+                        StyledText {
+                            text: parent.modelData.text
+                            color: Colours.m3Colors.m3OnSurface
+                            font.pixelSize: Appearance.fonts.size.normal
+                            font.weight: Font.DemiBold
+                        }
                     }
                 }
             }
@@ -137,6 +145,7 @@ ColumnLayout {
                 font.pixelSize: Appearance.fonts.size.medium
                 color: Colours.m3Colors.m3OnSurface
             }
+
             StyledText {
                 Layout.alignment: Qt.AlignTop | Qt.AlignRight
                 text: "Feels like " + Weather.feelsLike + "°"
@@ -151,16 +160,19 @@ ColumnLayout {
             RowLayout {
                 Layout.alignment: Qt.AlignBottom | Qt.AlignRight
                 spacing: Appearance.spacing.small
+
                 Icon {
                     type: Icon.Material
                     icon: "update"
-                    font.pixelSize: Appearance.fonts.size.small
+                    font.pixelSize: Appearance.fonts.size.normal
                     color: Colours.m3Colors.m3OnSurface
                 }
+
                 StyledText {
                     text: TimeAgo.formatTimestampRelative(parseInt(Weather.lastUpdateWeather))
-                    font.pixelSize: Appearance.fonts.size.small
                     color: Colours.m3Colors.m3OnSurface
+                    font.pixelSize: Appearance.fonts.size.normal
+                    font.weight: Font.DemiBold
                 }
             }
         }

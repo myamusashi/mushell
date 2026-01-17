@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Widgets
 
 import qs.Configs
 import qs.Helpers
@@ -30,7 +31,7 @@ StyledRect {
             Icon {
                 type: Icon.Lucide
                 icon: Lucide.icon_calendar_days
-                font.pixelSize: Appearance.fonts.size.normal
+                font.pixelSize: Appearance.fonts.size.large
                 color: Colours.m3Colors.m3Primary
             }
 
@@ -44,7 +45,7 @@ StyledRect {
 
         Flickable {
             Layout.fillWidth: true
-            Layout.preferredHeight: 200
+            Layout.preferredHeight: 220
             clip: true
             contentWidth: dailyRow.width
             contentHeight: dailyRow.height
@@ -60,22 +61,22 @@ StyledRect {
                     model: ScriptModel {
                         values: [...Weather.dailyForecast]
                     }
-                    delegate: StyledRect {
+                    delegate: WrapperRectangle {
                         id: delegate
 
                         required property var modelData
 
-                        color: Colours.withAlpha(Colours.m3Colors.m3Surface, 0.2)
-                        Layout.preferredWidth: 60
-                        Layout.preferredHeight: 180
+                        color: Colours.withAlpha(Colours.m3Colors.m3Surface, 0.3)
                         Layout.leftMargin: 10
                         Layout.rightMargin: 10
                         Layout.bottomMargin: 10
+                        implicitWidth: 60
+                        implicitHeight: 210
+                        extraMargin: 10
+                        contentInsideBorder: true
                         radius: Appearance.rounding.full
 
                         ColumnLayout {
-                            anchors.centerIn: parent
-                            anchors.margins: 5
                             spacing: Appearance.rounding.small
 
                             ColumnLayout {

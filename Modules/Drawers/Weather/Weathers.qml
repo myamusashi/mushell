@@ -25,6 +25,8 @@ Item {
     implicitHeight: parent.height
     implicitWidth: GlobalStates.isWeatherPanelOpen ? parent.width * 0.25 : 0
 
+    readonly property bool anyPageOpen: humidityPages.isOpen || sunPages.isOpen || pressurePages.isOpen || visibilityPages.isOpen || windPages.isOpen || uvIndexPages.isOpen || aqiPages.isOpen || precipitationPages.isOpen || moonPages.isOpen
+
     Behavior on implicitWidth {
         NAnim {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
@@ -76,7 +78,7 @@ Item {
             id: mainLoader
 
             anchors.fill: parent
-            active: root.visible && GlobalStates.isWeatherPanelOpen
+            active: GlobalStates.isWeatherPanelOpen
             asynchronous: true
 
             sourceComponent: Flickable {
@@ -192,6 +194,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     humidityPages.zoomOriginX = humidityCard.mapToItem(root, 0, 0).x + humidityCard.width / 2;
                                     humidityPages.zoomOriginY = humidityCard.mapToItem(root, 0, 0).y + humidityCard.height / 2;
@@ -209,6 +212,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     sunPages.zoomOriginX = sunCard.mapToItem(root, 0, 0).x + sunCard.width / 2;
                                     sunPages.zoomOriginY = sunCard.mapToItem(root, 0, 0).y + sunCard.height / 2;
@@ -226,6 +230,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     pressurePages.zoomOriginX = pressureCard.mapToItem(root, 0, 0).x + pressureCard.width / 2;
                                     pressurePages.zoomOriginY = pressureCard.mapToItem(root, 0, 0).y + pressureCard.height / 2;
@@ -243,6 +248,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     visibilityPages.zoomOriginX = visibilityCard.mapToItem(root, 0, 0).x + visibilityCard.width / 2;
                                     visibilityPages.zoomOriginY = visibilityCard.mapToItem(root, 0, 0).y + visibilityCard.height / 2;
@@ -260,6 +266,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     windPages.zoomOriginX = windCard.mapToItem(root, 0, 0).x + windCard.width / 2;
                                     windPages.zoomOriginY = windCard.mapToItem(root, 0, 0).y + windCard.height / 2;
@@ -277,6 +284,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     uvIndexPages.zoomOriginX = uvIndexCard.mapToItem(root, 0, 0).x + uvIndexCard.width / 2;
                                     uvIndexPages.zoomOriginY = uvIndexCard.mapToItem(root, 0, 0).y + uvIndexCard.height / 2;
@@ -294,6 +302,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     aqiPages.zoomOriginX = aqiCard.mapToItem(root, 0, 0).x + aqiCard.width / 2;
                                     aqiPages.zoomOriginY = aqiCard.mapToItem(root, 0, 0).y + aqiCard.height / 2;
@@ -311,6 +320,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     precipitationPages.zoomOriginX = precipitationCard.mapToItem(root, 0, 0).x + precipitationCard.width / 2;
                                     precipitationPages.zoomOriginY = precipitationCard.mapToItem(root, 0, 0).y + precipitationCard.height / 2;
@@ -328,6 +338,7 @@ Item {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
+                                enabled: !root.anyPageOpen
                                 onClicked: {
                                     moonPages.zoomOriginX = moonCard.mapToItem(root, 0, 0).x + moonCard.width / 2;
                                     moonPages.zoomOriginY = moonCard.mapToItem(root, 0, 0).y + moonCard.height / 2;
@@ -349,6 +360,18 @@ Item {
                 }
             }
         }
+    }
+
+    // Mouse blocker overlay
+    MouseArea {
+        anchors.fill: parent
+        visible: root.anyPageOpen
+        enabled: root.anyPageOpen
+        hoverEnabled: true
+
+        onClicked: {}
+        onPressed: {}
+        onReleased: {}
     }
 
     WeatherPages.Humidity {

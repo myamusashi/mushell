@@ -130,7 +130,7 @@ StyledRect {
                             Icon {
                                 type: Icon.Weather
                                 Layout.alignment: Qt.AlignHCenter
-                                font.pixelSize: Appearance.fonts.size.large * 1.3
+                                font.pixelSize: Appearance.fonts.size.large * 1.5
                                 color: Colours.m3Colors.m3Primary
                                 icon: delegate.modelData.weatherIcon
                             }
