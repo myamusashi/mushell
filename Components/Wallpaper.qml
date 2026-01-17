@@ -7,10 +7,9 @@ Image {
 
     anchors.fill: parent
     source: Paths.currentWallpaper
+    sourceSize: Qt.size(parent.width, parent.height)
     fillMode: Image.PreserveAspectCrop
     retainWhileLoading: true
-    asynchronous: true
-    cache: true
     onStatusChanged: {
         if (this.status == Image.Error) {
             console.log("[ERROR] Wallpaper source invalid");
