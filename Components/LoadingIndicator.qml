@@ -1,7 +1,7 @@
 import QtQuick
-import M3Shapes
-
 import qs.Services
+
+import M3Shapes
 
 Item {
     id: root

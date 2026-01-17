@@ -42,18 +42,13 @@
 
     devShells = forAllSystems (system: let
       pkgs = pkgsFor system;
-      packages = pkgs.callPackage ./nix/default.nix {
-        inherit quickshell m3Shapes;
-      };
     in {
       default = pkgs.mkShell {
-        packages =
-          [
-            packages.default
-            pkgs.go
-            pkgs.python3
-          ]
-          ++ packages.runtimeDeps;
+        packages = [
+          pkgs.go
+          pkgs.python3
+		  pkgs.kdePackages.qtdeclarative
+        ];
 
         shellHook = ''
           go build -o ./Assets/keystate-bin ./Assets/keystate.go

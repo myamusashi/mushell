@@ -72,6 +72,7 @@ Singleton {
             storage.setText(JSON.stringify(root.notClosed.map(n => ({
                         time: n.time.getTime(),
                         id: n.id,
+
                         summary: n.summary,
                         body: n.body,
                         appIcon: n.appIcon,
@@ -166,6 +167,7 @@ Singleton {
                     const notif = notifComponent.createObject(root, {
                         time: new Date(notifData.time),
                         id: notifData.id,
+
                         summary: notifData.summary,
                         body: notifData.body,
                         appIcon: notifData.appIcon,
