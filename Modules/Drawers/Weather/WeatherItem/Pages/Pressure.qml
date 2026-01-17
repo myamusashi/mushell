@@ -125,7 +125,14 @@ WrapperRectangle {
 
                             Repeater {
                                 model: ScriptModel {
-                                    values: [...Weather.hourlyForecast]
+                                    values: (function () {
+                                            const currentHour = new Date().getHours();
+                                            return Weather.hourlyForecast.filter(function (forecast) {
+                                                const timeStr = (forecast.time || "").split(" ")[1] || forecast.time || "";
+                                                const forecastHour = parseInt(timeStr.split(":")[0] || "0");
+                                                return forecastHour >= currentHour;
+                                            });
+                                        })()
                                 }
 
                                 delegate: ColumnLayout {
