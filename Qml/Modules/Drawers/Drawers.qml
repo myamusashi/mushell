@@ -59,7 +59,12 @@ Variants {
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.namespace: "shell:drawers"
         WlrLayershell.keyboardFocus: needFocusKeyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-        HyprlandWindow.visibleMask: window.contentItem.children
+        // HyprlandWindow.visibleMask: Region {
+        //     item: window.contentItem.children
+        // }
+        // BackgroundEffect.blurRegion: Region {
+        //     item: window.contentItem.children
+        // }
 
         mask: Region {
             regions: childRegions.instances
