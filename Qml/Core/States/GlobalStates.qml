@@ -273,8 +273,7 @@ Singleton {
             });
         }
         function get(): string {
-            const data = Utils.readFile(Paths.currentWallpaperFile);
-            return data.trim();
+            return Paths.currentWallpaper;
         }
     }
 
