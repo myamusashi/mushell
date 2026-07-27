@@ -21,7 +21,6 @@ void main() {
     float p        = ubuf.progress;
     float inNew    = float(uv.y >= 1.0 - p);
 
-    // Clamp shifted UV to avoid undefined sampler edge behaviour.
     vec2  shiftedUV = vec2(uv.x, min(uv.y + p, 1.0));
     vec3  c1        = texture(source1, shiftedUV).rgb;
     vec3  c2        = texture(source2, uv).rgb;

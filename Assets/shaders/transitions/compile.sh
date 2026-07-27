@@ -13,6 +13,7 @@ TRANSITIONS=(
     circleExpand
     dissolve
     splitHorizontal
+    hexTile
     slideUp
     pixelate
     diagonalWipe

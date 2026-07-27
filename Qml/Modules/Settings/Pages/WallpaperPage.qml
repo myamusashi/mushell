@@ -259,7 +259,10 @@ SettingsPageBase {
                     },
                     {
                         display: "roll"
-                    }
+                    },
+                    {
+                        display: "hexTile"
+                    },
                 ]
                 Layout.preferredWidth: 200
                 currentIndex: -1

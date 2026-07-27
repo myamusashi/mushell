@@ -34,7 +34,7 @@ pkgs.mkShell {
 
         echo "Compiling shaders..."
         qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/ImageTransition.vert.qsb Assets/shaders/ImageTransition.vert
-        for name in fade wipeDown circleExpand dissolve splitHorizontal slideUp pixelate diagonalWipe boxExpand roll; do
+        for name in fade wipeDown circleExpand dissolve splitHorizontal hexTile slideUp pixelate diagonalWipe boxExpand roll; do
             qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/transitions/$name.frag.qsb Assets/shaders/transitions/$name.frag
         done
         qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/borderProgress.vert.qsb Assets/shaders/borderProgress.vert

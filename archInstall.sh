@@ -284,7 +284,7 @@ compile_shaders() {
 	local -r qsb_flags=(--glsl "450,330,300 es" --hlsl 50 --msl 12)
 
 	local -ra transitions=(
-		fade wipeDown circleExpand dissolve splitHorizontal
+		fade wipeDown hexTile circleExpand dissolve splitHorizontal
 		slideUp pixelate diagonalWipe boxExpand roll
 	)
 

@@ -106,7 +106,7 @@
                 -o Assets/shaders/ImageTransition.vert.qsb \
                    Assets/shaders/ImageTransition.vert
 
-            for name in fade wipeDown circleExpand dissolve splitHorizontal slideUp pixelate diagonalWipe boxExpand roll; do
+            for name in fade wipeDown hexTile circleExpand dissolve splitHorizontal slideUp pixelate diagonalWipe boxExpand roll; do
                 echo "Compiling ''${name}.frag..."
                 ${qt6.qtshadertools}/bin/qsb \
                     --glsl "450,330,300 es" --hlsl 50 --msl 12 \

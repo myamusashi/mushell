@@ -18,11 +18,12 @@ import qs.Core.Utils
 //   "diagonal" – 7   diagonal band top-left → bottom-right
 //   "box"      – 8   rectangle expands from centre
 //   "roll"     – 9   page-roll from right edge
+//   "hexTile"  - 10  hex tile from right edge too top left edge
 
 Item {
     id: root
 
-    readonly property var _shaderNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll"]
+    readonly property var _shaderNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll", "hexTile"]
     readonly property var _typeMap: ({
             "fade": 0,
             "wipeDown": 1,
@@ -33,7 +34,8 @@ Item {
             "pixelate": 6,
             "diagonal": 7,
             "box": 8,
-            "roll": 9
+            "roll": 9,
+            "hexTile": 10
         })
 
     // Which slot is the "active" (currently shown)
