@@ -13,6 +13,9 @@ var rootCmd = &cobra.Command{
 	Use:   "vastctl",
 	Short: "CLI control surface for vast-shell",
 	Long:  "vastctl is a scriptable CLI companion for the vast-shell Hyprland desktop shell.",
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
 }
 
 func Execute() {
