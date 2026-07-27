@@ -121,6 +121,15 @@ SettingsPageBase {
                 onCheckedChanged: Configs.generals.enableOuterBorder = checked
             }
         }
+
+        SettingRow {
+            label: qsTr("Show Holidays in Calendar:")
+
+            StyledSwitch {
+                checked: Configs.generals.showHolidays
+                onCheckedChanged: Configs.generals.showHolidays = checked
+            }
+        }
     }
 
     SettingsCard {

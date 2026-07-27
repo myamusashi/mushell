@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell.Widgets
 
 import qs.Components.Base
@@ -10,6 +9,7 @@ import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
 import qs.Services
+import qs.Widgets
 
 Item {
     id: container
@@ -21,7 +21,7 @@ Item {
     }
 
     readonly property bool isCalendarShow: GlobalStates.isCalendarOpen
-    property int cellWidth: Math.floor((width - anchors.margins * 2) / 7.2)
+    property real cellWidth: (width - Appearance.margin.normal * 2) / 7
 
     implicitWidth: parent.width * 0.2
     implicitHeight: isCalendarShow ? 350 : 0
@@ -44,19 +44,17 @@ Item {
 
     WrapperRectangle {
         anchors.fill: parent
+        margin: Appearance.margin.normal
         color: GlobalStates.drawerColors
         radius: 0
         bottomLeftRadius: Appearance.rounding.large
 
         Loader {
+            id: contentLoader
+
             active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && container.isCalendarShow
             asynchronous: true
-            sourceComponent: CalendarLayout {
-                anchors {
-                    fill: parent
-                    margins: Appearance.margin.normal
-                }
-            }
+            sourceComponent: CalendarLayout {}
         }
     }
 
@@ -67,12 +65,14 @@ Item {
         property int currentYear: currentDate.getFullYear()
         property int currentMonth: currentDate.getMonth()
         property var monthNames: buildMonthNames()
+        property bool showYearMonthPicker: false
 
-        visible: container.isCalendarShow
         spacing: Appearance.spacing.normal
 
         Component.onCompleted: Qt.callLater(() => {
             monthNames = buildMonthNames();
+            if (Configs.generals.showHolidays)
+                HolidayModel.ensureYear(root.currentYear);
         })
 
         function buildMonthNames(): var {
@@ -80,6 +80,11 @@ Item {
             return Array.from({
                 length: 12
             }, (_, i) => locale.monthName(i));
+        }
+
+        onCurrentYearChanged: {
+            if (Configs.generals.showHolidays)
+                HolidayModel.ensureYear(root.currentYear);
         }
 
         Timer {
@@ -94,191 +99,351 @@ Item {
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 48
-            spacing: Appearance.spacing.normal
-
-            StyledRect {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: Appearance.rounding.full
-                color: "transparent"
-
-                Icon {
-                    id: prevIcon
-
-                    anchors.centerIn: parent
-                    icon: "chevron_left"
-                    font.pixelSize: Appearance.fonts.size.large * 2
-                    color: Colours.m3Colors.m3OnPrimaryContainer
-                }
-
-                MArea {
-                    id: prevMArea
-
-                    anchors.fill: parent
-
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-
-                    onClicked: {
-                        root.currentMonth = root.currentMonth - 1;
-                        if (root.currentMonth < 0) {
-                            root.currentMonth = 11;
-                            root.currentYear = root.currentYear - 1;
-                        }
-                    }
-                }
-            }
-
-            StyledText {
-                Layout.fillWidth: true
-                text: root.monthNames[root.currentMonth] + " " + root.currentYear
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font.weight: 600
-
-                color: Colours.m3Colors.m3OnBackground
-                font.pixelSize: Appearance.fonts.size.large
-            }
-
-            StyledRect {
-                Layout.preferredWidth: 40
-                Layout.preferredHeight: 40
-                radius: Appearance.rounding.full
-                color: "transparent"
-
-                Icon {
-                    id: nextIcon
-
-                    anchors.centerIn: parent
-                    icon: "chevron_right"
-                    font.pixelSize: Appearance.fonts.size.large * 2
-                    color: Colours.m3Colors.m3Primary
-                }
-
-                MArea {
-                    id: nextMArea
-
-                    anchors.fill: parent
-
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-
-                    onClicked: {
-                        root.currentMonth = root.currentMonth + 1;
-                        if (root.currentMonth > 11) {
-                            root.currentMonth = 0;
-                            root.currentYear = root.currentYear + 1;
-                        }
-                    }
-                }
+        Connections {
+            target: Configs.generals
+            function onShowHolidaysChanged() {
+                if (Configs.generals.showHolidays)
+                    HolidayModel.ensureYear(root.currentYear);
             }
         }
 
-        DayOfWeekRow {
-            Layout.fillWidth: true
-            Layout.topMargin: Appearance.spacing.small
-            Layout.preferredHeight: 32
-
-            delegate: StyledRect {
-                id: daysOfWeekDelegate
-
-                required property var model
-
-                implicitWidth: container.cellWidth
-                implicitHeight: 32
-                color: "transparent"
-
-                StyledText {
-                    anchors.centerIn: parent
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                    text: daysOfWeekDelegate.model.shortName
-                    color: {
-                        if (daysOfWeekDelegate.model.shortName === "Sun" || daysOfWeekDelegate.model.shortName === "Sat")
-                            return Colours.m3Colors.m3Error;
-                        else
-                            return Colours.m3Colors.m3OnSurface;
-                    }
-                    font.pixelSize: Appearance.fonts.size.small * 1.2
-                    font.weight: 600
-                }
-            }
-        }
-
-        MonthGrid {
-            id: monthGrid
-
+        Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.topMargin: Appearance.spacing.small
 
-            property int cellWidth: container.cellWidth
-            property int cellHeight: Math.floor(height / 7)
+            ColumnLayout {
+                id: calendarContent
+                anchors.fill: parent
+                spacing: 0
 
-            month: root.currentMonth
-            year: root.currentYear
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 48
+                    spacing: Appearance.spacing.normal
 
-            delegate: StyledRect {
-                id: dayItem
+                    StyledRect {
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
+                        radius: Appearance.rounding.full
+                        color: "transparent"
 
-                required property var model
-                readonly property int dayFontWeight: {
-                    if (model.today)
-                        return 1000;
-                    if (model.month === root.currentMonth)
-                        return 600;
-                    return 100;
-                }
-                property date cellDate: model.date
-                property int dayOfWeek: cellDate.getDay()
+                        Icon {
+                            anchors.centerIn: parent
+                            icon: "chevron_left"
+                            font.pixelSize: Appearance.fonts.size.large * 2
+                            color: Colours.m3Colors.m3OnPrimaryContainer
+                        }
 
-                width: monthGrid.cellWidth
-                height: monthGrid.cellHeight
-
-                color: {
-                    if (dayItem.model.today)
-                        return Colours.m3Colors.m3Primary;
-                    else if (mouseArea.containsMouse && dayItem.model.month === root.currentMonth)
-                        return Colours.m3Colors.m3SurfaceVariant;
-
-                    return "transparent";
-                }
-
-                radius: Appearance.rounding.small
-
-                implicitWidth: 40
-                implicitHeight: 40
-
-                MArea {
-                    id: mouseArea
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    visible: dayItem.model.month === root.currentMonth
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {}
-                }
-
-                StyledText {
-                    anchors.centerIn: parent
-                    text: Qt.formatDate(dayItem.model.date, "d")
-                    color: {
-                        if (dayItem.model.today)
-                            return Colours.m3Colors.m3OnPrimary;
-
-                        const isWeekend = dayItem.dayOfWeek === 0 || dayItem.dayOfWeek === 6;
-                        const isCurrentMonth = dayItem.model.month === root.currentMonth;
-                        const baseColor = isWeekend ? Colours.m3Colors.m3Error : Colours.m3Colors.m3OnSurface;
-
-                        return isCurrentMonth ? baseColor : Qt.alpha(baseColor, 0.2);
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: {
+                                monthGrid.closePopover();
+                                root.currentMonth = root.currentMonth - 1;
+                                if (root.currentMonth < 0) {
+                                    root.currentMonth = 11;
+                                    root.currentYear = root.currentYear - 1;
+                                }
+                            }
+                        }
                     }
-                    font.pixelSize: Appearance.fonts.size.small * 1.3
-                    font.weight: dayItem.dayFontWeight
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+
+                    StyledText {
+                        id: headerLabel
+
+                        Layout.fillWidth: true
+                        text: root.monthNames[root.currentMonth] + " " + root.currentYear
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        font.weight: 600
+                        color: Colours.m3Colors.m3OnBackground
+                        font.pixelSize: Appearance.fonts.size.large
+
+                        MArea {
+                            width: headerLabel.contentWidth
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: {
+                                monthGrid.closePopover();
+                                root.showYearMonthPicker = !root.showYearMonthPicker;
+                            }
+                        }
+                    }
+
+                    StyledRect {
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
+                        radius: Appearance.rounding.full
+                        color: "transparent"
+
+                        Icon {
+                            anchors.centerIn: parent
+                            icon: "chevron_right"
+                            font.pixelSize: Appearance.fonts.size.large * 2
+                            color: Colours.m3Colors.m3Primary
+                        }
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            hoverEnabled: true
+                            onClicked: {
+                                monthGrid.closePopover();
+                                root.currentMonth = root.currentMonth + 1;
+                                if (root.currentMonth > 11) {
+                                    root.currentMonth = 0;
+                                    root.currentYear = root.currentYear + 1;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                CustomDayOfWeekRow {
+                    id: dowRow
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 28
+
+                    delegate: Item {
+                        id: dow
+
+                        required property var modelData
+                        width: dowRow.cellWidth
+                        height: dowRow.height
+
+                        StyledText {
+                            anchors.centerIn: parent
+                            text: dow.modelData.shortName
+                            color: {
+                                if (dow.modelData.shortName === "Sun" || dow.modelData.shortName === "Sat")
+                                    return Colours.m3Colors.m3Error;
+                                return Colours.m3Colors.m3OnSurface;
+                            }
+                            font.pixelSize: Appearance.fonts.size.small * 1.2
+                            font.weight: 600
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    clip: false
+
+                    CustomMonthGrid {
+                        id: monthGrid
+                        anchors.fill: parent
+
+                        cellHeight: 34
+                        month: root.currentMonth
+                        year: root.currentYear
+
+                        delegate: Item {
+                            id: item
+
+                            required property var modelData
+                            required property int index
+
+                            readonly property int gridCol: index % 7
+                            readonly property int gridRow: Math.floor(index / 7)
+
+                            x: gridCol * monthGrid.cellWidth
+                            y: gridRow * monthGrid.cellHeight
+                            width: monthGrid.cellWidth
+                            height: monthGrid.cellHeight
+
+                            property date cellDate: modelData.date
+                            property int dayOfWeek: cellDate.getDay()
+                            property bool showHoliday: {
+                                if (!Configs.generals.showHolidays)
+                                    return false;
+                                return HolidayModel.hasHoliday(cellDate);
+                            }
+                            property var holidayEntries: {
+                                if (!Configs.generals.showHolidays)
+                                    return [];
+                                return HolidayModel.getHolidaysForDate(cellDate);
+                            }
+                            property string holidayLabel: {
+                                if (!Configs.generals.showHolidays)
+                                    return "";
+                                return HolidayModel.nameForDate(cellDate);
+                            }
+
+                            readonly property bool isToday: modelData.today
+                            readonly property bool isCurrentMonth: modelData.month === root.currentMonth
+                            readonly property int dayFontWeight: isToday ? 1000 : (isCurrentMonth ? 600 : 100)
+
+                            readonly property bool isPopoverOpen: monthGrid.openPopoverDate !== null && new Date(monthGrid.openPopoverDate).toDateString() === item.cellDate.toDateString()
+
+                            StyledRect {
+                                id: bg
+
+                                anchors.fill: parent
+                                radius: Appearance.rounding.small
+                                color: {
+                                    if (item.isPopoverOpen)
+                                        return Colours.m3Colors.m3SurfaceContainerHigh;
+                                    if (mouseArea.containsMouse && item.isCurrentMonth)
+                                        return Colours.m3Colors.m3SurfaceVariant;
+                                    return "transparent";
+                                }
+
+                                MArea {
+                                    id: mouseArea
+
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    visible: item.isCurrentMonth
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (item.showHoliday && item.holidayLabel !== "") {
+                                            monthGrid.openPopoverDate = item.isPopoverOpen ? null : item.cellDate;
+                                        } else {
+                                            monthGrid.closePopover();
+                                        }
+                                    }
+                                }
+                            }
+
+                            StyledRect {
+                                anchors.fill: parent
+                                anchors.margins: 1
+                                radius: Appearance.rounding.small - 1
+                                color: "transparent"
+                                border {
+                                    color: item.isToday ? Colours.m3Colors.m3Primary : "transparent"
+                                    width: item.isToday ? 1.5 : 0
+                                }
+                                visible: item.isToday && !mouseArea.containsMouse
+                            }
+
+                            Column {
+                                anchors.centerIn: parent
+                                width: parent.width - 2
+                                spacing: 3
+
+                                StyledText {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    text: Qt.formatDate(item.cellDate, "d")
+                                    color: {
+                                        if (item.isToday)
+                                            return Colours.m3Colors.m3Primary;
+                                        const baseColor = (item.dayOfWeek === 0 || item.dayOfWeek === 6) ? Colours.m3Colors.m3Error : Colours.m3Colors.m3OnSurface;
+                                        return item.isCurrentMonth ? baseColor : Qt.alpha(baseColor, 0.2);
+                                    }
+                                    font.pixelSize: Appearance.fonts.size.small * 1.3
+                                    font.weight: item.dayFontWeight
+                                    horizontalAlignment: Text.AlignHCenter
+                                }
+
+                                RowLayout {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    spacing: 3
+                                    visible: item.showHoliday
+
+                                    Repeater {
+                                        model: Math.min(item.holidayEntries.length, 3)
+
+                                        StyledRect {
+                                            required property int index
+
+                                            implicitWidth: 5
+                                            implicitHeight: 5
+                                            radius: 2.5
+                                            color: {
+                                                const h = item.holidayEntries[index];
+                                                if (h && h.type === "leave")
+                                                    return Colours.m3Colors.m3Secondary;
+                                                return Colours.m3Colors.m3Tertiary;
+                                            }
+                                        }
+                                    }
+
+                                    StyledText {
+                                        text: item.holidayEntries.length > 3 ? "+" + (item.holidayEntries.length - 3) : ""
+                                        font.pixelSize: Appearance.fonts.size.small * 0.65
+                                        color: Colours.m3Colors.m3OnSurfaceVariant
+                                        visible: text !== ""
+                                    }
+                                }
+                            }
+                        }
+
+                        popoverDelegate: StyledRect {
+                            id: popover
+
+                            property var cellDate
+
+                            readonly property var holidayEntries: cellDate ? HolidayModel.getHolidaysForDate(cellDate) : []
+                            readonly property string holidayName: cellDate ? HolidayModel.nameForDate(cellDate) : ""
+
+                            implicitHeight: popoverLabel.implicitHeight + 12
+                            radius: Appearance.rounding.small
+                            color: Colours.m3Colors.m3SurfaceContainerHigh
+                            clip: true
+
+                            border.color: Qt.alpha(Colours.m3Colors.m3Primary, 0.3)
+                            border.width: 1
+
+                            Behavior on implicitHeight {
+                                NAnim {
+                                    duration: Appearance.animations.durations.expressiveDefaultSpatial
+                                    easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                                }
+                            }
+
+                            StyledText {
+                                id: popoverLabel
+
+                                anchors {
+                                    verticalCenter: parent.verticalCenter
+                                    left: parent.left
+                                    right: parent.right
+                                    margins: 8
+                                }
+                                text: popover.holidayName
+                                font.pixelSize: Appearance.fonts.size.medium
+                                color: Colours.m3Colors.m3OnSurface
+                                horizontalAlignment: Text.AlignHCenter
+                                elide: Text.ElideRight
+                                maximumLineCount: 2
+                                wrapMode: Text.WordWrap
+                            }
+
+                            MArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: monthGrid.closePopover()
+                            }
+                        }
+                    }
+                }
+            }
+
+            YearMonthPicker {
+                anchors.fill: parent
+                visible: root.showYearMonthPicker
+                z: 10
+
+                currentYear: root.currentYear
+                currentMonth: root.currentMonth
+
+                background: StyledRect {
+                    color: GlobalStates.drawerColors
+                    radius: Appearance.rounding.medium
+                }
+
+                onMonthPicked: function (m) {
+                    root.currentMonth = m;
+                    root.showYearMonthPicker = false;
+                }
+                onYearPicked: function (y) {
+                    root.currentYear = y;
+                    root.showYearMonthPicker = false;
                 }
             }
         }

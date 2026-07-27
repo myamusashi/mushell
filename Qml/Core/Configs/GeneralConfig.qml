@@ -12,6 +12,7 @@ JsonObject {
     property int outerBorderSize: 10
     property int coverBlurRadius: 16
     property int chargingGlowSpread: 10
+    property bool showHolidays: true
 
     component Battery: JsonObject {
         property list<var> warnLevels: [
