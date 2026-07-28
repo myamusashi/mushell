@@ -17,7 +17,7 @@
     ffmpeg,
     wireplumber,
     foot,
-    rembg,
+    python313Packages,
     kdePackages,
     polkit,
     patchelf,
@@ -40,7 +40,7 @@
         gawk
         gnused
         util-linux
-        rembg
+        python313Packages.rembg
         wireplumber
         iw
         libnotify
