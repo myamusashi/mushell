@@ -35,7 +35,7 @@ SettingsPageBase {
                 id: pickWallpaperDialog
                 nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.svg", "*.webp"]
                 onFileSelected: path => Quickshell.execDetached({
-                        command: ["shell", "ipc", "call", "img", "set", path]
+                        command: ["vastctl", "wallpaper", "set", path]
                     })
             }
         }
@@ -148,7 +148,7 @@ SettingsPageBase {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: Quickshell.execDetached({
-                            command: ["shell", "ipc", "call", "img", "set", delegateRoot.modelData]
+                            command: ["vastctl", "wallpaper", "set", delegateRoot.modelData]
                         })
                     }
                 }

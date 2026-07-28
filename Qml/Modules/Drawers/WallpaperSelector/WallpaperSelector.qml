@@ -252,7 +252,7 @@ Item {
                                             wallpaperPath.currentIndex = delegateItem.index;
                                         } else {
                                             Quickshell.execDetached({
-                                                command: ["shell", "ipc", "call", "img", "set", delegateItem.modelData]
+                                                command: ["vastctl", "wallpaper", "set", delegateItem.modelData]
                                             });
                                         }
                                     }
@@ -263,7 +263,7 @@ Item {
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                                 Quickshell.execDetached({
-                                    command: ["shell", "ipc", "call", "img", "set", WallpaperFileModels.filteredWallpaperList[currentIndex]]
+                                    command: ["vastctl", "wallpaper", "set", WallpaperFileModels.filteredWallpaperList[currentIndex]]
                                 });
                                 event.accepted = true;
                             }

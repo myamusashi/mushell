@@ -37,7 +37,7 @@ Item {
             "reboot": ["systemctl", "reboot"],
             "suspend": ["systemctl", "suspend"],
             "logout": ["hyprctl", "dispatch", "hl.dsp.exit()"],
-            "lockscreen": ["shell", "ipc", "call", "lock", "lock"]
+            "lockscreen": ["vastctl", "lock", "lock"]
         };
         const cmd = cmds[action];
         if (cmd)
