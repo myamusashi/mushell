@@ -40,11 +40,11 @@ if [ -f "${DSTIMG}" ]; then
 fi
 
 echo "[INFO] Extracting wallpaper foreground"
-if rembg i -m birefnet-portrait "$SRCIMG" "$DSTIMG" &> "$CACHEDIR/rembg.log"; then
+if remove-bg.py -m birefnet-portrait "$SRCIMG" "$DSTIMG" &> "$CACHEDIR/remove-bg.log"; then
   echo "[INFO] Successfully extracted foreground"
   echo "FOREGROUND $DSTIMG"
 else
   echo "[ERROR] Failed to extract foreground"
-  echo "[INFO] find log in ${CACHEDIR}/rembg.log"
+  echo "[INFO] find log in ${CACHEDIR}/remove-bg.log"
   exit 1
 fi

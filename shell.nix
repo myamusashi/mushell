@@ -22,7 +22,7 @@ pkgs.mkShell {
         pkg-config
         qt6.qttools
         qt6.qtshadertools
-        python313Packages.rembg
+        python314Packages.rembg
         gcc
         gdb
         cmake

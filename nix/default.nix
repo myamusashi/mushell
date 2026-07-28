@@ -17,13 +17,12 @@
     ffmpeg,
     wireplumber,
     foot,
-    python313Packages,
+    python314,
     kdePackages,
     polkit,
     patchelf,
     hyprland,
     qt6,
-    python3Packages,
     callPackage,
     cmake,
 }: let
@@ -33,6 +32,7 @@
     another-ripple = callPackage ./plugins/AnotherRipple.nix {};
     vastPlugin = callPackage ./plugins/vastPlugin.nix {};
     vastctl = callPackage ./packages/vastctl.nix {};
+    remove-bg = callPackage ./packages/remove-bg.nix {};
 
     runtimeDeps = [
         findutils
@@ -40,7 +40,7 @@
         gawk
         gnused
         util-linux
-        (python313Packages.rembg.override {withCli = true;})
+        remove-bg
         wireplumber
         iw
         libnotify
@@ -190,6 +190,7 @@ in {
         vastctl
         material-symbols
         app2unit
+        remove-bg
         runtimeDeps
         ;
     default = vast-shell;

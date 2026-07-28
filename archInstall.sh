@@ -93,7 +93,6 @@ install_aur_packages() {
 	local -r pkg_list=(
 		google-breakpad matugen-bin ttf-weather-icons
 		app2unit ttf-material-symbols-variable-git quickshell-git
-		python-rembg
 	)
 
 	log "Checking AUR packages..."
