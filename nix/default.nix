@@ -40,7 +40,7 @@
         gawk
         gnused
         util-linux
-        python313Packages.rembg
+        (python313Packages.rembg.override {withCli = true;})
         wireplumber
         iw
         libnotify
