@@ -35,7 +35,7 @@ Item {
     property bool transferSuccess: false
 
     implicitWidth: bar.width * 0.35
-    implicitHeight: Configs.bar.barHeight + (currentState == DynamicIsland.State.Idle ? 0 : 120)
+    implicitHeight: root.islandVisible ? island.contentHeight + Configs.bar.barHeight + 40 : Configs.bar.barHeight + 60
 
     visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
 
@@ -150,8 +150,10 @@ Item {
         property real contentWidth: 0
         property real contentHeight: 44
 
-        implicitWidth: root.islandVisible ? island.contentWidth : 0
-        implicitHeight: root.islandVisible ? island.contentHeight : 0
+        implicitWidth: island.contentWidth
+        implicitHeight: island.contentHeight
+
+        opacity: root.islandVisible ? 1 : 0
 
         radius: root.currentState > DynamicIsland.State.Dragging ? Appearance.rounding.normal : Appearance.rounding.full
         color: GlobalStates.drawerColors
@@ -175,6 +177,12 @@ Item {
             NAnim {
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+            }
+        }
+
+        Behavior on opacity {
+            NAnim {
+                duration: Appearance.animations.durations.small
             }
         }
 
