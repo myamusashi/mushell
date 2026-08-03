@@ -14,11 +14,6 @@ Singleton {
     readonly property real diskProp: diskUsed / 1048576
     readonly property real diskPercent: diskTotal > 0 ? (diskUsed / diskTotal) * 100 : 0
     readonly property real memProp: memUsed / 1048576
-    readonly property real memPercent: memTotal > 0 ? (memUsed / memTotal) * 100 : 0
-    readonly property string gpuPowerText: gpuPower + " W"
-    readonly property string gpuFreqText: gpuFreqActual + " MHz"
-    readonly property string gpuRc6Text: gpuRc6 + "%"
-    readonly property string gpuBandwidthText: `R: ${gpuMemBandwidthRead} MiB/s W: ${gpuMemBandwidthWrite} MiB/s`
     readonly property var speedThresholds: [
         {
             limit: 0.01,
@@ -44,20 +39,13 @@ Singleton {
     property string gpuName: ""
     property string cpuName: ""
 
-    // Rendering backend information
     property bool vulkanAvailable: false
     property bool openglAvailable: false
-    property bool hardwareAccelAvailable: false
-    property bool vdpauAvailable: false
-    property string vulkanDriver: ""
-    property string vdpauDriver: ""
     property string vaApiDriver: ""
     property string openglVersion: ""
     property string vulkanVersion: ""
     property string openglRenderer: ""
     property string openglVendor: ""
-    property var vulkanDevices: []
-    property var vaApiProfiles: []
 
     // use formatUsage() at call sites
     property real storageAppsData: 0
@@ -68,30 +56,22 @@ Singleton {
     property var filesystemNames: []
 
     property var cpuCores: []
-    property int cpuCoreCount: 0
-    property int cpuMaxFreqKHz: 1
 
     // Temperatures (°C)
     property real cpuTemp: 0
     property real gpuTemp: 0
     property real batteryTemp: 0
-    property var cpuCoreTemps: []
 
     // Battery informations
     property string batteryTechnologies: ""
 
-    // Deep sleep & uptime
-    property bool deepSleepSupported: false
     property real uptimeSeconds: 0
-    property string sleepMode: ""
 
     // OS info
     property string osName: ""
-    property string osVersion: ""
     property string osPrettyName: ""
     property string kernelName: ""
     property string archDesign: ""
-    property string cpuFlags: ""
 
     // mem & disk info
     property int memTotal: 0
@@ -124,21 +104,9 @@ Singleton {
     property int wiredLinkSpeed: 0
     property int wirelessLinkSpeed: 0
 
-    // cpu, gpu & vram informations
-    property string gpuPower: "0.00"
-    property string gpuRc6: "0.0"
     property int cpuPerc: 0
-    property bool useGpuSysfsOnly: false
-    property int gpuUsage: 0
-    property int vramUsed: 0
-    property int gpuFreqActual: 0
-    property int gpuFreqRequested: 0
-    property int gpuMemBandwidthRead: 0
-    property int gpuMemBandwidthWrite: 0
 
-    // temp data
     property bool initialized: false
-    property bool staticInfoLoaded: false
     property double lastUpdateTime: 0
     property int lastCpuTotal: 0
     property int lastCpuIdle: 0
@@ -342,9 +310,6 @@ Singleton {
                 echo "VULKAN:AVAILABLE"
                 vulkaninfo --summary 2>/dev/null | awk '
                 /Vulkan Instance Version:/ {print "VERSION:" $NF}
-                /GPU id.*deviceName/ {match($0, /deviceName = (.+)/, arr); print "DEVICE:" arr[1]}
-                /GPU id.*driverName/ {match($0, /driverName = (.+)/, arr); print "DRIVER:" arr[1]}
-                /GPU id.*driverInfo/ {match($0, /driverInfo = (.+)/, arr); print "DRIVER_INFO:" arr[1]}
                 '
             else
                 echo "VULKAN:UNAVAILABLE"
@@ -353,33 +318,14 @@ Singleton {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const lines = text.trim().split('\n');
-                const devices = [];
-                let currentDevice = {};
-
-                for (const line of lines) {
-                    if (line === "VULKAN:AVAILABLE") {
+                for (const line of text.trim().split('\n')) {
+                    if (line === "VULKAN:AVAILABLE")
                         root.vulkanAvailable = true;
-                    } else if (line === "VULKAN:UNAVAILABLE") {
+                    else if (line === "VULKAN:UNAVAILABLE")
                         root.vulkanAvailable = false;
-                    } else if (line.startsWith("VERSION:")) {
+                    else if (line.startsWith("VERSION:"))
                         root.vulkanVersion = line.substring(8).trim();
-                    } else if (line.startsWith("DEVICE:")) {
-                        if (currentDevice.name)
-                            devices.push(currentDevice);
-                        currentDevice = {
-                            name: line.substring(7).trim()
-                        };
-                    } else if (line.startsWith("DRIVER:")) {
-                        root.vulkanDriver = line.substring(7).trim();
-                        currentDevice.driver = root.vulkanDriver;
-                    } else if (line.startsWith("DRIVER_INFO:")) {
-                        currentDevice.driverInfo = line.substring(12).trim();
-                    }
                 }
-                if (currentDevice.name)
-                    devices.push(currentDevice);
-                root.vulkanDevices = devices;
             }
         }
     }
@@ -426,9 +372,7 @@ Singleton {
             if command -v vainfo >/dev/null 2>&1; then
                 vainfo 2>/dev/null | awk '
                 /Driver version:/ {sub(/.*Driver version: */, ""); print "VAAPI_DRIVER:" $0}
-                /VAProfile/ {if ($2 == ":") print "VAAPI_PROFILE:" $1}
-                ' || echo "VAAPI:ERROR"
-                if [ $? -eq 0 ]; then echo "VAAPI:AVAILABLE"; else echo "VAAPI:UNAVAILABLE"; fi
+                '
             else
                 echo "VAAPI:UNAVAILABLE"
             fi
@@ -436,135 +380,9 @@ Singleton {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const lines = text.trim().split('\n');
-                const profiles = [];
-
-                for (const line of lines) {
-                    if (line === "VAAPI:AVAILABLE")
-                        root.hardwareAccelAvailable = true;
-                    else if (line === "VAAPI:UNAVAILABLE" || line === "VAAPI:ERROR")
-                        root.hardwareAccelAvailable = false;
-                    else if (line.startsWith("VAAPI_DRIVER:"))
-                        root.vaApiDriver = line.substring(13).trim();
-                    else if (line.startsWith("VAAPI_PROFILE:"))
-                        profiles.push(line.substring(14).trim());
-                }
-                root.vaApiProfiles = profiles;
-            }
-        }
-    }
-
-    Process {
-        id: vdpauInfoProc
-
-        command: ["sh", "-c", `
-            if command -v vdpauinfo >/dev/null 2>&1; then
-                vdpauinfo 2>/dev/null | awk '
-                /Information string:/ {sub(/.*Information string: */, ""); print "VDPAU_INFO:" $0}
-                /display:/ {if ($0 ~ /display:.*\\x27/) print "VDPAU:AVAILABLE"}
-                '
-                if [ $? -eq 0 ]; then echo "VDPAU:AVAILABLE"; else echo "VDPAU:UNAVAILABLE"; fi
-            else
-                echo "VDPAU:UNAVAILABLE"
-            fi
-        `]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
                 for (const line of text.trim().split('\n')) {
-                    if (line === "VDPAU:AVAILABLE") {
-                        root.vdpauAvailable = true;
-                    } else if (line === "VDPAU:UNAVAILABLE") {
-                        root.vdpauAvailable = false;
-                    } else if (line.startsWith("VDPAU_INFO:")) {
-                        root.vdpauDriver = line.substring(11).trim();
-                    }
-                }
-            }
-        }
-    }
-
-    Process {
-        id: intelGpuProc
-
-        command: ["sh", "-c", "timeout 1 intel_gpu_top -J -s 500"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                try {
-                    const jsonText = text.trim();
-                    const cleanedJson = jsonText.endsWith(',') ? jsonText.slice(0, -1) + ']' : jsonText + ']';
-                    const dataArray = JSON.parse(cleanedJson);
-                    if (dataArray.length === 0)
-                        return;
-
-                    const data = dataArray[dataArray.length - 1];
-                    if (data.engines?.["Render/3D"])
-                        root.gpuUsage = Math.round(data.engines["Render/3D"].busy || 0);
-                    if (data.power?.GPU)
-                        root.gpuPower = data.power.GPU.toFixed(2);
-
-                    let totalVramUsed = 0;
-                    if (data.clients) {
-                        for (const clientId in data.clients) {
-                            const client = data.clients[clientId];
-                            if (client.memory?.system)
-                                totalVramUsed += parseInt(client.memory.system.resident) || 0;
-                        }
-                    }
-                    root.vramUsed = Math.round(totalVramUsed / 1048576);
-
-                    if (data.frequency) {
-                        root.gpuFreqActual = Math.round(data.frequency.actual || 0);
-                        root.gpuFreqRequested = Math.round(data.frequency.requested || 0);
-                    }
-                    if (data.rc6)
-                        root.gpuRc6 = data.rc6.value.toFixed(1);
-                    if (data["imc-bandwidth"]) {
-                        root.gpuMemBandwidthRead = Math.round(data["imc-bandwidth"].reads || 0);
-                        root.gpuMemBandwidthWrite = Math.round(data["imc-bandwidth"].writes || 0);
-                    }
-                } catch (e) {
-                    console.log("Failed to parse intel_gpu_top output:", e);
-                    ToastService.show(qsTr("Failed to parse intel_gpu_top output: %1").arg(e), qsTr("System Usage"), "system-component-symbolic", 3000);
-                }
-            }
-        }
-        stderr: StdioCollector {
-            onStreamFinished: {
-                const err = text.trim();
-                if (err.length > 0) {
-                    if (/denied|paranoid|permission/i.test(err)) {
-                        root.useGpuSysfsOnly = true;
-                    } else {
-                        console.log("intel_gpu_top error:", err);
-                        ToastService.show(qsTr("intel_gpu_top error: %1").arg(err), qsTr("System Usage"), "system-component-symbolic", 3000);
-                    }
-                }
-            }
-        }
-    }
-
-    Process {
-        id: intelGpuSysfsProc
-
-        command: ["sh", "-c", `
-            cat /sys/class/drm/card0/gt_cur_freq_mhz 2>/dev/null || echo "0"
-            cat /sys/class/drm/card0/gt_max_freq_mhz 2>/dev/null || echo "1"
-            cat /sys/kernel/debug/dri/0/i915_gem_objects 2>/dev/null | awk '/bytes total/ {print $1}'
-        `]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const lines = text.trim().split('\n');
-                if (lines.length >= 3) {
-                    const curFreq = parseInt(lines[0]) || 0;
-                    const maxFreq = parseInt(lines[1]) || 1;
-                    const vramBytes = parseInt(lines[2]) || 0;
-
-                    root.gpuUsage = Math.round((curFreq / maxFreq) * 100);
-                    if (vramBytes > 0)
-                        root.vramUsed = Math.round(vramBytes / 1048576);
+                    if (line.startsWith("VAAPI_DRIVER:"))
+                        root.vaApiDriver = line.substring(13).trim();
                 }
             }
         }
@@ -749,7 +567,6 @@ Singleton {
             onStreamFinished: {
                 const lines = text.trim().split("\n");
                 const cores = root.cpuCores.length > 0 ? [...root.cpuCores] : [];
-                const maxFreq = root.cpuMaxFreqKHz;
 
                 for (let i = 0; i < lines.length; i++) {
                     const freqKHz = parseInt(lines[i].trim(), 10) || 0;
@@ -804,7 +621,6 @@ Singleton {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                const coreTemps = [];
                 let foundGpuTemp = false;
 
                 for (const line of text.trim().split("\n")) {
@@ -815,11 +631,6 @@ Singleton {
                             const temp = parseInt(parts[1], 10) / 1000;
                             if (label.startsWith("Package"))
                                 root.cpuTemp = temp;
-                            else if (label.startsWith("Core"))
-                                coreTemps.push({
-                                    core: coreTemps.length,
-                                    temp: temp
-                                });
                         }
                     } else if (line.startsWith("BATTEMP:")) {
                         const val = parseInt(line.substring(8), 10);
@@ -833,7 +644,6 @@ Singleton {
                         }
                     }
                 }
-                root.cpuCoreTemps = coreTemps;
                 if (!foundGpuTemp)
                     root.gpuTemp = 0;
             }
@@ -866,13 +676,8 @@ Singleton {
         command: ["sh", "-c", `
             echo "OS_PRETTY:$(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"')"
             echo "OS_NAME:$(grep '^NAME=' /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"')"
-            echo "OS_VERSION:$(grep '^VERSION=' /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"')"
             echo "KERNEL:$(uname -r)"
             echo "ARCH:$(uname -m)"
-            echo "NPROC:$(nproc)"
-            echo "MAXFREQ:$(cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq 2>/dev/null || echo 1)"
-            echo "FLAGS:$(grep -m1 '^flags' /proc/cpuinfo 2>/dev/null | cut -d: -f2- | xargs)"
-            echo "MEMSLEEP:$(cat /sys/power/mem_sleep 2>/dev/null || echo '')"
         `]
         running: false
         stdout: StdioCollector {
@@ -882,26 +687,11 @@ Singleton {
                         root.osPrettyName = line.substring(10);
                     else if (line.startsWith("OS_NAME:"))
                         root.osName = line.substring(8);
-                    else if (line.startsWith("OS_VERSION:"))
-                        root.osVersion = line.substring(11);
                     else if (line.startsWith("KERNEL:"))
                         root.kernelName = line.substring(7);
                     else if (line.startsWith("ARCH:"))
                         root.archDesign = line.substring(5);
-                    else if (line.startsWith("NPROC:"))
-                        root.cpuCoreCount = parseInt(line.substring(6), 10) || 0;
-                    else if (line.startsWith("MAXFREQ:"))
-                        root.cpuMaxFreqKHz = parseInt(line.substring(8), 10) || 1;
-                    else if (line.startsWith("FLAGS:"))
-                        root.cpuFlags = line.substring(6);
-                    else if (line.startsWith("MEMSLEEP:")) {
-                        const sleepStr = line.substring(9);
-                        root.deepSleepSupported = sleepStr.includes("deep");
-                        const activeMatch = sleepStr.match(/\\[([^\\]]+)\\]/);
-                        root.sleepMode = activeMatch ? activeMatch[1] : "";
-                    }
                 }
-                root.staticInfoLoaded = true;
             }
         }
     }
@@ -930,24 +720,15 @@ Singleton {
                 diskDfProc.running = true;
                 break;
             case 2:
-                if (root.useGpuSysfsOnly)
-                    intelGpuSysfsProc.running = true;
-                else
-                    intelGpuProc.running = true;
-                break;
-            case 3:
-                intelGpuSysfsProc.running = true;
-                break;
-            case 4:
                 cpuFreqProc.running = true;
                 break;
-            case 5:
+            case 3:
                 allNetworkDevicesProc.running = true;
                 temperatureProc.running = true;
                 linkSpeedProc.running = true;
                 break;
             }
-            updateCycle = (updateCycle + 1) % 6;
+            updateCycle = (updateCycle + 1) % 4;
         }
     }
 
@@ -958,7 +739,6 @@ Singleton {
         vulkanInfoProc.running = true;
         openglInfoProc.running = true;
         vaApiInfoProc.running = true;
-        vdpauInfoProc.running = true;
     }
 
     Component.onDestruction: {

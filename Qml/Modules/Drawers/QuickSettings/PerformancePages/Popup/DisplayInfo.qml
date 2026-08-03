@@ -66,18 +66,8 @@ PopupWidget {
                 },
                 {
                     header: "",
-                    text: qsTr("Vulkan Driver"),
-                    value: SystemUsage.vulkanDriver
-                },
-                {
-                    header: "",
                     text: qsTr("vaAPI Driver"),
                     value: SystemUsage.vaApiDriver
-                },
-                {
-                    header: "",
-                    text: qsTr("VDPAU Driver"),
-                    value: SystemUsage.vdpauDriver
                 },
                 {
                     header: "",
@@ -139,7 +129,7 @@ PopupWidget {
                     Layout.topMargin: Appearance.spacing.small
                     implicitHeight: 1
                     color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
-                    visible: delegate.modelData.header === "" && delegate.index < root.monitorModel.length + 7
+                    visible: delegate.modelData.header === "" && delegate.index < root.monitorModel.length + 5
                 }
             }
         }

@@ -22,11 +22,7 @@ PopupWidget {
                 {
                     text: qsTr("architecture design"),
                     value: SystemUsage.archDesign
-                },
-                {
-                    text: qsTr("CPU flags"),
-                    value: SystemUsage.cpuFlags
-                },
+                }
             ]
             delegate: RowLayout {
                 required property var modelData
