@@ -65,8 +65,6 @@ Control {
         }
     }
 
-
-
     component GridMode: Item {
         id: gridRoot
 

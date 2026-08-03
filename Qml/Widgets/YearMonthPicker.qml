@@ -131,7 +131,7 @@ Control {
 
                 delegate: StyledRect {
                     id: monthDelegate
-                    
+
                     required property int index
 
                     Layout.fillWidth: true

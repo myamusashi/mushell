@@ -6,6 +6,7 @@ import QtQuick.Controls
 import Quickshell.Widgets
 
 import qs.Core.Configs
+import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 

@@ -17,162 +17,94 @@ import qs.Services.ScreenRecorder
 Singleton {
     id: root
 
-    readonly property alias isVolumeOSDShow: root.isVolumeOSDVisible
-    readonly property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
-    readonly property alias isNumLockOSDShow: root.isNumLockOSDVisible
+    property alias isVolumeOSDShow: root.isVolumeOSDVisible
+    property alias isCapsLockOSDShow: root.isCapsLockOSDVisible
+    property alias isNumLockOSDShow: root.isNumLockOSDVisible
 
-    readonly property bool isVolumeOSDVisible: activeOSDs["volume"] || false
-    readonly property bool isCapsLockOSDVisible: activeOSDs["capslock"] || false
-    readonly property bool isNumLockOSDVisible: activeOSDs["numlock"] || false
+    readonly property bool isVolumeOSDVisible: osd.isActive("volume")
+    readonly property bool isCapsLockOSDVisible: osd.isActive("capslock")
+    readonly property bool isNumLockOSDVisible: osd.isActive("numlock")
 
     readonly property color drawerColors: Configs.generals.transparent ? Qt.alpha(Colours.m3Colors.m3Background, Configs.generals.alpha) : Colours.m3Colors.m3Background
-    readonly property int osdDisplayDuration: 5000
-    readonly property int cleanupDelay: 500
+
     readonly property string currentLanguage: TranslationManager.currentLanguage
 
-    readonly property var osdTimers: ({
-            "volume": volumeTimer,
-            "capslock": capslockTimer,
-            "numlock": numlockTimer
-        })
+    property alias isClipboardOpen: panel.isClipboardOpen
+    property alias isSettingsOpen: panel.isSettingsOpen
+    property alias isCalendarOpen: panel.isCalendarOpen
+    property alias isScreenCapturePanelOpen: panel.isScreenCapturePanelOpen
+    property alias isLauncherOpen: panel.isLauncherOpen
+    property alias isSessionOpen: panel.isSessionOpen
+    property alias isMediaPlayerOpen: panel.isMediaPlayerOpen
+    property alias isNotificationCenterOpen: panel.isNotificationCenterOpen
+    property alias isQuickSettingsOpen: panel.isQuickSettingsOpen
+    property alias isWallpaperSwitcherOpen: panel.isWallpaperSwitcherOpen
+    property alias isWeatherPanelOpen: panel.isWeatherPanelOpen
+    property alias isRecordingPanelOpen: panel.isRecordingPanelOpen
 
-    readonly property var panelProps: ({
-            "calendar": "isCalendarOpen",
-            "screenCapture": "isScreenCapturePanelOpen",
-            "launcher": "isLauncherOpen",
-            "bar": "isBarOpen",
-            "session": "isSessionOpen",
-            "mediaPlayer": "isMediaPlayerOpen",
-            "notificationCenter": "isNotificationCenterOpen",
-            "quickSettings": "isQuickSettingsOpen",
-            "wallpaperSwitcher": "isWallpaperSwitcherOpen",
-            "weather": "isWeatherPanelOpen",
-            "settings": "isSettingsOpen",
-            "clipboard": "isClipboardOpen",
-            "recordingPanel": "isRecordingPanelOpen"
-        })
-
-    property bool isClipboardOpen: false
-    property bool isSettingsOpen: false
-    property bool isCalendarOpen: false
-    property bool isScreenCapturePanelOpen: false
-    property bool isLauncherOpen: false
     property bool isBarOpen: Configs.bar.alwaysOpenBar
-    property bool isSessionOpen: false
-    property bool isMediaPlayerOpen: false
-    property bool isNotificationCenterOpen: false
-    property bool isQuickSettingsOpen: false
-    property bool isWallpaperSwitcherOpen: false
-    property bool isWeatherPanelOpen: false
+
     property bool isLockscreenOpen: false
     property bool isSelectionOpen: false
     property bool isScreenshotSelectionOpen: false
-    property bool isRecordingPanelOpen: false
-
     property bool isWifiScannerOpen: true
 
     property string scriptPath: `${Paths.projectRoot}/Assets/shell/screen-capture.sh`
 
-    property var activeOSDs: ({})
-    property var pausedOSDs: ({})
-
-    function setPanel(name: string, value: bool): void {
-        const prop = panelProps[name];
-        if (prop)
-            root[prop] = value;
-        else
-            console.warn("Unknown panel:", name);
+    OSDManager {
+        id: osd
+    }
+    PanelManager {
+        id: panel
     }
 
-    function togglePanel(name: string): void {
-        const prop = panelProps[name];
-        if (prop)
-            setPanel(name, !root[prop]);
+    function showOSD(name) {
+        osd.show(name);
     }
-
-    function openPanel(name: string): void {
-        setPanel(name, true);
-    }
-    function closePanel(name: string): void {
-        setPanel(name, false);
-    }
-
-    function showOSD(osdName) {
-        if (!osdName)
-            return;
-        activeOSDs[osdName] = true;
-        activeOSDsChanged();
-        if (!pausedOSDs[osdName])
-            startOSDTimer(osdName);
-    }
-
-    function hideOSD(osdName) {
-        if (!osdName)
-            return;
-        activeOSDs[osdName] = false;
-        pausedOSDs[osdName] = false;
-        activeOSDsChanged();
-        stopOSDTimer(osdName);
-        checkAndClosePanelWindow();
-    }
-
-    function toggleOSD(osdName) {
-        activeOSDs[osdName] ? hideOSD(osdName) : showOSD(osdName);
-    }
-
-    function isOSDVisible(osdName) {
-        return activeOSDs[osdName] || false;
-    }
-
-    function pauseOSD(osdName) {
-        if (!osdName || !activeOSDs[osdName])
-            return;
-        pausedOSDs[osdName] = true;
-        stopOSDTimer(osdName);
-    }
-
-    function resumeOSD(osdName) {
-        if (!osdName || !activeOSDs[osdName])
-            return;
-        pausedOSDs[osdName] = false;
-        startOSDTimer(osdName);
-    }
-
-    component OSDTimer: Timer {
-        required property string osdName
-        interval: root.osdDisplayDuration
-        repeat: false
-        onTriggered: root.hideOSD(osdName)
-    }
-
-    function startOSDTimer(osdName: string): void {
-        osdTimers[osdName]?.restart();
-    }
-
-    function stopOSDTimer(osdName: string): void {
-        osdTimers[osdName]?.stop();
-    }
-
-    function checkAndClosePanelWindow() {
-        const anyVisible = Object.keys(activeOSDs).some(key => activeOSDs[key] === true);
-        if (!anyVisible)
+    function hideOSD(name) {
+        osd.hide(name);
+        if (osd.allHidden())
             cleanupTimer.start();
     }
-
-    OSDTimer {
-        id: volumeTimer
-
-        osdName: "volume"
+    function toggleOSD(name) {
+        osd.toggle(name);
     }
-    OSDTimer {
-        id: capslockTimer
-
-        osdName: "capslock"
+    function isOSDVisible(name) {
+        return osd.isActive(name);
     }
-    OSDTimer {
-        id: numlockTimer
+    function pauseOSD(name) {
+        osd.pause(name);
+    }
+    function resumeOSD(name) {
+        osd.resume(name);
+    }
 
-        osdName: "numlock"
+    function setPanel(name, value) {
+        if (name === "bar") {
+            root.isBarOpen = value;
+            return;
+        }
+        panel.setPanel(name, value);
+    }
+    function togglePanel(name) {
+        if (name === "bar") {
+            root.setPanel(name, !root.isBarOpen);
+            return;
+        }
+        panel.togglePanel(name);
+    }
+    function openPanel(name) {
+        panel.openPanel(name);
+    }
+    function closePanel(name) {
+        panel.closePanel(name);
+    }
+
+    Timer {
+        id: cleanupTimer
+        interval: 500
+        repeat: false
+        onTriggered: gc()
     }
 
     component PanelController: QtObject {
@@ -183,7 +115,6 @@ Singleton {
 
         property IpcHandler ipc: IpcHandler {
             target: panelController.panelName
-
             function open(): void {
                 root.openPanel(panelController.panelName);
             }
@@ -242,7 +173,7 @@ Singleton {
             {
                 panel: "recordingPanel",
                 shortcut: "recordingPanel"
-            },
+            }
         ]
         delegate: PanelController {
             required property var modelData
@@ -253,7 +184,6 @@ Singleton {
 
     IpcHandler {
         target: "toast"
-
         function open(header: string, description: string, icon: string, duration: int): void {
             ToastService.show(description, header, icon, duration);
         }
@@ -261,10 +191,8 @@ Singleton {
 
     IpcHandler {
         target: "img"
-
         function set(path: string): void {
             ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
-
             Quickshell.execDetached({
                 command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
             });
@@ -279,7 +207,6 @@ Singleton {
 
     IpcHandler {
         target: "capture"
-
         function screen(action: string): void {
             ScreenRecorder.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
         }
@@ -293,7 +220,6 @@ Singleton {
 
     IpcHandler {
         target: "recorder"
-
         function start(): void {
             ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
         }
@@ -301,10 +227,7 @@ Singleton {
             ScreenRecorder.stopRecording();
         }
         function toggle(): void {
-            if (ScreenRecorder.isRecording)
-                ScreenRecorder.stopRecording();
-            else
-                ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
+            ScreenRecorder.isRecording ? ScreenRecorder.stopRecording() : ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
         }
         function status(): bool {
             return ScreenRecorder.isRecording;
@@ -313,10 +236,8 @@ Singleton {
 
     IpcHandler {
         target: "brightness"
-
         function get(): string {
-            const list = BrightnessManager.displays();
-            return JSON.stringify(list);
+            return JSON.stringify(BrightnessManager.displays());
         }
         function set(percent: int): void {
             BrightnessManager.setBrightnessAll(percent);
@@ -325,14 +246,12 @@ Singleton {
 
     IpcHandler {
         target: "audio"
-
         function deviceList(): string {
-            const model = AudioDevicesWatcher.devices;
-            const count = model.count();
-            const result = [];
-            for (let i = 0; i < count; i++) {
-                const d = model.get(i);
-                result.push({
+            const m = AudioDevicesWatcher.devices;
+            const r = [];
+            for (let i = 0; i < m.count(); i++) {
+                const d = m.get(i);
+                r.push({
                     id: d.id,
                     name: d.name,
                     description: d.description,
@@ -342,27 +261,25 @@ Singleton {
                     monitorOf: d.monitorOf
                 });
             }
-            return JSON.stringify(result);
+            return JSON.stringify(r);
         }
-
         function deviceSet(name: string): void {
             Quickshell.execDetached({
                 command: ["wpctl", "set-default", name]
             });
         }
-
-        function profileList(): string {
-            const model = AudioProfilesWatcher.profiles;
-            const count = model.count();
-            const result = {
+        function profileList() {
+            const m = AudioProfilesWatcher.profiles;
+            const count = m.count();
+            const r = {
                 deviceId: AudioProfilesWatcher.deviceId,
                 deviceName: AudioProfilesWatcher.deviceName,
                 activeIndex: AudioProfilesWatcher.activeIndex,
                 profiles: []
             };
             for (let i = 0; i < count; i++) {
-                const p = model.get(i);
-                result.profiles.push({
+                const p = m.get(i);
+                r.profiles.push({
                     index: p.index,
                     name: p.name,
                     description: p.description,
@@ -370,9 +287,8 @@ Singleton {
                     readable: p.readable
                 });
             }
-            return JSON.stringify(result);
+            return JSON.stringify(r);
         }
-
         function profileSet(name: string): void {
             Quickshell.execDetached({
                 command: ["wpctl", "set-profile", String(AudioProfilesWatcher.deviceId), name]
@@ -382,28 +298,27 @@ Singleton {
 
     IpcHandler {
         target: "mpris"
-
-        function togglePlaying(): void {
+        function togglePlaying() {
             Players.active?.togglePlaying();
         }
-        function next(): void {
+        function next() {
             Players.active?.next();
         }
-        function previous(): void {
+        function previous() {
             Players.active?.previous();
         }
-        function stop(): void {
+        function stop() {
             Players.active?.stop();
         }
-        function status(): bool {
+        function status() {
             return Players.active?.isPlaying;
         }
         function list(): string {
-            const result = [];
+            const r = [];
             const list = Players.players;
             for (let i = 0; i < list.length; i++) {
                 const p = list[i];
-                result.push({
+                r.push({
                     identity: p.identity,
                     trackTitle: p.trackTitle,
                     trackArtist: p.trackArtist,
@@ -412,32 +327,29 @@ Singleton {
                     status: p.isPlaying
                 });
             }
-            return JSON.stringify(result);
+            return JSON.stringify(r);
         }
     }
 
     IpcHandler {
         target: "idle"
-
-        function on(): void {
+        function on() {
             Configs.idle.enabled = true;
         }
-        function off(): void {
+        function off() {
             Configs.idle.enabled = false;
         }
-        function status(): bool {
+        function status() {
             return Configs.idle.enabled;
         }
     }
 
     IpcHandler {
         target: "volume"
-
-        function systemGet(): string {
-            const sink = Pipewire.defaultAudioSink;
+        function systemGet() {
             return JSON.stringify({
-                volume: sink.audio.volume,
-                muted: sink.audio.muted
+                volume: Pipewire.defaultAudioSink.audio.volume,
+                muted: Pipewire.defaultAudioSink.audio.muted
             });
         }
         function systemSet(percent: int): void {
@@ -454,9 +366,9 @@ Singleton {
         }
         function appList(): string {
             const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            const result = [];
-            for (const s of streams) {
-                result.push({
+            const r = [];
+            for (const s of streams)
+                r.push({
                     id: s.id,
                     name: s.name,
                     appName: s.properties["application.name"] ?? s.description ?? s.name,
@@ -464,50 +376,32 @@ Singleton {
                     volume: s.audio.volume,
                     muted: s.audio.muted
                 });
-            }
-            return JSON.stringify(result);
+            return JSON.stringify(r);
         }
         function appSet(id: int, percent: int): void {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            for (const s of streams) {
-                if (s.id === id) {
-                    s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
-                    break;
-                }
-            }
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
         }
         function appMute(id: int): void {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            for (const s of streams) {
-                if (s.id === id) {
-                    s.audio.muted = true;
-                    break;
-                }
-            }
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = true;
         }
         function appUnmute(id: int): void {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            for (const s of streams) {
-                if (s.id === id) {
-                    s.audio.muted = false;
-                    break;
-                }
-            }
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = false;
         }
         function appToggleMute(id: int): void {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            for (const s of streams) {
-                if (s.id === id) {
-                    s.audio.muted = !s.audio.muted;
-                    break;
-                }
-            }
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = !s.audio.muted;
         }
     }
 
     IpcHandler {
         target: "keylock"
-
         function capslock(): bool {
             return KeylockState.capsLock;
         }
@@ -516,32 +410,19 @@ Singleton {
         }
     }
 
-    Timer {
-        id: cleanupTimer
-
-        interval: root.cleanupDelay
-        repeat: false
-        onTriggered: gc()
-    }
-
     PwObjectTracker {
         objects: [Pipewire.defaultAudioSink]
     }
 
     Connections {
         target: Configs.clipboard
-
         function onEnabledChanged() {
-            if (Configs.clipboard.enabled)
-                ClipboardManager.enabled = true;
-            else
-                ClipboardManager.enabled = false;
+            ClipboardManager.enabled = Configs.clipboard.enabled;
         }
     }
 
     Connections {
         target: KeylockState
-
         function onCapsLockChanged() {
             root.showOSD("capslock");
         }
@@ -552,7 +433,6 @@ Singleton {
 
     Connections {
         target: Pipewire.defaultAudioSink.audio
-
         function onVolumeChanged() {
             root.showOSD("volume");
         }
@@ -574,18 +454,16 @@ Singleton {
             onIsIdleChanged: {
                 if (isIdle && !fired) {
                     fired = true;
-                    if (onTimeout) {
+                    if (onTimeout)
                         Quickshell.execDetached({
                             command: ["sh", "-c", onTimeout]
                         });
-                    }
                 } else if (!isIdle && fired) {
                     fired = false;
-                    if (onResume) {
+                    if (onResume)
                         Quickshell.execDetached({
                             command: ["sh", "-c", onResume]
                         });
-                    }
                 }
             }
         }
