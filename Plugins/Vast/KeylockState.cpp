@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <cerrno>
 #include <algorithm>
+#include <string_view>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <linux/input.h>
@@ -27,9 +28,9 @@ static QList<KeyboardDevice> findKeyboards() {
             continue;
         }
 
-        const std::string devName(name);
-        const bool        isMouse = devName.find("Mouse") != std::string::npos || devName.find("mouse") != std::string::npos || devName.find("Touchpad") != std::string::npos ||
-            devName.find("touchpad") != std::string::npos || devName.find("TrackPoint") != std::string::npos;
+        const std::string_view devName(name);
+        const bool            isMouse = devName.find("Mouse") != std::string_view::npos || devName.find("mouse") != std::string_view::npos || devName.find("Touchpad") != std::string_view::npos ||
+            devName.find("touchpad") != std::string_view::npos || devName.find("TrackPoint") != std::string_view::npos;
 
         if (isMouse) {
             ::close(fd);
