@@ -22,7 +22,6 @@ import "OSD"
 import "Bar"
 import "Volume"
 import "ScreenRecorder"
-import "DynamicIsland"
 
 Variants {
     model: Quickshell.screens
@@ -204,10 +203,6 @@ Variants {
 
         Bar {
             id: bar
-        }
-
-        DynamicIsland {
-            id: dynamicIsland
         }
 
         Clipboard {

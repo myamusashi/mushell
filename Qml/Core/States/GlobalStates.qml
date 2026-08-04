@@ -44,6 +44,8 @@ Singleton {
 
     property bool isBarOpen: Configs.bar.alwaysOpenBar
 
+    property bool isDynamicIslandActive: false
+
     property bool isLockscreenOpen: false
     property bool isSelectionOpen: false
     property bool isScreenshotSelectionOpen: false
@@ -77,6 +79,14 @@ Singleton {
     }
     function resumeOSD(name) {
         osd.resume(name);
+    }
+
+    function setDynamicIslandActive(value) {
+        if (root.isDynamicIslandActive === value)
+            return;
+        root.isDynamicIslandActive = value;
+        if (value)
+            ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
     }
 
     function setPanel(name, value) {
@@ -179,6 +189,27 @@ Singleton {
             required property var modelData
             panelName: modelData.panel
             shortcutName: modelData.shortcut
+        }
+    }
+
+    GlobalShortcut {
+        name: "dynamicIsland"
+        onPressed: root.setDynamicIslandActive(!root.isDynamicIslandActive)
+    }
+
+    IpcHandler {
+        target: "dynamicIsland"
+        function start(): void {
+            root.setDynamicIslandActive(true);
+        }
+        function stop(): void {
+            root.setDynamicIslandActive(false);
+        }
+        function toggle(): void {
+            root.setDynamicIslandActive(!root.isDynamicIslandActive);
+        }
+        function status(): bool {
+            return root.isDynamicIslandActive;
         }
     }
 
