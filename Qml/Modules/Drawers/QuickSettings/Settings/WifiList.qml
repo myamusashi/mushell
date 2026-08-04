@@ -150,7 +150,7 @@ WrapperRectangle {
                     Repeater {
                         model: ScriptModel {
                             values: {
-                                if (deviceDelegate.modelData.type !== DeviceType.Wifi)
+                                if (deviceDelegate.modelData.type !== DeviceType.Wifi) // qmllint disable
                                     return [];
                                 return [...deviceDelegate.modelData.networks.values].sort((a, b) => {
                                     if (a.connected !== b.connected)

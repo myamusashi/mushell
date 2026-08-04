@@ -137,7 +137,7 @@ RowLayout {
                     }
 
                     StyledText {
-                        text: Players.active == null ? "0:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}`
+                        text: Players.active == null ? "0:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}` // qmllint disable
                         color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
                         font.pixelSize: Appearance.fonts.size.small
                         font.weight: Font.DemiBold
@@ -322,7 +322,7 @@ RowLayout {
                 }
 
                 StyledText {
-                    text: Players.active == null ? "0:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}`
+                    text: Players.active == null ? "0:00" : `${root.formatTime(Players.active?.position)} / ${root.formatTime(Players.active?.length)}` // qmllint disable
                     color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
                     font.pixelSize: Appearance.fonts.size.small
                     font.weight: Font.DemiBold

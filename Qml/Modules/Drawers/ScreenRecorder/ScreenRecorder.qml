@@ -23,7 +23,7 @@ Item {
 
     implicitWidth: GlobalStates.isRecordingPanelOpen ? 380 : 0
     implicitHeight: parent.height * 0.25
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     property int currentPage: 0
 

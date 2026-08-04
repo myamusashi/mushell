@@ -99,7 +99,7 @@ StyledRect {
                         }
                     ]
                     selectedValue: ScreenRecorder.maxFps
-                    onSelected: ScreenRecorder.maxFps = value
+                    onSelected: value => ScreenRecorder.maxFps = value
                 }
 
                 SettingSection {
@@ -123,7 +123,7 @@ StyledRect {
                         }
                     ]
                     selectedValue: ScreenRecorder.bitrate
-                    onSelected: ScreenRecorder.bitrate = value
+                    onSelected: value => ScreenRecorder.bitrate = value
                 }
 
                 SettingSection {
@@ -155,7 +155,7 @@ StyledRect {
                         }
                     ]
                     selectedValue: ScreenRecorder.videoCodec
-                    onSelected: ScreenRecorder.videoCodec = value
+                    onSelected: value => ScreenRecorder.videoCodec = value
                 }
 
                 SettingSection {
@@ -183,7 +183,7 @@ StyledRect {
                         }
                     ]
                     selectedValue: ScreenRecorder.audioCodec
-                    onSelected: ScreenRecorder.audioCodec = value
+                    onSelected: value => ScreenRecorder.audioCodec = value
                 }
 
                 SettingSection {
@@ -203,7 +203,7 @@ StyledRect {
                         }
                     ]
                     selectedValue: ScreenRecorder.lowPower
-                    onSelected: ScreenRecorder.lowPower = value
+                    onSelected: value => ScreenRecorder.lowPower = value
                 }
 
                 SettingSection {
@@ -271,22 +271,24 @@ StyledRect {
                 model: section.model
 
                 delegate: StyledRect {
+                    id: optionDelegate
+
                     required property var modelData
 
-                    readonly property var value: modelData.value ?? modelData
-                    readonly property bool active: section.extraActive ? section.extraActive(modelData) : section.selectedValue === value
+                    readonly property var value: optionDelegate.modelData.value ?? optionDelegate.modelData
+                    readonly property bool active: section.extraActive ? section.extraActive(modelData) : section.selectedValue === value // qmllint disable
 
                     Layout.fillWidth: true
                     Layout.preferredHeight: 40
-                    color: active ? Qt.alpha(Colours.m3Colors.m3Primary, 0.2) : (pillMouse.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.08) : "transparent")
+                    color: optionDelegate.active ? Qt.alpha(Colours.m3Colors.m3Primary, 0.2) : (pillMouse.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.08) : "transparent")
                     radius: Appearance.rounding.small
 
                     StyledText {
                         anchors.centerIn: parent
-                        text: modelData.text ?? modelData
-                        color: active ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
+                        text: optionDelegate.modelData.text ?? optionDelegate.modelData
+                        color: optionDelegate.active ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
                         font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: active ? Font.DemiBold : Font.Normal
+                        font.weight: optionDelegate.active ? Font.DemiBold : Font.Normal
                     }
 
                     MArea {
@@ -294,7 +296,7 @@ StyledRect {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: section.selected(value)
+                        onClicked: section.selected(optionDelegate.value)
                     }
                 }
             }

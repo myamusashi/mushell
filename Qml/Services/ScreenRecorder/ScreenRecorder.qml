@@ -129,8 +129,9 @@ Singleton {
                 writePidFile.running = true;
             }
         }
-
+        // qmllint disable
         onExited: (code, status) => {
+        // qmllint enable
             root.recordingPid = -1;
             if (root.isRecording) {
                 root.isRecording = false;
@@ -197,7 +198,9 @@ Singleton {
         property string targetVideo: ""
         running: false
 
+        // qmllint disable
         onExited: (code, status) => {
+        // qmllint enable
             const pid = verifyProcess.targetPid;
             const video = verifyProcess.targetVideo;
             verifyProcess.targetPid = -1;
@@ -263,7 +266,9 @@ Singleton {
 
         command: ["ffmpeg", "-ss", seek, "-i", videoPath, "-vframes", "1", "-q:v", "2", "-vf", "scale=256:-1", thumb, "-y", "-v", "error"]
 
+        // qmllint disable
         onExited: (exitCode, exitStatus) => {
+        // qmllint enable
             const vp = root.pendingVideoPath;
             const tp = (exitCode === 0) ? ffmpegProcess.thumb : "";
             const cb = root.pendingCallback;

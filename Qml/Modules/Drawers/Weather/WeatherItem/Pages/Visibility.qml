@@ -6,7 +6,6 @@ import Quickshell.Widgets
 import M3Shapes
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 

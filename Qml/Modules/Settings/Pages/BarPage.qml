@@ -4,7 +4,6 @@ import QtQuick.Controls
 
 import qs.Core.Configs
 import qs.Components.Base
-import qs.Services
 
 import "../Components"
 

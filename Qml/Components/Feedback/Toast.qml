@@ -15,7 +15,7 @@ LazyLoader {
     activeAsync: ToastService.model.count > 0
     component: PanelWindow {
         anchors.bottom: true
-        margins.bottom: Appearance.margin.large
+        margins.bottom: Appearance.margin.large // qmllint disable
         mask: Region {} // ignore mouse input
         WlrLayershell.layer: Hypr.focusedWsHasFullscreen ? WlrLayer.Background : WlrLayer.Overlay
         exclusionMode: ExclusionMode.Ignore

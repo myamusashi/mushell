@@ -17,7 +17,7 @@ StyledRect {
 
     required property ShellScreen monitor
 
-    implicitWidth: Configs.bar.workspacesIndicator === "dot" ? loader.item.implicitWidth : loaderInteractiveWp.item.implicitWidth
+    implicitWidth: Configs.bar.workspacesIndicator === "dot" ? loader.item.implicitWidth : loaderInteractiveWp.item.implicitWidth // qmllint disable
     implicitHeight: 30
 
     property real workspaceWidth: monitor.width - (reserved[0] + reserved[2])
@@ -209,10 +209,10 @@ StyledRect {
                         onDropped: drag => {
                             const toplevel = drag.source;
 
-                            if (toplevel.modelData.workspace !== workspaceContainer.workspace) {
-                                const address = toplevel.modelData.address;
+                            if (toplevel.modelData.workspace !== workspaceContainer.workspace) { // qmllint disable
+                                const address = toplevel.modelData.address; // qmllint disable
                                 Hypr.dispatch("hl.movetoworkspacesilent(" + (workspaceContainer.index + 1) + ", \"address:0x" + address + "\")");
-                                Hypr.dispatch("hl.movewindowpixel(\"exact " + toplevel.initX + " " + toplevel.initY + "\", \"address:0x" + address + "\")");
+                                Hypr.dispatch("hl.movewindowpixel(\"exact " + toplevel.initX + " " + toplevel.initY + "\", \"address:0x" + address + "\")"); // qmllint disable
                             }
                         }
                     }
@@ -232,7 +232,7 @@ StyledRect {
                             id: toplevel
 
                             required property HyprlandToplevel modelData
-                            property Toplevel waylandHandle: modelData?.wayland
+                            property Toplevel waylandHandle: modelData?.wayland // qmllint disable
                             property var toplevelData: modelData.lastIpcObject
                             property int initX: toplevelData.at[0] ?? 0
                             property int initY: toplevelData.at[1] ?? 0

@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Core.Configs
-import qs.Services
 
 Singleton {
     id: root
@@ -187,7 +186,7 @@ Singleton {
     Process {
         id: discoverCommand
         command: ["kdeconnect-cli", "--refresh"]
-        onExited: {
+        onExited: { // qmllint disable
             listAvailable.running = true;
             listAll.running = true;
         }
@@ -216,10 +215,12 @@ Singleton {
     Component {
         id: shareFileProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdShareFileProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] shareFile failed:", stderr.text);
+                    console.warn("[KDEConnect] shareFile failed:", stdShareFileProcess.text);
                 destroy();
             }
         }
@@ -228,10 +229,12 @@ Singleton {
     Component {
         id: shareTextProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdShareTextProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] shareText failed:", stderr.text);
+                    console.warn("[KDEConnect] shareText failed:", stdShareTextProcess.text);
                 destroy();
             }
         }
@@ -240,10 +243,12 @@ Singleton {
     Component {
         id: clipboardProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdClipboardProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] sendClipboard failed:", stderr.text);
+                    console.warn("[KDEConnect] sendClipboard failed:", stdClipboardProcess.text);
                 destroy();
             }
         }
@@ -252,10 +257,12 @@ Singleton {
     Component {
         id: pingProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdPingProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] ping failed:", stderr.text);
+                    console.warn("[KDEConnect] ping failed:", stdPingProcess.text);
                 destroy();
             }
         }
@@ -264,10 +271,12 @@ Singleton {
     Component {
         id: ringProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdRingProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] ring failed:", stderr.text);
+                    console.warn("[KDEConnect] ring failed:", stdRingProcess.text);
                 destroy();
             }
         }
@@ -276,10 +285,12 @@ Singleton {
     Component {
         id: lockProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdLockProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] lock failed:", stderr.text);
+                    console.warn("[KDEConnect] lock failed:", stdLockProcess.text);
                 destroy();
             }
         }
@@ -288,10 +299,12 @@ Singleton {
     Component {
         id: unlockProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdUnlockProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] unlock failed:", stderr.text);
+                    console.warn("[KDEConnect] unlock failed:", stdUnlockProcess.text);
                 destroy();
             }
         }
@@ -300,10 +313,12 @@ Singleton {
     Component {
         id: pairProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdPairProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] pair failed:", stderr.text);
+                    console.warn("[KDEConnect] pair failed:", stdPairProcess.text);
                 destroy();
             }
         }
@@ -312,10 +327,12 @@ Singleton {
     Component {
         id: unpairProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdUnpairProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] unpair failed:", stderr.text);
+                    console.warn("[KDEConnect] unpair failed:", stdUnpairProcess.text);
                 destroy();
             }
         }
@@ -324,10 +341,12 @@ Singleton {
     Component {
         id: smsProcess
         Process {
-            stderr: StdioCollector {}
-            onExited: code => {
+            stderr: StdioCollector {
+                id: stdSmsProcess
+            }
+            onExited: code => { // qmllint disable
                 if (code !== 0)
-                    console.warn("[KDEConnect] sendSms failed:", stderr.text);
+                    console.warn("[KDEConnect] sendSms failed:", stdSmsProcess.text);
                 destroy();
             }
         }

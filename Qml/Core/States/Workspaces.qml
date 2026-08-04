@@ -39,11 +39,13 @@ Singleton {
                     hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
                     hyprland.maxWorkspace = hyprland.findMaxId();
                 }
+                break;
             case "destroyworkspacev2":
                 {
                     hyprland.workspaces = hyprland.sortWorkspaces(Hyprland.workspaces.values);
                     hyprland.maxWorkspace = hyprland.findMaxId();
                 }
+                break;
             }
         }
     }

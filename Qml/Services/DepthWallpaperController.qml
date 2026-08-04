@@ -48,6 +48,7 @@ Singleton {
     Process {
         id: generateFg
 
+        property int exitedCode: 0
         command: ["bash", root.scriptPath, root.cleanPath(Paths.currentWallpaper), root.cacheDir]
 
         stdout: SplitParser {
@@ -66,13 +67,13 @@ Singleton {
         onRunningChanged: {
             if (generateFg.running) {
                 root.state = "processing";
-            } else if (root.state === "processing" && generateFg.exitCode !== 0) {
+            } else if (root.state === "processing" && generateFg.exitedCode !== 0) {
                 root.state = "error";
                 root.errorMessage = "Foreground extraction failed";
             }
         }
 
-        onExited: function (code) {
+        onExited: function (code) { // qmllint disable
             if (code === 0 && root.state === "done") {
                 ToastService.show(qsTr("Depth wallpaper ready"), qsTr("Depth Wallpaper"), "image", 5000);
             } else if (code !== 0 && root.state !== "done") {
@@ -80,6 +81,7 @@ Singleton {
                 root.errorMessage = "Foreground extraction failed (exit " + code + ")";
                 ToastService.show(qsTr("Foreground extraction failed"), qsTr("Depth Wallpaper"), "error", 5000);
             }
+            exitedCode = code;
         }
     }
 

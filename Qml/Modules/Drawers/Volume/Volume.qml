@@ -55,7 +55,7 @@ Item {
         id: wrapper
 
         anchors.fill: parent
-        implicitWidth: 60 + (root.openPerappVolume && loader.item ? loader.item.perappWidth + root.itemSpacing : 0)
+        implicitWidth: 60 + (root.openPerappVolume && loader.item ? loader.item.perappWidth + root.itemSpacing : 0) // qmllint disable
         color: GlobalStates.drawerColors
         clip: true
         radius: 0
@@ -65,7 +65,7 @@ Item {
         Loader {
             id: loader
 
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isOSDVisible("volume")
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isOSDVisible("volume") // qmllint disable
             asynchronous: true
             onActiveChanged: {
                 if (!active)

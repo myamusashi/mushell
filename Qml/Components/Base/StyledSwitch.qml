@@ -17,6 +17,7 @@ Switch {
     property string _currentIcon: offIcon
     property color _currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
 
+    // qmllint disable
     states: [
         State {
             name: "unchecked"
@@ -103,6 +104,7 @@ Switch {
             }
         }
     ]
+    // qmllint enable
 
     transitions: Transition {
         NAnim {

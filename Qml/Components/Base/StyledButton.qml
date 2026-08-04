@@ -44,6 +44,7 @@ Item {
     implicitWidth: contentRow.implicitWidth + leftPad + rightPad
     implicitHeight: 40
 
+    // qmllint disable
     states: [
         State {
             name: "disabled"
@@ -66,6 +67,7 @@ Item {
             when: root.enabled && !root.hovered && !root.pressed
         }
     ]
+    // qmllint enable
 
     transitions: [
         Transition {

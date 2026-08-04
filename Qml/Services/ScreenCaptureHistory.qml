@@ -4,8 +4,9 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
+// why the fuck qmllint think this shit is not used
+import qs.Core.Utils // qmllint disable
 import qs.Services
-import qs.Core.Utils
 
 Singleton {
     id: root

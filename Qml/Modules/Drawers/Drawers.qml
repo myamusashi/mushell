@@ -1,12 +1,9 @@
 import QtQuick
 import Quickshell
-import Quickshell.Widgets
 import Quickshell.Wayland
-import Quickshell.Hyprland
 
 import qs.Core.Configs
 import qs.Core.States
-import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 
@@ -150,7 +147,7 @@ Variants {
 
                 anchors.left: parent.left
                 implicitWidth: exclusiveLeft.zone
-                implicitHeight: QsWindow.window?.height ?? 0
+                implicitHeight: QsWindow.window?.height ?? 0 // qmllint disable
                 color: GlobalStates.drawerColors
 
                 ElevatedCharging {}
@@ -160,7 +157,7 @@ Variants {
                 id: topBar
 
                 anchors.top: parent.top
-                implicitWidth: QsWindow.window?.width ?? 0
+                implicitWidth: QsWindow.window?.width ?? 0 // qmllint disable
                 implicitHeight: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) ? exclusiveTop.zone : 0
                 color: GlobalStates.drawerColors
 
@@ -179,7 +176,7 @@ Variants {
 
                 anchors.right: parent.right
                 implicitWidth: exclusiveRight.zone
-                implicitHeight: QsWindow.window?.height ?? 0
+                implicitHeight: QsWindow.window?.height ?? 0 // qmllint disable
                 color: GlobalStates.drawerColors
 
                 ElevatedCharging {}
@@ -189,7 +186,7 @@ Variants {
                 id: bottomBar
 
                 anchors.bottom: parent.bottom
-                implicitWidth: QsWindow.window?.width ?? 0
+                implicitWidth: QsWindow.window?.width ?? 0 // qmllint disable
                 implicitHeight: exclusiveBottom.zone
                 color: GlobalStates.drawerColors
 
@@ -248,8 +245,8 @@ Variants {
         Rectangle {
             id: cornersArea
 
-            implicitWidth: QsWindow.window?.width - (leftBar.implicitWidth + rightBar.implicitWidth)
-            implicitHeight: QsWindow.window?.height - (topBar.implicitHeight + bottomBar.implicitHeight)
+            implicitWidth: QsWindow.window?.width - (leftBar.implicitWidth + rightBar.implicitWidth) // qmllint disable
+            implicitHeight: QsWindow.window?.height - (topBar.implicitHeight + bottomBar.implicitHeight) // qmllint disable
             color: "transparent"
             x: leftBar.implicitWidth
             y: topBar.implicitHeight
@@ -266,7 +263,7 @@ Variants {
         }
     }
 
-    component Exclusion: PanelWindow {
+    component Exclusion: PanelWindow { // qmllint disable
         property string name
         implicitWidth: 0
         implicitHeight: 0

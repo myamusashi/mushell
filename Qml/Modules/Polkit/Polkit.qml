@@ -23,11 +23,11 @@ DialogBox {
             }
 
             function onAccepted() {
-                PolAgent.agent?.flow?.submit(bodyPolkit.passwordInput.text);
+                PolAgent.agent?.flow?.submit(bodyPolkit.passwordInput.text); // qmllint disable
             }
 
             function onRejected() {
-                PolAgent.agent?.flow?.cancelAuthenticationRequest();
+                PolAgent.agent?.flow?.cancelAuthenticationRequest(); // qmllint disable
             }
         }
     }

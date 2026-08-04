@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 
 import qs.Core.Configs
 import qs.Core.Utils
@@ -91,6 +90,8 @@ SettingsPageBase {
                 model: KDEConnect.allDevices
 
                 delegate: RowLayout {
+                    id: deviceDelegate
+
                     required property var modelData
 
                     Layout.fillWidth: true
@@ -106,14 +107,14 @@ SettingsPageBase {
                         spacing: 2
 
                         StyledText {
-                            text: modelData.name
+                            text: deviceDelegate.modelData.name
                             font.pixelSize: Appearance.fonts.size.normal
                             font.weight: Font.DemiBold
                             color: Colours.m3Colors.m3OnSurface
                         }
 
                         StyledText {
-                            text: modelData.id
+                            text: deviceDelegate.modelData.id
                             font.pixelSize: Appearance.fonts.size.small
                             color: Colours.m3Colors.m3OnSurfaceVariant
                             elide: Text.ElideMiddle
@@ -148,7 +149,7 @@ SettingsPageBase {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                page.deviceIdToTransfer = modelData.id;
+                                page.deviceIdToTransfer = deviceDelegate.modelData.id;
                                 transferFileDialog.openFileDialog();
                             }
                         }
@@ -178,6 +179,8 @@ SettingsPageBase {
                 model: KDEConnect.availableDevices
 
                 delegate: RowLayout {
+                    id: availableDelegate
+
                     required property var modelData
 
                     Layout.fillWidth: true
@@ -193,14 +196,14 @@ SettingsPageBase {
                         spacing: 2
 
                         StyledText {
-                            text: modelData.name
+                            text: availableDelegate.modelData.name
                             font.pixelSize: Appearance.fonts.size.normal
                             font.weight: Font.DemiBold
                             color: Colours.m3Colors.m3OnSurface
                         }
 
                         StyledText {
-                            text: modelData.id
+                            text: availableDelegate.modelData.id
                             font.pixelSize: Appearance.fonts.size.small
                             color: Colours.m3Colors.m3OnSurfaceVariant
                             elide: Text.ElideMiddle
@@ -234,7 +237,7 @@ SettingsPageBase {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: KDEConnect.pair(modelData.id)
+                            onClicked: KDEConnect.pair(availableDelegate.modelData.id)
                         }
                     }
                 }

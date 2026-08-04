@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Vast
 
 import qs.Core.Configs
@@ -235,7 +234,6 @@ Item {
         onStopped: root._commitTransition()
     }
 
-    // Wallpaper change signal
     Connections {
         target: Paths
 

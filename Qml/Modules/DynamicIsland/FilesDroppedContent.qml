@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -39,7 +38,7 @@ Item {
         }
 
         visible: root.active
-        text: qsTr("%1 file(s)").arg(fileCount)
+        text: qsTr("%1 file(s)").arg(root.fileCount)
         font.pixelSize: Appearance.fonts.size.normal
         font.weight: Font.DemiBold
         color: Colours.m3Colors.m3OnSurface

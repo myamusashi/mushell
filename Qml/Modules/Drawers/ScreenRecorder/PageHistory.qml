@@ -159,8 +159,8 @@ StyledRect {
                         spacing: 2
 
                         StyledText {
-                            text: modelData.name
-                            color: listView.currentIndex === index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
+                            text: delegateRoot.modelData.name
+                            color: listView.currentIndex === delegateRoot.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
                             font.pixelSize: Appearance.fonts.size.normal
                             font.weight: Font.Medium
                             elide: Text.ElideRight
@@ -169,7 +169,7 @@ StyledRect {
 
                         StyledText {
                             text: {
-                                const ts = modelData.created;
+                                const ts = delegateRoot.modelData.created;
                                 const d = new Date(ts * 1000);
                                 return d.toLocaleString("en-US", {
                                     month: "short",
@@ -194,7 +194,7 @@ StyledRect {
                             anchors.fill: parent
                             anchors.margins: -5
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: root.openFile(modelData.path)
+                            onClicked: root.openFile(delegateRoot.modelData.path)
                         }
                     }
                 }
@@ -205,8 +205,8 @@ StyledRect {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        listView.currentIndex = index;
-                        root.openFile(modelData.path);
+                        listView.currentIndex = delegateRoot.index;
+                        root.openFile(delegateRoot.modelData.path);
                     }
                 }
             }

@@ -117,12 +117,14 @@ Rectangle {
                     State {
                         name: "activeFocus"
                         when: input.activeFocus
+                        // qmllint disable
                         PropertyChanges {
                             target: activeIndicatorLine
                             implicitWidth: parent.width
                             implicitHeight: 2
                             color: Colours.m3Colors.m3Primary
                         }
+                        // qmllint enable
                     }
                 ]
 

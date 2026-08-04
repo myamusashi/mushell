@@ -26,7 +26,7 @@ Item {
 
     implicitHeight: parent.height
     implicitWidth: GlobalStates.isWeatherPanelOpen ? parent.width * 0.25 : 0
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     Behavior on implicitWidth {
         NAnim {

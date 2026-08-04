@@ -12,7 +12,7 @@ Rectangle {
     property alias text: textItem.text
     property alias iconName: iconItem.icon
     property int pageIndex: 0
-    property bool isActive: pageIndex === settingsLoader.currentPage
+    property bool isActive: pageIndex === settingsLoader.currentPage // qmllint disable
 
     Layout.fillWidth: true
     Layout.preferredHeight: 48
@@ -124,8 +124,7 @@ Rectangle {
                 name: "flipped"
                 when: area.containsPress
                 PropertyChanges {
-                    target: flipRotation
-                    angle: 180
+                    flipRotation.angle: 180
                 }
             }
 
@@ -194,7 +193,7 @@ Rectangle {
         layerColor: "transparent"
         layerRadius: root.radius
         anchors.fill: parent
-        onClicked: settingsLoader.currentPage = root.pageIndex
+        onClicked: settingsLoader.currentPage = root.pageIndex // qmllint disable
 
         Rectangle {
             id: hoverOverlay

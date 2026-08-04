@@ -23,7 +23,7 @@ Item {
 
     implicitWidth: Math.min(Math.round(parent.width * 0.22), 360)
     implicitHeight: hasNotifications ? Math.min(notifListView.contentHeight + 30, parent.height * 0.5) : 0
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     Behavior on implicitHeight {
         NAnim {

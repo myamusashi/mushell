@@ -2,15 +2,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Widgets
-import Quickshell.Services.Mpris
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Components.Base
-import qs.Services
-import qs.Widgets
-import Vast
 
 Item {
     id: root

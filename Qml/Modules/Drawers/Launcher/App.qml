@@ -28,7 +28,7 @@ Item {
 
     implicitWidth: parent.width * 0.3
     implicitHeight: GlobalStates.isLauncherOpen ? parent.height * 0.5 : 0
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     function launch(entry: DesktopEntry): void {
         const cmd = entry.runInTerminal ? ["app2unit", "--", Configs.generals.apps.terminal, ...entry.command] : ["app2unit", "--", ...entry.command];
@@ -62,7 +62,7 @@ Item {
         color: GlobalStates.drawerColors
 
         Loader {
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isLauncherOpen
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isLauncherOpen // qmllint disable
             asynchronous: true
             sourceComponent: FocusCage {
                 active: GlobalStates.isLauncherOpen

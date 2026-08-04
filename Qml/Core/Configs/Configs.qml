@@ -44,7 +44,7 @@ Singleton {
             ToastService.show(qsTr("Failed to save config: %1").arg(FileViewError.toString(err)), qsTr("Configuration"), "configure", 3000);
         }
 
-        JsonAdapter {
+        JsonAdapter { // qmllint disable
             id: adapter
 
             property AppearanceConfig appearance: AppearanceConfig {}

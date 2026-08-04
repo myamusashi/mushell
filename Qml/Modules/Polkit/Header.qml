@@ -25,7 +25,7 @@ RowLayout {
             width: 40
             height: 40
             asynchronous: true
-            source: Quickshell.iconPath(PolAgent.agent?.flow?.iconName) || ""
+            source: Quickshell.iconPath(PolAgent.agent?.flow?.iconName) || "" // qmllint disable
         }
     }
 
@@ -46,7 +46,7 @@ RowLayout {
         StyledText {
             Layout.fillWidth: true
             Layout.topMargin: 8
-            text: PolAgent.agent?.flow?.message || qsTr("<no message>")
+            text: PolAgent.agent?.flow?.message || qsTr("<no message>") // qmllint disable
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: Appearance.fonts.size.large

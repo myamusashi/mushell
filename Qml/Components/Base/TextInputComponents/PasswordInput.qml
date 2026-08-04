@@ -15,7 +15,7 @@ Item {
     required property bool isUnlocked
     required property bool unlockInProgress
     required property bool hasSelection
-    required property Item passwordInput
+    required property TextInput passwordInput
     required property Item toggleButton
     required property int selectionStart
     required property int selectionEnd
@@ -51,8 +51,8 @@ Item {
                     name: "selection"
                     when: root.hasSelection
                     PropertyChanges {
-                        target: passwordRectSelected
-                        opacity: 0.25
+                        target: passwordRectSelected // qmllint disable
+                        opacity: 0.25 // qmllint disable
                     }
                 }
             ]

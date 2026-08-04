@@ -144,7 +144,7 @@ StyledRect {
             running = true;
         }
 
-        onExited: function (exitCode) {
+        onExited: function (exitCode) { // qmllint disable
             if (exitCode === 0)
                 mediaPlayerRect.cachedArtPath = targetPath;
         }

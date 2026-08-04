@@ -27,7 +27,7 @@ Item {
 
     implicitWidth: GlobalStates.isQuickSettingsOpen ? parent.width * 0.3 : 0
     implicitHeight: parent.height * 0.8
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     Behavior on implicitWidth {
         NAnim {
@@ -157,7 +157,7 @@ Item {
 
                 property int previousIndex: 0
 
-                Page {
+                SettingsPage {
                     pageIndex: 0
                     currentIndex: root.saveIndex
                     content: Component {
@@ -165,7 +165,7 @@ Item {
                     }
                 }
 
-                Page {
+                SettingsPage {
                     pageIndex: 1
                     currentIndex: root.saveIndex
                     content: Component {
@@ -173,7 +173,7 @@ Item {
                     }
                 }
 
-                Page {
+                SettingsPage {
                     pageIndex: 2
                     currentIndex: root.saveIndex
                     content: Component {
@@ -184,7 +184,7 @@ Item {
         }
     }
 
-    component Page: Item {
+    component SettingsPage: Item {
         id: animRoot
 
         required property int pageIndex

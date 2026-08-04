@@ -10,7 +10,7 @@ Item {
     required property bool isFocused
     required property bool unlockInProgress
     required property bool hasSelection
-    required property Item passwordInput
+    required property TextInput passwordInput
     required property Item toggleButton
     required property int selectionStart
     required property int selectionEnd
@@ -43,10 +43,12 @@ Item {
                 State {
                     name: "selection"
                     when: root.hasSelection
+                    // qmllint disable
                     PropertyChanges {
                         target: visibleRectSelected
                         opacity: 0.25
                     }
+                    // qmllint enable
                 }
             ]
 

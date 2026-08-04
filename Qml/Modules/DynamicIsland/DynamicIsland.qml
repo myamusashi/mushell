@@ -165,8 +165,8 @@ Scope {
                 item: islandBox
             }
 
-            HyprlandWindow.visibleMask: Region {
-                item: islandBox
+            HyprlandWindow.visibleMask: Region { // qmllint disable
+                item: islandBox // qmllint disable
             }
 
             Component.onCompleted: Qt.callLater(win.updateContentSize)

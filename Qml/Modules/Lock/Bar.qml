@@ -89,7 +89,7 @@ WrapperRectangle {
 
             SequentialAnimation {
                 id: shakeAnim
-                running: showErrorMessage
+                running: bottomWrapperRect.showErrorMessage
 
                 NAnim {
                     target: lockIcon
@@ -161,8 +161,8 @@ WrapperRectangle {
             color: Colours.m3Colors.m3Error
             font.pixelSize: Appearance.fonts.size.medium
             font.bold: true
-            opacity: showErrorMessage ? 1 : 0
-            visible: showErrorMessage
+            opacity: bottomWrapperRect.showErrorMessage ? 1 : 0
+            visible: bottomWrapperRect.showErrorMessage
 
             Behavior on opacity {
                 NAnim {

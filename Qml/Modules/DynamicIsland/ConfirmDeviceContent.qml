@@ -44,7 +44,7 @@ Item {
         }
 
         Flickable {
-            Layout.preferredWidth: fileNameMaxWidth
+            Layout.preferredWidth: root.fileNameMaxWidth
             Layout.preferredHeight: root.visibleHeight
             contentWidth: width
             contentHeight: root.maxContentHeight

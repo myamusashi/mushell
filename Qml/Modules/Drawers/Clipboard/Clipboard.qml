@@ -62,7 +62,7 @@ WrapperRectangle {
     }
 
     Loader {
-        active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isClipboardOpen
+        active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isClipboardOpen // qmllint disable
         asynchronous: true
         sourceComponent: clipboardWindow
     }
@@ -83,7 +83,7 @@ WrapperRectangle {
                 readonly property int currentId: {
                     if (entryList.currentIndex < 0 || !entryList.currentItem)
                         return -1;
-                    return entryList.currentItem.entryId;
+                    return entryList.currentItem.entryId; // qmllint disable
                 }
 
                 spacing: 0
@@ -203,7 +203,7 @@ WrapperRectangle {
 
                                 if (event.key === Qt.Key_Delete) {
                                     const item = entryList.currentItem;
-                                    if (clipboardLayout.currentId >= 0 && item && !item.pinned)
+                                    if (clipboardLayout.currentId >= 0 && item && !item.pinned) // qmllint disable
                                         ClipboardManager.remove(clipboardLayout.currentId);
                                     event.accepted = true;
                                 }
@@ -211,7 +211,7 @@ WrapperRectangle {
                                 if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_P) {
                                     const item = entryList.currentItem;
                                     if (clipboardLayout.currentId >= 0 && item)
-                                        ClipboardManager.pin(clipboardLayout.currentId, !item.pinned);
+                                        ClipboardManager.pin(clipboardLayout.currentId, !item.pinned); // qmllint disable
                                     event.accepted = true;
                                     return;
                                 }

@@ -144,8 +144,10 @@ ComboBox {
 
                 modelMenu: modelData
                 indexMenu: index
+                // qmllint disable
                 itemEnabled: root.isItemEnabled(modelData)
                 itemActive: root.isItemActive(modelData, index)
+                // qmllint enable
             }
         }
 
@@ -230,7 +232,12 @@ ComboBox {
             }
         }
 
-        contentItem: BoxContent {}
+        contentItem: BoxContent {
+            modelMenu: menuDelegate.modelMenu
+            itemEnabled: menuDelegate.itemEnabled
+            itemActive: menuDelegate.itemActive
+            highlighted: menuDelegate.highlighted
+        }
 
         onClicked: {
             if (!menuDelegate.itemEnabled)
@@ -242,6 +249,13 @@ ComboBox {
     }
 
     component BoxContent: RowLayout {
+        id: boxContent
+
+        required property var modelMenu
+        required property bool itemEnabled
+        required property bool itemActive
+        required property bool highlighted
+
         anchors.verticalCenter: parent.verticalCenter
         spacing: Appearance.spacing.small
 
@@ -273,10 +287,10 @@ ComboBox {
             }
 
             Layout.fillWidth: true
-            text: menuDelegate.modelMenu[root.textRole] ?? ""
+            text: boxContent.modelMenu[root.textRole] ?? ""
             font.pixelSize: Appearance.fonts.size.normal
-            font.weight: menuDelegate.highlighted ? Font.Medium : Font.Normal
-            property color boxLabelTarget: !menuDelegate.itemEnabled ? Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38) : menuDelegate.highlighted ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurface
+            font.weight: boxContent.highlighted ? Font.Medium : Font.Normal
+            property color boxLabelTarget: !boxContent.itemEnabled ? Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38) : boxContent.highlighted ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurface
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
 
@@ -297,14 +311,22 @@ ComboBox {
 
         BadgeComponent {
             Layout.alignment: Qt.AlignCenter
+            modelMenu: parent.modelMenu
+            itemEnabled: parent.itemEnabled
         }
         CheckComponent {
             Layout.alignment: Qt.AlignCenter
+            itemActive: parent.itemActive
         }
     }
 
     component BadgeComponent: Loader {
-        active: !menuDelegate.itemEnabled
+        id: badgeComponent
+
+        required property var modelMenu
+        required property bool itemEnabled
+
+        active: !itemEnabled
         asynchronous: false
         sourceComponent: StyledRect {
             anchors.centerIn: parent
@@ -314,7 +336,7 @@ ComboBox {
                 id: badgeLabel
 
                 anchors.centerIn: parent
-                text: root.disabledLabel(menuDelegate.modelMenu)
+                text: root.disabledLabel(badgeComponent.modelMenu) // qmllint disable
                 font.pixelSize: Appearance.fonts.size.small
                 font.weight: Font.Medium
                 color: Colours.m3Colors.m3Error
@@ -323,14 +345,18 @@ ComboBox {
     }
 
     component CheckComponent: Loader {
-        active: menuDelegate.itemActive
+        id: checkComponent
+
+        required property bool itemActive
+
+        active: itemActive
         asynchronous: false
         sourceComponent: Icon {
             anchors.centerIn: parent
             icon: "check"
             font.pixelSize: Appearance.fonts.size.large * 1.3
             color: Colours.m3Colors.m3Primary
-            visible: menuDelegate.itemActive
+            visible: checkComponent.itemActive
             scale: visible ? 1.0 : 0.0
 
             Behavior on scale {

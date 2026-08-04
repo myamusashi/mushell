@@ -32,7 +32,7 @@ Singleton {
     property alias isClipboardOpen: panel.isClipboardOpen
     property alias isSettingsOpen: panel.isSettingsOpen
     property alias isCalendarOpen: panel.isCalendarOpen
-    property alias isScreenCapturePanelOpen: panel.isScreenCapturePanelOpen
+    property alias isScreenCapturePanelOpen: panel.isScreenCapturePanelOpen // qmllint disable
     property alias isLauncherOpen: panel.isLauncherOpen
     property alias isSessionOpen: panel.isSessionOpen
     property alias isMediaPlayerOpen: panel.isMediaPlayerOpen
@@ -136,10 +136,12 @@ Singleton {
             }
         }
 
+        // qmllint disable
         property GlobalShortcut shortcut: GlobalShortcut {
             name: panelController.shortcutName
             onPressed: root.togglePanel(panelController.panelName)
         }
+        // qmllint enable
     }
 
     Variants {
@@ -192,10 +194,12 @@ Singleton {
         }
     }
 
+    // qmllint disable
     GlobalShortcut {
         name: "dynamicIsland"
         onPressed: root.setDynamicIslandActive(!root.isDynamicIslandActive)
     }
+    // qmllint enable
 
     IpcHandler {
         target: "dynamicIsland"

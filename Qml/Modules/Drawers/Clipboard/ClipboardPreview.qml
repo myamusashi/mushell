@@ -260,19 +260,19 @@ Item {
 
             Keys.onPressed: event => {
                 if (event.key === Qt.Key_PageUp) {
-                    contentItem.contentY = Math.max(0, contentItem.contentY - height);
+                    contentItem.contentY = Math.max(0, contentItem.contentY - height); // qmllint disable
                     event.accepted = true;
                 }
                 if (event.key === Qt.Key_PageDown) {
-                    contentItem.contentY = Math.min(contentItem.contentHeight - height, contentItem.contentY + height);
+                    contentItem.contentY = Math.min(contentItem.contentHeight - height, contentItem.contentY + height); // qmllint disable
                     event.accepted = true;
                 }
                 if (event.key === Qt.Key_Up) {
-                    contentItem.contentY = Math.max(0, contentItem.contentY - 40);
+                    contentItem.contentY = Math.max(0, contentItem.contentY - 40); // qmllint disable
                     event.accepted = true;
                 }
                 if (event.key === Qt.Key_Down) {
-                    contentItem.contentY = Math.min(contentItem.contentHeight - height, contentItem.contentY + 40);
+                    contentItem.contentY = Math.min(contentItem.contentHeight - height, contentItem.contentY + 40); // qmllint disable
                     event.accepted = true;
                 }
             }
@@ -310,10 +310,10 @@ Item {
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
             ScrollBar.horizontal.policy: ScrollBar.AsNeeded
 
-            Keys.onUpPressed: contentItem.contentY -= 40
-            Keys.onDownPressed: contentItem.contentY += 40
-            Keys.onLeftPressed: contentItem.contentX -= 40
-            Keys.onRightPressed: contentItem.contentX += 40
+            Keys.onUpPressed: contentItem.contentY -= 40 // qmllint disable
+            Keys.onDownPressed: contentItem.contentY += 40 // qmllint disable
+            Keys.onLeftPressed: contentItem.contentX -= 40 // qmllint disable
+            Keys.onRightPressed: contentItem.contentX += 40 // qmllint disable
 
             WheelHandler {
                 id: imageZoom

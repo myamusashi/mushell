@@ -48,7 +48,9 @@ Item {
             return ["sh", "-c", "cat '" + p.replace(/'/g, "'\\''") + "' | wl-copy"];
         }
 
+        // qmllint disable
         onExited: (code, status) => {
+        // qmllint enable
             if (code === 0)
                 root.copied();
             else

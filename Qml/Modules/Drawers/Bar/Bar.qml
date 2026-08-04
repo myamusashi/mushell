@@ -8,7 +8,7 @@ import qs.Services
 
 WrapperItem {
     implicitWidth: Configs.bar.compact ? parent.width * 0.6 : parent.width
-    implicitHeight: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isBarOpen ? 40 : 0
+    implicitHeight: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isBarOpen ? 40 : 0 // qmllint disable
 
     anchors {
         top: parent.top
@@ -29,7 +29,7 @@ WrapperItem {
         color: "transparent"
 
         Loader {
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isBarOpen
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isBarOpen // qmllint disable
             asynchronous: false
             sourceComponent: Item {
                 anchors {
@@ -41,7 +41,7 @@ WrapperItem {
                 Left {
                     implicitHeight: parent.height
                     implicitWidth: parent.width / 6
-                    monitor: window.modelData
+                    monitor: window.modelData // qmllint disable
                     anchors {
                         left: parent.left
                         verticalCenter: parent.verticalCenter

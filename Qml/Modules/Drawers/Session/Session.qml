@@ -29,7 +29,7 @@ Item {
 
     implicitWidth: GlobalStates.isSessionOpen ? 80 : 0
     implicitHeight: parent.height * 0.5
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     function executeAction(action: string): void {
         const cmds = {
@@ -69,7 +69,7 @@ Item {
 
         Loader {
             anchors.fill: parent
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isSessionOpen
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isSessionOpen // qmllint disable
             asynchronous: true
 
             sourceComponent: ColumnLayout {

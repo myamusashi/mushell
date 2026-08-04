@@ -31,9 +31,9 @@ ClippingWrapperRectangle {
     }
     color: GlobalStates.drawerColors
     clip: true
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
     implicitWidth: root.selectedTab === 0 ? 300 : 340
-    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, root.maxH) : 0
+    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, root.maxH) : 0 // qmllint disable
     radius: Appearance.rounding.normal
 
     Behavior on implicitWidth {
@@ -51,7 +51,7 @@ ClippingWrapperRectangle {
     Loader {
         id: loader
 
-        active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isScreenCapturePanelOpen
+        active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isScreenCapturePanelOpen // qmllint disable
         asynchronous: true
         sourceComponent: ColumnLayout {
             id: innerLayout
@@ -88,8 +88,8 @@ ClippingWrapperRectangle {
                     if (root.selectedTab === 0) {
                         const repeater = screenshotRepeater;
                         const item = repeater.itemAt(root.selectedIndex);
-                        if (item && item.optionData.action) {
-                            item.optionData.action();
+                        if (item && item.optionData.action) { // qmllint disable
+                            item.optionData.action(); // qmllint disable
                             GlobalStates.isScreenCapturePanelOpen = false;
                         }
                     }

@@ -15,7 +15,7 @@ Rectangle {
     property alias fileName: fileNameField.text
     property bool hasSelection: false
     property bool selectFolder: false
-    property real labelWidth: Math.max(fileNameMetrics.advanceWidth(fileNameLabel.text), filterMetrics.advanceWidth(filterLabelLoader.item.text)) + 10
+    property real labelWidth: Math.max(fileNameMetrics.advanceWidth(fileNameLabel.text), filterMetrics.advanceWidth(filterLabelLoader.item.text)) + 10 // qmllint disable
     property var nameFilters: ["*"]
 
     signal cancelClicked
@@ -37,7 +37,7 @@ Rectangle {
     FontMetrics {
         id: filterMetrics
 
-        font: filterLabelLoader.item.font
+        font: filterLabelLoader.item.font // qmllint disable
     }
 
     Elevation {

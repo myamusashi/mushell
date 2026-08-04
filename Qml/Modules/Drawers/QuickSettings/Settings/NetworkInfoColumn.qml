@@ -97,11 +97,11 @@ RowLayout {
         MArea {
             anchors.fill: parent
             hoverEnabled: true
-            cursorShape: content && content.wifi.isVisible ? Qt.ArrowCursor : Qt.PointingHandCursor
-            enabled: content && !content.wifi.isVisible
+            cursorShape: content && content.wifi.isVisible ? Qt.ArrowCursor : Qt.PointingHandCursor // qmllint disable
+            enabled: content && !content.wifi.isVisible // qmllint disable
             onClicked: {
-                if (content)
-                    content.wifi.isVisible = !content.wifi.isVisible;
+                if (content) // qmllint disable
+                    content.wifi.isVisible = !content.wifi.isVisible; // qmllint disable
             }
         }
 

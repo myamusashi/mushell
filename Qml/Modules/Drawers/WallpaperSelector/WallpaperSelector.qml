@@ -48,7 +48,7 @@ Item {
         topRightRadius: Appearance.rounding.normal
 
         Loader {
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isWallpaperSwitcherOpen
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isWallpaperSwitcherOpen // qmllint disable
             asynchronous: true
             sourceComponent: FocusCage {
                 active: GlobalStates.isWallpaperSwitcherOpen

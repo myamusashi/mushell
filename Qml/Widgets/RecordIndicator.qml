@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import Vast
 
 import qs.Core.Configs
 import qs.Core.Utils

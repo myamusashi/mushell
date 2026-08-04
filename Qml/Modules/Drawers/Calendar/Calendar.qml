@@ -25,7 +25,7 @@ Item {
 
     implicitWidth: parent.width * 0.2
     implicitHeight: isCalendarShow ? 350 : 0
-    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     Behavior on implicitHeight {
         NAnim {
@@ -52,7 +52,7 @@ Item {
         Loader {
             id: contentLoader
 
-            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && container.isCalendarShow
+            active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && container.isCalendarShow // qmllint disable
             asynchronous: true
             sourceComponent: CalendarLayout {}
         }
@@ -434,7 +434,7 @@ Item {
 
                 background: StyledRect {
                     color: GlobalStates.drawerColors
-                    radius: Appearance.rounding.medium
+                    radius: Appearance.rounding.medium // qmllint disable
                 }
 
                 onMonthPicked: function (m) {

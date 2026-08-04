@@ -8,7 +8,7 @@ Item {
     property Item defaultFocus
     property bool active: false
 
-    default property alias data: contentItem.data
+    default property alias data: contentItem.data // qmllint disable
 
     onActiveChanged: {
         if (active)

@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Core.States
-import qs.Services
 
 Singleton {
     id: root
@@ -54,7 +53,6 @@ Singleton {
 
     // Filesystem info: list of {name, type, mountpoint, usedKB, freeKB, totalKB}
     property var filesystemNames: []
-
     property var cpuCores: []
 
     // Temperatures (°C)

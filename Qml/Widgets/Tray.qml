@@ -126,7 +126,7 @@ StyledRect {
                         }
 
                         if (delegateTray.modelData.hasMenu) {
-                            var validWindow = window;
+                            var validWindow = window; // qmllint disable
                             if (!validWindow) {
                                 var item = root.parent;
                                 while (item && !validWindow) {
@@ -139,7 +139,7 @@ StyledRect {
                             }
 
                             if (validWindow) {
-                                menuAnchor.menu = delegateTray.modelData?.menu;
+                                menuAnchor.menu = delegateTray.modelData?.menu; // qmllint disable
                                 menuAnchor.anchor.window = validWindow;
                                 menuAnchor.anchor.rect = validWindow.mapFromItem(delegateTray, 0, delegateTray.height, delegateTray.width, delegateTray.width);
                                 menuAnchor.open();

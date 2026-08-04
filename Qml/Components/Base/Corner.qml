@@ -29,6 +29,7 @@ WrapperItem {
         NAnim {}
     }
 
+    // qmllint disable
     states: [
         State {
             name: "TR_Vert"
@@ -135,6 +136,7 @@ WrapperItem {
             }
         }
     ]
+    // qmllint enable
 
     Shape {
         preferredRendererType: Shape.CurveRenderer

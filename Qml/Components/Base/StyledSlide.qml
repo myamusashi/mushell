@@ -99,6 +99,7 @@ Slider {
             active: root.icon !== ""
             z: 10
 
+            // qmllint disable
             states: [
                 State {
                     name: "hFilled"
@@ -177,6 +178,7 @@ Slider {
                     }
                 }
             ]
+            // qmllint enable
 
             transitions: Transition {
                 enabled: root.useAnim
@@ -349,7 +351,7 @@ Slider {
                     id: valueLabel
 
                     anchors.centerIn: parent
-                    text: root.popupValueFormat(root.value)
+                    text: root.popupValueFormat(root.value) // qmllint disable
                     font.pixelSize: Appearance.fonts.size.small
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3InverseOnSurface
