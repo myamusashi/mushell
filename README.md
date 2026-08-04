@@ -86,6 +86,7 @@ vastctl
 ├── lock lock / unlock / status
 ├── idle on / off / status
 ├── keylock capslock / numlock
+├── dynamicIsland start / stop / toggle / status / shortcut
 ├── hypr dispatch / shortcuts list
 ├── daemon start / stop / restart / status [-v]
 └── completion bash / fish / zsh / nushell
@@ -120,7 +121,7 @@ Dispatch a panel or action directly from Hyprland:
 hyprctl dispatch global quickshell:<target>
 ```
 
-Available targets: `wallpaperSwitcher`, `layershell`, `appLauncher`, `screencaptureLauncher`, `overview`, `QuickSettings`, `session`, `weather`, `dashboard`, `settings`, `clipboard`, `kdeConnect`
+Available targets: `wallpaperSwitcher`, `layershell`, `appLauncher`, `screencaptureLauncher`, `overview`, `QuickSettings`, `session`, `weather`, `dashboard`, `settings`, `clipboard`, `kdeConnect`, `dynamicIsland`
 
 ### IPC
 
@@ -153,6 +154,7 @@ shell ipc call <target> <function>
 | `mpris` | `togglePlaying()`, `next()`, `previous()`, `stop()`, `list(): string` |
 | `idle` | `on()`, `off()`, `status(): bool` |
 | `keylock` | `capslock(): bool`, `numlock(): bool` |
+| `dynamicIsland` | `start()`, `stop()`, `toggle()`, `status(): bool` |
 
 ---
 
