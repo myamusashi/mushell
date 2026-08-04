@@ -6,6 +6,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 
+import qs.Core.Configs
+
 Singleton {
     id: root
 
@@ -27,6 +29,88 @@ Singleton {
     readonly property bool audioConnected: AudioProfilesWatcher.connected
 
     property bool restartPending: false
+    property bool _wasConnected: false
+    property bool _restoring: false
+
+    Component.onCompleted: {
+        if (audioConnected && !_restoring) {
+            _wasConnected = true;
+            restoreTimer.start();
+        }
+    }
+
+    onAudioConnectedChanged: {
+        if (audioConnected && !_wasConnected && !_restoring) {
+            _wasConnected = true;
+            restoreTimer.start();
+        }
+        if (!audioConnected) {
+            _wasConnected = false;
+            if (_restoring) {
+                restoreTimer.stop();
+                profileRestoreDelay.stop();
+                _restoring = false;
+            }
+        }
+    }
+
+    Timer {
+        id: restoreTimer
+        interval: 1000
+        repeat: false
+        onTriggered: root.restoreAudioState()
+    }
+
+    Timer {
+        id: profileRestoreDelay
+        interval: 1500
+        repeat: false
+        onTriggered: {
+            root.restoreProfiles();
+            root._restoring = false;
+        }
+    }
+
+    function restoreAudioState() {
+        if (_restoring)
+            return;
+        _restoring = true;
+        const savedSink = Configs.audio.defaultSinkName;
+        if (savedSink) {
+            const sink = root.listSink.find(s => s.name === savedSink);
+            if (sink) {
+                Quickshell.execDetached({
+                    command: ["wpctl", "set-default", sink.nodeId]
+                });
+            }
+        }
+        profileRestoreDelay.start();
+    }
+
+    function restoreProfiles() {
+        const profiles = Configs.audio.sinkProfiles;
+        if (!profiles || typeof profiles !== "object")
+            return;
+        const device = AudioProfilesWatcher.deviceName;
+        if (!device)
+            return;
+        const savedIndex = profiles[device];
+        if (savedIndex === undefined || savedIndex < 0)
+            return;
+        const deviceId = AudioProfilesWatcher.deviceId;
+        if (!deviceId)
+            return;
+        const model = AudioProfilesWatcher.profiles;
+        for (let i = 0; i < model.count(); i++) {
+            const p = model.get(i);
+            if (p.index === savedIndex && p.available === "yes") {
+                Quickshell.execDetached({
+                    command: ["pw-cli", "set-param", String(deviceId), "Profile", `{ "index": ${p.index} }`]
+                });
+                break;
+            }
+        }
+    }
 
     function getIcon(node: PwNode): string {
         return node.isSink ? getSinkIcon(node) : getSourceIcon(node);

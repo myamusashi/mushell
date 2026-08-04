@@ -8,7 +8,6 @@ import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Widgets
 import qs.Services
 import qs.Components.Base
@@ -105,6 +104,7 @@ ScrollView {
                             Quickshell.execDetached({
                                 command: ["wpctl", "set-default", del.modelData.nodeId]
                             });
+                            Configs.audio.defaultSinkName = del.modelData.name;
                         }
                     }
                 }
