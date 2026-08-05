@@ -1,16 +1,16 @@
 #include "LyricsProvider.hpp"
 
-#include <QCryptographicHash>
-#include <QDateTime>
-#include <QDir>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QRegularExpression>
-#include <QStandardPaths>
-#include <QUrlQuery>
+#include <qcryptographichash.h>
+#include <qdatetime.h>
+#include <qdir.h>
+#include <qfile.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qnetworkreply.h>
+#include <qnetworkrequest.h>
+#include <qregularexpression.h>
+#include <qstandardpaths.h>
+#include <qurlquery.h>
 
 #include <algorithm>
 

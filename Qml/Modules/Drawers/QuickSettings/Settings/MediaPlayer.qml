@@ -8,6 +8,7 @@ import Quickshell.Io
 import Quickshell.Widgets
 
 import qs.Core.Configs
+import qs.Core.Utils
 import qs.Core.States
 import qs.Services
 import qs.Components.Base

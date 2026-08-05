@@ -2,11 +2,11 @@
 
 #include "ClipboardEntry.hpp"
 
-#include <QObject>
-#include <QClipboard>
-#include <QPointer>
-#include <QHash>
-#include <QByteArray>
+#include <qobject.h>
+#include <qclipboard.h>
+#include <qpointer.h>
+#include <qhash.h>
+#include <qbytearray.h>
 
 #include <optional>
 #include <atomic>
@@ -34,14 +34,14 @@ namespace Vast {
         void onDataChanged();
 
       private:
-        [[nodiscard]] static std::optional<ClipboardEntry> buildTextEntry(const QClipboard* cb, const QString& sourceApp);
-        [[nodiscard]] static std::optional<ClipboardEntry> buildHtmlEntry(const QClipboard* cb, const QString& sourceApp);
-        [[nodiscard]] static std::optional<ClipboardEntry> buildFilesEntry(const QClipboard* cb, const QString& sourceApp);
+        [[nodiscard]] static std::optional<ClipboardEntry> buildTextEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp);
+        [[nodiscard]] static std::optional<ClipboardEntry> buildHtmlEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp);
+        [[nodiscard]] static std::optional<ClipboardEntry> buildFilesEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp);
 
         [[nodiscard]] static QByteArray                    sha256(const QByteArray& data);
         [[nodiscard]] static QByteArray                    compressImage(const QImage& image);
 
-        static void                                        finalise(ClipboardEntry& entry, const QByteArray& hashPayload, const QString& sourceApp);
+        static void                                        finalise(ClipboardEntry& entry, const QByteArray& hashPayload, const QString& sourceApp, qint64 capturedTimestamp);
 
         bool                                               m_enabled{false};
         QHash<QByteArray, int>                             m_selfCopyHashes{};

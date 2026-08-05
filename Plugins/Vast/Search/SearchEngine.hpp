@@ -2,13 +2,13 @@
 
 #include "SearchResult.hpp"
 
-#include <QHash>
-#include <QList>
-#include <QObject>
-#include <QQmlEngine>
-#include <QSettings>
-#include <QString>
-#include <QVariantList>
+#include <qhash.h>
+#include <qlist.h>
+#include <qobject.h>
+#include <qqmlengine.h>
+#include <qsettings.h>
+#include <qstring.h>
+#include <qvariantlist.h>
 #include <qnumeric.h>
 
 class SearchEngine : public QObject {

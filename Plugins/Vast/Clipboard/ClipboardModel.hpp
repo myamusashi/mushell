@@ -3,7 +3,7 @@
 #include "ClipboardEntry.hpp"
 
 #include <QAbstractListModel>
-#include <QList>
+#include <qlist.h>
 #include <QtQmlIntegration/qqmlintegration.h>
 
 #include <vector>

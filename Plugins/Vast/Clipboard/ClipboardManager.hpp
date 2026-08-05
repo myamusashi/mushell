@@ -3,9 +3,9 @@
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
 
-#include <QObject>
-#include <QString>
-#include <QPointer>
+#include <qobject.h>
+#include <qstring.h>
+#include <qpointer.h>
 
 #include <memory>
 

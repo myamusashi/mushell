@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QObject>
-#include <QThreadPool>
-#include <QSet>
-#include <QHash>
-#include <QSize>
+#include <qobject.h>
+#include <qthreadpool.h>
+#include <qset.h>
+#include <qhash.h>
+#include <qsize.h>
 #include <QtQml/qqml.h>
 #include <expected>
 #include <shared_mutex>

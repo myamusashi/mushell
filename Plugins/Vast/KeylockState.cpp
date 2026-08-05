@@ -1,6 +1,6 @@
 #include "KeylockState.hpp"
 
-#include <QDir>
+#include <qdir.h>
 #include <fcntl.h>
 #include <cerrno>
 #include <algorithm>
@@ -29,8 +29,8 @@ static QList<KeyboardDevice> findKeyboards() {
         }
 
         const std::string_view devName(name);
-        const bool            isMouse = devName.find("Mouse") != std::string_view::npos || devName.find("mouse") != std::string_view::npos || devName.find("Touchpad") != std::string_view::npos ||
-            devName.find("touchpad") != std::string_view::npos || devName.find("TrackPoint") != std::string_view::npos;
+        const bool             isMouse = devName.find("Mouse") != std::string_view::npos || devName.find("mouse") != std::string_view::npos ||
+            devName.find("Touchpad") != std::string_view::npos || devName.find("touchpad") != std::string_view::npos || devName.find("TrackPoint") != std::string_view::npos;
 
         if (isMouse) {
             ::close(fd);

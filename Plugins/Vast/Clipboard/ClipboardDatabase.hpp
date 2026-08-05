@@ -2,12 +2,13 @@
 
 #include "ClipboardEntry.hpp"
 
-#include <QObject>
-#include <QSqlDatabase>
-#include <QString>
+#include <qobject.h>
+#include <qsqldatabase.h>
+#include <qstring.h>
 
 #include <expected>
 #include <optional>
+#include <vector>
 
 namespace Vast {
 
@@ -28,8 +29,9 @@ namespace Vast {
         [[nodiscard]] std::expected<void, QString>                  setPin(qint64 id, bool pinned);
         [[nodiscard]] std::expected<void, QString>                  clearUnpinned();
         [[nodiscard]] std::expected<void, QString>                  bumpTimestamp(qint64 id);
-        [[nodiscard]] std::expected<void, QString>                  pruneToLimit(int maxEntries, qint64 maxBytes);
+        [[nodiscard]] std::expected<std::vector<qint64>, QString>   pruneToLimit(int maxEntries, qint64 maxBytes);
         [[nodiscard]] bool                                          existsByHash(const QByteArray& hash);
+        [[nodiscard]] std::expected<qint64, QString>                fetchIdByHash(const QByteArray& hash);
         [[nodiscard]] std::expected<QList<ClipboardEntry>, QString> fetchAll();
         [[nodiscard]] std::expected<ClipboardEntry, QString>        fetchById(qint64 id);
         [[nodiscard]] std::expected<qint64, QString>                totalSizeBytes();

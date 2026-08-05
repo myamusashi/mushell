@@ -1,7 +1,7 @@
 #include "AudioDevicesWatcher.hpp"
 
-#include <QDebug>
-#include <QQmlEngine>
+#include <qdebug.h>
+#include <qqmlengine.h>
 
 #include <algorithm>
 #include <cstring>

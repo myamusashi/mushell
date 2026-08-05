@@ -1,8 +1,8 @@
 #pragma once
-#include <QJSEngine>
-#include <QObject>
-#include <QQmlEngine>
-#include <QTimer>
+#include <qjsengine.h>
+#include <qobject.h>
+#include <qqmlengine.h>
+#include <qtimer.h>
 #include <QtQml/qqmlregistration.h>
 #include <memory>
 

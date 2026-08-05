@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QList>
-#include <QObject>
-#include <QSocketNotifier>
-#include <QQmlEngine>
+#include <qlist.h>
+#include <qobject.h>
+#include <qsocketnotifier.h>
+#include <qqmlengine.h>
 #include <linux/input.h>
 
 struct KeyboardDevice {

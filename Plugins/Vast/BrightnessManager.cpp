@@ -1,6 +1,6 @@
 #include "BrightnessManager.hpp"
 
-#include <QDebug>
+#include <qdebug.h>
 
 #include <algorithm>
 #include <fstream>

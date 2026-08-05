@@ -2,16 +2,18 @@
 #include "ClipboardEntry.hpp"
 #include "ClipboardManager.hpp"
 
-#include <QGuiApplication>
-#include <QBuffer>
-#include <QClipboard>
-#include <QCryptographicHash>
-#include <QDateTime>
-#include <QImage>
-#include <QMimeData>
-#include <QThread>
-#include <QThreadPool>
-#include <QUrl>
+#include <qguiapplication.h>
+#include <qbuffer.h>
+#include <qclipboard.h>
+#include <qcryptographichash.h>
+#include <qdatetime.h>
+#include <qimage.h>
+#include <qmimedata.h>
+#include <qthread.h>
+#include <qthreadpool.h>
+#include <qurl.h>
+
+#include <algorithm>
 
 namespace Vast {
 
@@ -43,52 +45,52 @@ namespace Vast {
     }
 
     void ClipboardWatcher::onDataChanged() {
-        if (!m_enabled)
+        const qint64 capturedTimestamp = QDateTime::currentMSecsSinceEpoch();
+
+        if (!m_enabled) [[unlikely]]
             return;
 
         const auto* cb   = QGuiApplication::clipboard();
         const auto* mime = cb->mimeData();
 
-        if (!mime || mime->formats().isEmpty())
+        if (!mime || mime->formats().isEmpty()) [[unlikely]]
             return;
 
-        const quint64 seq               = ++m_copySequence;
-        const qint64  capturedTimestamp = QDateTime::currentMSecsSinceEpoch();
+        const quint64 seq = ++m_copySequence;
 
         const auto*   manager   = qobject_cast<ClipboardManager*>(parent());
         const QString sourceApp = manager ? manager->activeWindow() : QString{};
 
+        const bool    hasImage = mime->hasImage();
+        const bool    hasHtml  = mime->hasHtml();
+        const bool    hasUrls  = mime->hasUrls();
+        const bool    hasText  = mime->hasText();
+
         if (!m_selfCopyHashes.isEmpty()) {
             if (mime) {
-                const QByteArray payload = mime->hasImage() ? QByteArray{} :
-                    mime->hasHtml()                         ? mime->html().toUtf8() :
-                    mime->hasUrls()                         ? mime->urls().first().toString().toUtf8() :
-                                                              mime->text().toUtf8();
+                const QByteArray payload = hasImage ? QByteArray{} : hasHtml ? mime->html().toUtf8() : hasUrls ? mime->urls().first().toString().toUtf8() : mime->text().toUtf8();
                 if (!payload.isEmpty()) {
                     const QByteArray h  = sha256(payload);
                     auto             it = m_selfCopyHashes.find(h);
                     if (it != m_selfCopyHashes.end()) {
                         if (--it.value() <= 0)
                             m_selfCopyHashes.erase(it);
-                        // Do NOT advance m_lastProcessedSequence here.
-                        // A self-copy discard must not block a concurrent valid image task
-                        // that was spawned before this event but finishes after.
                         return;
                     }
                 }
             }
         }
 
-        if (mime->hasImage()) {
+        if (hasImage) {
             const QImage image = cb->image();
-            if (image.isNull())
+            if (image.isNull()) [[unlikely]]
                 return;
 
             QThreadPool::globalInstance()->start([this, image, sourceApp, seq, capturedTimestamp]() {
                 QThread::currentThread()->setPriority(QThread::LowPriority);
 
                 const QByteArray png = compressImage(image);
-                if (png.isEmpty())
+                if (png.isEmpty()) [[unlikely]]
                     return;
 
                 const QByteArray hash = sha256(png);
@@ -96,25 +98,19 @@ namespace Vast {
                 QMetaObject::invokeMethod(
                     this,
                     [this, png, hash, sourceApp, seq, capturedTimestamp]() {
-                        // Discard task if a *newer* image has already been committed.
                         if (seq < m_lastProcessedSequence)
                             return;
 
-                        // Check self-copy for image: payload was empty at dispatch time
-                        // so hash-based detection is done here, after compression.
                         auto it = m_selfCopyHashes.find(hash);
                         if (it != m_selfCopyHashes.end()) {
                             if (--it.value() <= 0)
                                 m_selfCopyHashes.erase(it);
-                            // Do NOT advance m_lastProcessedSequence: a self-copy image
-                            // discard must not prevent older in-flight tasks from committing.
                             return;
                         }
 
                         if (hash == m_lastImageHash)
                             return;
 
-                        // Only commit the sequence number on a real, successful emit.
                         m_lastProcessedSequence = seq;
                         m_lastImageHash         = hash;
 
@@ -136,28 +132,30 @@ namespace Vast {
             return;
         }
 
-        // For non-image types, commit sequence immediately (synchronous path).
         m_lastProcessedSequence = seq;
 
         std::optional<ClipboardEntry> entry;
-        if (mime->hasHtml()) {
+        if (hasHtml) {
             m_lastImageHash.clear();
-            entry = buildHtmlEntry(cb, sourceApp);
-        } else if (mime->hasUrls()) {
+            entry = buildHtmlEntry(cb, sourceApp, capturedTimestamp);
+        } else if (hasUrls) {
             m_lastImageHash.clear();
-            entry = buildFilesEntry(cb, sourceApp);
-        } else if (mime->hasText()) {
+            entry = buildFilesEntry(cb, sourceApp, capturedTimestamp);
+        } else if (hasText) {
             m_lastImageHash.clear();
-            entry = buildTextEntry(cb, sourceApp);
+            entry = buildTextEntry(cb, sourceApp, capturedTimestamp);
         }
 
         if (entry.has_value())
             emit newEntry(std::move(*entry));
     }
 
-    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildTextEntry(const QClipboard* cb, const QString& sourceApp) {
+    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildTextEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp) {
         const QString text = cb->text();
-        if (text.trimmed().isEmpty())
+
+        const auto    isEmptyOrWhitespace = [](QStringView sv) noexcept { return sv.isEmpty() || std::ranges::all_of(sv, [](QChar c) { return c.isSpace(); }); };
+
+        if (isEmptyOrWhitespace(text))
             return std::nullopt;
 
         ClipboardEntry entry{.id        = -1,
@@ -171,16 +169,18 @@ namespace Vast {
                              .sizeBytes = 0,
                              .timestamp = 0};
 
-        finalise(entry, text.toUtf8(), sourceApp);
+        finalise(entry, text.toUtf8(), sourceApp, capturedTimestamp);
         return entry;
     }
 
-    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildHtmlEntry(const QClipboard* cb, const QString& sourceApp) {
+    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildHtmlEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp) {
         const auto*   mime  = cb->mimeData();
         const QString html  = mime->html();
         const QString plain = mime->hasText() ? mime->text() : QString{};
 
-        if (html.trimmed().isEmpty())
+        const auto    isEmptyOrWhitespace = [](QStringView sv) noexcept { return sv.isEmpty() || std::ranges::all_of(sv, [](QChar c) { return c.isSpace(); }); };
+
+        if (isEmptyOrWhitespace(html))
             return std::nullopt;
 
         ClipboardEntry entry{.id        = -1,
@@ -194,11 +194,11 @@ namespace Vast {
                              .sizeBytes = 0,
                              .timestamp = 0};
 
-        finalise(entry, html.toUtf8(), sourceApp);
+        finalise(entry, html.toUtf8(), sourceApp, capturedTimestamp);
         return entry;
     }
 
-    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildFilesEntry(const QClipboard* cb, const QString& sourceApp) {
+    [[nodiscard]] std::optional<ClipboardEntry> ClipboardWatcher::buildFilesEntry(const QClipboard* cb, const QString& sourceApp, qint64 capturedTimestamp) {
         const auto* mime = cb->mimeData();
         const auto  urls = mime->urls();
 
@@ -223,15 +223,15 @@ namespace Vast {
                              .sizeBytes = 0,
                              .timestamp = 0};
 
-        finalise(entry, content.toUtf8(), sourceApp);
+        finalise(entry, content.toUtf8(), sourceApp, capturedTimestamp);
         return entry;
     }
 
-    void ClipboardWatcher::finalise(ClipboardEntry& entry, const QByteArray& hashPayload, const QString& sourceApp) {
+    void ClipboardWatcher::finalise(ClipboardEntry& entry, const QByteArray& hashPayload, const QString& sourceApp, qint64 capturedTimestamp) {
         entry.hash      = sha256(hashPayload);
-        entry.timestamp = QDateTime::currentMSecsSinceEpoch();
+        entry.timestamp = capturedTimestamp;
         entry.sourceApp = sourceApp;
-        entry.sizeBytes = entry.data.isEmpty() ? static_cast<qint64>(entry.content.toUtf8().size()) : static_cast<qint64>(entry.data.size());
+        entry.sizeBytes = entry.data.isEmpty() ? static_cast<qint64>(hashPayload.size()) : static_cast<qint64>(entry.data.size());
     }
 
     [[nodiscard]] QByteArray ClipboardWatcher::sha256(const QByteArray& data) {

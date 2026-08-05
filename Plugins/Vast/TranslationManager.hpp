@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QGuiApplication>
-#include <QObject>
-#include <QQmlEngine>
-#include <QTranslator>
+#include <qguiapplication.h>
+#include <qobject.h>
+#include <qqmlengine.h>
+#include <qtranslator.h>
 
 class TranslationManager : public QObject {
     Q_OBJECT

@@ -1,6 +1,6 @@
 #include "FuzzyMatcher.hpp"
 
-#include <QRegularExpression>
+#include <qregularexpression.h>
 #include <algorithm>
 #include <cmath>
 #include <qtypes.h>

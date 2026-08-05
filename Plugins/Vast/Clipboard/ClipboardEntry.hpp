@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QByteArray>
-#include <QString>
-#include <QMetaType>
-#include <QList>
+#include <qbytearray.h>
+#include <qstring.h>
+#include <qmetatype.h>
+#include <qlist.h>
 
 namespace Vast {
 

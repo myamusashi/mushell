@@ -1,8 +1,8 @@
 #include "AudioProfilesWatcher.hpp"
 
-#include <QDebug>
-#include <QQmlEngine>
-#include <QStringList>
+#include <qdebug.h>
+#include <qqmlengine.h>
+#include <qstringlist.h>
 
 #include <algorithm>
 #include <memory>

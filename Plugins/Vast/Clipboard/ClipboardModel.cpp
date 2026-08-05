@@ -1,6 +1,6 @@
 #include "ClipboardModel.hpp"
 
-#include <QDateTime>
+#include <qdatetime.h>
 
 #include <algorithm>
 
@@ -230,14 +230,12 @@ namespace Vast {
 
         const int  dest = static_cast<int>(std::distance(m_entries.begin(), insertPos));
         if (existing != dest) {
-            int destChild = dest > existing ? dest + 1 : dest;
-            beginMoveRows({}, existing, existing, {}, destChild);
+            int qtDest = (dest > existing) ? dest + 1 : dest;
+            beginMoveRows({}, existing, existing, {}, qtDest);
             auto item = m_entries.takeAt(existing);
-
-            int  insertIdx = dest > existing ? dest - 1 : dest;
-            m_entries.insert(insertIdx, std::move(item));
+            m_entries.insert(dest, std::move(item));
             endMoveRows();
-            emit dataChanged(index(insertIdx, 0), index(insertIdx, 0));
+            emit dataChanged(index(std::min(existing, dest), 0), index(std::max(existing, dest), 0));
         } else {
             emit dataChanged(index(existing, 0), index(existing, 0));
         }

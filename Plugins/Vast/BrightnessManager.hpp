@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QtQml/qqmlregistration.h>
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QVariantMap>
+#include <qobject.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qvariantmap.h>
 
 #include <atomic>
 #include <condition_variable>

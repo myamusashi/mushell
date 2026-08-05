@@ -1,11 +1,11 @@
 #include "SearchEngine.hpp"
 #include "FuzzyMatcher.hpp"
 
-#include <QDateTime>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QRegularExpression>
+#include <qdatetime.h>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
+#include <qregularexpression.h>
 #include <algorithm>
 #include <cmath>
 

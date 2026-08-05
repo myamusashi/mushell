@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QObject>
-#include <QQmlEngine>
-#include <QString>
-#include <QVariantList>
-#include <QVariantMap>
+#include <qobject.h>
+#include <qqmlengine.h>
+#include <qstring.h>
+#include <qvariantlist.h>
+#include <qvariantmap.h>
 
 class SearchResult : public QObject {
     Q_OBJECT

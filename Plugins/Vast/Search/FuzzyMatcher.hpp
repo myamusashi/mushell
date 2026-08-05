@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QChar>
-#include <QHash>
-#include <QString>
-#include <QStringList>
-#include <QVariantList>
-#include <QVariantMap>
+#include <qchar.h>
+#include <qhash.h>
+#include <qstring.h>
+#include <qstringlist.h>
+#include <qvariantlist.h>
+#include <qvariantmap.h>
 
 class FuzzyMatcher {
   public:

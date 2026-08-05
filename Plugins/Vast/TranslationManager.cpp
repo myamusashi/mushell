@@ -1,6 +1,6 @@
 #include "TranslationManager.hpp"
 
-#include <QDebug>
+#include <qdebug.h>
 
 TranslationManager::TranslationManager(QObject* parent) : QObject(parent), m_currentLanguage("en_US"), m_availableLanguages({"en_US", "id_ID"}) {}
 

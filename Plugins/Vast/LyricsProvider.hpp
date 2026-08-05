@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QNetworkAccessManager>
-#include <QObject>
-#include <QTimer>
-#include <QVariantList>
+#include <qnetworkaccessmanager.h>
+#include <qobject.h>
+#include <qtimer.h>
+#include <qvariantlist.h>
 #include <QtQml/qqmlregistration.h>
 
 class LyricsProvider : public QObject {

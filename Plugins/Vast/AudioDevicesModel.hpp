@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QList>
-#include <QVariantMap>
+#include <qlist.h>
+#include <qvariantmap.h>
 #include <QtQml/qqmlregistration.h>
 #include <span>
 

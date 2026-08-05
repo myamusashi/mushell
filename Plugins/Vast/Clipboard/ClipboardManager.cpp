@@ -3,14 +3,14 @@
 #include "ClipboardWatcher.hpp"
 #include "../Search/FuzzyMatcher.hpp"
 
-#include <QGuiApplication>
-#include <QThreadPool>
-#include <QClipboard>
-#include <QMimeData>
-#include <QTimer>
-#include <QImage>
-#include <QDir>
-#include <QUrl>
+#include <qguiapplication.h>
+#include <qthreadpool.h>
+#include <qclipboard.h>
+#include <qmimedata.h>
+#include <qtimer.h>
+#include <qimage.h>
+#include <qdir.h>
+#include <qurl.h>
 
 #include <algorithm>
 #include <functional>
@@ -51,19 +51,25 @@ namespace Vast {
         connect(
             m_watcher.get(), &ClipboardWatcher::newEntry, this,
             [this](const ClipboardEntry& entry) {
-                if (!m_database)
+                if (!m_database) [[unlikely]]
                     return;
 
-                if (auto result = m_database->insert(entry); !result)
-                    if (result.error() != QStringLiteral("duplicate"))
+                if (auto result = m_database->insert(entry); !result) {
+                    if (result.error() == QStringLiteral("duplicate")) {
+                        auto idResult = m_database->fetchIdByHash(entry.hash);
+                        if (idResult && m_model)
+                            m_model->bumpToTop(*idResult);
+                    } else {
                         qWarning() << "[ClipboardManager] insert failed:" << result.error();
+                    }
+                }
             },
             Qt::QueuedConnection);
 
         connect(
             m_database.get(), &ClipboardDatabase::entryInserted, this,
             [this](const ClipboardEntry& entry) {
-                if (!m_model)
+                if (!m_model) [[unlikely]]
                     return;
 
                 m_model->prepend(entry);
@@ -72,7 +78,7 @@ namespace Vast {
                 if (entry.isImage() && !entry.data.isEmpty())
                     writePreviewFile(entry.id, entry.data);
             },
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 
         connect(
             m_database.get(), &ClipboardDatabase::entryRemoved, this,
@@ -80,7 +86,7 @@ namespace Vast {
                 if (m_model)
                     m_model->removeById(id);
             },
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
 
         connect(
             m_database.get(), &ClipboardDatabase::entryPinChanged, this,
@@ -88,7 +94,7 @@ namespace Vast {
                 if (m_model)
                     m_model->setPinById(id, pinned);
             },
-            Qt::QueuedConnection);
+            Qt::DirectConnection);
     }
 
     void ClipboardManager::loadAllEntries() {
@@ -394,11 +400,19 @@ namespace Vast {
         const qint64 maxBytes   = static_cast<qint64>(m_maxMegabytes) * 1024 * 1024;
         const int    maxEntries = m_maxEntries;
 
-        QTimer::singleShot(0, this, [this, maxEntries, maxBytes]() {
-            if (!m_database)
-                return;
-            if (auto r = m_database->pruneToLimit(maxEntries, maxBytes); !r)
-                qWarning() << "[ClipboardManager] pruneToLimit failed:" << r.error();
-        });
+        if (!m_database) [[unlikely]]
+            return;
+
+        auto prunedIds = m_database->pruneToLimit(maxEntries, maxBytes);
+        if (!prunedIds) {
+            qWarning() << "[ClipboardManager] pruneToLimit failed:" << prunedIds.error();
+            return;
+        }
+
+        for (qint64 droppedId : *prunedIds) {
+            if (m_model)
+                m_model->removeById(droppedId);
+            removePreviewFile(droppedId);
+        }
     }
 }

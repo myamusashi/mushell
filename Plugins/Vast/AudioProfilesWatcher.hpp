@@ -1,9 +1,9 @@
 #pragma once
-#include <QJSEngine>
-#include <QObject>
-#include <QQmlEngine>
-#include <QTimer>
-#include <QVariantMap>
+#include <qjsengine.h>
+#include <qobject.h>
+#include <qqmlengine.h>
+#include <qtimer.h>
+#include <qvariantmap.h>
 #include <QtQml/qqmlregistration.h>
 #include <memory>
 #include <qtypes.h>

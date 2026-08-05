@@ -1,12 +1,12 @@
 #include "ImageCache.hpp"
 
-#include <QImageReader>
+#include <qimagereader.h>
 #include <QMutexLocker>
-#include <QRunnable>
-#include <QThreadPool>
-#include <QDir>
-#include <QFile>
-#include <QQuickImageProvider>
+#include <qrunnable.h>
+#include <qthreadpool.h>
+#include <qdir.h>
+#include <qfile.h>
+#include <qquickimageprovider.h>
 #include <expected>
 #include <shared_mutex>
 
