@@ -483,7 +483,6 @@ namespace vast {
 
         if (auto result = mDatabase->insert(entry); !result) {
             if (result.error() == QStringLiteral("duplicate")) {
-                // §10: consecutive duplicate copy — bump the existing row.
                 auto idResult = mDatabase->fetchIdByHash(entry.hash);
                 if (idResult && mModel)
                     mModel->bumpToTop(*idResult);

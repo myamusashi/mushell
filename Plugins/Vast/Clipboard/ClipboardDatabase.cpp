@@ -4,6 +4,7 @@
 #include <expected>
 #include <qdatetime.h>
 #include <qsqldatabase.h>
+#include <qsqlrecord.h>
 #include <qlist.h>
 #include <qsqlerror.h>
 #include <qsqlquery.h>
@@ -136,6 +137,7 @@ namespace vast {
 
         q.bindValue(QStringLiteral(":type"), entry.typeString());
         q.bindValue(QStringLiteral(":content"), entry.content);
+        // bind NULL, not empty QByteArray, to keep blob column semantically absent for text entries
         q.bindValue(QStringLiteral(":data"), entry.data.isEmpty() ? QVariant{QMetaType{QMetaType::QByteArray}} : QVariant{entry.data});
         q.bindValue(QStringLiteral(":mime_type"), entry.mimeType);
         q.bindValue(QStringLiteral(":hash"), QString::fromLatin1(entry.hash.toHex()));
@@ -372,23 +374,36 @@ namespace vast {
     }
 
     ClipboardEntry ClipboardDatabase::rowToEntry(const QSqlQuery& q, bool includeData) {
-        ClipboardEntry e;
-        const int      off = includeData ? 1 : 0;
+        ClipboardEntry   e;
+        const QSqlRecord rec = q.record();
 
-        e.id      = q.value(0).toLongLong();
-        e.type    = ClipboardEntry::typeFromString(q.value(1).toString());
-        e.content = q.value(2).toString();
+        static const int idIdx        = rec.indexOf("id");
+        static const int typeIdx      = rec.indexOf("type");
+        static const int contentIdx   = rec.indexOf("content");
+        static const int dataIdx      = rec.indexOf("data");
+        static const int mimeTypeIdx  = rec.indexOf("mime_type");
+        static const int hashIdx      = rec.indexOf("hash");
+        static const int pinnedIdx    = rec.indexOf("pinned");
+        static const int sourceAppIdx = rec.indexOf("source_app");
+        static const int sizeBytesIdx = rec.indexOf("size_bytes");
+        static const int timestampIdx = rec.indexOf("timestamp");
+        static const int fileNameIdx  = rec.indexOf("file_name");
 
-        if (includeData)
-            e.data = q.value(3).toByteArray();
+        e.id      = rec.value(idIdx).toLongLong();
+        e.type    = ClipboardEntry::typeFromString(rec.value(typeIdx).toString());
+        e.content = rec.value(contentIdx).toString();
 
-        e.mimeType  = q.value(3 + off).toString();
-        e.hash      = QByteArray::fromHex(q.value(4 + off).toString().toLatin1());
-        e.pinned    = q.value(5 + off).toInt() != 0;
-        e.sourceApp = q.value(6 + off).toString();
-        e.sizeBytes = q.value(7 + off).toLongLong();
-        e.timestamp = q.value(8 + off).toLongLong();
-        e.fileName  = q.value(9 + off).toString();
+        if (includeData && dataIdx != -1) {
+            e.data = rec.value(dataIdx).toByteArray();
+        }
+
+        e.mimeType  = rec.value(mimeTypeIdx).toString();
+        e.hash      = QByteArray::fromHex(rec.value(hashIdx).toByteArray());
+        e.pinned    = rec.value(pinnedIdx).toBool();
+        e.sourceApp = rec.value(sourceAppIdx).toString();
+        e.sizeBytes = rec.value(sizeBytesIdx).toLongLong();
+        e.timestamp = rec.value(timestampIdx).toLongLong();
+        e.fileName  = rec.value(fileNameIdx).toString();
 
         return e;
     }
