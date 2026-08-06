@@ -131,7 +131,7 @@ Singleton {
         }
         // qmllint disable
         onExited: (code, status) => {
-        // qmllint enable
+            // qmllint enable
             root.recordingPid = -1;
             if (root.isRecording) {
                 root.isRecording = false;
@@ -200,7 +200,7 @@ Singleton {
 
         // qmllint disable
         onExited: (code, status) => {
-        // qmllint enable
+            // qmllint enable
             const pid = verifyProcess.targetPid;
             const video = verifyProcess.targetVideo;
             verifyProcess.targetPid = -1;
@@ -268,7 +268,7 @@ Singleton {
 
         // qmllint disable
         onExited: (exitCode, exitStatus) => {
-        // qmllint enable
+            // qmllint enable
             const vp = root.pendingVideoPath;
             const tp = (exitCode === 0) ? ffmpegProcess.thumb : "";
             const cb = root.pendingCallback;

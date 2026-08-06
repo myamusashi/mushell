@@ -50,7 +50,7 @@ Item {
 
         // qmllint disable
         onExited: (code, status) => {
-        // qmllint enable
+            // qmllint enable
             if (code === 0)
                 root.copied();
             else

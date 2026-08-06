@@ -16,6 +16,37 @@ qt_policy(SET QTP0001 NEW)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
 pkg_check_modules(DDCUTIL REQUIRED IMPORTED_TARGET ddcutil)
+pkg_check_modules(WAYLAND_CLIENT REQUIRED IMPORTED_TARGET wayland-client)
+find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner REQUIRED)
+
+set(WAYLAND_PROTOCOL_XML ${CMAKE_CURRENT_SOURCE_DIR}/protocols/ext-data-control-v1.xml)
+set(WAYLAND_PROTOCOL_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/wayland)
+file(MAKE_DIRECTORY ${WAYLAND_PROTOCOL_GEN_DIR})
+
+add_custom_command(
+    OUTPUT ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-protocol.c
+    COMMAND ${WAYLAND_SCANNER_EXECUTABLE} private-code
+            ${WAYLAND_PROTOCOL_XML}
+            ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-protocol.c
+    DEPENDS ${WAYLAND_PROTOCOL_XML}
+    COMMENT "Generating ext-data-control-v1 protocol source"
+)
+
+add_custom_command(
+    OUTPUT ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-client-protocol.h
+    COMMAND ${WAYLAND_SCANNER_EXECUTABLE} client-header
+            ${WAYLAND_PROTOCOL_XML}
+            ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-client-protocol.h
+    DEPENDS ${WAYLAND_PROTOCOL_XML}
+    COMMENT "Generating ext-data-control-v1 client header"
+)
+
+add_library(wayland-ext-data-control STATIC
+    ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-protocol.c
+    ${WAYLAND_PROTOCOL_GEN_DIR}/ext-data-control-v1-client-protocol.h
+)
+target_include_directories(wayland-ext-data-control PUBLIC ${WAYLAND_PROTOCOL_GEN_DIR})
+target_link_libraries(wayland-ext-data-control PUBLIC PkgConfig::WAYLAND_CLIENT)
 
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion
@@ -61,8 +92,8 @@ qt_add_qml_module(VastPlugin
         Clipboard/ClipboardModel.cpp
         Clipboard/ClipboardManager.hpp
         Clipboard/ClipboardManager.cpp
-        Clipboard/ClipboardWatcher.hpp
-        Clipboard/ClipboardWatcher.cpp
+        Clipboard/WaylandDataControl.hpp
+        Clipboard/WaylandDataControl.cpp
         Clipboard/ClipboardDatabase.hpp
         Clipboard/ClipboardDatabase.cpp
         Search/FuzzyMatcher.hpp
@@ -90,6 +121,7 @@ target_link_libraries(VastPlugin PRIVATE
 	Qt6::Sql
     ${PIPEWIRE_LIBRARIES}
     ${DDCUTIL_LIBRARIES}
+    wayland-ext-data-control
 )
 
 target_compile_options(VastPlugin PRIVATE

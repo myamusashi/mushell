@@ -7,6 +7,9 @@
     pipewire,
     ddcutil,
     pkg-config,
+    wayland,
+    wayland-protocols,
+    wayland-scanner,
 }:
 stdenv.mkDerivation {
     pname = "vast-plugin";
@@ -18,6 +21,8 @@ stdenv.mkDerivation {
         qt6.wrapQtAppsHook
         patchelf
         pkg-config
+        wayland-scanner
+        wayland-protocols
     ];
 
     buildInputs = [
@@ -25,6 +30,7 @@ stdenv.mkDerivation {
         qt6.qtdeclarative
         pipewire
         ddcutil
+        wayland
     ];
 
     cmakeFlags = [
@@ -45,6 +51,7 @@ stdenv.mkDerivation {
             qt6.qtdeclarative
             pipewire
             ddcutil
+            wayland
         ]}" \
             "$PLUGIN_DIR/libVastPlugin.so"
         fi

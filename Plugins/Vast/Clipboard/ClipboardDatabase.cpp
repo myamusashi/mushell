@@ -73,12 +73,35 @@ namespace Vast {
                 pinned      INTEGER NOT NULL DEFAULT 0,
                 source_app  TEXT             DEFAULT '',
                 size_bytes  INTEGER NOT NULL DEFAULT 0,
-                timestamp   INTEGER NOT NULL
+                timestamp   INTEGER NOT NULL,
+                filename    TEXT             DEFAULT ''
             )
         )sql";
 
         if (!q.exec(QString::fromUtf8(createTable)))
             return std::unexpected(lastError());
+
+        // Migration for databases created before the filename column existed:
+        // CREATE TABLE IF NOT EXISTS does not add columns to an existing table.
+        {
+            QSqlQuery columnQ{*m_db};
+            if (!columnQ.exec(QStringLiteral("PRAGMA table_info(clipboard_entries)")))
+                return std::unexpected(lastError());
+
+            bool hasFilename = false;
+            while (columnQ.next()) {
+                if (columnQ.value(1).toString() == QLatin1StringView{"filename"}) {
+                    hasFilename = true;
+                    break;
+                }
+            }
+
+            if (!hasFilename) {
+                QSqlQuery migrateQ{*m_db};
+                if (!migrateQ.exec(QStringLiteral("ALTER TABLE clipboard_entries ADD COLUMN filename TEXT DEFAULT ''")))
+                    return std::unexpected(lastError());
+            }
+        }
 
         constexpr std::array<const char*, 2> indices{
             {"CREATE INDEX IF NOT EXISTS idx_ts ON clipboard_entries(timestamp DESC)", "CREATE INDEX IF NOT EXISTS idx_pinned ON clipboard_entries(pinned, timestamp DESC)"}};
@@ -100,9 +123,9 @@ namespace Vast {
         QSqlQuery q{*m_db};
         q.prepare(QStringLiteral(R"sql(
             INSERT INTO clipboard_entries
-                (type, content, data, mime_type, hash, pinned, source_app, size_bytes, timestamp)
+                (type, content, data, mime_type, hash, pinned, source_app, size_bytes, timestamp, filename)
             VALUES
-                (:type, :content, :data, :mime_type, :hash, :pinned, :source_app, :size_bytes, :timestamp)
+                (:type, :content, :data, :mime_type, :hash, :pinned, :source_app, :size_bytes, :timestamp, :filename)
         )sql"));
 
         q.bindValue(QStringLiteral(":type"), entry.typeString());
@@ -114,6 +137,7 @@ namespace Vast {
         q.bindValue(QStringLiteral(":source_app"), entry.sourceApp);
         q.bindValue(QStringLiteral(":size_bytes"), entry.sizeBytes);
         q.bindValue(QStringLiteral(":timestamp"), entry.timestamp > 0 ? entry.timestamp : QDateTime::currentMSecsSinceEpoch());
+        q.bindValue(QStringLiteral(":filename"), entry.fileName);
 
         if (!q.exec())
             return std::unexpected(lastError());
@@ -290,7 +314,7 @@ namespace Vast {
 
         QSqlQuery q{*m_db};
         if (!q.exec(QStringLiteral(R"sql(
-				SELECT id, type, content, mime_type, hash, pinned, source_app, size_bytes, timestamp
+				SELECT id, type, content, mime_type, hash, pinned, source_app, size_bytes, timestamp, filename
 				FROM clipboard_entries
 				ORDER BY pinned DESC, timestamp DESC
 			)sql"))) {
@@ -310,7 +334,7 @@ namespace Vast {
 
         QSqlQuery q{*m_db};
         q.prepare(QStringLiteral(R"sql(
-            SELECT id, type, content, data, mime_type, hash, pinned, source_app, size_bytes, timestamp
+            SELECT id, type, content, data, mime_type, hash, pinned, source_app, size_bytes, timestamp, filename
             FROM clipboard_entries
             WHERE id = :id
             LIMIT 1
@@ -357,6 +381,7 @@ namespace Vast {
         e.sourceApp = q.value(6 + off).toString();
         e.sizeBytes = q.value(7 + off).toLongLong();
         e.timestamp = q.value(8 + off).toLongLong();
+        e.fileName  = q.value(9 + off).toString();
 
         return e;
     }

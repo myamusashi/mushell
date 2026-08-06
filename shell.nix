@@ -12,6 +12,8 @@ pkgs.mkShell {
         qt6.qttranslations
         ddcutil
         pipewire.dev
+        wayland
+        wayland-protocols
     ];
 
     packages = with pkgs; [
@@ -20,6 +22,7 @@ pkgs.mkShell {
         golangci-lint
         nil
         pkg-config
+        wayland-scanner
         qt6.qttools
         qt6.qtshadertools
         python314Packages.rembg

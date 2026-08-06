@@ -19,6 +19,7 @@ ItemDelegate {
     required property bool pinned
     required property string sourceApp
     required property var timestamp
+    required property string fileName
     required property bool isSelected
 
     readonly property bool isImage: root.type === "image"
@@ -130,7 +131,7 @@ ItemDelegate {
                 readonly property int fileCount: root.isFiles ? root.preview.split("\n").length : 0
 
                 Layout.fillWidth: true
-                text: root.isImage ? qsTr("Image") : root.isFiles ? qsTr("Files (%1)").arg(fileCount) : root.preview || qsTr("(empty)")
+                text: root.isImage ? (root.fileName || qsTr("Image")) : root.isFiles ? qsTr("Files (%1)").arg(fileCount) : root.preview || qsTr("(empty)")
                 color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.size.medium
                 maximumLineCount: 2

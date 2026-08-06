@@ -1,6 +1,7 @@
 #include "ClipboardModel.hpp"
 
 #include <qdatetime.h>
+#include <qfileinfo.h>
 
 #include <algorithm>
 
@@ -29,6 +30,7 @@ namespace Vast {
             case Roles::SourceAppRole: return e.sourceApp;
             case Roles::MimeTypeRole: return e.mimeType;
             case Roles::SizeBytesRole: return e.sizeBytes;
+            case Roles::FileNameRole: return QFileInfo(e.fileName).fileName();
         }
         return {};
     }
@@ -37,7 +39,7 @@ namespace Vast {
         return {
             {static_cast<int>(Roles::IdRole), "entryId"},          {static_cast<int>(Roles::TypeRole), "type"},           {static_cast<int>(Roles::PreviewRole), "preview"},
             {static_cast<int>(Roles::TimestampRole), "timestamp"}, {static_cast<int>(Roles::PinnedRole), "pinned"},       {static_cast<int>(Roles::SourceAppRole), "sourceApp"},
-            {static_cast<int>(Roles::MimeTypeRole), "mimeType"},   {static_cast<int>(Roles::SizeBytesRole), "sizeBytes"},
+            {static_cast<int>(Roles::MimeTypeRole), "mimeType"},   {static_cast<int>(Roles::SizeBytesRole), "sizeBytes"}, {static_cast<int>(Roles::FileNameRole), "fileName"},
         };
     }
 
@@ -85,19 +87,10 @@ namespace Vast {
                 return entry.timestamp >= e.timestamp;
             });
 
-            // insertIdx is the true final slot after takeAt shifts indices.
-            // Guard on insertIdx (not dest): when the item is already at the
-            // correct position, findIf skips self then matches the immediately
-            // following element, yielding dest=existing+1 but insertIdx=existing.
-            // Using dest as the guard would trigger a bogus beginMoveRows that
-            // mismatches the view and leaves a delegate showing stale data.
-            const int dest      = static_cast<int>(std::distance(m_entries.begin(), insertPos));
-            const int insertIdx = dest > existing ? dest - 1 : dest;
+            const int  dest      = static_cast<int>(std::distance(m_entries.begin(), insertPos));
+            const int  insertIdx = dest > existing ? dest - 1 : dest;
 
             if (existing != insertIdx) {
-                // destChild = dest (not dest+1): for a same-parent downward move
-                // Qt expects destinationChild = dest so the view shift matches
-                // what takeAt+insert(insertIdx) produces in m_entries
                 beginMoveRows({}, existing, existing, {}, dest);
                 auto item = m_entries.takeAt(existing);
 
@@ -254,8 +247,9 @@ namespace Vast {
         const QString lower = m_filterQuery.toLower();
 
         for (int i = 0; i < m_entries.size(); ++i) {
-            const auto& e       = m_entries[i];
-            const bool  matches = e.content.toLower().contains(lower) || e.sourceApp.toLower().contains(lower) || e.mimeType.toLower().contains(lower);
+            const auto& e = m_entries[i];
+            const bool  matches =
+                e.content.toLower().contains(lower) || e.sourceApp.toLower().contains(lower) || e.mimeType.toLower().contains(lower) || e.fileName.toLower().contains(lower);
             if (matches)
                 m_filtered.push_back(i);
         }

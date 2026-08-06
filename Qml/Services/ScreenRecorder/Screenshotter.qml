@@ -48,7 +48,7 @@ Item {
         property string destPath: ""
         // qmllint disable
         onExited: (code, status) => {
-        // qmllint enable
+            // qmllint enable
             if (code === 0 && destPath) {
                 root.notify("Screenshot Saved", destPath, "normal", destPath, "Screenshot");
                 saver.copyFile(destPath);

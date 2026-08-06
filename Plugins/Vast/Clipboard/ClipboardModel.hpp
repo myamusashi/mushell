@@ -28,6 +28,7 @@ namespace Vast {
             SourceAppRole,
             MimeTypeRole,
             SizeBytesRole,
+            FileNameRole,
         };
         Q_ENUM(Roles)
 

@@ -25,6 +25,7 @@ namespace Vast {
         QString                      sourceApp;
         qint64                       sizeBytes{0};
         qint64                       timestamp{0};
+        QString                      fileName;
 
         [[nodiscard]] constexpr bool isImage() const noexcept {
             return type == ClipboardType::Image;

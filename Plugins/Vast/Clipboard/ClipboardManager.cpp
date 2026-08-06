@@ -1,16 +1,16 @@
 #include "ClipboardManager.hpp"
 #include "ClipboardDatabase.hpp"
-#include "ClipboardWatcher.hpp"
+#include "WaylandDataControl.hpp"
 #include "../Search/FuzzyMatcher.hpp"
 
 #include <qguiapplication.h>
 #include <qthreadpool.h>
-#include <qclipboard.h>
-#include <qmimedata.h>
 #include <qtimer.h>
 #include <qimage.h>
 #include <qdir.h>
-#include <qurl.h>
+#include <qdatetime.h>
+#include <qcryptographichash.h>
+#include <qfileinfo.h>
 
 #include <algorithm>
 #include <functional>
@@ -18,7 +18,7 @@
 namespace Vast {
 
     ClipboardManager::ClipboardManager(QObject* parent) :
-        QObject{parent}, m_model{new ClipboardModel{this}}, m_watcher{std::make_unique<ClipboardWatcher>(this)}, m_database{std::make_unique<ClipboardDatabase>(this)},
+        QObject{parent}, m_model{new ClipboardModel{this}}, m_wayland{std::make_unique<WaylandDataControl>(this)}, m_database{std::make_unique<ClipboardDatabase>(this)},
         m_searchDebounce{new QTimer{this}} {
         qRegisterMetaType<ClipboardEntry>();
 
@@ -42,29 +42,18 @@ namespace Vast {
 
         setupConnections();
         loadAllEntries();
-        m_watcher->start();
+
+        if (!m_wayland->initialize())
+            qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
 
         return true;
     }
 
     void ClipboardManager::setupConnections() {
-        connect(
-            m_watcher.get(), &ClipboardWatcher::newEntry, this,
-            [this](const ClipboardEntry& entry) {
-                if (!m_database) [[unlikely]]
-                    return;
+        connect(m_wayland.get(), &WaylandDataControl::selectionReceived, this, &ClipboardManager::onSelectionReceived, Qt::QueuedConnection);
 
-                if (auto result = m_database->insert(entry); !result) {
-                    if (result.error() == QStringLiteral("duplicate")) {
-                        auto idResult = m_database->fetchIdByHash(entry.hash);
-                        if (idResult && m_model)
-                            m_model->bumpToTop(*idResult);
-                    } else {
-                        qWarning() << "[ClipboardManager] insert failed:" << result.error();
-                    }
-                }
-            },
-            Qt::QueuedConnection);
+        connect(
+            m_wayland.get(), &WaylandDataControl::deviceFinished, this, []() { qWarning() << "[ClipboardManager] Wayland data control device finished"; }, Qt::DirectConnection);
 
         connect(
             m_database.get(), &ClipboardDatabase::entryInserted, this,
@@ -204,8 +193,6 @@ namespace Vast {
             return;
 
         m_enabled = enabled;
-        if (m_watcher)
-            m_watcher->setEnabled(enabled);
         emit enabledChanged();
     }
 
@@ -220,6 +207,13 @@ namespace Vast {
         if (!m_database)
             return false;
 
+        const qint64 now = QDateTime::currentMSecsSinceEpoch();
+        if (id == m_lastCopyId && now - m_lastCopyTimestamp < 500) {
+            return true;
+        }
+        m_lastCopyId        = id;
+        m_lastCopyTimestamp = now;
+
         auto result = m_database->fetchById(id);
         if (!result) {
             qWarning() << "[ClipboardManager] fetchById failed:" << result.error();
@@ -230,36 +224,37 @@ namespace Vast {
         if (entry.id < 0)
             return false;
 
-        if (m_watcher)
-            m_watcher->setSelfCopyHash(entry.hash);
-
-        auto mime = std::make_unique<QMimeData>();
+        QString    mimeType;
+        QByteArray content;
 
         switch (entry.type) {
-            case ClipboardType::Text: mime->setText(entry.content); break;
+            case ClipboardType::Text:
+                mimeType = QStringLiteral("text/plain;charset=utf-8");
+                content  = entry.content.toUtf8();
+                break;
             case ClipboardType::Html:
-                mime->setHtml(entry.content);
-                mime->setText(entry.content);
+                mimeType = QStringLiteral("text/html");
+                content  = entry.content.toUtf8();
                 break;
-            case ClipboardType::Image: {
-                QImage img;
-                img.loadFromData(entry.data, "PNG");
-                if (!img.isNull())
-                    mime->setImageData(std::move(img));
+            case ClipboardType::Image:
+                mimeType = QStringLiteral("image/png");
+                content  = entry.data;
                 break;
-            }
-            case ClipboardType::Files: {
-                const auto  paths = entry.content.split(u'\n', Qt::SkipEmptyParts);
-                QList<QUrl> urls;
-                urls.reserve(paths.size());
-                for (const auto& path : paths)
-                    urls.append(QUrl::fromLocalFile(path));
-                mime->setUrls(urls);
+            case ClipboardType::Files:
+                mimeType = QStringLiteral("text/uri-list");
+                content  = entry.content.toUtf8();
                 break;
-            }
         }
 
-        QGuiApplication::clipboard()->setMimeData(mime.release());
+        if (!m_wayland) {
+            qWarning() << "[ClipboardManager] wayland data control unavailable";
+            return false;
+        }
+
+        m_wayland->setClipboardContent(mimeType, content, entry.fileName);
+
+        m_lastSelfSetContent   = content;
+        m_lastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
 
         const bool alreadyTop = m_model && m_model->idAtRow(0) == id;
 
@@ -337,6 +332,7 @@ namespace Vast {
             map[QStringLiteral("sourceApp")] = entry.sourceApp;
             map[QStringLiteral("sizeBytes")] = entry.sizeBytes;
             map[QStringLiteral("timestamp")] = entry.timestamp;
+            map[QStringLiteral("fileName")]  = entry.fileName.isEmpty() ? QString{} : QFileInfo(entry.fileName).fileName();
 
             if (entry.isImage()) {
                 const QString path = QStringLiteral("/tmp/vast-shell/clipboard-preview/%1.png").arg(entry.id);
@@ -379,9 +375,11 @@ namespace Vast {
         scored.reserve(static_cast<size_t>(entries.size()));
 
         for (const auto& entry : entries) {
-            const QString haystack = entry.isImage() ? entry.sourceApp : entry.content.left(200) + u' ' + entry.sourceApp;
+            QString haystack = entry.content.left(200) + u' ' + entry.sourceApp;
+            if (entry.isImage())
+                haystack = entry.fileName + u' ' + entry.sourceApp;
 
-            const double  score = FuzzyMatcher::fuzzyScore(query, haystack);
+            const double score = FuzzyMatcher::fuzzyScore(query, haystack.trimmed());
             if (score > 0.0)
                 scored.emplace_back(score, entry.id);
         }
@@ -413,6 +411,73 @@ namespace Vast {
             if (m_model)
                 m_model->removeById(droppedId);
             removePreviewFile(droppedId);
+        }
+    }
+
+    void ClipboardManager::onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName) {
+        if (m_lastSelfSetContent.has_value()) {
+            constexpr qint64 kLoopbackWindowMs = 60000;
+            const bool       withinWindow      = QDateTime::currentMSecsSinceEpoch() - m_lastSelfSetTimestamp < kLoopbackWindowMs;
+            const bool       contentMatches    = *m_lastSelfSetContent == content;
+            if (withinWindow && contentMatches) {
+                qWarning() << "[ClipboardManager] loopback suppressed: mime=" << mimeType << "size=" << content.size();
+                m_lastSelfSetContent.reset();
+                return;
+            }
+            m_lastSelfSetContent.reset();
+        }
+
+        persistToHistory(mimeType, content, fileName);
+    }
+
+    [[nodiscard]] ClipboardType ClipboardManager::mimeTypeToClipboardType(const QString& mimeType) {
+        if (mimeType == QStringLiteral("image/png"))
+            return ClipboardType::Image;
+        if (mimeType == QStringLiteral("text/html"))
+            return ClipboardType::Html;
+        if (mimeType == QStringLiteral("text/uri-list"))
+            return ClipboardType::Files;
+        return ClipboardType::Text;
+    }
+
+    void ClipboardManager::persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName) {
+        if (!m_database) [[unlikely]]
+            return;
+
+        if (content.isEmpty())
+            return;
+
+        const ClipboardType type = mimeTypeToClipboardType(mimeType);
+
+        if (type == ClipboardType::Text || type == ClipboardType::Html) {
+            const auto text                = QString::fromUtf8(content);
+            const auto isEmptyOrWhitespace = [](QStringView sv) noexcept { return sv.isEmpty() || std::ranges::all_of(sv, [](QChar c) { return c.isSpace(); }); };
+            if (isEmptyOrWhitespace(text))
+                return;
+        }
+
+        ClipboardEntry entry;
+        entry.type                 = type;
+        entry.content              = entry.isImage() ? QString{} : QString::fromUtf8(content);
+        entry.data                 = entry.isImage() ? content : QByteArray{};
+        entry.mimeType             = mimeType;
+        entry.pinned               = false;
+        entry.sourceApp            = m_activeWindow;
+        entry.sizeBytes            = content.size();
+        entry.timestamp            = QDateTime::currentMSecsSinceEpoch();
+        const QByteArray hashInput = entry.isImage() ? content : entry.content.toUtf8();
+        entry.hash                 = QCryptographicHash::hash(hashInput, QCryptographicHash::Sha256);
+        entry.fileName             = entry.isImage() ? fileName : QString{};
+
+        if (auto result = m_database->insert(entry); !result) {
+            if (result.error() == QStringLiteral("duplicate")) {
+                // §10: consecutive duplicate copy — bump the existing row.
+                auto idResult = m_database->fetchIdByHash(entry.hash);
+                if (idResult && m_model)
+                    m_model->bumpToTop(*idResult);
+            } else {
+                qWarning() << "[ClipboardManager] insert failed:" << result.error();
+            }
         }
     }
 }

@@ -227,6 +227,7 @@ shell
 |---|---|
 | `cmake`, `qt6-shadertools`, `qt6-tools` | Build system, shader compiler (`qsb`), translation compiler (`lrelease`) |
 | `qt6-base`, `qt6-declarative`, `qt6-multimedia` | Qt6 build-time libraries |
+| `wayland` | Provides `libwayland-client` + `wayland-scanner` for the clipboard manager's native `ext_data_control_v1` binding |
 
 **Runtime**
 
@@ -275,7 +276,7 @@ The following packages must always be built from source, regardless of distro:
 ```bash
 # System & build
 sudo dnf install git cmake ninja-build extra-cmake-modules patchelf pkgconf \
-                 gcc gcc-c++ make rust cargo
+                 gcc gcc-c++ make rust cargo wayland-devel
 
 # Qt6
 sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtsvg-devel \
@@ -300,7 +301,7 @@ sudo dnf install pipewire wireplumber iw libnotify polkit \
 ```bash
 # System & build
 sudo zypper install git cmake ninja extra-cmake-modules patchelf pkgconf \
-                    gcc gcc-c++ make rust cargo
+                    gcc gcc-c++ make rust cargo wayland-devel
 
 # Qt6
 sudo zypper install qt6-base-devel qt6-declarative-devel qt6-svg-devel \
@@ -321,7 +322,7 @@ sudo zypper install pipewire wireplumber iw libnotify-tools polkit \
 # System & build
 sudo emerge -av dev-vcs/git dev-build/cmake dev-build/ninja \
                 kde-frameworks/extra-cmake-modules dev-util/patchelf \
-                dev-util/pkgconf dev-lang/rust
+                dev-util/pkgconf dev-lang/rust dev-libs/wayland
 
 # Qt6 (ensure USE="qt6" where applicable)
 sudo emerge -av dev-qt/qtbase:6 dev-qt/qtdeclarative:6 dev-qt/qtsvg:6 \
@@ -343,7 +344,7 @@ sudo emerge -av media-video/pipewire media-video/wireplumber net-wireless/iw \
 ```bash
 # System & build
 sudo xbps-install -S git cmake ninja extra-cmake-modules patchelf pkgconf \
-                     base-devel rust cargo
+                     base-devel rust cargo wayland-devel
 
 # Qt6
 sudo xbps-install -S qt6-base-devel qt6-declarative-devel qt6-svg-devel \
@@ -828,7 +829,7 @@ vast-shell/
 │   ├── KeylockState.{cpp,hpp}
 │   ├── LyricsProvider.{cpp,hpp}
 │   ├── TranslationManager.{cpp,hpp}
-│   ├── Clipboard/             # Database, Entry, Manager, Model, Watcher
+│   ├── Clipboard/             # Database, Entry, Manager, Model, WaylandDataControl
 │   └── Search/                # FuzzyMatcher, SearchEngine, SearchResult
 │
 ├── Assets/
@@ -870,10 +871,17 @@ vast-shell/
 - [ ] Warp (Cloudflare) and WireGuard connection detection
 - [ ] Generic VPN status indicator in the network settings page
 
+> [!NOTE]
+> When you copy and want to recopy again from history, the clipboard UI freezing/hangs for a seconds. This is because wayland clipboard management is just full of garbage. We only just wait and see
+> Issue from CopyQ: https://github.com/hluk/CopyQ/issues/3125
 **Clipboard Manager**
 - [x] Persistent clipboard history with image preview
 - [x] Selected text snippets with source context
 - [x] Built-in storage via `sqlite`
+- [x] Native `ext_data_control_v1` Wayland backend (replaces `QClipboard`)
+- [x] Password-manager sensitive-content exclusion (`x-kde-passwordManagerHint`)
+- [x] Fuzzy search over history
+- [x] Original filenames preserved for image copies (`text/uri-list` / `application/x-kde-suggestedfilename`) and re-offered on paste
 
 ---
 

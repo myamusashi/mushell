@@ -54,6 +54,7 @@ Item {
             d.pinned = entry.pinned ?? false;
             d.sizeBytes = entry.sizeBytes ?? 0;
             d.timestamp = root.formatTimestamp(entry.timestamp ?? 0);
+            d.fileName = entry.fileName ?? "";
 
             d.previewPath = entry.previewPath ?? "";
 
@@ -73,6 +74,7 @@ Item {
         property bool pinned: false
         property int sizeBytes: 0
         property string entryType: "text"
+        property string fileName: ""
 
         function clear() {
             loading = false;
@@ -84,6 +86,7 @@ Item {
             pinned = false;
             sizeBytes = 0;
             entryType = "text";
+            fileName = "";
         }
     }
 
@@ -150,6 +153,16 @@ Item {
                         font.pixelSize: Appearance.fonts.size.normal
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnSurface
+                    }
+
+                    StyledText {
+                        visible: d.isImage && d.fileName.length > 0
+                        Layout.maximumWidth: 220
+                        Layout.fillWidth: false
+                        text: d.fileName
+                        elide: Text.ElideRight
+                        font.pixelSize: Appearance.fonts.size.normal
+                        color: Colours.m3Colors.m3OnSurfaceVariant
                     }
 
                     StyledRect {

@@ -11,3 +11,4 @@ result
 log
 plugins/*/build
 *.tmp
+.cache

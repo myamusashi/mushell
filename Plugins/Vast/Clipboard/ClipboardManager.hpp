@@ -8,13 +8,14 @@
 #include <qpointer.h>
 
 #include <memory>
+#include <optional>
 
 class QTimer;
 
 namespace Vast {
 
     class ClipboardDatabase;
-    class ClipboardWatcher;
+    class WaylandDataControl;
 
     class ClipboardManager : public QObject {
         Q_OBJECT
@@ -60,26 +61,35 @@ namespace Vast {
         void fullEntryReady(QVariantMap entry);
 
       private:
-        void                               setupConnections();
-        void                               loadAllEntries();
-        void                               pruneIfNeeded();
-        void                               writePreviewFile(qint64 id, const QByteArray& pngData);
-        static void                        writePreviewFileBackground(qint64 id, QByteArray pngData);
-        void                               removePreviewFile(qint64 id);
-        void                               performSearch(const QString& query);
+        void                                setupConnections();
+        void                                loadAllEntries();
+        void                                pruneIfNeeded();
+        void                                writePreviewFile(qint64 id, const QByteArray& pngData);
+        static void                         writePreviewFileBackground(qint64 id, QByteArray pngData);
+        void                                removePreviewFile(qint64 id);
+        void                                performSearch(const QString& query);
+        void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
+        void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
+        [[nodiscard]] static ClipboardType  mimeTypeToClipboardType(const QString& mimeType);
 
-        QPointer<ClipboardModel>           m_model;
-        std::unique_ptr<ClipboardWatcher>  m_watcher;
-        std::unique_ptr<ClipboardDatabase> m_database;
+        QPointer<ClipboardModel>            m_model;
+        std::unique_ptr<WaylandDataControl> m_wayland;
+        std::unique_ptr<ClipboardDatabase>  m_database;
 
-        QTimer*                            m_searchDebounce{nullptr};
-        QString                            m_pendingQuery;
+        std::optional<QByteArray>           m_lastSelfSetContent;
+        qint64                              m_lastSelfSetTimestamp{0};
 
-        qint64                             m_pendingEntryId{-1};
-        int                                m_maxEntries{500};
-        int                                m_maxMegabytes{64};
-        bool                               m_enabled{true};
+        qint64                              m_lastCopyId{-1};
+        qint64                              m_lastCopyTimestamp{0};
 
-        QString                            m_activeWindow;
+        QTimer*                             m_searchDebounce{nullptr};
+        QString                             m_pendingQuery;
+
+        qint64                              m_pendingEntryId{-1};
+        int                                 m_maxEntries{500};
+        int                                 m_maxMegabytes{64};
+        bool                                m_enabled{true};
+
+        QString                             m_activeWindow;
     };
 }

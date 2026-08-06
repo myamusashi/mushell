@@ -340,31 +340,28 @@ WrapperRectangle {
                                 move: Transition {
                                     NAnim {
                                         properties: "x,y"
-                                    }
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        to: 1
-                                    }
-                                }
-
-                                addDisplaced: Transition {
-                                    NAnim {
-                                        properties: "x,y"
                                         duration: Appearance.animations.durations.small
                                     }
                                     NAnim {
                                         properties: "opacity,scale"
                                         to: 1
+                                        duration: Appearance.animations.durations.small
+                                    }
+                                }
+
+                                addDisplaced: Transition {
+                                    NAnim {
+                                        properties: "opacity,scale"
+                                        to: 1
+                                        duration: Appearance.animations.durations.small
                                     }
                                 }
 
                                 displaced: Transition {
                                     NAnim {
-                                        properties: "x,y"
-                                    }
-                                    NAnim {
                                         properties: "opacity,scale"
                                         to: 1
+                                        duration: Appearance.animations.durations.small
                                     }
                                 }
 
@@ -379,6 +376,7 @@ WrapperRectangle {
                                     timestamp: modelData.timestamp
                                     pinned: modelData.pinned
                                     sourceApp: modelData.sourceApp
+                                    fileName: modelData.fileName
                                     isSelected: GridView.isCurrentItem
 
                                     width: GridView.view.cellWidth

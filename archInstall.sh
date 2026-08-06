@@ -47,10 +47,13 @@ install_system_packages() {
 	local -a missing=()
 	# ddcutil added — required for external monitor brightness via DDC/CI
 	# i2c-tools added — provides i2cdetect for debugging
+	# wayland added — libwayland-client + wayland-scanner for the clipboard
+	#   manager's native ext_data_control_v1 binding (protocol XML is vendored
+	#   in Plugins/Vast/protocols, so wayland-protocols is not required).
 	local -r pkg_list=(
 		base-devel git cmake ninja extra-cmake-modules patchelf pkgconf
 		qt6-base qt6-declarative qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
-		rust pipewire ddcutil i2c-tools go
+		rust pipewire ddcutil i2c-tools go wayland
 		findutils grep sed gawk util-linux libnotify wireplumber
 		iw polkit wl-clipboard ffmpeg foot hyprland xdg-desktop-portal
 	)
@@ -209,18 +212,19 @@ build_vast_plugin() {
 	done
 	((found)) || die "Vast install tree not found under $install_base"
 
-	local qt_core_lib qt_qml_lib qt_gui_lib qt_quick_lib pw_lib ddc_lib
+	local qt_core_lib qt_qml_lib qt_gui_lib qt_quick_lib pw_lib ddc_lib wl_lib
 	qt_core_lib=$(pkg-config --variable=libdir Qt6Core)
 	qt_gui_lib=$(pkg-config --variable=libdir Qt6Gui)
 	qt_qml_lib=$(pkg-config --variable=libdir Qt6Qml)
 	qt_quick_lib=$(pkg-config --variable=libdir Qt6Quick)
 	pw_lib=$(pkg-config --variable=libdir libpipewire-0.3)
 	ddc_lib=$(pkg-config --variable=libdir ddcutil)
+	wl_lib=$(pkg-config --variable=libdir wayland-client)
 
 	local backing="$QML_DIR/Vast/libVastPlugin.so"
 	[[ -f $backing ]] &&
 		patchelf --set-rpath \
-			"$QML_DIR/Vast:$qt_core_lib:$qt_gui_lib:$qt_qml_lib:$qt_quick_lib:$pw_lib:$ddc_lib" \
+			"$QML_DIR/Vast:$qt_core_lib:$qt_gui_lib:$qt_qml_lib:$qt_quick_lib:$pw_lib:$ddc_lib:$wl_lib" \
 			"$backing" 2>/dev/null || true
 
 	local stub="$QML_DIR/Vast/libVastQmlPlugin.so"
