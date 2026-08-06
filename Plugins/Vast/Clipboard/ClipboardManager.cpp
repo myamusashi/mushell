@@ -3,7 +3,16 @@
 #include "WaylandDataControl.hpp"
 #include "../Search/FuzzyMatcher.hpp"
 
-#include <qguiapplication.h>
+#include <ClipboardModel.hpp>
+#include <memory>
+#include <ClipboardEntry.hpp>
+#include <qcontainerfwd.h>
+#include <cstddef>
+#include <qobject.h>
+#include <qlogging.h>
+#include <qnamespace.h>
+#include <qlist.h>
+#include <qstringview.h>
 #include <qthreadpool.h>
 #include <qtimer.h>
 #include <qimage.h>
@@ -14,28 +23,32 @@
 
 #include <algorithm>
 #include <functional>
+#include <qtypes.h>
+#include <qtmetamacros.h>
+#include <utility>
+#include <vector>
 
-namespace Vast {
+namespace vast {
 
     ClipboardManager::ClipboardManager(QObject* parent) :
-        QObject{parent}, m_model{new ClipboardModel{this}}, m_wayland{std::make_unique<WaylandDataControl>(this)}, m_database{std::make_unique<ClipboardDatabase>(this)},
-        m_searchDebounce{new QTimer{this}} {
+        QObject{parent}, mModel{new ClipboardModel{this}}, mWayland{std::make_unique<WaylandDataControl>(this)}, mDatabase{std::make_unique<ClipboardDatabase>(this)},
+        mSearchDebounce{new QTimer{this}} {
         qRegisterMetaType<ClipboardEntry>();
 
-        m_searchDebounce->setSingleShot(true);
-        m_searchDebounce->setInterval(150);
-        connect(m_searchDebounce, &QTimer::timeout, this, [this]() { performSearch(m_pendingQuery); });
+        mSearchDebounce->setSingleShot(true);
+        mSearchDebounce->setInterval(150);
+        connect(mSearchDebounce, &QTimer::timeout, this, [this]() { performSearch(mPendingQuery); });
     }
 
     ClipboardManager::~ClipboardManager() = default;
 
     [[nodiscard]] bool ClipboardManager::initialize(const QString& dbPath) {
-        if (!m_database) {
+        if (!mDatabase) {
             qWarning() << "[ClipboardManager] Database not initialized";
             return false;
         }
 
-        if (auto result = m_database->open(dbPath); !result) {
+        if (auto result = mDatabase->open(dbPath); !result) {
             qWarning() << "[ClipboardManager] Database open failed:" << result.error();
             return false;
         }
@@ -43,25 +56,24 @@ namespace Vast {
         setupConnections();
         loadAllEntries();
 
-        if (!m_wayland->initialize())
+        if (!mWayland->initialize())
             qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
 
         return true;
     }
 
     void ClipboardManager::setupConnections() {
-        connect(m_wayland.get(), &WaylandDataControl::selectionReceived, this, &ClipboardManager::onSelectionReceived, Qt::QueuedConnection);
+        connect(mWayland.get(), &WaylandDataControl::selectionReceived, this, &ClipboardManager::onSelectionReceived, Qt::QueuedConnection);
+
+        connect(mWayland.get(), &WaylandDataControl::deviceFinished, this, []() { qWarning() << "[ClipboardManager] Wayland data control device finished"; }, Qt::DirectConnection);
 
         connect(
-            m_wayland.get(), &WaylandDataControl::deviceFinished, this, []() { qWarning() << "[ClipboardManager] Wayland data control device finished"; }, Qt::DirectConnection);
-
-        connect(
-            m_database.get(), &ClipboardDatabase::entryInserted, this,
+            mDatabase.get(), &ClipboardDatabase::entryInserted, this,
             [this](const ClipboardEntry& entry) {
-                if (!m_model) [[unlikely]]
+                if (!mModel) [[unlikely]]
                     return;
 
-                m_model->prepend(entry);
+                mModel->prepend(entry);
                 pruneIfNeeded();
 
                 if (entry.isImage() && !entry.data.isEmpty())
@@ -70,35 +82,35 @@ namespace Vast {
             Qt::DirectConnection);
 
         connect(
-            m_database.get(), &ClipboardDatabase::entryRemoved, this,
+            mDatabase.get(), &ClipboardDatabase::entryRemoved, this,
             [this](qint64 id) {
-                if (m_model)
-                    m_model->removeById(id);
+                if (mModel)
+                    mModel->removeById(id);
             },
             Qt::DirectConnection);
 
         connect(
-            m_database.get(), &ClipboardDatabase::entryPinChanged, this,
+            mDatabase.get(), &ClipboardDatabase::entryPinChanged, this,
             [this](qint64 id, bool pinned) {
-                if (m_model)
-                    m_model->setPinById(id, pinned);
+                if (mModel)
+                    mModel->setPinById(id, pinned);
             },
             Qt::DirectConnection);
     }
 
     void ClipboardManager::loadAllEntries() {
-        if (!m_database || !m_model)
+        if (!mDatabase || !mModel)
             return;
 
-        auto result = m_database->fetchAll();
+        auto result = mDatabase->fetchAll();
         if (!result) {
             qWarning() << "[ClipboardManager] fetchAll failed:" << result.error();
             return;
         }
 
-        m_model->reset(std::move(*result));
+        mModel->reset(std::move(*result));
 
-        for (const auto& entry : m_model->allEntries()) {
+        for (const auto& entry : mModel->allEntries()) {
             if (!entry.isImage())
                 continue;
 
@@ -107,9 +119,9 @@ namespace Vast {
                 continue;
 
             QTimer::singleShot(0, this, [this, id = entry.id]() {
-                if (!m_database)
+                if (!mDatabase)
                     return;
-                auto r = m_database->fetchById(id);
+                auto r = mDatabase->fetchById(id);
                 if (!r || !r->isImage() || r->data.isEmpty())
                     return;
 
@@ -129,7 +141,7 @@ namespace Vast {
         });
     }
 
-    void ClipboardManager::writePreviewFileBackground(qint64 id, QByteArray pngData) {
+    void ClipboardManager::writePreviewFileBackground(qint64 id, const QByteArray& pngData) {
         const QString dir  = QStringLiteral("/tmp/vast-shell/clipboard-preview");
         const QString path = QStringLiteral("%1/%2.png").arg(dir).arg(id);
 
@@ -151,76 +163,76 @@ namespace Vast {
     }
 
     ClipboardModel* ClipboardManager::model() const noexcept {
-        return m_model.get();
+        return mModel.get();
     }
 
     int ClipboardManager::maxEntries() const noexcept {
-        return m_maxEntries;
+        return mMaxEntries;
     }
 
     int ClipboardManager::maxMegabytes() const noexcept {
-        return m_maxMegabytes;
+        return mMaxMegabytes;
     }
 
     bool ClipboardManager::isEnabled() const noexcept {
-        return m_enabled;
+        return mEnabled;
     }
 
     QString ClipboardManager::activeWindow() const noexcept {
-        return m_activeWindow;
+        return mActiveWindow;
     }
 
     void ClipboardManager::setMaxEntries(int max) {
-        if (m_maxEntries == max)
+        if (mMaxEntries == max)
             return;
 
-        m_maxEntries = max;
+        mMaxEntries = max;
         emit maxEntriesChanged();
         pruneIfNeeded();
     }
 
     void ClipboardManager::setMaxMegabytes(int mb) {
-        if (m_maxMegabytes == mb)
+        if (mMaxMegabytes == mb)
             return;
 
-        m_maxMegabytes = mb;
+        mMaxMegabytes = mb;
         emit maxMegabytesChanged();
         pruneIfNeeded();
     }
 
     void ClipboardManager::setEnabled(bool enabled) {
-        if (m_enabled == enabled)
+        if (mEnabled == enabled)
             return;
 
-        m_enabled = enabled;
+        mEnabled = enabled;
         emit enabledChanged();
     }
 
     void ClipboardManager::setActiveWindow(const QString& window) {
-        if (m_activeWindow == window)
+        if (mActiveWindow == window)
             return;
-        m_activeWindow = window;
+        mActiveWindow = window;
         emit activeWindowChanged();
     }
 
     [[nodiscard]] bool ClipboardManager::copyToClipboard(qint64 id) {
-        if (!m_database)
+        if (!mDatabase)
             return false;
 
         const qint64 now = QDateTime::currentMSecsSinceEpoch();
-        if (id == m_lastCopyId && now - m_lastCopyTimestamp < 500) {
+        if (id == mLastCopyId && now - mLastCopyTimestamp < 500) {
             return true;
         }
-        m_lastCopyId        = id;
-        m_lastCopyTimestamp = now;
+        mLastCopyId        = id;
+        mLastCopyTimestamp = now;
 
-        auto result = m_database->fetchById(id);
+        auto result = mDatabase->fetchById(id);
         if (!result) {
             qWarning() << "[ClipboardManager] fetchById failed:" << result.error();
             return false;
         }
 
-        ClipboardEntry entry = std::move(*result);
+        ClipboardEntry const entry = std::move(*result);
         if (entry.id < 0)
             return false;
 
@@ -246,24 +258,24 @@ namespace Vast {
                 break;
         }
 
-        if (!m_wayland) {
+        if (!mWayland) {
             qWarning() << "[ClipboardManager] wayland data control unavailable";
             return false;
         }
 
-        m_wayland->setClipboardContent(mimeType, content, entry.fileName);
+        mWayland->setClipboardContent(mimeType, content, entry.fileName);
 
-        m_lastSelfSetContent   = content;
-        m_lastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
+        mLastSelfSetContent   = content;
+        mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
 
-        const bool alreadyTop = m_model && m_model->idAtRow(0) == id;
+        const bool alreadyTop = mModel && mModel->idAtRow(0) == id;
 
-        if (!alreadyTop && m_model)
-            m_model->bumpToTop(id);
+        if (!alreadyTop && mModel)
+            mModel->bumpToTop(id);
 
         QTimer::singleShot(0, this, [this, id, alreadyTop]() {
-            if (!alreadyTop && m_database)
-                if (auto r = m_database->bumpTimestamp(id); !r)
+            if (!alreadyTop && mDatabase)
+                if (auto r = mDatabase->bumpTimestamp(id); !r)
                     qWarning() << "[ClipboardManager] bumpTimestamp failed:" << r.error();
         });
 
@@ -271,34 +283,34 @@ namespace Vast {
     }
 
     void ClipboardManager::pin(qint64 id, bool pinned) {
-        if (m_model)
-            m_model->setPinById(id, pinned);
+        if (mModel)
+            mModel->setPinById(id, pinned);
 
         QTimer::singleShot(0, this, [this, id, pinned]() {
-            if (m_database)
-                if (auto r = m_database->setPin(id, pinned); !r)
+            if (mDatabase)
+                if (auto r = mDatabase->setPin(id, pinned); !r)
                     qWarning() << "[ClipboardManager] setPin failed:" << r.error();
         });
     }
 
     void ClipboardManager::remove(qint64 id) {
-        if (m_model)
-            m_model->removeById(id);
+        if (mModel)
+            mModel->removeById(id);
 
         removePreviewFile(id);
 
         QTimer::singleShot(0, this, [this, id]() {
-            if (m_database)
-                if (auto r = m_database->remove(id); !r)
+            if (mDatabase)
+                if (auto r = mDatabase->remove(id); !r)
                     qWarning() << "[ClipboardManager] remove failed:" << r.error();
         });
     }
 
     [[nodiscard]] bool ClipboardManager::clearUnpinned() {
-        if (!m_database)
+        if (!mDatabase)
             return false;
 
-        if (auto r = m_database->clearUnpinned(); !r) {
+        if (auto r = mDatabase->clearUnpinned(); !r) {
             qWarning() << "[ClipboardManager] clearUnpinned failed:" << r.error();
             return false;
         }
@@ -308,18 +320,18 @@ namespace Vast {
     }
 
     void ClipboardManager::requestFullEntry(qint64 id) {
-        m_pendingEntryId = id;
-        if (id < 0 || !m_database)
+        mPendingEntryId = id;
+        if (id < 0 || !mDatabase)
             return;
 
         QTimer::singleShot(0, this, [this, id]() {
-            auto result = m_database->fetchById(id);
+            auto result = mDatabase->fetchById(id);
             if (!result) {
                 qWarning() << "[ClipboardManager] fetchById failed:" << result.error();
                 return;
             }
 
-            if (id != m_pendingEntryId)
+            if (id != mPendingEntryId)
                 return;
 
             auto        entry = std::move(*result);
@@ -351,26 +363,26 @@ namespace Vast {
     }
 
     void ClipboardManager::search(const QString& query) {
-        if (!m_model)
+        if (!mModel)
             return;
 
         if (query.isEmpty()) {
-            if (m_searchDebounce)
-                m_searchDebounce->stop();
-            m_model->setFilter({}, {});
+            if (mSearchDebounce)
+                mSearchDebounce->stop();
+            mModel->setFilter({}, {});
             return;
         }
 
-        m_pendingQuery = query;
-        if (m_searchDebounce)
-            m_searchDebounce->start();
+        mPendingQuery = query;
+        if (mSearchDebounce)
+            mSearchDebounce->start();
     }
 
     void ClipboardManager::performSearch(const QString& query) {
-        if (!m_model || query.isEmpty())
+        if (!mModel || query.isEmpty())
             return;
 
-        const auto&                            entries = m_model->allEntries();
+        const auto&                            entries = mModel->allEntries();
         std::vector<std::pair<double, qint64>> scored;
         scored.reserve(static_cast<size_t>(entries.size()));
 
@@ -391,40 +403,40 @@ namespace Vast {
         for (const auto& [score, id] : scored)
             orderedIds.append(id);
 
-        m_model->setFilter(query, orderedIds);
+        mModel->setFilter(query, orderedIds);
     }
 
     void ClipboardManager::pruneIfNeeded() {
-        const qint64 maxBytes   = static_cast<qint64>(m_maxMegabytes) * 1024 * 1024;
-        const int    maxEntries = m_maxEntries;
+        const qint64 maxBytes   = static_cast<qint64>(mMaxMegabytes) * 1024 * 1024;
+        const int    maxEntries = mMaxEntries;
 
-        if (!m_database) [[unlikely]]
+        if (!mDatabase) [[unlikely]]
             return;
 
-        auto prunedIds = m_database->pruneToLimit(maxEntries, maxBytes);
+        auto prunedIds = mDatabase->pruneToLimit(maxEntries, maxBytes);
         if (!prunedIds) {
             qWarning() << "[ClipboardManager] pruneToLimit failed:" << prunedIds.error();
             return;
         }
 
-        for (qint64 droppedId : *prunedIds) {
-            if (m_model)
-                m_model->removeById(droppedId);
+        for (qint64 const droppedId : *prunedIds) {
+            if (mModel)
+                mModel->removeById(droppedId);
             removePreviewFile(droppedId);
         }
     }
 
     void ClipboardManager::onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName) {
-        if (m_lastSelfSetContent.has_value()) {
+        if (mLastSelfSetContent.has_value()) {
             constexpr qint64 kLoopbackWindowMs = 60000;
-            const bool       withinWindow      = QDateTime::currentMSecsSinceEpoch() - m_lastSelfSetTimestamp < kLoopbackWindowMs;
-            const bool       contentMatches    = *m_lastSelfSetContent == content;
+            const bool       withinWindow      = QDateTime::currentMSecsSinceEpoch() - mLastSelfSetTimestamp < kLoopbackWindowMs;
+            const bool       contentMatches    = *mLastSelfSetContent == content;
             if (withinWindow && contentMatches) {
                 qWarning() << "[ClipboardManager] loopback suppressed: mime=" << mimeType << "size=" << content.size();
-                m_lastSelfSetContent.reset();
+                mLastSelfSetContent.reset();
                 return;
             }
-            m_lastSelfSetContent.reset();
+            mLastSelfSetContent.reset();
         }
 
         persistToHistory(mimeType, content, fileName);
@@ -441,7 +453,7 @@ namespace Vast {
     }
 
     void ClipboardManager::persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName) {
-        if (!m_database) [[unlikely]]
+        if (!mDatabase) [[unlikely]]
             return;
 
         if (content.isEmpty())
@@ -462,19 +474,19 @@ namespace Vast {
         entry.data                 = entry.isImage() ? content : QByteArray{};
         entry.mimeType             = mimeType;
         entry.pinned               = false;
-        entry.sourceApp            = m_activeWindow;
+        entry.sourceApp            = mActiveWindow;
         entry.sizeBytes            = content.size();
         entry.timestamp            = QDateTime::currentMSecsSinceEpoch();
         const QByteArray hashInput = entry.isImage() ? content : entry.content.toUtf8();
         entry.hash                 = QCryptographicHash::hash(hashInput, QCryptographicHash::Sha256);
         entry.fileName             = entry.isImage() ? fileName : QString{};
 
-        if (auto result = m_database->insert(entry); !result) {
+        if (auto result = mDatabase->insert(entry); !result) {
             if (result.error() == QStringLiteral("duplicate")) {
                 // §10: consecutive duplicate copy — bump the existing row.
-                auto idResult = m_database->fetchIdByHash(entry.hash);
-                if (idResult && m_model)
-                    m_model->bumpToTop(*idResult);
+                auto idResult = mDatabase->fetchIdByHash(entry.hash);
+                if (idResult && mModel)
+                    mModel->bumpToTop(*idResult);
             } else {
                 qWarning() << "[ClipboardManager] insert failed:" << result.error();
             }

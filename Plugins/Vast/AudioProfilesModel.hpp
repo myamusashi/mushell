@@ -1,9 +1,19 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <qhashfunctions.h>
+#include <qhash.h>
+#include <qcontainerfwd.h>
 #include <qlist.h>
-#include <qvariantmap.h>
-#include <QtQml/qqmlregistration.h>
+#include <qtmetamacros.h>
+#include <qqmlintegration.h>
+#include <qnamespace.h>
+#include <qobject.h>
+#include <qvariant.h>
+#include <qstringview.h>
+#include <qtypes.h>
+#include <cstdint>
+#include <span>
 
 struct ProfileEntry {
     int     index = -1;
@@ -21,7 +31,7 @@ class AudioProfilesModel : public QAbstractListModel {
     QML_UNCREATABLE("Access via AudioProfilesWatcher.profiles")
 
   public:
-    enum Roles {
+    enum Roles : uint16_t {
         IndexRole = Qt::UserRole + 1,
         NameRole,
         DescriptionRole,
@@ -40,9 +50,9 @@ class AudioProfilesModel : public QAbstractListModel {
 
     [[nodiscard]] Q_INVOKABLE QVariantMap get(int row) const;
     [[nodiscard]] Q_INVOKABLE qsizetype   count() const {
-        return m_profiles.size();
+        return mProfiles.size();
     }
 
   private:
-    QList<ProfileEntry> m_profiles;
+    QList<ProfileEntry> mProfiles;
 };

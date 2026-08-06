@@ -2,9 +2,10 @@
 #include <qjsengine.h>
 #include <qobject.h>
 #include <qqmlengine.h>
+#include <qqmlintegration.h>
 #include <qtimer.h>
-#include <QtQml/qqmlregistration.h>
 #include <memory>
+#include <qtmetamacros.h>
 
 #include "AudioDevicesModel.hpp"
 
@@ -21,12 +22,16 @@ class AudioDevicesWatcher : public QObject {
 
     explicit AudioDevicesWatcher(QObject* parent = nullptr);
     ~AudioDevicesWatcher() override;
+    AudioDevicesWatcher(const AudioDevicesWatcher&)                   = delete;
+    AudioDevicesWatcher& operator=(const AudioDevicesWatcher&)        = delete;
+    AudioDevicesWatcher(AudioDevicesWatcher&&)                        = delete;
+    AudioDevicesWatcher&             operator=(AudioDevicesWatcher&&) = delete;
 
     [[nodiscard]] AudioDevicesModel* devices() const {
-        return m_model;
+        return mModel;
     }
     [[nodiscard]] bool connected() const {
-        return m_connected;
+        return mConnected;
     }
 
   signals:
@@ -36,14 +41,14 @@ class AudioDevicesWatcher : public QObject {
   private:
     void                 poll();
 
-    static constexpr int kMinPollMs = 200;
-    static constexpr int kMaxPollMs = 2000;
+    static constexpr int K_MIN_POLL_MS = 200;
+    static constexpr int K_MAX_POLL_MS = 2000;
 
-    AudioDevicesModel*   m_model          = nullptr;
-    QTimer*              m_timer          = nullptr;
-    int                  m_pollIntervalMs = kMinPollMs;
-    bool                 m_connected      = false;
+    AudioDevicesModel*   mModel          = nullptr;
+    QTimer*              mTimer          = nullptr;
+    int                  mPollIntervalMs = K_MIN_POLL_MS;
+    bool                 mConnected      = false;
 
     struct PwState;
-    std::unique_ptr<PwState> m_pw;
+    std::unique_ptr<PwState> mPw;
 };

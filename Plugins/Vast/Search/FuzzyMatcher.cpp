@@ -1,13 +1,23 @@
 #include "FuzzyMatcher.hpp"
 
+#include <qhash.h>
+#include <array>
+#include <iterator>
+#include <qlatin1stringview.h>
+#include <qcontainerfwd.h>
+#include <qhashfunctions.h>
+#include <cstddef>
+#include <qnamespace.h>
 #include <qregularexpression.h>
 #include <algorithm>
 #include <cmath>
 #include <qtypes.h>
+#include <utility>
+#include <vector>
 
 // char normalisation table
 const QHash<QChar, QChar>& FuzzyMatcher::charLookup() {
-    static QHash<QChar, QChar> map = []() {
+    static QHash<QChar, QChar> const map = []() {
         static constexpr std::array entries = {
             std::pair{'a', "aàáâãäåāăą4@"}, std::pair{'e', "eèéêëēėę3"}, std::pair{'i', "iìíîïīįı1!|l"}, std::pair{'o', "oòóôõöøōő0"},
             std::pair{'u', "uùúûüūůű"},     std::pair{'c', "cçćč"},      std::pair{'n', "nñńň"},         std::pair{'s', "sśšş5$"},
@@ -17,7 +27,7 @@ const QHash<QChar, QChar>& FuzzyMatcher::charLookup() {
         for (const auto& [key, chars] : entries) {
             const QString str = QString::fromUtf8(chars);
             const QChar   canon(key);
-            for (QChar c : str)
+            for (QChar const c : str)
                 h.insert(c, canon);
         }
         return h;
@@ -120,8 +130,9 @@ double FuzzyMatcher::subsequenceScore(const QString& q, const QString& t) {
     if (q.isEmpty())
         return 1.0;
 
-    int    qi = 0, consecutive = 0;
-    double bonus = 0.0;
+    int    qi          = 0;
+    int    consecutive = 0;
+    double bonus       = 0.0;
 
     for (int i = 0; i < t.length() && qi < q.length(); ++i) {
         if (t[i] == q[qi]) {
@@ -135,7 +146,7 @@ double FuzzyMatcher::subsequenceScore(const QString& q, const QString& t) {
     if (qi < q.length())
         return 0.0;
 
-    const double maxBonus = static_cast<double>(q.length() * (q.length() + 1));
+    const auto maxBonus = static_cast<double>(q.length() * (q.length() + 1));
     return std::min(bonus / maxBonus, 1.0);
 }
 
@@ -145,32 +156,36 @@ double FuzzyMatcher::subsequenceScore(const QString& q, const QString& t) {
     if (b.isEmpty())
         return a.length();
 
-    const QString&         shorter = a.length() <= b.length() ? a : b;
-    const QString&         longer  = a.length() <= b.length() ? b : a;
+    const QString&      shorter = a.length() <= b.length() ? a : b;
+    const QString&      longer  = a.length() <= b.length() ? b : a;
 
-    const qsizetype        slen = shorter.length();
-    const qsizetype        llen = longer.length();
+    const qsizetype     shortLength  = shorter.length();
+    const qsizetype     longerLength = longer.length();
 
-    std::vector<qsizetype> prev(static_cast<size_t>(slen + 1)), curr(static_cast<size_t>(slen + 1));
-    for (qsizetype i = 0; i <= slen; ++i)
+    const auto          uShortLength  = static_cast<size_t>(shortLength);
+    const auto          uLongerLength = static_cast<size_t>(longerLength);
+
+    std::vector<size_t> prev(uShortLength + 1);
+    std::vector<size_t> curr(uShortLength + 1);
+    for (size_t i = 0; i <= uShortLength; ++i)
         prev[i] = i;
 
-    for (qsizetype i = 1; i <= llen; ++i) {
-        curr[0]          = i;
-        qsizetype rowMin = curr[0];
+    for (size_t i = 1; i <= uLongerLength; ++i) {
+        curr[0]       = i;
+        size_t rowMin = curr[0];
 
-        for (qsizetype j = 1; j <= slen; ++j) {
-            const qsizetype cost = (longer[i - 1] == shorter[j - 1]) ? 0 : 1;
-            curr[j]              = std::min({prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost});
-            rowMin               = std::min(rowMin, curr[j]);
+        for (size_t j = 1; j <= uShortLength; ++j) {
+            const size_t cost = (longer[static_cast<qsizetype>(i - 1)] == shorter[static_cast<qsizetype>(j - 1)]) ? 0 : 1;
+            curr[j]           = std::min({prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost});
+            rowMin            = std::min(rowMin, curr[j]);
         }
 
-        if (rowMin > slen)
-            return rowMin;
+        if (rowMin > uShortLength)
+            return static_cast<qsizetype>(rowMin);
 
         std::swap(prev, curr);
     }
-    return curr[static_cast<size_t>(slen)];
+    return static_cast<qsizetype>(curr[uShortLength]);
 }
 
 double FuzzyMatcher::distanceScore(const QString& a, const QString& b) {
@@ -199,12 +214,12 @@ double FuzzyMatcher::prefixScore(const QString& q, const QString& t, const QStri
 }
 
 double FuzzyMatcher::wordBoundaryScore(const QString& q, const QStringList& tWords) {
-    const double qlen = double(q.length());
-    double       best = 0.0;
+    const auto qlen = static_cast<double>(q.length());
+    double     best = 0.0;
 
     for (const QString& word : tWords)
         if (word.contains(q))
-            best = std::max(best, qlen / double(word.length()));
+            best = std::max(best, qlen / static_cast<double>(word.length()));
 
     return best;
 }
@@ -238,14 +253,14 @@ double FuzzyMatcher::getScore(const QString& q, const QString& t, const QStringL
     // Acronym path ("vsc" → "Visual Studio Code")
     const double acro = acronymScore(q, tWords);
     if (acro > 0.0)
-        return acro * kAcronymWeight + prefixScore(q, t, tWords) * kPrefixWeight + wordBoundaryScore(q, tWords) * kWordBoundaryWeight;
+        return acro * K_ACRONYM_WEIGHT + prefixScore(q, t, tWords) * K_PREFIX_WEIGHT + wordBoundaryScore(q, tWords) * K_WORD_BOUNDARY_WEIGHT;
 
     const double lenRatio = static_cast<double>(std::min(q.length(), t.length())) / static_cast<double>(std::max(q.length(), t.length()));
     if (lenRatio < 0.3 && !isSubsequence(q, t))
         return 0.0;
 
-    return distanceScore(q, t) * kDistanceWeight + prefixScore(q, t, tWords) * kPrefixWeight + subsequenceScore(q, t) * kConsecutiveWeight +
-        wordBoundaryScore(q, tWords) * kWordBoundaryWeight;
+    return distanceScore(q, t) * K_DISTANCE_WEIGHT + prefixScore(q, t, tWords) * K_PREFIX_WEIGHT + subsequenceScore(q, t) * K_CONSECUTIVE_WEIGHT +
+        wordBoundaryScore(q, tWords) * K_WORD_BOUNDARY_WEIGHT;
 }
 
 double FuzzyMatcher::getMultiWordScore(const QStringList& qWords, const QString& t, const QStringList& tWords) {

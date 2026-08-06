@@ -1,13 +1,14 @@
 #pragma once
 
+#include <cstdint>
 #include <qbytearray.h>
 #include <qstring.h>
 #include <qmetatype.h>
-#include <qlist.h>
+#include <qtypes.h>
 
-namespace Vast {
+namespace vast {
 
-    enum class ClipboardType {
+    enum class ClipboardType : std::uint8_t {
         Text,
         Html,
         Image,
@@ -53,5 +54,5 @@ namespace Vast {
     };
 }
 
-Q_DECLARE_METATYPE(Vast::ClipboardEntry)
-Q_DECLARE_METATYPE(Vast::ClipboardType)
+Q_DECLARE_METATYPE(vast::ClipboardEntry)
+Q_DECLARE_METATYPE(vast::ClipboardType)

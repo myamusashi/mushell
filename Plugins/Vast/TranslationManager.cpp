@@ -1,19 +1,25 @@
 #include "TranslationManager.hpp"
 
 #include <qdebug.h>
+#include <qobject.h>
+#include <qlogging.h>
+#include <qguiapplication.h>
+#include <qtmetamacros.h>
+#include <qqml.h>
+#include <qqmlengine.h>
 
-TranslationManager::TranslationManager(QObject* parent) : QObject(parent), m_currentLanguage("en_US"), m_availableLanguages({"en_US", "id_ID"}) {}
+TranslationManager::TranslationManager(QObject* parent) : QObject(parent), mCurrentLanguage("en_US"), M_AVAILABLE_LANGUAGES({"en_US", "id_ID"}) {}
 
 QString TranslationManager::currentLanguage() const {
-    return m_currentLanguage;
+    return mCurrentLanguage;
 }
 
 void TranslationManager::setCurrentLanguage(const QString& language) {
-    if (m_currentLanguage == language)
+    if (mCurrentLanguage == language)
         return;
 
     if (!loadTranslation(language))
-        qWarning() << "Language switch failed, staying on:" << m_currentLanguage;
+        qWarning() << "Language switch failed, staying on:" << mCurrentLanguage;
 }
 
 bool TranslationManager::loadTranslation(const QString& language, const QString& translationPath) {
@@ -21,16 +27,16 @@ bool TranslationManager::loadTranslation(const QString& language, const QString&
 
     qDebug() << "Loading translation:" << filePath;
 
-    QGuiApplication::removeTranslator(&m_translator);
+    QGuiApplication::removeTranslator(&mTranslator);
 
-    if (!m_translator.load(filePath)) {
+    if (!mTranslator.load(filePath)) {
         qWarning() << "Failed to load translation:" << filePath;
-        QGuiApplication::installTranslator(&m_translator);
+        QGuiApplication::installTranslator(&mTranslator);
         return false;
     }
 
-    QGuiApplication::installTranslator(&m_translator);
-    m_currentLanguage = language;
+    QGuiApplication::installTranslator(&mTranslator);
+    mCurrentLanguage = language;
     emit  languageChanged();
 
     auto* engine = qmlEngine(this);
@@ -42,5 +48,5 @@ bool TranslationManager::loadTranslation(const QString& language, const QString&
 }
 
 QStringList TranslationManager::availableLanguages() const {
-    return m_availableLanguages;
+    return M_AVAILABLE_LANGUAGES;
 }

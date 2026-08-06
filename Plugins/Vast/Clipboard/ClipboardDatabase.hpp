@@ -2,15 +2,19 @@
 
 #include "ClipboardEntry.hpp"
 
+#include <qlist.h>
 #include <qobject.h>
 #include <qsqldatabase.h>
 #include <qstring.h>
 
 #include <expected>
 #include <optional>
+#include <qtmetamacros.h>
+#include <qtclasshelpermacros.h>
+#include <qtypes.h>
 #include <vector>
 
-namespace Vast {
+namespace vast {
 
     class ClipboardDatabase : public QObject {
         Q_OBJECT
@@ -19,6 +23,8 @@ namespace Vast {
       public:
         explicit ClipboardDatabase(QObject* parent = nullptr);
         ~ClipboardDatabase() override;
+        ClipboardDatabase(ClipboardDatabase&&)                                                     = delete;
+        ClipboardDatabase&                                          operator=(ClipboardDatabase&&) = delete;
 
         [[nodiscard]] std::expected<void, QString>                  open(const QString& dbPath);
         void                                                        close();
@@ -37,7 +43,7 @@ namespace Vast {
         [[nodiscard]] std::expected<qint64, QString>                totalSizeBytes();
 
       signals:
-        void entryInserted(Vast::ClipboardEntry entry);
+        void entryInserted(vast::ClipboardEntry entry);
         void entryRemoved(qint64 id);
         void entryPinChanged(qint64 id, bool pinned);
 
@@ -46,8 +52,8 @@ namespace Vast {
         [[nodiscard]] static ClipboardEntry        rowToEntry(const QSqlQuery& q, bool includeData = false);
         [[nodiscard]] QString                      lastError() const;
 
-        std::optional<QSqlDatabase>                m_db;
-        QString                                    m_connectionName;
-        bool                                       m_open{false};
+        std::optional<QSqlDatabase>                mDb;
+        QString                                    mConnectionName;
+        bool                                       mOpen{false};
     };
 }

@@ -1,10 +1,13 @@
 #pragma once
 
+#include <qcontainerfwd.h>
 #include <qobject.h>
-#include <qqmlengine.h>
+#include <qqmlintegration.h>
 #include <qstring.h>
-#include <qvariantlist.h>
-#include <qvariantmap.h>
+#include <qtmetamacros.h>
+#include <qmap.h>
+#include <qlist.h>
+#include <qvariant.h>
 
 class SearchResult : public QObject {
     Q_OBJECT
@@ -23,60 +26,60 @@ class SearchResult : public QObject {
     explicit SearchResult(QObject* parent = nullptr) : QObject(parent) {}
 
     void setType(const QString& v) {
-        m_type = v;
+        mType = v;
     }
     void setTitle(const QString& v) {
-        m_title = v;
+        mTitle = v;
     }
     void setSubtitle(const QString& v) {
-        m_subtitle = v;
+        mSubtitle = v;
     }
     void setIcon(const QString& v) {
-        m_icon = v;
+        mIcon = v;
     }
     void setScore(double v) {
-        m_score = v;
+        mScore = v;
     }
     void setData(const QVariantMap& v) {
-        m_data = v;
+        mData = v;
     }
     void setHighlightRanges(const QVariantList& v) {
-        m_highlightRanges = v;
+        mHighlightRanges = v;
     }
 
     static SearchResult*  makeFile(const QString& title, const QString& subtitle, const QString& icon, double score, const QVariantMap& data, const QVariantList& ranges,
                                    QObject* parent = nullptr);
 
     [[nodiscard]] QString type() const {
-        return m_type;
+        return mType;
     }
     [[nodiscard]] QString title() const {
-        return m_title;
+        return mTitle;
     }
     [[nodiscard]] QString subtitle() const {
-        return m_subtitle;
+        return mSubtitle;
     }
     [[nodiscard]] QString icon() const {
-        return m_icon;
+        return mIcon;
     }
     [[nodiscard]] double score() const {
-        return m_score;
+        return mScore;
     }
     [[nodiscard]] QVariantMap data() const {
-        return m_data;
+        return mData;
     }
     [[nodiscard]] QVariantList highlightRanges() const {
-        return m_highlightRanges;
+        return mHighlightRanges;
     }
 
     [[nodiscard]] Q_INVOKABLE QString highlightedTitle(const QString& color) const;
 
   private:
-    QString      m_type;
-    QString      m_title;
-    QString      m_subtitle;
-    QString      m_icon;
-    double       m_score = 0.0;
-    QVariantMap  m_data;
-    QVariantList m_highlightRanges;
+    QString                 mType;
+    QString                 mTitle;
+    QString                 mSubtitle;
+    QString                 mIcon;
+    double                  mScore = 0.0;
+    QMap<QString, QVariant> mData;
+    QList<QVariant>         mHighlightRanges;
 };

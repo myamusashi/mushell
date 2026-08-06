@@ -1,10 +1,15 @@
 #pragma once
 
+#include <cstdint>
+#include <qcontainerfwd.h>
+#include <qhashfunctions.h>
+#include <qlist.h>
 #include <qnetworkaccessmanager.h>
 #include <qobject.h>
+#include <qqmlintegration.h>
 #include <qtimer.h>
-#include <qvariantlist.h>
-#include <QtQml/qqmlregistration.h>
+#include <qtmetamacros.h>
+#include <qtypes.h>
 
 class LyricsProvider : public QObject {
     Q_OBJECT
@@ -23,7 +28,7 @@ class LyricsProvider : public QObject {
     Q_PROPERTY(qint64 currentWordDuration READ currentWordDuration NOTIFY currentWordDurationChanged)
 
   public:
-    enum class State {
+    enum class State : uint8_t {
         Idle,
         Loading,
         Ready,
@@ -35,31 +40,31 @@ class LyricsProvider : public QObject {
     explicit LyricsProvider(QObject* parent = nullptr);
 
     [[nodiscard]] State state() const {
-        return m_state;
+        return mState;
     }
     [[nodiscard]] bool synced() const {
-        return m_synced;
+        return mSynced;
     }
     [[nodiscard]] bool wordSynced() const {
-        return m_wordSynced;
+        return mWordSynced;
     }
     [[nodiscard]] QVariantList lines() const {
-        return m_lines;
+        return mLines;
     }
     [[nodiscard]] QVariantList wordLines() const {
-        return m_wordLines;
+        return mWordLines;
     }
     [[nodiscard]] int currentLineIndex() const {
-        return m_curLine;
+        return mCurLine;
     }
     [[nodiscard]] int currentWordIndex() const {
-        return m_curWord;
+        return mCurWord;
     }
     [[nodiscard]] qint64 currentWordDuration() const {
-        return m_curWordDuration;
+        return mCurWordDuration;
     }
     [[nodiscard]] int offsetMs() const {
-        return m_offsetMs;
+        return mOffsetMs;
     }
     void setOffsetMs(int offset);
 
@@ -102,16 +107,16 @@ class LyricsProvider : public QObject {
     [[nodiscard]] static QString cacheKey(const QString& title, const QString& artist, double durationSecs);
     [[nodiscard]] static QString cachePath(const QString& key);
     [[nodiscard]] bool           loadFromCache(const QString& key);
-    void                         saveToCache(const QString& key, const QByteArray& data);
+    static void                  saveToCache(const QString& key, const QByteArray& data);
 
-    QNetworkAccessManager*       m_nam;
+    QNetworkAccessManager*       mNam;
 
     // Lyrics data
-    QVariantList m_lines;
-    QVariantList m_wordLines;
-    State        m_state      = State::Idle;
-    bool         m_synced     = false;
-    bool         m_wordSynced = false;
+    QVariantList mLines;
+    QVariantList mWordLines;
+    State        mState      = State::Idle;
+    bool         mSynced     = false;
+    bool         mWordSynced = false;
 
     // Flat sorted list of every word boundary for O(1) scheduling
     struct WordBoundary {
@@ -119,20 +124,20 @@ class LyricsProvider : public QObject {
         int    lineIndex;
         int    wordIndex;
     };
-    QList<WordBoundary> m_boundaries;
-    qsizetype           m_boundaryPos = 0;
+    QList<WordBoundary> mBoundaries;
+    qsizetype           mBoundaryPos = 0;
 
     // Current playback state
-    int    m_curLine         = -1;
-    int    m_curWord         = -1;
-    qint64 m_curWordDuration = 0;
-    int    m_offsetMs        = 150;
+    int    mCurLine         = -1;
+    int    mCurWord         = -1;
+    qint64 mCurWordDuration = 0;
+    int    mOffsetMs        = 150;
 
     // Dead-reckoning anchors
-    qint64 m_anchorMs   = 0;
-    qint64 m_anchorWall = 0; // QDateTime::currentMSecsSinceEpoch() at last setPlayback()
-    double m_rate       = 1.0;
-    bool   m_playing    = false;
+    qint64 mAnchorMs   = 0;
+    qint64 mAnchorWall = 0; // QDateTime::currentMSecsSinceEpoch() at last setPlayback()
+    double mRate       = 1.0;
+    bool   mPlaying    = false;
 
-    QTimer m_wordTimer;
+    QTimer mWordTimer;
 };

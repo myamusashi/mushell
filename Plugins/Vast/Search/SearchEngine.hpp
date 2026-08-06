@@ -2,13 +2,17 @@
 
 #include "SearchResult.hpp"
 
-#include <qhash.h>
+#include <qcontainerfwd.h>
+#include <qjsengine.h>
 #include <qlist.h>
 #include <qobject.h>
 #include <qqmlengine.h>
+#include <qqmlintegration.h>
 #include <qsettings.h>
 #include <qstring.h>
-#include <qvariantlist.h>
+#include <qstringlist.h>
+#include <qtmetamacros.h>
+#include <qtypes.h>
 #include <qnumeric.h>
 
 class SearchEngine : public QObject {
@@ -21,48 +25,48 @@ class SearchEngine : public QObject {
     Q_PROPERTY(double fileThreshold READ fileThreshold WRITE setFileThreshold NOTIFY fileThresholdChanged)
 
   public:
-    static SearchEngine* create(QQmlEngine*, QJSEngine*) {
+    static SearchEngine* create(QQmlEngine* /*unused*/, QJSEngine* /*unused*/) {
         auto* inst = new SearchEngine();
         QQmlEngine::setObjectOwnership(inst, QQmlEngine::CppOwnership);
         return inst;
     }
 
-    [[nodiscard]] Q_INVOKABLE QVariantList searchApps(const QVariantList& apps, const QString& query) const;
-    [[nodiscard]] Q_INVOKABLE QVariantList searchFiles(const QVariantList& files, const QString& query) const;
+    [[nodiscard]] Q_INVOKABLE QVariantList        searchApps(const QVariantList& apps, const QString& query) const;
+    [[nodiscard]] Q_INVOKABLE QVariantList        searchFiles(const QVariantList& files, const QString& query) const;
 
-    Q_INVOKABLE void                       recordLaunch(const QString& appId);
-    [[nodiscard]] Q_INVOKABLE double       recencyScore(const QString& appId) const;
-    Q_INVOKABLE void                       clearHistory();
+    Q_INVOKABLE void                              recordLaunch(const QString& appId);
+    [[nodiscard]] Q_INVOKABLE double              recencyScore(const QString& appId) const;
+    Q_INVOKABLE void                              clearHistory();
 
-    [[nodiscard]] Q_INVOKABLE QString      highlightedHtml(const QString& text, const QString& query, const QString& color) const;
-    [[nodiscard]] Q_INVOKABLE QVariantList highlightRanges(const QString& text, const QString& query) const;
-    [[nodiscard]] Q_INVOKABLE double       score(const QString& query, const QString& text) const;
+    [[nodiscard]] static Q_INVOKABLE QString      highlightedHtml(const QString& text, const QString& query, const QString& color);
+    [[nodiscard]] static Q_INVOKABLE QVariantList highlightRanges(const QString& text, const QString& query);
+    [[nodiscard]] static Q_INVOKABLE double       score(const QString& query, const QString& text);
 
-    [[nodiscard]] int                      historyLimit() const {
-        return m_historyLimit;
+    [[nodiscard]] int                             historyLimit() const {
+        return mHistoryLimit;
     }
     [[nodiscard]] double appThreshold() const {
-        return m_appThreshold;
+        return mAppThreshold;
     }
     [[nodiscard]] double fileThreshold() const {
-        return m_fileThreshold;
+        return mFileThreshold;
     }
 
     void setHistoryLimit(int v) {
-        if (m_historyLimit != v) {
-            m_historyLimit = v;
+        if (mHistoryLimit != v) {
+            mHistoryLimit = v;
             emit historyLimitChanged();
         }
     }
     void setAppThreshold(double v) {
-        if (!qFuzzyCompare(m_appThreshold, v)) {
-            m_appThreshold = v;
+        if (!qFuzzyCompare(mAppThreshold, v)) {
+            mAppThreshold = v;
             emit appThresholdChanged();
         }
     }
     void setFileThreshold(double v) {
-        if (!qFuzzyCompare(m_fileThreshold, v)) {
-            m_fileThreshold = v;
+        if (!qFuzzyCompare(mFileThreshold, v)) {
+            mFileThreshold = v;
             emit fileThresholdChanged();
         }
     }
@@ -87,13 +91,13 @@ class SearchEngine : public QObject {
         int     count     = 0;
     };
 
-    double               scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery) const;
+    static double        scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery);
 
-    QSettings*           m_settings = nullptr;
+    QSettings*           mSettings = nullptr;
 
-    QList<SearchResult*> m_fileResults;
-    QList<HistoryEntry>  m_history;
-    int                  m_historyLimit  = 50;
-    double               m_appThreshold  = 0.35;
-    double               m_fileThreshold = 0.40;
+    QList<SearchResult*> mFileResults;
+    QList<HistoryEntry>  mHistory;
+    int                  mHistoryLimit  = 50;
+    double               mAppThreshold  = 0.35;
+    double               mFileThreshold = 0.40;
 };

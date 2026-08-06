@@ -1,12 +1,27 @@
 #include "AudioDevicesWatcher.hpp"
+#include "AudioDevicesModel.hpp"
 
+#include <cstdint>
+#include <array>
+#include <cstdio>
+#include <exception>
 #include <qdebug.h>
+#include <qjsengine.h>
+#include <qobject.h>
+#include <qlogging.h>
+#include <qlist.h>
+#include <qhashfunctions.h>
 #include <qqmlengine.h>
 
 #include <algorithm>
 #include <cstring>
 #include <memory>
 #include <mutex>
+#include <spa/utils/dict.h>
+#include <spa/utils/hook.h>
+#include <qtimer.h>
+#include <qtmetamacros.h>
+#include <qtypes.h>
 #include <span>
 #include <stdexcept>
 #include <string_view>
@@ -44,28 +59,28 @@ namespace {
     using UniquePwCore       = std::unique_ptr<pw_core, PwCoreDeleter>;
     using UniquePwRegistry   = std::unique_ptr<pw_registry, PwRegistryDeleter>;
 
-    constexpr int kMaxStr = 256;
+    constexpr int K_MAX_STR = 256;
 
-    struct ad_node_t {
-        pw_proxy*                 proxy = nullptr;
-        spa_hook                  node_listener{};
-        spa_hook                  proxy_listener{};
+    struct AdNodeT {
+        pw_proxy*                   proxy = nullptr;
+        spa_hook                    nodeListener{};
+        spa_hook                    proxyListener{};
 
-        uint32_t                  pw_id = 0;
-        std::array<char, kMaxStr> name{};
-        std::array<char, kMaxStr> description{};
-        std::array<char, 32>      media_class{};
-        std::array<char, 16>      state{};
+        uint32_t                    pwId = 0;
+        std::array<char, K_MAX_STR> name{};
+        std::array<char, K_MAX_STR> description{};
+        std::array<char, 32>        mediaClass{};
+        std::array<char, 16>        state{};
 
-        int                       dirty = 0;
+        int                         dirty = 0;
     };
 
-    void        ad_registry_event_global(void* data, uint32_t id, uint32_t permissions, const char* type, uint32_t version, const spa_dict* props);
-    void        ad_registry_event_global_remove(void* data, uint32_t id);
-    void        ad_node_event_info(void* data, const pw_node_info* info);
-    void        ad_on_proxy_destroy(void* data);
+    void        adRegistryEventGlobal(void* data, uint32_t id, uint32_t permissions, const char* type, uint32_t version, const spa_dict* props);
+    void        adRegistryEventGlobalRemove(void* data, uint32_t id);
+    void        adNodeEventInfo(void* data, const pw_node_info* info);
+    void        adOnProxyDestroy(void* data);
 
-    const char* ad_safe_lookup(const spa_dict* dict, const char* key) {
+    const char* adSafeLookup(const spa_dict* dict, const char* key) {
         if (!dict)
             return "";
         const char* v = spa_dict_lookup(dict, key);
@@ -73,7 +88,7 @@ namespace {
     }
 
     template <std::size_t N>
-    void ad_safe_copy(std::array<char, N>& dst, const char* src) {
+    void adSafeCopy(std::array<char, N>& dst, const char* src) {
         if (!src) {
             dst[0] = '\0';
             return;
@@ -81,7 +96,7 @@ namespace {
         std::snprintf(dst.data(), N, "%s", src);
     }
 
-    const char* ad_state_to_string(pw_node_state state) {
+    const char* adStateToString(pw_node_state state) {
         switch (state) {
             case PW_NODE_STATE_ERROR: return "error";
             case PW_NODE_STATE_CREATING: return "creating";
@@ -96,120 +111,122 @@ namespace {
       public:
         PwApp(const PwApp&)            = delete;
         PwApp& operator=(const PwApp&) = delete;
+        PwApp(PwApp&&)                 = delete;
+        PwApp& operator=(PwApp&&)      = delete;
 
         PwApp() {
-            static std::once_flag s_init;
-            std::call_once(s_init, [] {
+            static std::once_flag sInit;
+            std::call_once(sInit, [] {
                 int argc = 0;
                 pw_init(&argc, nullptr);
             });
 
-            m_loop.reset(pw_thread_loop_new("pw-devices", nullptr));
-            if (!m_loop)
+            mLoop.reset(pw_thread_loop_new("pw-devices", nullptr));
+            if (!mLoop)
                 throw std::runtime_error("pw_thread_loop_new failed");
 
-            m_context.reset(pw_context_new(pw_thread_loop_get_loop(m_loop.get()), nullptr, 0));
-            if (!m_context)
+            mContext.reset(pw_context_new(pw_thread_loop_get_loop(mLoop.get()), nullptr, 0));
+            if (!mContext)
                 throw std::runtime_error("pw_context_new failed");
 
-            m_core.reset(pw_context_connect(m_context.get(), nullptr, 0));
-            if (!m_core)
+            mCore.reset(pw_context_connect(mContext.get(), nullptr, 0));
+            if (!mCore)
                 throw std::runtime_error("pw_context_connect failed");
 
-            m_registry.reset(pw_core_get_registry(m_core.get(), PW_VERSION_REGISTRY, 0));
-            if (!m_registry)
+            mRegistry.reset(pw_core_get_registry(mCore.get(), PW_VERSION_REGISTRY, 0));
+            if (!mRegistry)
                 throw std::runtime_error("pw_core_get_registry failed");
 
-            pw_registry_add_listener(m_registry.get(), &m_registry_listener, &s_registry_events, this);
+            pw_registry_add_listener(mRegistry.get(), &mRegistryListener, &S_REGISTRY_EVENTS, this);
 
-            if (pw_thread_loop_start(m_loop.get()) < 0)
+            if (pw_thread_loop_start(mLoop.get()) < 0)
                 throw std::runtime_error("pw_thread_loop_start failed");
         }
 
         ~PwApp() {
-            pw_thread_loop_stop(m_loop.get());
-            std::ranges::for_each(m_nodes, [](ad_node_t* n) { pw_proxy_destroy(n->proxy); });
-            m_nodes.clear();
-            spa_hook_remove(&m_registry_listener);
+            pw_thread_loop_stop(mLoop.get());
+            std::ranges::for_each(mNodes, [](AdNodeT* n) { pw_proxy_destroy(n->proxy); });
+            mNodes.clear();
+            spa_hook_remove(&mRegistryListener);
         }
 
         [[nodiscard]] pw_thread_loop* loop() const {
-            return m_loop.get();
+            return mLoop.get();
         }
         [[nodiscard]] pw_registry* registry() const {
-            return m_registry.get();
+            return mRegistry.get();
         }
 
-        std::vector<ad_node_t*>         m_nodes;
-        spa_hook                        m_registry_listener{};
-        bool                            m_topologyChanged = true;
+        std::vector<AdNodeT*>           mNodes;
+        spa_hook                        mRegistryListener{};
+        bool                            mTopologyChanged = true;
 
-        static const pw_registry_events s_registry_events;
-        static const pw_node_events     s_node_events;
-        static const pw_proxy_events    s_proxy_events;
+        static const pw_registry_events S_REGISTRY_EVENTS;
+        static const pw_node_events     S_NODE_EVENTS;
+        static const pw_proxy_events    S_PROXY_EVENTS;
 
       private:
-        UniquePwThreadLoop m_loop;
-        UniquePwContext    m_context;
-        UniquePwCore       m_core;
-        UniquePwRegistry   m_registry;
+        UniquePwThreadLoop mLoop;
+        UniquePwContext    mContext;
+        UniquePwCore       mCore;
+        UniquePwRegistry   mRegistry;
     };
 
-    void ad_node_event_info(void* data, const pw_node_info* info) {
-        auto* n = static_cast<ad_node_t*>(data);
+    void adNodeEventInfo(void* data, const pw_node_info* info) {
+        auto* n = static_cast<AdNodeT*>(data);
 
         if (info->props) {
-            const char* name = ad_safe_lookup(info->props, PW_KEY_NODE_NAME);
+            const char* name = adSafeLookup(info->props, PW_KEY_NODE_NAME);
             if (*name)
-                ad_safe_copy(n->name, name);
+                adSafeCopy(n->name, name);
 
-            const char* desc = ad_safe_lookup(info->props, PW_KEY_NODE_DESCRIPTION);
+            const char* desc = adSafeLookup(info->props, PW_KEY_NODE_DESCRIPTION);
             if (!*desc)
-                desc = ad_safe_lookup(info->props, PW_KEY_NODE_NICK);
+                desc = adSafeLookup(info->props, PW_KEY_NODE_NICK);
             if (*desc)
-                ad_safe_copy(n->description, desc);
+                adSafeCopy(n->description, desc);
 
-            const char* mclass = ad_safe_lookup(info->props, PW_KEY_MEDIA_CLASS);
+            const char* mclass = adSafeLookup(info->props, PW_KEY_MEDIA_CLASS);
             if (*mclass)
-                ad_safe_copy(n->media_class, mclass);
+                adSafeCopy(n->mediaClass, mclass);
         }
 
-        ad_safe_copy(n->state, ad_state_to_string(info->state));
+        adSafeCopy(n->state, adStateToString(info->state));
         n->dirty = 1;
     }
 
-    void ad_on_proxy_destroy(void* data) {
-        auto* n = static_cast<ad_node_t*>(data);
-        spa_hook_remove(&n->node_listener);
-        spa_hook_remove(&n->proxy_listener);
+    void adOnProxyDestroy(void* data) {
+        auto* n = static_cast<AdNodeT*>(data);
+        spa_hook_remove(&n->nodeListener);
+        spa_hook_remove(&n->proxyListener);
         delete n;
     }
 
-    void ad_registry_event_global(void* data, uint32_t id, uint32_t /*permissions*/, const char* type, uint32_t /*version*/, const spa_dict* props) {
+    void adRegistryEventGlobal(void* data, uint32_t id, uint32_t /*permissions*/, const char* type, uint32_t /*version*/, const spa_dict* props) {
         auto* app = static_cast<PwApp*>(data);
 
         if (strcmp(type, PW_TYPE_INTERFACE_Node) != 0)
             return;
 
-        const char*            mediaClassStr = ad_safe_lookup(props, PW_KEY_MEDIA_CLASS);
+        const char*            mediaClassStr = adSafeLookup(props, PW_KEY_MEDIA_CLASS);
         const std::string_view mediaClass(mediaClassStr);
         if (!mediaClass.starts_with("Audio/Sink") && !mediaClass.starts_with("Audio/Source"))
             return;
 
-        auto* n  = new ad_node_t();
-        n->pw_id = id;
-        ad_safe_copy(n->media_class, mediaClassStr);
-        ad_safe_copy(n->state, "creating");
+        auto* n = new AdNodeT();
+        n->pwId = id;
+        adSafeCopy(n->mediaClass, mediaClassStr);
+        adSafeCopy(n->state, "creating");
 
-        const char* name = ad_safe_lookup(props, PW_KEY_NODE_NAME);
+        const char* name = adSafeLookup(props, PW_KEY_NODE_NAME);
         if (*name)
-            ad_safe_copy(n->name, name);
+            adSafeCopy(n->name, name);
 
-        const char* desc = ad_safe_lookup(props, PW_KEY_NODE_DESCRIPTION);
+        const char* desc = adSafeLookup(props, PW_KEY_NODE_DESCRIPTION);
         if (!*desc)
-            desc = ad_safe_lookup(props, PW_KEY_NODE_NICK);
+            desc = adSafeLookup(props, PW_KEY_NODE_NICK);
         if (*desc)
-            ad_safe_copy(n->description, desc);
+            adSafeCopy(n->description, desc);
 
         n->dirty = 1;
 
@@ -219,38 +236,38 @@ namespace {
             return;
         }
 
-        pw_proxy_add_object_listener(n->proxy, &n->node_listener, &PwApp::s_node_events, n);
-        pw_proxy_add_listener(n->proxy, &n->proxy_listener, &PwApp::s_proxy_events, n);
-        app->m_nodes.push_back(n);
-        app->m_topologyChanged = true;
+        pw_proxy_add_object_listener(n->proxy, &n->nodeListener, &PwApp::S_NODE_EVENTS, n);
+        pw_proxy_add_listener(n->proxy, &n->proxyListener, &PwApp::S_PROXY_EVENTS, n);
+        app->mNodes.push_back(n);
+        app->mTopologyChanged = true;
     }
 
-    void ad_registry_event_global_remove(void* data, uint32_t id) {
+    void adRegistryEventGlobalRemove(void* data, uint32_t id) {
         auto* app = static_cast<PwApp*>(data);
 
-        auto  it = std::ranges::find_if(app->m_nodes, [id](const ad_node_t* n) { return n->pw_id == id; });
-        if (it == app->m_nodes.end())
+        auto  it = std::ranges::find_if(app->mNodes, [id](const AdNodeT* n) { return n->pwId == id; });
+        if (it == app->mNodes.end())
             return;
 
-        ad_node_t* n = *it;
-        app->m_nodes.erase(it);
-        app->m_topologyChanged = true;
+        AdNodeT* n = *it;
+        app->mNodes.erase(it);
+        app->mTopologyChanged = true;
         pw_proxy_destroy(n->proxy);
     }
 
-    const pw_registry_events PwApp::s_registry_events = {
+    const pw_registry_events PwApp::S_REGISTRY_EVENTS = {
         .version       = PW_VERSION_REGISTRY_EVENTS,
-        .global        = ad_registry_event_global,
-        .global_remove = ad_registry_event_global_remove,
+        .global        = adRegistryEventGlobal,
+        .global_remove = adRegistryEventGlobalRemove,
     };
-    const pw_node_events PwApp::s_node_events = {
+    const pw_node_events PwApp::S_NODE_EVENTS = {
         .version = PW_VERSION_NODE_EVENTS,
-        .info    = ad_node_event_info,
+        .info    = adNodeEventInfo,
         .param   = nullptr,
     };
-    const pw_proxy_events PwApp::s_proxy_events = {
+    const pw_proxy_events PwApp::S_PROXY_EVENTS = {
         .version     = PW_VERSION_PROXY_EVENTS,
-        .destroy     = ad_on_proxy_destroy,
+        .destroy     = adOnProxyDestroy,
         .bound       = nullptr,
         .removed     = nullptr,
         .done        = nullptr,
@@ -260,10 +277,10 @@ namespace {
 
     // Returns true if anything changed since the last poll (node added/removed/updated),
     // and clears all dirty flags as a side effect.
-    bool ad_consume_dirty(PwApp& app) {
-        bool any              = app.m_topologyChanged;
-        app.m_topologyChanged = false;
-        for (ad_node_t* n : app.m_nodes) {
+    bool adConsumeDirty(PwApp& app) {
+        bool any             = app.mTopologyChanged;
+        app.mTopologyChanged = false;
+        for (AdNodeT* n : app.mNodes) {
             if (n->dirty) {
                 any      = true;
                 n->dirty = 0;
@@ -278,62 +295,64 @@ struct AudioDevicesWatcher::PwState {
     std::unique_ptr<PwApp> app;
 };
 
-AudioDevicesWatcher* AudioDevicesWatcher::create(QQmlEngine*, QJSEngine*) {
-    static AudioDevicesWatcher s_instance;
-    return &s_instance;
+AudioDevicesWatcher* AudioDevicesWatcher::create(QQmlEngine* /*unused*/, QJSEngine* /*unused*/) {
+    static AudioDevicesWatcher sInstance;
+    return &sInstance;
 }
 
-AudioDevicesWatcher::AudioDevicesWatcher(QObject* parent) : QObject(parent), m_model(new AudioDevicesModel(this)), m_timer(new QTimer(this)), m_pw(std::make_unique<PwState>()) {
+AudioDevicesWatcher::AudioDevicesWatcher(QObject* parent) : QObject(parent), mModel(new AudioDevicesModel(this)), mTimer(new QTimer(this)), mPw(std::make_unique<PwState>()) {
     try {
-        m_pw->app   = std::make_unique<PwApp>();
-        m_connected = true;
+        mPw->app   = std::make_unique<PwApp>();
+        mConnected = true;
         emit connectedChanged();
     } catch (const std::exception& e) { qWarning("AudioDevicesWatcher: failed to connect to PipeWire: %s", e.what()); }
 
-    m_timer->setSingleShot(true);
-    connect(m_timer, &QTimer::timeout, this, &AudioDevicesWatcher::poll);
-    if (m_connected)
-        m_timer->start(kMinPollMs);
+    mTimer->setSingleShot(true);
+    connect(mTimer, &QTimer::timeout, this, &AudioDevicesWatcher::poll);
+    if (mConnected)
+        mTimer->start(K_MIN_POLL_MS);
 }
 
 AudioDevicesWatcher::~AudioDevicesWatcher() {
-    m_timer->stop();
+    mTimer->stop();
 }
 
 void AudioDevicesWatcher::poll() {
-    if (!m_pw->app)
+    if (!mPw->app)
         return;
 
-    PwApp*             app = m_pw->app.get();
+    PwApp*             app = mPw->app.get();
 
     QList<DeviceEntry> snapshot;
-    bool               changed;
+    bool               changed = false;
 
     pw_thread_loop_lock(app->loop());
-    changed = ad_consume_dirty(*app);
+    changed = adConsumeDirty(*app);
     if (changed) {
-        snapshot.reserve(static_cast<qsizetype>(app->m_nodes.size()) * 2);
-        for (const ad_node_t* n : app->m_nodes) {
+        snapshot.reserve(static_cast<qsizetype>(app->mNodes.size()) * 2);
+        for (const AdNodeT* n : app->mNodes) {
             const QString          name  = QString::fromUtf8(n->name.data());
             const QString          desc  = QString::fromUtf8(n->description.data());
             const QString          state = QString::fromUtf8(n->state.data());
-            const std::string_view mediaClass(n->media_class.data());
+            const std::string_view mediaClass(n->mediaClass.data());
 
             if (mediaClass.starts_with("Audio/Sink")) {
-                snapshot.append(DeviceEntry{n->pw_id, name, desc, QStringLiteral("sink"), state, false, {}});
+                snapshot.append(
+                    DeviceEntry{.id = n->pwId, .name = name, .description = desc, .mediaClass = QStringLiteral("sink"), .state = state, .isMonitor = false, .monitorOf = {}});
                 // PipeWire doesn't expose monitor sources as separate graph nodes —
                 // pactl/pipewire-pulse synthesizes them per sink, so we do the same here.
                 snapshot.append(DeviceEntry{
-                    n->pw_id,
-                    name + QStringLiteral(".monitor"),
-                    QStringLiteral("Monitor of ") + desc,
-                    QStringLiteral("source"),
-                    state,
-                    true,
-                    name,
+                    .id          = n->pwId,
+                    .name        = name + QStringLiteral(".monitor"),
+                    .description = QStringLiteral("Monitor of ") + desc,
+                    .mediaClass  = QStringLiteral("source"),
+                    .state       = state,
+                    .isMonitor   = true,
+                    .monitorOf   = name,
                 });
             } else if (mediaClass.starts_with("Audio/Source")) {
-                snapshot.append(DeviceEntry{n->pw_id, name, desc, QStringLiteral("source"), state, false, {}});
+                snapshot.append(
+                    DeviceEntry{.id = n->pwId, .name = name, .description = desc, .mediaClass = QStringLiteral("source"), .state = state, .isMonitor = false, .monitorOf = {}});
             }
         }
     }
@@ -341,15 +360,15 @@ void AudioDevicesWatcher::poll() {
 
     if (!changed) {
         // Nothing dirty — exponential backoff to reduce idle CPU
-        m_pollIntervalMs = std::min(m_pollIntervalMs * 2, kMaxPollMs);
-        m_timer->start(m_pollIntervalMs);
+        mPollIntervalMs = std::min(mPollIntervalMs * 2, K_MAX_POLL_MS);
+        mTimer->start(mPollIntervalMs);
         return;
     }
 
     // Activity detected — reset to fast polling
-    m_pollIntervalMs = kMinPollMs;
-    m_model->setDevices(snapshot);
+    mPollIntervalMs = K_MIN_POLL_MS;
+    mModel->setDevices(snapshot);
     emit devicesChanged();
 
-    m_timer->start(m_pollIntervalMs);
+    mTimer->start(mPollIntervalMs);
 }

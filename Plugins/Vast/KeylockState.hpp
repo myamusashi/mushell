@@ -1,10 +1,10 @@
 #pragma once
 
-#include <qlist.h>
 #include <qobject.h>
+#include <qqmlintegration.h>
 #include <qsocketnotifier.h>
-#include <qqmlengine.h>
-#include <linux/input.h>
+#include <qtmetamacros.h>
+#include <vector>
 
 struct KeyboardDevice {
     int  fd;
@@ -26,13 +26,17 @@ class Keylock : public QObject {
 
   public:
     explicit Keylock(QObject* parent = nullptr);
-    ~Keylock();
+    ~Keylock() override;
+    Keylock(const Keylock&)                 = delete;
+    Keylock& operator=(const Keylock&)      = delete;
+    Keylock(Keylock&&)                      = delete;
+    Keylock&           operator=(Keylock&&) = delete;
 
     [[nodiscard]] bool capsLock() const {
-        return m_capsLock;
+        return mCapsLock;
     }
     [[nodiscard]] bool numLock() const {
-        return m_numLock;
+        return mNumLock;
     }
 
   signals:
@@ -49,9 +53,9 @@ class Keylock : public QObject {
     void                    readInitialState(int fd, bool hasLED);
     void                    onReadReady(int fd, bool hasLED);
 
-    std::vector<OpenDevice> m_open;
-    bool                    m_capsLock     = false;
-    bool                    m_numLock      = false;
-    bool                    m_lastCapsLock = false;
-    bool                    m_lastNumLock  = false;
+    std::vector<OpenDevice> mOpen;
+    bool                    mCapsLock     = false;
+    bool                    mNumLock      = false;
+    bool                    mLastCapsLock = false;
+    bool                    mLastNumLock  = false;
 };

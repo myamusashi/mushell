@@ -1,10 +1,11 @@
 #pragma once
+#include <qcontainerfwd.h>
 #include <qjsengine.h>
 #include <qobject.h>
 #include <qqmlengine.h>
+#include <qqmlintegration.h>
 #include <qtimer.h>
-#include <qvariantmap.h>
-#include <QtQml/qqmlregistration.h>
+#include <qtmetamacros.h>
 #include <memory>
 #include <qtypes.h>
 
@@ -27,24 +28,28 @@ class AudioProfilesWatcher : public QObject {
 
     explicit AudioProfilesWatcher(QObject* parent = nullptr);
     ~AudioProfilesWatcher() override;
+    AudioProfilesWatcher(const AudioProfilesWatcher&)            = delete;
+    AudioProfilesWatcher& operator=(const AudioProfilesWatcher&) = delete;
+    AudioProfilesWatcher(AudioProfilesWatcher&&)                 = delete;
+    AudioProfilesWatcher& operator=(AudioProfilesWatcher&&)      = delete;
 
     [[nodiscard]] quint32 deviceId() const {
-        return m_deviceId;
+        return mDeviceId;
     }
     [[nodiscard]] QString deviceName() const {
-        return m_deviceName;
+        return mDeviceName;
     }
     [[nodiscard]] qsizetype activeIndex() const {
-        return m_activeIndex;
+        return mActiveIndex;
     }
     [[nodiscard]] QVariantMap activeProfile() const {
-        return m_activeProfile;
+        return mActiveProfile;
     }
     [[nodiscard]] AudioProfilesModel* profiles() const {
-        return m_model;
+        return mModel;
     }
     [[nodiscard]] bool connected() const {
-        return m_connected;
+        return mConnected;
     }
 
   signals:
@@ -55,20 +60,20 @@ class AudioProfilesWatcher : public QObject {
   private:
     void                 poll();
 
-    static constexpr int kMinPollMs = 100;
-    static constexpr int kMaxPollMs = 2000;
+    static constexpr int K_MIN_POLL_MS = 100;
+    static constexpr int K_MAX_POLL_MS = 2000;
 
-    quint32              m_deviceId = 0;
-    QString              m_deviceName;
-    qsizetype            m_activeIndex = -1;
-    QVariantMap          m_activeProfile;
-    AudioProfilesModel*  m_model          = nullptr;
-    QTimer*              m_timer          = nullptr;
-    int                  m_pollIntervalMs = kMinPollMs;
-    bool                 m_connected      = false;
+    quint32              mDeviceId = 0;
+    QString              mDeviceName;
+    qsizetype            mActiveIndex = -1;
+    QVariantMap          mActiveProfile;
+    AudioProfilesModel*  mModel          = nullptr;
+    QTimer*              mTimer          = nullptr;
+    int                  mPollIntervalMs = K_MIN_POLL_MS;
+    bool                 mConnected      = false;
 
     struct PwState;
-    std::unique_ptr<PwState>     m_pw;
+    std::unique_ptr<PwState>     mPw;
 
     [[nodiscard]] static QString formatProfileName(const QString& name);
 };

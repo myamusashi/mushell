@@ -1,65 +1,78 @@
 #include "LyricsProvider.hpp"
 
+#include <iterator>
+#include <qcontainerfwd.h>
 #include <qcryptographichash.h>
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qhashfunctions.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
+#include <qnetworkaccessmanager.h>
+#include <qnamespace.h>
+#include <qlist.h>
+#include <qminmax.h>
 #include <qnetworkreply.h>
 #include <qnetworkrequest.h>
+#include <qobject.h>
+#include <qnumeric.h>
 #include <qregularexpression.h>
 #include <qstandardpaths.h>
+#include <qtypes.h>
+#include <qtmetamacros.h>
 #include <qurlquery.h>
 
 #include <algorithm>
+#include <qvariant.h>
 
-LyricsProvider::LyricsProvider(QObject* parent) : QObject(parent), m_nam(new QNetworkAccessManager(this)) {
-    m_wordTimer.setSingleShot(true);
-    m_wordTimer.setTimerType(Qt::PreciseTimer);
-    connect(&m_wordTimer, &QTimer::timeout, this, &LyricsProvider::onWordTimer);
+LyricsProvider::LyricsProvider(QObject* parent) : QObject(parent), mNam(new QNetworkAccessManager(this)) {
+    mWordTimer.setSingleShot(true);
+    mWordTimer.setTimerType(Qt::PreciseTimer);
+    connect(&mWordTimer, &QTimer::timeout, this, &LyricsProvider::onWordTimer);
 }
 
 qint64 LyricsProvider::currentPositionMs() const {
-    if (!m_playing)
-        return m_anchorMs;
-    const qint64 wallNow = QDateTime::currentMSecsSinceEpoch();
-    const qint64 elapsed = wallNow - m_anchorWall;
-    return m_anchorMs + static_cast<qint64>(elapsed * m_rate) + m_offsetMs;
+    if (!mPlaying)
+        return mAnchorMs;
+    const qint64 wallNow       = QDateTime::currentMSecsSinceEpoch();
+    const auto   elapsed       = static_cast<double>(wallNow - mAnchorWall);
+    const auto   scaledElapsed = static_cast<qint64>(std::llround(elapsed * mRate));
+    return mAnchorMs + scaledElapsed + mOffsetMs;
 }
 
 void LyricsProvider::setPlayback(double positionSecs, double rate, bool playing) {
-    m_anchorMs   = static_cast<qint64>(positionSecs * 1000.0);
-    m_anchorWall = QDateTime::currentMSecsSinceEpoch();
-    m_rate       = rate;
-    m_playing    = playing;
+    mAnchorMs   = static_cast<qint64>(positionSecs * 1000.0);
+    mAnchorWall = QDateTime::currentMSecsSinceEpoch();
+    mRate       = rate;
+    mPlaying    = playing;
 
-    m_wordTimer.stop();
+    mWordTimer.stop();
 
-    if (!m_synced || m_boundaries.isEmpty())
+    if (!mSynced || mBoundaries.isEmpty())
         return;
 
     const qint64 posMs = currentPositionMs();
     seekTo(posMs);
 
-    if (m_playing)
+    if (mPlaying)
         scheduleNext();
 }
 
 void LyricsProvider::setOffsetMs(int offset) {
-    if (m_offsetMs == offset)
+    if (mOffsetMs == offset)
         return;
-    m_offsetMs = offset;
+    mOffsetMs = offset;
     emit offsetMsChanged();
 
-    if (!m_synced || m_boundaries.isEmpty())
+    if (!mSynced || mBoundaries.isEmpty())
         return;
 
-    m_wordTimer.stop();
+    mWordTimer.stop();
     const qint64 posMs = currentPositionMs();
     seekTo(posMs);
 
-    if (m_playing)
+    if (mPlaying)
         scheduleNext();
 }
 
@@ -86,7 +99,7 @@ void LyricsProvider::fetch(const QString& title, const QString& artist, double d
     QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::UserAgentHeader, "Vast Shell/1.0");
 
-    auto* reply = m_nam->get(req);
+    auto* reply = mNam->get(req);
     connect(reply, &QNetworkReply::finished, this, [this, reply, key, durationSecs] {
         reply->deleteLater();
         if (reply->error() != QNetworkReply::NoError) {
@@ -121,15 +134,15 @@ void LyricsProvider::fetch(const QString& title, const QString& artist, double d
 }
 
 void LyricsProvider::clear() {
-    m_wordTimer.stop();
-    m_lines.clear();
-    m_wordLines.clear();
-    m_boundaries.clear();
-    m_synced          = false;
-    m_wordSynced      = false;
-    m_curLine         = -1;
-    m_curWord         = -1;
-    m_curWordDuration = 0;
+    mWordTimer.stop();
+    mLines.clear();
+    mWordLines.clear();
+    mBoundaries.clear();
+    mSynced          = false;
+    mWordSynced      = false;
+    mCurLine         = -1;
+    mCurWord         = -1;
+    mCurWordDuration = 0;
     setState(State::Idle);
     emit lyricsChanged();
     emit currentIndexChanged();
@@ -137,29 +150,29 @@ void LyricsProvider::clear() {
 
 void LyricsProvider::seekTo(qint64 posMs) {
     // Find the last boundary with timeMs <= posMs using upper_bound - 1
-    auto            it    = std::ranges::upper_bound(m_boundaries, posMs, {}, &WordBoundary::timeMs);
-    const qsizetype found = (it != m_boundaries.begin()) ? std::distance(m_boundaries.begin(), std::prev(it)) : -1;
+    auto            it    = std::ranges::upper_bound(mBoundaries, posMs, {}, &WordBoundary::timeMs);
+    const qsizetype found = (it != mBoundaries.begin()) ? std::distance(mBoundaries.begin(), std::prev(it)) : -1;
 
-    const int       newLine = (found >= 0) ? m_boundaries[found].lineIndex : -1;
-    const int       newWord = (found >= 0) ? m_boundaries[found].wordIndex : -1;
+    const int       newLine = (found >= 0) ? mBoundaries[found].lineIndex : -1;
+    const int       newWord = (found >= 0) ? mBoundaries[found].wordIndex : -1;
 
     bool            durationChanged = false;
     qint64          newDuration     = 0;
-    if (newLine >= 0 && newWord >= 0 && newLine < m_wordLines.size()) {
-        const auto wl    = m_wordLines[newLine].toMap();
+    if (newLine >= 0 && newWord >= 0 && newLine < mWordLines.size()) {
+        const auto wl    = mWordLines[newLine].toMap();
         const auto words = wl["words"].toList();
         if (newWord < words.size())
             newDuration = words[newWord].toMap()["duration"].toLongLong();
     }
 
-    if (newDuration != m_curWordDuration) {
-        m_curWordDuration = newDuration;
-        durationChanged   = true;
+    if (newDuration != mCurWordDuration) {
+        mCurWordDuration = newDuration;
+        durationChanged  = true;
     }
 
-    if (newLine != m_curLine || newWord != m_curWord) {
-        m_curLine = newLine;
-        m_curWord = newWord;
+    if (newLine != mCurLine || newWord != mCurWord) {
+        mCurLine = newLine;
+        mCurWord = newWord;
         emit currentIndexChanged();
     }
 
@@ -167,54 +180,54 @@ void LyricsProvider::seekTo(qint64 posMs) {
         emit currentWordDurationChanged();
 
     // store where we are in the boundary list for O(1) next-boundary lookup
-    m_boundaryPos = found + 1;
+    mBoundaryPos = found + 1;
 }
 
 void LyricsProvider::scheduleNext() {
     const qint64 nowMs = currentPositionMs();
 
     // Skip past all boundaries already in the past (iterative, no recursion)
-    while (m_boundaryPos < m_boundaries.size() && m_boundaries[m_boundaryPos].timeMs <= nowMs) {
-        ++m_boundaryPos;
+    while (mBoundaryPos < mBoundaries.size() && mBoundaries[mBoundaryPos].timeMs <= nowMs) {
+        ++mBoundaryPos;
     }
 
-    if (m_boundaryPos >= m_boundaries.size())
+    if (mBoundaryPos >= mBoundaries.size())
         return;
 
-    const qint64 delayMs = m_boundaries[m_boundaryPos].timeMs - nowMs;
+    const qint64 delayMs = mBoundaries[mBoundaryPos].timeMs - nowMs;
     if (delayMs > 60'000)
         return;
 
-    m_wordTimer.start(static_cast<int>(delayMs));
+    mWordTimer.start(static_cast<int>(delayMs));
 }
 
 void LyricsProvider::onWordTimer() {
-    if (!m_playing)
+    if (!mPlaying)
         return;
 
     const qint64 nowMs = currentPositionMs();
 
     bool         changedIndex = false;
-    while (m_boundaryPos < m_boundaries.size() && m_boundaries[m_boundaryPos].timeMs <= nowMs) {
-        const auto& b = m_boundaries[m_boundaryPos];
-        m_curLine     = b.lineIndex;
-        m_curWord     = b.wordIndex;
+    while (mBoundaryPos < mBoundaries.size() && mBoundaries[mBoundaryPos].timeMs <= nowMs) {
+        const auto& b = mBoundaries[mBoundaryPos];
+        mCurLine      = b.lineIndex;
+        mCurWord      = b.wordIndex;
         changedIndex  = true;
-        ++m_boundaryPos;
+        ++mBoundaryPos;
     }
 
     if (changedIndex) {
         emit   currentIndexChanged();
 
         qint64 newDuration = 0;
-        if (m_curLine >= 0 && m_curWord >= 0 && m_curLine < m_wordLines.size()) {
-            const auto wl    = m_wordLines[m_curLine].toMap();
+        if (mCurLine >= 0 && mCurWord >= 0 && mCurLine < mWordLines.size()) {
+            const auto wl    = mWordLines[mCurLine].toMap();
             const auto words = wl["words"].toList();
-            if (m_curWord < words.size())
-                newDuration = words[m_curWord].toMap()["duration"].toLongLong();
+            if (mCurWord < words.size())
+                newDuration = words[mCurWord].toMap()["duration"].toLongLong();
         }
-        if (newDuration != m_curWordDuration) {
-            m_curWordDuration = newDuration;
+        if (newDuration != mCurWordDuration) {
+            mCurWordDuration = newDuration;
             emit currentWordDurationChanged();
         }
     }
@@ -224,25 +237,25 @@ void LyricsProvider::onWordTimer() {
 
 // parsing
 void LyricsProvider::rebuildBoundaries() {
-    m_boundaries.clear();
-    for (int li = 0; li < m_wordLines.size(); ++li) {
-        const auto& wlEntry = m_wordLines[li].toMap();
+    mBoundaries.clear();
+    for (int li = 0; li < mWordLines.size(); ++li) {
+        const auto& wlEntry = mWordLines[li].toMap();
         const auto  words   = wlEntry["words"].toList();
         for (int wi = 0; wi < words.size(); ++wi) {
             const auto   word = words[wi].toMap();
             const qint64 t    = word["time"].toLongLong();
             if (t < 0)
                 continue;
-            m_boundaries.append({t, li, wi});
+            mBoundaries.append({.timeMs = t, .lineIndex = li, .wordIndex = wi});
         }
     }
-    std::ranges::stable_sort(m_boundaries, {}, &WordBoundary::timeMs);
+    std::ranges::stable_sort(mBoundaries, {}, &WordBoundary::timeMs);
 }
 
 void LyricsProvider::setState(State s) {
-    if (m_state == s)
+    if (mState == s)
         return;
-    m_state = s;
+    mState = s;
     emit stateChanged();
 }
 
@@ -267,14 +280,15 @@ bool LyricsProvider::parseLrc(const QString& lrc, double totalDurationSecs) {
         auto m = lineRe.match(line.trimmed());
         if (!m.hasMatch())
             continue;
-        raw.append({parseTimestamp(m.captured(1), m.captured(2), m.captured(3)), m.captured(4).trimmed()});
+        raw.append({.timeMs = parseTimestamp(m.captured(1), m.captured(2), m.captured(3)), .content = m.captured(4).trimmed()});
     }
     if (raw.isEmpty())
         return false;
 
     bool         foundWordTs = false;
-    QVariantList newLines, newWordLines;
-    const qint64 totalMs = static_cast<qint64>(totalDurationSecs * 1000.0);
+    QVariantList newLines;
+    QVariantList newWordLines;
+    const auto   totalMs = static_cast<qint64>(totalDurationSecs * 1000.0);
 
     for (int i = 0; i < raw.size(); ++i) {
         const qint64  lineStart = raw[i].timeMs;
@@ -308,13 +322,13 @@ bool LyricsProvider::parseLrc(const QString& lrc, double totalDurationSecs) {
                 words.append(w);
             }
             for (int j = 0; j < words.size(); ++j) {
-                QVariantMap w     = words[j].toMap();
-                qint64      t     = w["time"].toLongLong();
-                qint64      nextT = lineEnd;
+                QVariantMap  w     = words[j].toMap();
+                qint64 const t     = w["time"].toLongLong();
+                qint64       nextT = lineEnd;
                 if (j + 1 < words.size())
                     nextT = words[j + 1].toMap()["time"].toLongLong();
                 else {
-                    qint64 maxLastWord = 1500;
+                    qint64 const maxLastWord = 1500;
                     if (nextT - t > maxLastWord)
                         nextT = t + maxLastWord;
                 }
@@ -333,10 +347,10 @@ bool LyricsProvider::parseLrc(const QString& lrc, double totalDurationSecs) {
         newWordLines.append(wlEntry);
     }
 
-    m_lines      = newLines;
-    m_wordLines  = newWordLines;
-    m_synced     = true;
-    m_wordSynced = foundWordTs;
+    mLines      = newLines;
+    mWordLines  = newWordLines;
+    mSynced     = true;
+    mWordSynced = foundWordTs;
 
     rebuildBoundaries();
     setState(State::Ready);
@@ -344,14 +358,15 @@ bool LyricsProvider::parseLrc(const QString& lrc, double totalDurationSecs) {
 
     const qint64 posMs = currentPositionMs();
     seekTo(posMs);
-    if (m_playing)
+    if (mPlaying)
         scheduleNext();
 
     return foundWordTs;
 }
 
 void LyricsProvider::parsePlain(const QString& plain) {
-    QVariantList newLines, newWordLines;
+    QVariantList newLines;
+    QVariantList newWordLines;
     for (const QString& raw : plain.split('\n')) {
         const QString text = raw.trimmed();
         if (text.isEmpty())
@@ -381,10 +396,10 @@ void LyricsProvider::parsePlain(const QString& plain) {
         newWordLines.append(wlEntry);
     }
 
-    m_lines      = newLines;
-    m_wordLines  = newWordLines;
-    m_synced     = false;
-    m_wordSynced = false;
+    mLines      = newLines;
+    mWordLines  = newWordLines;
+    mSynced     = false;
+    mWordSynced = false;
     rebuildBoundaries();
     setState(State::Ready);
     emit lyricsChanged();
@@ -395,24 +410,22 @@ QVariantList LyricsProvider::interpolateWords(const QString& text, qint64 lineSt
     if (tokens.isEmpty())
         return {};
 
-    int totalLen = 0;
+    qint64 totalLen = 0;
     for (const QString& t : tokens) {
         totalLen += t.length();
     }
 
     qint64       durationGap = lineEndMs - lineStartMs;
     const qint64 maxDuration = tokens.size() * 800;
-    if (durationGap > maxDuration) {
-        durationGap = maxDuration;
-    }
+    durationGap              = std::min(durationGap, maxDuration);
 
     QVariantList words;
     qint64       currentMs = lineStartMs;
     for (int i = 0; i < tokens.size(); ++i) {
-        qsizetype   fraction  = static_cast<qsizetype>(tokens[i].length() + 1) / (totalLen + tokens.size());
-        qint64      wDuration = static_cast<qint64>(durationGap * fraction);
+        qsizetype const fraction  = static_cast<qsizetype>(tokens[i].length() + 1) / (totalLen + tokens.size());
+        auto const      wDuration = static_cast<qint64>(durationGap * fraction);
 
-        QVariantMap w;
+        QVariantMap     w;
         w["time"]     = currentMs;
         w["text"]     = tokens[i];
         w["duration"] = wDuration;

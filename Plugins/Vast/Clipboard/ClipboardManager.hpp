@@ -3,16 +3,21 @@
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
 
+#include <qcontainerfwd.h>
 #include <qobject.h>
+#include <qqmlintegration.h>
 #include <qstring.h>
 #include <qpointer.h>
 
 #include <memory>
 #include <optional>
+#include <qtmetamacros.h>
+#include <qtclasshelpermacros.h>
+#include <qtypes.h>
 
 class QTimer;
 
-namespace Vast {
+namespace vast {
 
     class ClipboardDatabase;
     class WaylandDataControl;
@@ -23,7 +28,7 @@ namespace Vast {
         QML_SINGLETON
         Q_DISABLE_COPY(ClipboardManager)
 
-        Q_PROPERTY(Vast::ClipboardModel* model READ model CONSTANT)
+        Q_PROPERTY(vast::ClipboardModel* model READ model CONSTANT)
         Q_PROPERTY(int maxEntries READ maxEntries WRITE setMaxEntries NOTIFY maxEntriesChanged)
         Q_PROPERTY(int maxMegabytes READ maxMegabytes WRITE setMaxMegabytes NOTIFY maxMegabytesChanged)
         Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
@@ -32,6 +37,8 @@ namespace Vast {
       public:
         explicit ClipboardManager(QObject* parent = nullptr);
         ~ClipboardManager() override;
+        ClipboardManager(ClipboardManager&&)                         = delete;
+        ClipboardManager&              operator=(ClipboardManager&&) = delete;
 
         Q_INVOKABLE [[nodiscard]] bool initialize(const QString& dbPath);
 
@@ -64,32 +71,32 @@ namespace Vast {
         void                                setupConnections();
         void                                loadAllEntries();
         void                                pruneIfNeeded();
-        void                                writePreviewFile(qint64 id, const QByteArray& pngData);
-        static void                         writePreviewFileBackground(qint64 id, QByteArray pngData);
-        void                                removePreviewFile(qint64 id);
+        static void                         writePreviewFile(qint64 id, const QByteArray& pngData);
+        static void                         writePreviewFileBackground(qint64 id, const QByteArray& pngData);
+        static void                         removePreviewFile(qint64 id);
         void                                performSearch(const QString& query);
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] static ClipboardType  mimeTypeToClipboardType(const QString& mimeType);
 
-        QPointer<ClipboardModel>            m_model;
-        std::unique_ptr<WaylandDataControl> m_wayland;
-        std::unique_ptr<ClipboardDatabase>  m_database;
+        QPointer<ClipboardModel>            mModel;
+        std::unique_ptr<WaylandDataControl> mWayland;
+        std::unique_ptr<ClipboardDatabase>  mDatabase;
 
-        std::optional<QByteArray>           m_lastSelfSetContent;
-        qint64                              m_lastSelfSetTimestamp{0};
+        std::optional<QByteArray>           mLastSelfSetContent;
+        qint64                              mLastSelfSetTimestamp{0};
 
-        qint64                              m_lastCopyId{-1};
-        qint64                              m_lastCopyTimestamp{0};
+        qint64                              mLastCopyId{-1};
+        qint64                              mLastCopyTimestamp{0};
 
-        QTimer*                             m_searchDebounce{nullptr};
-        QString                             m_pendingQuery;
+        QTimer*                             mSearchDebounce{nullptr};
+        QString                             mPendingQuery;
 
-        qint64                              m_pendingEntryId{-1};
-        int                                 m_maxEntries{500};
-        int                                 m_maxMegabytes{64};
-        bool                                m_enabled{true};
+        qint64                              mPendingEntryId{-1};
+        int                                 mMaxEntries{500};
+        int                                 mMaxMegabytes{64};
+        bool                                mEnabled{true};
 
-        QString                             m_activeWindow;
+        QString                             mActiveWindow;
     };
 }

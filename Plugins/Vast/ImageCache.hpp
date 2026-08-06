@@ -1,15 +1,19 @@
 #pragma once
 
+#include <qlogging.h>
 #include <qobject.h>
+#include <qqmlintegration.h>
 #include <qthreadpool.h>
 #include <qset.h>
 #include <qhash.h>
 #include <qsize.h>
 #include <QtQml/qqml.h>
 #include <expected>
+#include <cstdint>
+#include <qtmetamacros.h>
 #include <shared_mutex>
 
-enum class ImageCacheError {
+enum class ImageCacheError : std::uint8_t {
     NoEngine,
     InvalidUrl,
     NoProvider,
@@ -26,11 +30,15 @@ class ImageCache : public QObject {
     QML_NAMED_ELEMENT(ImageCache)
 
   public:
-    static ImageCache* create(QQmlEngine*, QJSEngine*);
+    static ImageCache* create(QQmlEngine* /*engine*/, QJSEngine* /*unused*/);
     static ImageCache* instance();
-    ~ImageCache() {
+    ~ImageCache() override {
         QThreadPool::globalInstance()->waitForDone();
     }
+    ImageCache(const ImageCache&)               = delete;
+    ImageCache& operator=(const ImageCache&)    = delete;
+    ImageCache(ImageCache&&)                    = delete;
+    ImageCache&         operator=(ImageCache&&) = delete;
 
     Q_INVOKABLE QString copyAndPreload(const QString& path, QSize targetSize = {});
     Q_INVOKABLE void    preload(const QString& path, QSize targetSize = {});
@@ -54,19 +62,19 @@ class ImageCache : public QObject {
 
   private:
     explicit ImageCache(QObject* parent = nullptr);
-    static ImageCache*        s_instance;
+    static ImageCache*        sInstance;
 
     void                      loadIndex();
     void                      saveIndex();
-    QString                   indexPath() const;
+    static QString            indexPath();
 
-    QQmlEngine*               m_engine = nullptr;
+    QQmlEngine*               mEngine = nullptr;
 
-    mutable std::shared_mutex m_rwMutex;
+    mutable std::shared_mutex mRwMutex;
 
-    QSet<QString>             m_loading;
-    QSet<QString>             m_done;
-    QHash<QString, QString>   m_keyToPath;
+    QSet<QString>             mLoading;
+    QSet<QString>             mDone;
+    QHash<QString, QString>   mKeyToPath;
 
     void                      store(const QString& path);
     friend class DecodeTask;

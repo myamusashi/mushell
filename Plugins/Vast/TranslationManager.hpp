@@ -1,8 +1,9 @@
 #pragma once
 
-#include <qguiapplication.h>
+#include <qcontainerfwd.h>
 #include <qobject.h>
-#include <qqmlengine.h>
+#include <qtmetamacros.h>
+#include <qqmlintegration.h>
 #include <qtranslator.h>
 
 class TranslationManager : public QObject {
@@ -12,21 +13,21 @@ class TranslationManager : public QObject {
     QML_SINGLETON
 
   public:
-    static constexpr auto DefaultTranslationPath = ":/translations";
+    static constexpr auto DEFAULT_TRANSLATION_PATH = ":/translations";
 
     explicit TranslationManager(QObject* parent = nullptr);
 
     [[nodiscard]] QString                 currentLanguage() const;
     void                                  setCurrentLanguage(const QString& language);
 
-    [[nodiscard]] Q_INVOKABLE bool        loadTranslation(const QString& language, const QString& translationPath = DefaultTranslationPath);
+    [[nodiscard]] Q_INVOKABLE bool        loadTranslation(const QString& language, const QString& translationPath = DEFAULT_TRANSLATION_PATH);
     [[nodiscard]] Q_INVOKABLE QStringList availableLanguages() const;
 
   signals:
     void languageChanged();
 
   private:
-    QTranslator       m_translator;
-    QString           m_currentLanguage;
-    const QStringList m_availableLanguages;
+    QTranslator       mTranslator;
+    QString           mCurrentLanguage;
+    const QStringList M_AVAILABLE_LANGUAGES;
 };
