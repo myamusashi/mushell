@@ -118,13 +118,15 @@ namespace vast {
     }
 
     [[nodiscard]] std::expected<qint64, QString> ClipboardDatabase::insert(const ClipboardEntry& entry) {
-        if (!mOpen || !mDb) [[unlikely]]
+        if (!mOpen || !mDb.has_value()) [[unlikely]]
             return std::unexpected(QStringLiteral("Database is not open"));
+
+        const QSqlDatabase& db = *mDb;
 
         if (existsByHash(entry.hash))
             return std::unexpected(QStringLiteral("duplicate"));
 
-        QSqlQuery q{*mDb};
+        QSqlQuery q{db};
         q.prepare(QStringLiteral(R"sql(
             INSERT INTO clipboard_entries
                 (type, content, data, mime_type, hash, pinned, source_app, size_bytes, timestamp, filename)
@@ -214,20 +216,21 @@ namespace vast {
     }
 
     [[nodiscard]] std::expected<std::vector<qint64>, QString> ClipboardDatabase::pruneToLimit(int maxEntries, qint64 maxBytes) {
-        if (!mOpen || !mDb) [[unlikely]]
+        if (!mOpen || !mDb.has_value()) [[unlikely]]
             return std::unexpected(QStringLiteral("Database is not open"));
 
+        const QSqlDatabase& db = *mDb;
         std::vector<qint64> removedIds;
 
         if (maxEntries > 0) {
-            QSqlQuery countQ{*mDb};
+            QSqlQuery countQ{db};
             if (!countQ.exec(QStringLiteral("SELECT COUNT(*) FROM clipboard_entries WHERE pinned = 0")))
                 return std::unexpected(lastError());
 
             if (countQ.next()) {
                 const int excess = countQ.value(0).toInt() - maxEntries;
                 if (excess > 0) {
-                    QSqlQuery collectQ{*mDb};
+                    QSqlQuery collectQ{db};
                     collectQ.prepare(QStringLiteral("SELECT id FROM clipboard_entries WHERE pinned = 0 ORDER BY timestamp ASC LIMIT :excess"));
                     collectQ.bindValue(QStringLiteral(":excess"), excess);
 
@@ -237,7 +240,7 @@ namespace vast {
                     while (collectQ.next())
                         removedIds.push_back(collectQ.value(0).toLongLong());
 
-                    QSqlQuery pruneQ{*mDb};
+                    QSqlQuery pruneQ{db};
                     pruneQ.prepare(QStringLiteral(R"sql(
                         DELETE FROM clipboard_entries
                         WHERE id IN (
@@ -262,7 +265,7 @@ namespace vast {
                 if (!sizeResult || *sizeResult <= maxBytes)
                     break;
 
-                QSqlQuery getQ{*mDb};
+                QSqlQuery getQ{db};
                 if (!getQ.exec(QStringLiteral("SELECT id FROM clipboard_entries WHERE pinned = 0 ORDER BY timestamp ASC LIMIT 1")))
                     return std::unexpected(lastError());
 
@@ -272,7 +275,7 @@ namespace vast {
                 const qint64 idToRemove = getQ.value(0).toLongLong();
                 removedIds.push_back(idToRemove);
 
-                QSqlQuery pruneQ{*mDb};
+                QSqlQuery pruneQ{db};
                 pruneQ.prepare(QStringLiteral("DELETE FROM clipboard_entries WHERE id = :id"));
                 pruneQ.bindValue(QStringLiteral(":id"), idToRemove);
 

@@ -161,25 +161,23 @@ namespace vast {
 
       public:
         explicit BrightnessManager(QObject* parent = nullptr);
-        ~BrightnessManager() override                          = default;
-        BrightnessManager(const BrightnessManager&)            = delete;
-        BrightnessManager& operator=(const BrightnessManager&) = delete;
-        BrightnessManager(BrightnessManager&&)                 = delete;
-        BrightnessManager& operator=(BrightnessManager&&)      = delete;
+        ~BrightnessManager() override                            = default;
+        BrightnessManager(const BrightnessManager&)              = delete;
+        BrightnessManager& operator=(const BrightnessManager&)   = delete;
+        BrightnessManager(BrightnessManager&&)                   = delete;
+        BrightnessManager&        operator=(BrightnessManager&&) = delete;
 
-        Q_INVOKABLE void   initialize();
+        [[nodiscard]] Q_INVOKABLE QList<QVariant> displays() const;
+        Q_INVOKABLE void                          initialize();
 
-        // returns list of QVariantMap { id, name, brightness, isInternal }
-        [[nodiscard]] Q_INVOKABLE QVariantList displays() const;
+        Q_INVOKABLE void                          setBrightness(const QString& displayId, int percent);
+        Q_INVOKABLE void                          setBrightnessGroup(const QVariantMap& targets);
+        Q_INVOKABLE void                          setBrightnessAll(int percent);
 
-        Q_INVOKABLE void                       setBrightness(const QString& displayId, int percent);
-        Q_INVOKABLE void                       setBrightnessGroup(const QVariantMap& targets);
-        Q_INVOKABLE void                       setBrightnessAll(int percent);
-
-        Q_INVOKABLE void                       saveProfile(const QString& name, const QVariantMap& targets);
-        Q_INVOKABLE void                       applyProfile(const QString& name);
-        Q_INVOKABLE void                       removeProfile(const QString& name);
-        [[nodiscard]] Q_INVOKABLE QStringList  profileNames() const;
+        Q_INVOKABLE void                          saveProfile(const QString& name, const QVariantMap& targets);
+        Q_INVOKABLE void                          applyProfile(const QString& name);
+        Q_INVOKABLE void                          removeProfile(const QString& name);
+        [[nodiscard]] Q_INVOKABLE QStringList     profileNames() const;
 
       signals:
         void brightnessChanged(const QString& displayId, int percent);
