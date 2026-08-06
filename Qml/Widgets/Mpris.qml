@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
 import Quickshell.Services.Mpris
 
 import qs.Core.Configs
@@ -26,6 +27,41 @@ StyledRect {
             return hours + ":" + minutes.toString().padStart(2, '0') + ":" + secs.toString().padStart(2, '0');
 
         return minutes + ":" + secs.toString().padStart(2, '0');
+    }
+
+    IpcHandler {
+        target: "mpris"
+        function togglePlaying(): void {
+            Players.active?.togglePlaying();
+        }
+        function next(): void {
+            Players.active?.next();
+        }
+        function previous(): void {
+            Players.active?.previous();
+        }
+        function stop(): void {
+            Players.active?.stop();
+        }
+        function status(): bool {
+            return Players.active?.isPlaying;
+        }
+        function list(): string {
+            const r = [];
+            const list = Players.players;
+            for (let i = 0; i < list.length; i++) {
+                const p = list[i];
+                r.push({
+                    identity: p.identity,
+                    trackTitle: p.trackTitle,
+                    trackArtist: p.trackArtist,
+                    playbackStatus: p.playbackStatus,
+                    volume: p.volume,
+                    status: p.isPlaying
+                });
+            }
+            return JSON.stringify(r);
+        }
     }
 
     RowLayout {

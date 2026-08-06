@@ -51,6 +51,14 @@ Item {
         node: Pipewire.defaultAudioSink
     }
 
+    Connections {
+        target: Pipewire.defaultAudioSink.audio
+
+        function onVolumeChanged() {
+            GlobalStates.showOSD("volume");
+        }
+    }
+
     WrapperRectangle {
         id: wrapper
 

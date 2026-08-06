@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -51,6 +52,35 @@ Item {
         NAnim {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+        }
+    }
+
+    IpcHandler {
+        target: "capture"
+        function screen(action: string): void {
+            ScreenRecorder.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
+        }
+        function region(action: string): void {
+            ScreenRecorder.screenshotSelection(action);
+        }
+        function window(action: string): void {
+            ScreenRecorder.screenshotWindow(action);
+        }
+    }
+
+    IpcHandler {
+        target: "recorder"
+        function start(): void {
+            ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
+        }
+        function stop(): void {
+            ScreenRecorder.stopRecording();
+        }
+        function toggle(): void {
+            ScreenRecorder.isRecording ? ScreenRecorder.stopRecording() : ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
+        }
+        function status(): bool {
+            return ScreenRecorder.isRecording;
         }
     }
 

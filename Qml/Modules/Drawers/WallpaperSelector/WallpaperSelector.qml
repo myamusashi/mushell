@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Widgets
 import Vast.ImageCache
 
@@ -38,6 +39,23 @@ Item {
         location2: Qt.BottomLeftCorner
         extensionSide: Qt.Horizontal
         active: GlobalStates.isWallpaperSwitcherOpen
+    }
+
+    IpcHandler {
+        target: "img"
+
+        function set(path: string): void {
+            ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
+            Quickshell.execDetached({
+                command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
+            });
+            Quickshell.execDetached({
+                command: ["matugen", "image", path, "--source-color-index", "2"]
+            });
+        }
+        function get(): string {
+            return Paths.currentWallpaper;
+        }
     }
 
     WrapperRectangle {

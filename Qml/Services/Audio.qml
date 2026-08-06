@@ -4,6 +4,7 @@ pragma Singleton
 import Vast.Audio
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
 import qs.Core.Configs
@@ -137,5 +138,57 @@ Singleton {
     function wheelAction(event: WheelEvent, node: PwNode) {
         const delta = event.angleDelta.y < 0 ? -0.01 : 0.01;
         node.audio.volume = Math.max(0.0, Math.min(1.3, node.audio.volume + delta));
+    }
+
+    IpcHandler {
+        target: "audio"
+        function deviceList(): string {
+            const m = AudioDevicesWatcher.devices;
+            const r = [];
+            for (let i = 0; i < m.count(); i++) {
+                const d = m.get(i);
+                r.push({
+                    id: d.id,
+                    name: d.name,
+                    description: d.description,
+                    mediaClass: d.mediaClass,
+                    state: d.state,
+                    isMonitor: d.isMonitor,
+                    monitorOf: d.monitorOf
+                });
+            }
+            return JSON.stringify(r);
+        }
+        function deviceSet(name: string): void {
+            Quickshell.execDetached({
+                command: ["wpctl", "set-default", name]
+            });
+        }
+        function profileList(): string {
+            const m = AudioProfilesWatcher.profiles;
+            const count = m.count();
+            const r = {
+                deviceId: AudioProfilesWatcher.deviceId,
+                deviceName: AudioProfilesWatcher.deviceName,
+                activeIndex: AudioProfilesWatcher.activeIndex,
+                profiles: []
+            };
+            for (let i = 0; i < count; i++) {
+                const p = m.get(i);
+                r.profiles.push({
+                    index: p.index,
+                    name: p.name,
+                    description: p.description,
+                    available: p.available,
+                    readable: p.readable
+                });
+            }
+            return JSON.stringify(r);
+        }
+        function profileSet(name: string): void {
+            Quickshell.execDetached({
+                command: ["wpctl", "set-profile", String(AudioProfilesWatcher.deviceId), name]
+            });
+        }
     }
 }

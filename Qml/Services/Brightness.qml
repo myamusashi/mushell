@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Vast.Brightness
 
 import qs.Services
@@ -101,6 +102,16 @@ Singleton {
         function onInitializationFailed(reason: string) {
             console.warn("BrightnessManager init failed:", reason);
             ToastService.show(qsTr("Brightness unavailable: %1").arg(reason), qsTr("Brightness"), "display-brightness-symbolic", 3000);
+        }
+    }
+
+    IpcHandler {
+        target: "brightness"
+        function get(): string {
+            return JSON.stringify(BrightnessManager.displays());
+        }
+        function set(percent: int): void {
+            BrightnessManager.setBrightnessAll(percent);
         }
     }
 }

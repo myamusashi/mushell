@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
 import Quickshell.Services.Pipewire
 
 import qs.Core.Configs
@@ -27,6 +28,62 @@ StyledRect {
 
     PwObjectTracker {
         objects: [root.node]
+    }
+
+    IpcHandler {
+        target: "volume"
+        function systemGet(): string {
+            return JSON.stringify({
+                volume: Pipewire.defaultAudioSink.audio.volume,
+                muted: Pipewire.defaultAudioSink.audio.muted
+            });
+        }
+        function systemSet(percent: int): void {
+            Pipewire.defaultAudioSink.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
+        }
+        function systemMute(): void {
+            Pipewire.defaultAudioSink.audio.muted = true;
+        }
+        function systemUnmute(): void {
+            Pipewire.defaultAudioSink.audio.muted = false;
+        }
+        function systemToggleMute(): void {
+            Pipewire.defaultAudioSink.audio.muted = !Pipewire.defaultAudioSink.audio.muted;
+        }
+        function appList(): string {
+            const streams = Pipewire.nodes.values.filter(n => n.isStream);
+            const r = [];
+            for (const s of streams)
+                r.push({
+                    id: s.id,
+                    name: s.name,
+                    appName: s.properties["application.name"] ?? s.description ?? s.name,
+                    mediaName: s.properties["media.name"] ?? "",
+                    volume: s.audio.volume,
+                    muted: s.audio.muted
+                });
+            return JSON.stringify(r);
+        }
+        function appSet(id: int, percent: int): void {
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
+        }
+        function appMute(id: int): void {
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = true;
+        }
+        function appUnmute(id: int): void {
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = false;
+        }
+        function appToggleMute(id: int): void {
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.muted = !s.audio.muted;
+        }
     }
 
     Dots {

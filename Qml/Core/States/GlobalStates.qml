@@ -6,17 +6,11 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
-import Quickshell.Services.Pipewire
-import Vast.Audio
-import Vast.Brightness
-import Vast.Clipboard
-import Vast.ImageCache
 import Vast.Translation
 
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
 
 Singleton {
     id: root
@@ -34,7 +28,7 @@ Singleton {
     readonly property string currentLanguage: TranslationManager.currentLanguage
 
     property alias isClipboardOpen: panel.isClipboardOpen
-    property alias isSettingsOpen: panel.isSettingsOpen
+    property alias isSettingsOpen: panel.isSettingsOpen // qmllint disable
     property alias isCalendarOpen: panel.isCalendarOpen
     property alias isScreenCapturePanelOpen: panel.isScreenCapturePanelOpen // qmllint disable
     property alias isLauncherOpen: panel.isLauncherOpen
@@ -198,180 +192,9 @@ Singleton {
         }
     }
 
-    // qmllint disable
-    GlobalShortcut {
-        name: "dynamicIsland"
-        onPressed: root.setDynamicIslandActive(!root.isDynamicIslandActive)
-    }
-    // qmllint enable
-
-    IpcHandler {
-        target: "dynamicIsland"
-        function start(): void {
-            root.setDynamicIslandActive(true);
-        }
-        function stop(): void {
-            root.setDynamicIslandActive(false);
-        }
-        function toggle(): void {
-            root.setDynamicIslandActive(!root.isDynamicIslandActive);
-        }
-        function status(): bool {
-            return root.isDynamicIslandActive;
-        }
-    }
-
-    IpcHandler {
-        target: "toast"
-        function open(header: string, description: string, icon: string, duration: int): void {
-            ToastService.show(description, header, icon, duration);
-        }
-    }
-
-    IpcHandler {
-        target: "img"
-        function set(path: string): void {
-            ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
-            Quickshell.execDetached({
-                command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
-            });
-            Quickshell.execDetached({
-                command: ["matugen", "image", path, "--source-color-index", "2"]
-            });
-        }
-        function get(): string {
-            return Paths.currentWallpaper;
-        }
-    }
-
-    IpcHandler {
-        target: "capture"
-        function screen(action: string): void {
-            ScreenRecorder.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
-        }
-        function region(action: string): void {
-            ScreenRecorder.screenshotSelection(action);
-        }
-        function window(action: string): void {
-            ScreenRecorder.screenshotWindow(action);
-        }
-    }
-
-    IpcHandler {
-        target: "recorder"
-        function start(): void {
-            ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
-        }
-        function stop(): void {
-            ScreenRecorder.stopRecording();
-        }
-        function toggle(): void {
-            ScreenRecorder.isRecording ? ScreenRecorder.stopRecording() : ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
-        }
-        function status(): bool {
-            return ScreenRecorder.isRecording;
-        }
-    }
-
-    IpcHandler {
-        target: "brightness"
-        function get(): string {
-            return JSON.stringify(BrightnessManager.displays());
-        }
-        function set(percent: int): void {
-            BrightnessManager.setBrightnessAll(percent);
-        }
-    }
-
-    IpcHandler {
-        target: "audio"
-        function deviceList(): string {
-            const m = AudioDevicesWatcher.devices;
-            const r = [];
-            for (let i = 0; i < m.count(); i++) {
-                const d = m.get(i);
-                r.push({
-                    id: d.id,
-                    name: d.name,
-                    description: d.description,
-                    mediaClass: d.mediaClass,
-                    state: d.state,
-                    isMonitor: d.isMonitor,
-                    monitorOf: d.monitorOf
-                });
-            }
-            return JSON.stringify(r);
-        }
-        function deviceSet(name: string): void {
-            Quickshell.execDetached({
-                command: ["wpctl", "set-default", name]
-            });
-        }
-        function profileList(): string {
-            const m = AudioProfilesWatcher.profiles;
-            const count = m.count();
-            const r = {
-                deviceId: AudioProfilesWatcher.deviceId,
-                deviceName: AudioProfilesWatcher.deviceName,
-                activeIndex: AudioProfilesWatcher.activeIndex,
-                profiles: []
-            };
-            for (let i = 0; i < count; i++) {
-                const p = m.get(i);
-                r.profiles.push({
-                    index: p.index,
-                    name: p.name,
-                    description: p.description,
-                    available: p.available,
-                    readable: p.readable
-                });
-            }
-            return JSON.stringify(r);
-        }
-        function profileSet(name: string): void {
-            Quickshell.execDetached({
-                command: ["wpctl", "set-profile", String(AudioProfilesWatcher.deviceId), name]
-            });
-        }
-    }
-
-    IpcHandler {
-        target: "mpris"
-        function togglePlaying(): void {
-            Players.active?.togglePlaying();
-        }
-        function next(): void {
-            Players.active?.next();
-        }
-        function previous(): void {
-            Players.active?.previous();
-        }
-        function stop(): void {
-            Players.active?.stop();
-        }
-        function status(): bool {
-            return Players.active?.isPlaying;
-        }
-        function list(): string {
-            const r = [];
-            const list = Players.players;
-            for (let i = 0; i < list.length; i++) {
-                const p = list[i];
-                r.push({
-                    identity: p.identity,
-                    trackTitle: p.trackTitle,
-                    trackArtist: p.trackArtist,
-                    playbackStatus: p.playbackStatus,
-                    volume: p.volume,
-                    status: p.isPlaying
-                });
-            }
-            return JSON.stringify(r);
-        }
-    }
-
     IpcHandler {
         target: "idle"
+
         function on(): void {
             Configs.idle.enabled = true;
         }
@@ -380,100 +203,6 @@ Singleton {
         }
         function status(): bool {
             return Configs.idle.enabled;
-        }
-    }
-
-    IpcHandler {
-        target: "volume"
-        function systemGet(): string {
-            return JSON.stringify({
-                volume: Pipewire.defaultAudioSink.audio.volume,
-                muted: Pipewire.defaultAudioSink.audio.muted
-            });
-        }
-        function systemSet(percent: int): void {
-            Pipewire.defaultAudioSink.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
-        }
-        function systemMute(): void {
-            Pipewire.defaultAudioSink.audio.muted = true;
-        }
-        function systemUnmute(): void {
-            Pipewire.defaultAudioSink.audio.muted = false;
-        }
-        function systemToggleMute(): void {
-            Pipewire.defaultAudioSink.audio.muted = !Pipewire.defaultAudioSink.audio.muted;
-        }
-        function appList(): string {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            const r = [];
-            for (const s of streams)
-                r.push({
-                    id: s.id,
-                    name: s.name,
-                    appName: s.properties["application.name"] ?? s.description ?? s.name,
-                    mediaName: s.properties["media.name"] ?? "",
-                    volume: s.audio.volume,
-                    muted: s.audio.muted
-                });
-            return JSON.stringify(r);
-        }
-        function appSet(id: int, percent: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
-        }
-        function appMute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = true;
-        }
-        function appUnmute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = false;
-        }
-        function appToggleMute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = !s.audio.muted;
-        }
-    }
-
-    IpcHandler {
-        target: "keylock"
-        function capslock(): bool {
-            return KeylockState.capsLock;
-        }
-        function numlock(): bool {
-            return KeylockState.numLock;
-        }
-    }
-
-    PwObjectTracker {
-        objects: [Pipewire.defaultAudioSink]
-    }
-
-    Connections {
-        target: Configs.clipboard
-        function onEnabledChanged() {
-            ClipboardManager.enabled = Configs.clipboard.enabled;
-        }
-    }
-
-    Connections {
-        target: KeylockState
-        function onCapsLockChanged() {
-            root.showOSD("capslock");
-        }
-        function onNumLockChanged() {
-            root.showOSD("numlock");
-        }
-    }
-
-    Connections {
-        target: Pipewire.defaultAudioSink.audio
-        function onVolumeChanged() {
-            root.showOSD("volume");
         }
     }
 

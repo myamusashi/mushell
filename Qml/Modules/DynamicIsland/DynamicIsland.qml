@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
 import Quickshell.Wayland
 import Quickshell.Widgets
@@ -141,6 +142,30 @@ Scope {
             transferTimer.stop();
             resetTimer.stop();
             root.beginClose();
+        }
+    }
+
+    // qmllint disable
+    GlobalShortcut {
+        name: "dynamicIsland"
+        onPressed: root.setDynamicIslandActive(!root.isDynamicIslandActive)
+    }
+    // qmllint enable
+
+    IpcHandler {
+        target: "dynamicIsland"
+
+        function start(): void {
+            GlobalStates.setDynamicIslandActive(true);
+        }
+        function stop(): void {
+            GlobalStates.setDynamicIslandActive(false);
+        }
+        function toggle(): void {
+            GlobalStates.setDynamicIslandActive(!GlobalStates.isDynamicIslandActive);
+        }
+        function status(): bool {
+            return GlobalStates.isDynamicIslandActive;
         }
     }
 

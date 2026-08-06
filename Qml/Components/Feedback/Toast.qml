@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Widgets
 
@@ -13,64 +14,73 @@ import qs.Services
 
 import "../Base"
 
-LazyLoader {
-    activeAsync: ToastService.model.count > 0
-    component: PanelWindow {
-        anchors.bottom: true
-        margins.bottom: Appearance.margin.large // qmllint disable
-        mask: Region {} // ignore mouse input
-        WlrLayershell.layer: Hypr.focusedWsHasFullscreen ? WlrLayer.Background : WlrLayer.Overlay
-        exclusionMode: ExclusionMode.Ignore
-        color: "transparent"
-        implicitWidth: 350
-        implicitHeight: 300
+Scope {
+    IpcHandler {
+        target: "toast"
+        function open(header: string, description: string, icon: string, duration: int): void {
+            ToastService.show(description, header, icon, duration);
+        }
+    }
 
-        ListView {
-            id: toastListView
+    LazyLoader {
+        activeAsync: ToastService.model.count > 0
+        component: PanelWindow {
+            anchors.bottom: true
+            margins.bottom: Appearance.margin.large // qmllint disable
+            mask: Region {} // ignore mouse input
+            WlrLayershell.layer: Hypr.focusedWsHasFullscreen ? WlrLayer.Background : WlrLayer.Overlay
+            exclusionMode: ExclusionMode.Ignore
+            color: "transparent"
+            implicitWidth: 350
+            implicitHeight: 300
 
-            anchors {
-                bottom: parent.bottom
-                horizontalCenter: parent.horizontalCenter
-            }
-            implicitWidth: parent.width
-            implicitHeight: parent.height
-            model: ToastService.model
-            cacheBuffer: implicitHeight
-            spacing: Appearance.spacing.small
-            verticalLayoutDirection: ListView.BottomToTop
+            ListView {
+                id: toastListView
 
-            add: Transition {
-                NAnim {
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
-                    duration: Appearance.animations.durations.emphasizedDecel
+                anchors {
+                    bottom: parent.bottom
+                    horizontalCenter: parent.horizontalCenter
                 }
-                NAnim {
-                    property: "y"
-                    from: 20
-                    easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
-                    duration: Appearance.animations.durations.emphasizedDecel
-                }
-            }
-            remove: Transition {
-                NAnim {
-                    property: "opacity"
-                    to: 0
-                    easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
-                    duration: Appearance.animations.durations.emphasizedAccel
-                }
-            }
-            displaced: Transition {
-                NAnim {
-                    properties: "x,y"
-                    duration: Appearance.animations.durations.small
-                }
-            }
+                implicitWidth: parent.width
+                implicitHeight: parent.height
+                model: ToastService.model
+                cacheBuffer: implicitHeight
+                spacing: Appearance.spacing.small
+                verticalLayoutDirection: ListView.BottomToTop
 
-            delegate: ToastDelegate {
-                implicitWidth: toastListView.width
+                add: Transition {
+                    NAnim {
+                        property: "opacity"
+                        from: 0
+                        to: 1
+                        easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
+                        duration: Appearance.animations.durations.emphasizedDecel
+                    }
+                    NAnim {
+                        property: "y"
+                        from: 20
+                        easing.bezierCurve: Appearance.animations.curves.emphasizedDecel
+                        duration: Appearance.animations.durations.emphasizedDecel
+                    }
+                }
+                remove: Transition {
+                    NAnim {
+                        property: "opacity"
+                        to: 0
+                        easing.bezierCurve: Appearance.animations.curves.emphasizedAccel
+                        duration: Appearance.animations.durations.emphasizedAccel
+                    }
+                }
+                displaced: Transition {
+                    NAnim {
+                        properties: "x,y"
+                        duration: Appearance.animations.durations.small
+                    }
+                }
+
+                delegate: ToastDelegate {
+                    implicitWidth: toastListView.width
+                }
             }
         }
     }
