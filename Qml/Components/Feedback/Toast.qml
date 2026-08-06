@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -24,6 +26,8 @@ LazyLoader {
         implicitHeight: 300
 
         ListView {
+            id: toastListView
+
             anchors {
                 bottom: parent.bottom
                 horizontalCenter: parent.horizontalCenter
@@ -66,7 +70,7 @@ LazyLoader {
             }
 
             delegate: ToastDelegate {
-                implicitWidth: ListView.view.width
+                implicitWidth: toastListView.width
             }
         }
     }

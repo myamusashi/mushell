@@ -1,7 +1,7 @@
 #include "ClipboardManager.hpp"
 #include "ClipboardDatabase.hpp"
 #include "WaylandDataControl.hpp"
-#include "../Search/FuzzyMatcher.hpp"
+#include "../FuzzyMatcher.hpp"
 
 #include <ClipboardModel.hpp>
 #include <memory>

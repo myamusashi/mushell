@@ -2,7 +2,7 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
-import Vast
+import Vast.Translation
 
 import qs.Core.Utils
 import qs.Services

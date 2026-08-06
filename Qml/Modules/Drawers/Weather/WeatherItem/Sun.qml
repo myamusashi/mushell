@@ -20,7 +20,7 @@ MaterialShape {
     shape: MaterialShape.Square
     animationDuration: 0
 
-    function calculateSunProgress() {
+    function calculateSunProgress(): double {
         var now = new Date();
         var currentMinutes = now.getHours() * 60 + now.getMinutes();
 

@@ -1,5 +1,5 @@
 import QtQuick
-import Vast
+import Vast.Search
 
 import qs.Core.Configs
 import qs.Services

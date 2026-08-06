@@ -818,19 +818,20 @@ vast-shell/
 │                              # RecordIndicator, Sound, Tray, TrayMenu,
 │                              # WorkspaceName, Workspaces
 │
-├── Plugins/Vast/
+├── Plugins/                   # C++ QML modules, URI per directory under the Vast namespace
 │   ├── CMakeLists.txt
-│   ├── AudioDevicesModel.{cpp,hpp}
-│   ├── AudioDevicesWatcher.{cpp,hpp}
-│   ├── AudioProfilesModel.{cpp,hpp}
-│   ├── AudioProfilesWatcher.{cpp,hpp}
-│   ├── BrightnessManager.{cpp,hpp}
-│   ├── ImageCache.{cpp,hpp}
-│   ├── KeylockState.{cpp,hpp}
-│   ├── LyricsProvider.{cpp,hpp}
-│   ├── TranslationManager.{cpp,hpp}
-│   ├── Clipboard/             # Database, Entry, Manager, Model, WaylandDataControl
-│   └── Search/                # FuzzyMatcher, SearchEngine, SearchResult
+│   ├── cmake/qml-module.cmake  # shared vast_module() helper
+│   └── Vast/
+│       ├── CMakeLists.txt      # core module (URI Vast), shared FuzzyMatcher
+│       ├── Audio/              # Vast.Audio       — AudioDevicesModel/Watcher, AudioProfilesModel/Watcher
+│       ├── Brightness/         # Vast.Brightness  — BrightnessManager
+│       ├── Clipboard/          # Vast.Clipboard   — Database, Entry, Manager, Model, WaylandDataControl
+│       │   └── protocols/      # ext-data-control-v1.xml
+│       ├── ImageCache/         # Vast.ImageCache  — ImageCache
+│       ├── Keylock/            # Vast.Keylock     — KeylockState
+│       ├── Lyrics/             # Vast.Lyrics      — LyricsProvider
+│       ├── Search/             # Vast.Search      — SearchEngine, SearchResult
+│       └── Translation/        # Vast.Translation — TranslationManager
 │
 ├── Assets/
 │   ├── go/formatting.go       # QML auto-formatter / linter

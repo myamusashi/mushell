@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
-import Vast
+import Vast.ImageCache
 
 import qs.Core.Utils
 import qs.Services

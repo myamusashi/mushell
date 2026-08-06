@@ -1,5 +1,5 @@
 #include "SearchEngine.hpp"
-#include "FuzzyMatcher.hpp"
+#include "../FuzzyMatcher.hpp"
 
 #include <qcontainerfwd.h>
 #include <qdatetime.h>

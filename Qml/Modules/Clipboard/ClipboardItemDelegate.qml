@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import Vast
+import Vast.Clipboard
 
 import qs.Core.States
 import qs.Core.Configs

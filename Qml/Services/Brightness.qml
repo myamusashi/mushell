@@ -2,7 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Vast
+import Vast.Brightness
 
 import qs.Services
 

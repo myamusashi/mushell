@@ -48,7 +48,6 @@ Checks: >
   -readability-implicit-bool-conversion,
   -readability-avoid-nested-conditional-operator,
   -readability-math-missing-parentheses,
-  tidyfox-*,
 CheckOptions:
   performance-for-range-copy.WarnOnAllAutoCopies: true
   performance-inefficient-string-concatenation.StrictMode: true

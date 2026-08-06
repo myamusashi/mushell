@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Vast
+import Vast.Lyrics
 
 import qs.Core.Configs
 import qs.Services

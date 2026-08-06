@@ -12,7 +12,7 @@ import qs.Core.Utils
 import qs.Core.States
 import qs.Services
 import qs.Components.Base
-import Vast
+import Vast.ImageCache
 
 ClippingWrapperRectangle {
     id: root

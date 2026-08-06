@@ -13,7 +13,8 @@ import qs.Core.States
 import qs.Core.Utils
 import qs.Components.Base
 import qs.Services
-import Vast
+import Vast.ImageCache
+import Vast.Lyrics
 
 StyledRect {
 	id: mediaPlayerRect

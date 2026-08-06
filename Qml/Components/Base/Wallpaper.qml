@@ -1,5 +1,5 @@
 import QtQuick
-import Vast
+import Vast.ImageCache
 
 import qs.Core.Configs
 import qs.Core.Utils

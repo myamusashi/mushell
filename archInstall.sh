@@ -49,7 +49,8 @@ install_system_packages() {
 	# i2c-tools added — provides i2cdetect for debugging
 	# wayland added — libwayland-client + wayland-scanner for the clipboard
 	#   manager's native ext_data_control_v1 binding (protocol XML is vendored
-	#   in Plugins/Vast/protocols, so wayland-protocols is not required).
+	#   in Plugins/Vast/Clipboard/protocols, so wayland-protocols is not
+	#   required).
 	local -r pkg_list=(
 		base-devel git cmake ninja extra-cmake-modules patchelf pkgconf
 		qt6-base qt6-declarative qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
@@ -174,19 +175,19 @@ EOF
 }
 
 build_vast_plugin() {
-	local -r plugin_so="$QML_DIR/Vast/libVastPlugin.so"
-	[[ -f $plugin_so ]] && {
-		log "Vast plugin already installed"
+	local -r core_so="$QML_DIR/Vast/lib/libvast-core.so"
+	[[ -f $core_so ]] && {
+		log "Vast plugins already installed"
 		return 0
 	}
 
-	local -r src="$PROJECT_ROOT/Plugins/Vast"
+	local -r src="$PROJECT_ROOT/Plugins"
 	[[ -d $src ]] || {
-		warn "Plugins/Vast not found, skipping"
+		warn "Plugins not found, skipping"
 		return 0
 	}
 
-	log "Building Vast Qt plugin..."
+	log "Building Vast Qt plugins..."
 	local -r build="$BUILD_DIR/Vast-build"
 	local -r install_base="$BUILD_DIR/Vast-install"
 
@@ -212,28 +213,29 @@ build_vast_plugin() {
 	done
 	((found)) || die "Vast install tree not found under $install_base"
 
-	local qt_core_lib qt_qml_lib qt_gui_lib qt_quick_lib pw_lib ddc_lib wl_lib
-	qt_core_lib=$(pkg-config --variable=libdir Qt6Core)
-	qt_gui_lib=$(pkg-config --variable=libdir Qt6Gui)
-	qt_qml_lib=$(pkg-config --variable=libdir Qt6Qml)
-	qt_quick_lib=$(pkg-config --variable=libdir Qt6Quick)
+	# The Vast namespace is split into per-domain QML modules
+	# (Vast.Audio, Vast.Clipboard, ...). Backing targets live in
+	# Vast/lib, plugins in Vast/<Module>/. Patch an rpath on every
+	# shared object so they can find each other and the Qt deps.
+	local qt_libs pw_lib ddc_lib wl_lib
+	qt_libs=""
+	for mod in Qt6Core Qt6Gui Qt6Qml Qt6Quick Qt6Sql Qt6Network; do
+		local lib
+		lib=$(pkg-config --variable=libdir "$mod" 2>/dev/null || true)
+		[[ -n $lib && -z $qt_libs ]] && qt_libs="$lib"
+		[[ -n $lib ]] && qt_libs="$qt_libs:$lib"
+	done
 	pw_lib=$(pkg-config --variable=libdir libpipewire-0.3)
 	ddc_lib=$(pkg-config --variable=libdir ddcutil)
 	wl_lib=$(pkg-config --variable=libdir wayland-client)
+	local deps="$qt_libs:$pw_lib:$ddc_lib:$wl_lib"
 
-	local backing="$QML_DIR/Vast/libVastPlugin.so"
-	[[ -f $backing ]] &&
-		patchelf --set-rpath \
-			"$QML_DIR/Vast:$qt_core_lib:$qt_gui_lib:$qt_qml_lib:$qt_quick_lib:$pw_lib:$ddc_lib:$wl_lib" \
-			"$backing" 2>/dev/null || true
+	local so_file
+	while IFS= read -r -d '' so_file; do
+		patchelf --set-rpath "$(dirname "$so_file"):$QML_DIR/Vast/lib:$deps" "$so_file" 2>/dev/null || true
+	done < <(find "$QML_DIR/Vast" -name '*.so' -print0)
 
-	local stub="$QML_DIR/Vast/libVastQmlPlugin.so"
-	[[ -f $stub ]] &&
-		patchelf --set-rpath \
-			"$QML_DIR/Vast:$qt_core_lib:$qt_gui_lib:$qt_qml_lib:$qt_quick_lib" \
-			"$stub" 2>/dev/null || true
-
-	[[ -f $plugin_so ]] || warn "Vast plugin .so not found after install — check build output"
+	[[ -f $core_so ]] || warn "Vast plugin .so not found after install — check build output"
 }
 
 build_m3shapes() {

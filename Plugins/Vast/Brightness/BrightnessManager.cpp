@@ -149,13 +149,15 @@ namespace vast {
                 const QString id      = QString::fromUtf8(info.model_name);
                 const QString name    = QStringLiteral("%1 %2").arg(QString::fromUtf8(info.mfg_id)).arg(QString::fromUtf8(info.model_name));
 
+                // clang-format off
                 auto          meta = DisplayMeta{
-                             .id            = id,
-                             .name          = name,
-                             .type          = DisplayType::Ddc,
-                             .backlightPath = {},
-                             .ddcHandle     = std::move(*handleResult),
+                                                 .id            = id,
+                                                 .name          = name,
+                                                 .type          = DisplayType::Ddc,
+                                                 .backlightPath = {},
+                                                 .ddcHandle     = std::move(*handleResult),
                 };
+                // clang-format on
 
                 auto worker = std::make_unique<DisplayWorker>(std::move(meta), initial);
                 spawnWorkerThread(id, *worker);
@@ -184,13 +186,15 @@ namespace vast {
             for (const auto& path : entries) {
                 const int     initial = readBacklightBrightness(path).value_or(50);
                 const QString id      = QString::fromStdString(path.filename().string());
+                // clang-format off
                 auto          meta    = DisplayMeta{
-                                .id            = id,
-                                .name          = QStringLiteral("Internal: %1").arg(id),
-                                .type          = DisplayType::Backlight,
-                                .backlightPath = path,
-                                .ddcHandle     = {},
+                                                    .id            = id,
+                                                    .name          = QStringLiteral("Internal: %1").arg(id),
+                                                    .type          = DisplayType::Backlight,
+                                                    .backlightPath = path,
+                                                    .ddcHandle     = {},
                 };
+                // clang-format on
                 auto worker = std::make_unique<DisplayWorker>(std::move(meta), initial);
                 spawnWorkerThread(id, *worker);
                 std::unique_lock const lock(mWorkersMutex);

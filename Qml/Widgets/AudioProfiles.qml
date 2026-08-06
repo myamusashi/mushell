@@ -2,7 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Vast
+import Vast.Audio
 
 import qs.Core.Configs
 import qs.Services

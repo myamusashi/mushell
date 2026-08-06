@@ -9,6 +9,7 @@ import Quickshell
 
 import qs.Components.Feedback
 import qs.Modules.Drawers
+import qs.Modules.Clipboard
 import qs.Modules.DynamicIsland
 import qs.Modules.Lock
 import qs.Modules.Polkit
@@ -23,4 +24,5 @@ ShellRoot {
     DynamicIsland {}
     Settings {}
     Toast {}
+    Clipboard {}
 }

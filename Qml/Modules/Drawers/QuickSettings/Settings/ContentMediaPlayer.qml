@@ -7,7 +7,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
-import Vast
+import Vast.Lyrics
 
 import qs.Core.Configs
 import qs.Core.Utils

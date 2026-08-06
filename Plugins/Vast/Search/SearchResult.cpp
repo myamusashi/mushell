@@ -1,5 +1,5 @@
 #include "SearchResult.hpp"
-#include "FuzzyMatcher.hpp"
+#include "../FuzzyMatcher.hpp"
 #include <qobject.h>
 #include <qcontainerfwd.h>
 #include <qvariant.h>

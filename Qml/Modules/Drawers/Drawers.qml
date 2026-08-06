@@ -8,7 +8,6 @@ import qs.Services
 import qs.Components.Base
 
 import "Calendar"
-import "Clipboard"
 import "Launcher"
 import "QuickSettings"
 import "Notifications"
@@ -42,8 +41,6 @@ Variants {
             if (GlobalStates.isWallpaperSwitcherOpen)
                 return true;
             if (GlobalStates.isScreenCapturePanelOpen)
-                return true;
-            if (GlobalStates.isClipboardOpen)
                 return true;
             return false;
         }
@@ -200,10 +197,6 @@ Variants {
 
         Bar {
             id: bar
-        }
-
-        Clipboard {
-            id: clipboard
         }
 
         Calendar {

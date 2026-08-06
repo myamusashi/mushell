@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Vast
+import Vast.Audio
 
 import qs.Core.Configs
 import "shellUtils.js" as Utils

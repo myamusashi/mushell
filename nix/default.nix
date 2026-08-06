@@ -188,6 +188,7 @@
 in {
     inherit
         vastctl
+        vastPlugin
         material-symbols
         app2unit
         remove-bg

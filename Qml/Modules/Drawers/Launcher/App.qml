@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
-import Vast
+import Vast.Search
 
 import qs.Components.Base
 import qs.Core.Configs

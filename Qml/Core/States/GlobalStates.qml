@@ -7,7 +7,11 @@ import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import Quickshell.Services.Pipewire
-import Vast
+import Vast.Audio
+import Vast.Brightness
+import Vast.Clipboard
+import Vast.ImageCache
+import Vast.Translation
 
 import qs.Core.Configs
 import qs.Core.Utils
@@ -60,28 +64,28 @@ Singleton {
         id: panel
     }
 
-    function showOSD(name) {
+    function showOSD(name): void {
         osd.show(name);
     }
-    function hideOSD(name) {
+    function hideOSD(name): void {
         osd.hide(name);
         if (osd.allHidden())
             cleanupTimer.start();
     }
-    function toggleOSD(name) {
+    function toggleOSD(name): void {
         osd.toggle(name);
     }
-    function isOSDVisible(name) {
+    function isOSDVisible(name): bool {
         return osd.isActive(name);
     }
-    function pauseOSD(name) {
+    function pauseOSD(name): void {
         osd.pause(name);
     }
-    function resumeOSD(name) {
+    function resumeOSD(name): void {
         osd.resume(name);
     }
 
-    function setDynamicIslandActive(value) {
+    function setDynamicIslandActive(value): void {
         if (root.isDynamicIslandActive === value)
             return;
         root.isDynamicIslandActive = value;
@@ -89,24 +93,24 @@ Singleton {
             ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
     }
 
-    function setPanel(name, value) {
+    function setPanel(name, value): void {
         if (name === "bar") {
             root.isBarOpen = value;
             return;
         }
         panel.setPanel(name, value);
     }
-    function togglePanel(name) {
+    function togglePanel(name): void {
         if (name === "bar") {
             root.setPanel(name, !root.isBarOpen);
             return;
         }
         panel.togglePanel(name);
     }
-    function openPanel(name) {
+    function openPanel(name): void {
         panel.openPanel(name);
     }
-    function closePanel(name) {
+    function closePanel(name): void {
         panel.closePanel(name);
     }
 
@@ -303,7 +307,7 @@ Singleton {
                 command: ["wpctl", "set-default", name]
             });
         }
-        function profileList() {
+        function profileList(): string {
             const m = AudioProfilesWatcher.profiles;
             const count = m.count();
             const r = {
@@ -333,19 +337,19 @@ Singleton {
 
     IpcHandler {
         target: "mpris"
-        function togglePlaying() {
+        function togglePlaying(): void {
             Players.active?.togglePlaying();
         }
-        function next() {
+        function next(): void {
             Players.active?.next();
         }
-        function previous() {
+        function previous(): void {
             Players.active?.previous();
         }
-        function stop() {
+        function stop(): void {
             Players.active?.stop();
         }
-        function status() {
+        function status(): bool {
             return Players.active?.isPlaying;
         }
         function list(): string {
@@ -368,20 +372,20 @@ Singleton {
 
     IpcHandler {
         target: "idle"
-        function on() {
+        function on(): void {
             Configs.idle.enabled = true;
         }
-        function off() {
+        function off(): void {
             Configs.idle.enabled = false;
         }
-        function status() {
+        function status(): bool {
             return Configs.idle.enabled;
         }
     }
 
     IpcHandler {
         target: "volume"
-        function systemGet() {
+        function systemGet(): string {
             return JSON.stringify({
                 volume: Pipewire.defaultAudioSink.audio.volume,
                 muted: Pipewire.defaultAudioSink.audio.muted

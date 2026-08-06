@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
-import Vast
+import Vast.ImageCache
 
 import qs.Components.Base
 import qs.Core.Configs

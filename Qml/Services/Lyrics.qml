@@ -3,7 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Mpris
-import Vast
+import Vast.Lyrics
 
 import qs.Core.States
 import qs.Services

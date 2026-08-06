@@ -14,7 +14,7 @@
 stdenv.mkDerivation {
     pname = "vast-plugin";
     version = "1.0";
-    src = ../../Plugins/Vast;
+    src = ../../Plugins;
 
     nativeBuildInputs = [
         cmake
@@ -36,38 +36,33 @@ stdenv.mkDerivation {
     cmakeFlags = [
         "-DCMAKE_BUILD_TYPE=Release"
         "-DCMAKE_INSTALL_PREFIX=${placeholder "out"}"
-        "-DQML_INSTALL_DEST=lib/qt-6/qml/Vast"
+        "-DINSTALL_QMLDIR=${qt6.qtbase.qtQmlPrefix}"
     ];
 
     dontWrapQtApps = true;
 
+    # The plugin is split into per-domain QML modules under the Vast
+    # namespace (Vast.Audio, Vast.Clipboard, ...). Backing targets live in
+    # <qml>/Vast/lib, plugins in <qml>/Vast/<Module>/. Patch an rpath on every
+    # shared object so they can find each other and the Qt deps.
     postInstall = ''
-        PLUGIN_DIR="$out/${qt6.qtbase.qtQmlPrefix}/Vast"
-
-        if [ -f "$PLUGIN_DIR/libVastPlugin.so" ]; then
-          patchelf --set-rpath \
-            "$PLUGIN_DIR:${lib.makeLibraryPath [
+        VAST_DIR="$out/${qt6.qtbase.qtQmlPrefix}/Vast"
+        DEPS="${lib.makeLibraryPath [
             qt6.qtbase
             qt6.qtdeclarative
             pipewire
             ddcutil
             wayland
-        ]}" \
-            "$PLUGIN_DIR/libVastPlugin.so"
-        fi
+        ]}"
 
-        if [ -f "$PLUGIN_DIR/libVastQmlPlugin.so" ]; then
-          patchelf --set-rpath \
-            "$PLUGIN_DIR:${lib.makeLibraryPath [
-            qt6.qtbase
-            qt6.qtdeclarative
-        ]}" \
-            "$PLUGIN_DIR/libVastQmlPlugin.so"
-        fi
+        find "$VAST_DIR" -name '*.so' -print0 | while IFS= read -r -d ''' so_file; do
+            echo "Patching $so_file"
+            patchelf --set-rpath "$(dirname "$so_file"):$VAST_DIR/lib:$DEPS" "$so_file"
+        done
     '';
 
     meta = with lib; {
-        description = "Unified Vast Plugin for Quickshell";
+        description = "Vast QML modules for Quickshell (Vast.Audio, Vast.Clipboard, ...)";
         license = licenses.gpl3Plus;
         platforms = platforms.linux;
     };
