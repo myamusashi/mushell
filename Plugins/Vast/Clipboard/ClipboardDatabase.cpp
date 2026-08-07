@@ -418,17 +418,17 @@ namespace vast {
         ClipboardEntry   e;
         const QSqlRecord rec = q.record();
 
-        const int idIdx        = rec.indexOf("id");
-        const int typeIdx      = rec.indexOf("type");
-        const int contentIdx   = rec.indexOf("content");
-        const int dataIdx      = rec.indexOf("data");
-        const int mimeTypeIdx  = rec.indexOf("mime_type");
-        const int hashIdx      = rec.indexOf("hash");
-        const int pinnedIdx    = rec.indexOf("pinned");
-        const int sourceAppIdx = rec.indexOf("source_app");
-        const int sizeBytesIdx = rec.indexOf("size_bytes");
-        const int timestampIdx = rec.indexOf("timestamp");
-        const int fileNameIdx  = rec.indexOf("filename");
+        const int        idIdx        = rec.indexOf("id");
+        const int        typeIdx      = rec.indexOf("type");
+        const int        contentIdx   = rec.indexOf("content");
+        const int        dataIdx      = rec.indexOf("data");
+        const int        mimeTypeIdx  = rec.indexOf("mime_type");
+        const int        hashIdx      = rec.indexOf("hash");
+        const int        pinnedIdx    = rec.indexOf("pinned");
+        const int        sourceAppIdx = rec.indexOf("source_app");
+        const int        sizeBytesIdx = rec.indexOf("size_bytes");
+        const int        timestampIdx = rec.indexOf("timestamp");
+        const int        fileNameIdx  = rec.indexOf("filename");
 
         e.id      = rec.value(idIdx).toLongLong();
         e.type    = ClipboardEntry::typeFromString(rec.value(typeIdx).toString());

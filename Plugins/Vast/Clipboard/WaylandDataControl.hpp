@@ -20,6 +20,7 @@ struct ext_data_control_manager_v1;
 struct ext_data_control_device_v1;
 struct ext_data_control_offer_v1;
 struct ext_data_control_source_v1;
+class QSocketNotifier;
 
 namespace vast {
 
@@ -60,12 +61,14 @@ namespace vast {
         void                         reconnect();
 
         void                         receiveSelection(ext_data_control_offer_v1* offer);
+        void                         dispatchWayland();
         [[nodiscard]] QString        pickBestMimeType() const;
         [[nodiscard]] QString        pickMetaMimeType(const QString& primaryMime) const;
         [[nodiscard]] static QString extractFileName(const QString& metaMime, const QByteArray& metaContent);
         void                         readOfferAsync(int fd, std::function<void(QByteArray)> onRead);
 
         wl_display*                  mDisplay{nullptr};
+        QSocketNotifier*             mDisplayNotifier{nullptr};
         wl_registry*                 mRegistry{nullptr};
         wl_seat*                     mSeat{nullptr};
         ext_data_control_manager_v1* mManager{nullptr};

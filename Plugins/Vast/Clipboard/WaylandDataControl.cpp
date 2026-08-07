@@ -11,12 +11,12 @@
 #include <qhashfunctions.h>
 #include <qobject.h>
 #include <qlogging.h>
-#include <qguiapplication_platform.h>
 #include <qlatin1stringview.h>
 #include <qobjectdefs.h>
 #include <qnamespace.h>
 #include <qhash.h>
 #include <qregularexpression.h>
+#include <qsocketnotifier.h>
 #include <qstringview.h>
 #include <qtextdocument.h>
 #include <qthreadpool.h>
@@ -209,14 +209,9 @@ namespace vast {
             return false;
         }
 
-        auto* waylandApp = qApp->nativeInterface<QNativeInterface::QWaylandApplication>();
-        if (!waylandApp) {
-            qWarning() << "[WaylandDataControl] Qt Wayland native interface not available";
-            return false;
-        }
-        mDisplay = waylandApp->display();
+        mDisplay = wl_display_connect(nullptr);
         if (!mDisplay) {
-            qWarning() << "[WaylandDataControl] Qt's wl_display is null";
+            qWarning() << "[WaylandDataControl] failed to connect to Wayland display";
             return false;
         }
 
@@ -239,6 +234,9 @@ namespace vast {
             shutdown();
             return false;
         }
+
+        mDisplayNotifier = new QSocketNotifier(wl_display_get_fd(mDisplay), QSocketNotifier::Read, this);
+        connect(mDisplayNotifier, &QSocketNotifier::activated, this, [this]() { dispatchWayland(); });
 
         mDevice = ext_data_control_manager_v1_get_data_device(mManager, mSeat);
         if (ext_data_control_device_v1_add_listener(mDevice, &DEVICE_LISTENER, this) < 0) {
@@ -269,6 +267,13 @@ namespace vast {
 
         shutdown();
 
+        mDisplay = wl_display_connect(nullptr);
+        if (!mDisplay) {
+            qWarning() << "[WaylandDataControl] reconnect failed to connect to Wayland display";
+            mReconnecting = false;
+            return;
+        }
+
         mRegistry = wl_display_get_registry(mDisplay);
         wl_registry_add_listener(mRegistry, &REGISTRY_LISTENER, this);
 
@@ -278,6 +283,9 @@ namespace vast {
             mReconnecting = false;
             return;
         }
+
+        mDisplayNotifier = new QSocketNotifier(wl_display_get_fd(mDisplay), QSocketNotifier::Read, this);
+        connect(mDisplayNotifier, &QSocketNotifier::activated, this, [this]() { dispatchWayland(); });
 
         if (mManager && mSeat) {
             mDevice = ext_data_control_manager_v1_get_data_device(mManager, mSeat);
@@ -295,6 +303,9 @@ namespace vast {
     }
 
     void WaylandDataControl::shutdown() {
+        delete mDisplayNotifier;
+        mDisplayNotifier = nullptr;
+
         for (auto it = mPendingSources.cbegin(); it != mPendingSources.cend(); ++it)
             ext_data_control_source_v1_destroy(it.key());
         mPendingSources.clear();
@@ -321,8 +332,25 @@ namespace vast {
             wl_registry_destroy(mRegistry);
             mRegistry = nullptr;
         }
+        if (mDisplay) {
+            wl_display_disconnect(mDisplay);
+            mDisplay = nullptr;
+        }
 
         mInitialized = false;
+    }
+
+    void WaylandDataControl::dispatchWayland() {
+        if (!mDisplay || wl_display_dispatch(mDisplay) >= 0)
+            return;
+
+        if (mDisplayNotifier)
+            mDisplayNotifier->setEnabled(false);
+
+        if (!mReconnecting) {
+            mReconnecting = true;
+            QTimer::singleShot(0, this, [this]() { reconnect(); });
+        }
     }
 
     void WaylandDataControl::receiveSelection(ext_data_control_offer_v1* offer) {
