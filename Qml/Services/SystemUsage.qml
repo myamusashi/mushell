@@ -4,6 +4,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Networking
 
 import qs.Core.States
 
@@ -78,12 +79,28 @@ Singleton {
     property int diskTotal: 0
 
     // ethernet and wifi devices
-    property var allEthernetDevices: []
+    readonly property var ethernetDevice: Networking.devices.values.find(d => d.type === DeviceType.Wired) ?? null
+
+    readonly property var allEthernetDevices: {
+        const devices = [];
+        for (const d of Networking.devices.values) {
+            if (d.type !== DeviceType.Wired)
+                continue;
+            devices.push({
+                interface: d.name ?? "",
+                model: d.name ?? "Unknown Ethernet",
+                state: d.connected ? "connected" : "disconnected",
+                isActive: d.connected,
+                name: d.name ?? ""
+            });
+        }
+        return devices;
+    }
 
     // network interfaces name and status
-    property string wiredInterface: ""
+    readonly property string wiredInterface: ethernetDevice?.name ?? ""
     property string wirelessInterface: ""
-    property string statusWiredInterface: ""
+    readonly property string statusWiredInterface: ethernetDevice?.connected === true ? "connected" : "disconnected"
     property string statusVPNInterface: ""
 
     // wireless usage for download and upload
@@ -99,7 +116,7 @@ Singleton {
     property double totalWiredUploadUsage: 0
 
     // wired & wireless link speed
-    property int wiredLinkSpeed: 0
+    readonly property int wiredLinkSpeed: ethernetDevice?.linkSpeed ?? 0
     property int wirelessLinkSpeed: 0
 
     property int cpuPerc: 0
@@ -220,12 +237,12 @@ Singleton {
         }
     }
 
+    // wireless interface name and vpn (ethernet comes from Quickshell.Networking)
     Process {
         id: networkInfoProc
 
         command: ["sh", "-c", `
             nmcli -t -f DEVICE,TYPE,STATE device status | awk -F: '
-            /ethernet/ && !eth_found { print "WIRED_DEV:" $1; print "WIRED_STATE:" $3; eth_found=1 }
             /wifi/ && !wifi_found { print "WIFI_DEV:" $1; wifi_found=1 }
             /^(wg0|CloudflareWARP):/ { print "VPN_DEV:" $1 }
             '`]
@@ -233,11 +250,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 for (const line of text.trim().split('\n')) {
-                    if (line.startsWith("WIRED_DEV:"))
-                        root.wiredInterface = line.substring(10).trim();
-                    else if (line.startsWith("WIRED_STATE:"))
-                        root.statusWiredInterface = line.substring(12).replace(" (externally)", "").trim();
-                    else if (line.startsWith("WIFI_DEV:"))
+                    if (line.startsWith("WIFI_DEV:"))
                         root.wirelessInterface = line.substring(9).trim();
                     else if (line.startsWith("VPN_DEV:"))
                         root.statusVPNInterface = line.substring(8).trim();
@@ -247,39 +260,9 @@ Singleton {
     }
 
     Process {
-        id: allNetworkDevicesProc
-
-        command: ["nmcli", "-t", "-f", "DEVICE,TYPE,STATE,CONNECTION", "device", "status"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const ethDevices = [];
-                for (const line of text.trim().split('\n')) {
-                    const [iface, type, state, connection] = line.split(':');
-                    if (type !== "ethernet")
-                        continue;
-                    ethDevices.push({
-                        interface: iface,
-                        model: connection || "Unknown Ethernet",
-                        state: state,
-                        isActive: state === "connected",
-                        name: iface
-                    });
-                }
-                root.allEthernetDevices = ethDevices;
-            }
-        }
-    }
-
-    Process {
         id: linkSpeedProc
 
         command: ["sh", "-c", `
-            if [ -n "${root.wiredInterface}" ] && [ -f "/sys/class/net/${root.wiredInterface}/speed" ]; then
-                echo "WIRED_SPEED:$(cat /sys/class/net/${root.wiredInterface}/speed 2>/dev/null || echo 0)"
-            else
-                echo "WIRED_SPEED:0"
-            fi
             if [ -n "${root.wirelessInterface}" ]; then
                 speed=$(iw dev ${root.wirelessInterface} link 2>/dev/null | grep 'tx bitrate:' | awk '{print $3}')
                 echo "WIRELESS_SPEED:\${speed:-0}"
@@ -291,9 +274,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 for (const line of text.trim().split("\n")) {
-                    if (line.startsWith("WIRED_SPEED:"))
-                        root.wiredLinkSpeed = parseInt(line.substring(12), 10) || 0;
-                    else if (line.startsWith("WIRELESS_SPEED:"))
+                    if (line.startsWith("WIRELESS_SPEED:"))
                         root.wirelessLinkSpeed = parseFloat(line.substring(15)) || 0;
                 }
             }
@@ -721,7 +702,6 @@ Singleton {
                 cpuFreqProc.running = true;
                 break;
             case 3:
-                allNetworkDevicesProc.running = true;
                 temperatureProc.running = true;
                 linkSpeedProc.running = true;
                 break;

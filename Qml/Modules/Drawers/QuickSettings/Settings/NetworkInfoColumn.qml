@@ -26,7 +26,8 @@ RowLayout {
         color: Colours.m3Colors.m3SurfaceContainer
         radius: Appearance.rounding.normal
 
-        readonly property bool isConnected: SystemUsage.statusWiredInterface === "connected"
+        readonly property WiredDevice wiredDevice: Networking.devices.values.find(d => d.type === DeviceType.Wired) ?? null
+        readonly property bool isConnected: (wiredDevice?.state ?? ConnectionState.Disconnected) === ConnectionState.Connected
 
         RowLayout {
             anchors.fill: parent

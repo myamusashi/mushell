@@ -8,8 +8,6 @@ import Quickshell.Services.SystemTray
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-
-import "../Components/Base"
 import qs.Components.Base
 
 StyledRect {
