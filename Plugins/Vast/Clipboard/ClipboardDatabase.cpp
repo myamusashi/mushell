@@ -418,17 +418,17 @@ namespace vast {
         ClipboardEntry   e;
         const QSqlRecord rec = q.record();
 
-        static const int idIdx        = rec.indexOf("id");
-        static const int typeIdx      = rec.indexOf("type");
-        static const int contentIdx   = rec.indexOf("content");
-        static const int dataIdx      = rec.indexOf("data");
-        static const int mimeTypeIdx  = rec.indexOf("mime_type");
-        static const int hashIdx      = rec.indexOf("hash");
-        static const int pinnedIdx    = rec.indexOf("pinned");
-        static const int sourceAppIdx = rec.indexOf("source_app");
-        static const int sizeBytesIdx = rec.indexOf("size_bytes");
-        static const int timestampIdx = rec.indexOf("timestamp");
-        static const int fileNameIdx  = rec.indexOf("file_name");
+        const int idIdx        = rec.indexOf("id");
+        const int typeIdx      = rec.indexOf("type");
+        const int contentIdx   = rec.indexOf("content");
+        const int dataIdx      = rec.indexOf("data");
+        const int mimeTypeIdx  = rec.indexOf("mime_type");
+        const int hashIdx      = rec.indexOf("hash");
+        const int pinnedIdx    = rec.indexOf("pinned");
+        const int sourceAppIdx = rec.indexOf("source_app");
+        const int sizeBytesIdx = rec.indexOf("size_bytes");
+        const int timestampIdx = rec.indexOf("timestamp");
+        const int fileNameIdx  = rec.indexOf("filename");
 
         e.id      = rec.value(idIdx).toLongLong();
         e.type    = ClipboardEntry::typeFromString(rec.value(typeIdx).toString());
