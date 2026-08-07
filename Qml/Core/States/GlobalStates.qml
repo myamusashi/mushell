@@ -206,6 +206,17 @@ Singleton {
         }
     }
 
+    Connections {
+        target: KeylockState
+
+        function onCapsLockChanged() {
+            root.showOSD("capslock");
+        }
+        function onNumLockChanged() {
+            root.showOSD("numlock");
+        }
+    }
+
     Instantiator {
         model: Configs.idle.timeouts
         delegate: IdleMonitor {

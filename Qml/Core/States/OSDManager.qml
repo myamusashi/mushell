@@ -13,49 +13,47 @@ Item {
     readonly property bool anyVisible: Object.keys(activeOSDs).some(k => activeOSDs[k] === true)
     readonly property int displayDuration: 5000
 
-    signal activeChanged
-
-    function show(name) {
+    function show(name): void {
         if (!name)
             return;
         activeOSDs[name] = true;
-        activeChanged();
+        activeOSDsChanged();
         if (!pausedOSDs[name])
             timers[name]?.restart();
     }
 
-    function hide(name) {
+    function hide(name): void {
         if (!name)
             return;
         activeOSDs[name] = false;
         pausedOSDs[name] = false;
-        activeChanged();
+        activeOSDsChanged();
         timers[name]?.stop();
     }
 
-    function toggle(name) {
+    function toggle(name): void {
         activeOSDs[name] ? hide(name) : show(name);
     }
 
-    function isActive(name) {
+    function isActive(name): bool {
         return activeOSDs[name] || false;
     }
 
-    function pause(name) {
+    function pause(name): void {
         if (!name || !activeOSDs[name])
             return;
         pausedOSDs[name] = true;
         timers[name]?.stop();
     }
 
-    function resume(name) {
+    function resume(name): void {
         if (!name || !activeOSDs[name])
             return;
         pausedOSDs[name] = false;
         timers[name]?.restart();
     }
 
-    function allHidden() {
+    function allHidden(): bool {
         return !anyVisible;
     }
 
