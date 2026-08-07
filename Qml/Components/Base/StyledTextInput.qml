@@ -30,9 +30,15 @@ Item {
     readonly property int dotStep: 24
     readonly property bool hasText: passwordInput.text.length > 0
 
+    property bool keyboardFocusable: true
+
     property string placeHolderText: ""
     property var pam: null
     property bool passwordMode: false
+
+    function requestKeyboardFocus() {
+        passwordInput.forceActiveFocus();
+    }
 
     function forceActiveFocus() {
         passwordInput.forceActiveFocus();
@@ -67,14 +73,6 @@ Item {
             while (dotsModel.count > len)
                 dotsModel.remove(dotsModel.count - 1);
         }
-
-        onCursorPositionChanged: Qt.callLater(() => {
-            if (root.passwordMode && dotsModel.count > 0) {
-                const dotsView = passwordModeLoader.item?.dotsView ?? null;
-                if (dotsView)
-                    dotsView.positionViewAtIndex(Math.max(0, cursorPosition - 1), ListView.Contain);
-            }
-        })
 
         Keys.onReturnPressed: {
             if (root.pam && text.length > 0)

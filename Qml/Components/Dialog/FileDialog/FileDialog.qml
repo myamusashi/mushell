@@ -43,6 +43,17 @@ LazyLoader {
         color: Colours.m3Colors.m3Surface
         onClosed: root.activeAsync = false
 
+        TabNavigator {
+            id: tabNav
+
+            scope: mainLayout
+            defaultItem: topAppBar.pathField
+
+            Component.onCompleted: {
+                Qt.callLater(() => tabNav.firstFocus());
+            }
+        }
+
         Component.onCompleted: {
             var home = StandardPaths.standardLocations(StandardPaths.HomeLocation)[0];
             navigateTo(home);
@@ -115,8 +126,13 @@ LazyLoader {
         }
 
         ColumnLayout {
+            id: mainLayout
+
             anchors.fill: parent
             spacing: Appearance.spacing.small
+
+            Keys.onTabPressed: tabNav.next()
+            Keys.onBacktabPressed: tabNav.previous()
 
             TopAppBar {
                 id: topAppBar

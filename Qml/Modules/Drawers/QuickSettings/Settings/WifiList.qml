@@ -8,6 +8,7 @@ import Quickshell.Networking
 
 import qs.Components.Base
 import qs.Components.Feedback
+import qs.Components.Dialog
 import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
@@ -63,6 +64,10 @@ WrapperRectangle {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
+    }
+
+    WifiPskDialog {
+        id: wifiPskDialog
     }
 
     Loader {
@@ -206,10 +211,7 @@ WrapperRectangle {
                             TapHandler {
                                 id: networkTap
 
-                                onTapped: {
-                                    if (networkDelegate.modelData && !networkDelegate.modelData.connected)
-                                        networkDelegate.modelData.connect();
-                                }
+                                onTapped: networkDelegate.tryConnect()
                             }
 
                             TapHandler {
@@ -217,12 +219,30 @@ WrapperRectangle {
                                 onTapped: contextMenu.popup()
                             }
 
+                            function tryConnect() {
+                                const net = networkDelegate.modelData;
+                                if (!net || net.connected)
+                                    return;
+                                if (net.known || net.security === WifiSecurityType.Open)
+                                    net.connect();
+                                else
+                                    wifiPskDialog.show(net);
+                            }
+
+                            Connections {
+                                target: networkDelegate.modelData
+                                function onConnectionFailed(reason) {
+                                    if (reason === ConnectionFailReason.NoSecrets)
+                                        wifiPskDialog.show(networkDelegate.modelData);
+                                }
+                            }
+
                             StyledMenu {
                                 id: contextMenu
 
                                 StyledMenuItem {
                                     text: networkDelegate.modelData?.connected ? qsTr("Disconnect") : qsTr("Connect")
-                                    onTriggered: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.modelData?.connect()
+                                    onTriggered: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.tryConnect()
                                 }
 
                                 StyledMenuItem {

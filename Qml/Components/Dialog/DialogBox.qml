@@ -16,7 +16,7 @@ LazyLoader {
     required property Component header
     required property Component body
 
-    property bool needKeyboardFocus: false
+    property bool needKeyboardFocus: true
 
     signal accepted
     signal rejected
@@ -33,6 +33,16 @@ LazyLoader {
         color: Qt.alpha(Colours.m3Colors.m3Background, 0.3)
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: root.needKeyboardFocus ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+
+        TabNavigator {
+            id: tabNav
+
+            scope: column
+
+            Component.onCompleted: {
+                Qt.callLater(() => tabNav.firstFocus());
+            }
+        }
 
         MArea {
             anchors.fill: parent
@@ -57,6 +67,9 @@ LazyLoader {
                 width: Math.max(300, loaderHeader.item ? loaderHeader.implicitWidth : 0, loaderBody.item ? loaderBody.implicitWidth : 0, rowButtons.implicitWidth)
                 anchors.margins: 20
                 spacing: Appearance.spacing.large
+
+                Keys.onTabPressed: tabNav.next()
+                Keys.onBacktabPressed: tabNav.previous()
 
                 Loader {
                     id: loaderHeader

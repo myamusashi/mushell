@@ -17,6 +17,22 @@ StyledRect {
 
     signal clicked
 
+    property bool keyboardFocusable: true
+
+    function requestKeyboardFocus() {
+        root.forceActiveFocus();
+    }
+
+    Keys.onReturnPressed: event => {
+        root.clicked();
+        event.accepted = true;
+    }
+
+    Keys.onSpacePressed: event => {
+        root.clicked();
+        event.accepted = true;
+    }
+
     implicitHeight: 48
     radius: Appearance.rounding.small
     clip: true
@@ -120,5 +136,14 @@ StyledRect {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: root.clicked()
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.radius
+        color: "transparent"
+        border.color: Colours.m3Colors.m3Primary
+        border.width: 2
+        visible: root.activeFocus
     }
 }

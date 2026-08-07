@@ -21,6 +21,22 @@ Rectangle {
     signal clicked
     signal doubleClicked
 
+    property bool keyboardFocusable: true
+
+    function requestKeyboardFocus() {
+        root.forceActiveFocus();
+    }
+
+    Keys.onReturnPressed: event => {
+        root.clicked();
+        event.accepted = true;
+    }
+
+    Keys.onSpacePressed: event => {
+        root.clicked();
+        event.accepted = true;
+    }
+
     implicitHeight: 48
     clip: true
     property color c0From
@@ -79,6 +95,20 @@ Rectangle {
         anchors.fill: parent
         color: Colours.m3Colors.m3OnSurface
         opacity: !root.isSelected && (root.itemIndex % 2 !== 0) ? 0.03 : 0
+
+        Behavior on opacity {
+            NAnim {
+                duration: Appearance.animations.durations.small
+            }
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "transparent"
+        border.color: Colours.m3Colors.m3Primary
+        border.width: 2
+        visible: root.activeFocus
 
         Behavior on opacity {
             NAnim {

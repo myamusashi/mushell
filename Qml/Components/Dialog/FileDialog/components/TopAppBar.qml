@@ -26,6 +26,8 @@ Rectangle {
     signal pathEntered(string path)
     signal showHiddenToggled
 
+    property alias pathField: input
+
     implicitHeight: 64
     color: Colours.m3Colors.m3SurfaceContainer
 
@@ -158,6 +160,12 @@ Rectangle {
                     font.pixelSize: Appearance.fonts.size.normal
                     text: root.currentPath
                     onAccepted: root.pathEntered(text)
+
+                    property bool keyboardFocusable: true
+
+                    function requestKeyboardFocus() {
+                        input.forceActiveFocus();
+                    }
                 }
             }
         }
@@ -168,6 +176,22 @@ Rectangle {
 
         property bool isRotate: false
         property alias mArea: mArea
+
+        property bool keyboardFocusable: true
+
+        function requestKeyboardFocus() {
+            iconButton.forceActiveFocus();
+        }
+
+        Keys.onReturnPressed: event => {
+            mArea.clicked();
+            event.accepted = true;
+        }
+
+        Keys.onSpacePressed: event => {
+            mArea.clicked();
+            event.accepted = true;
+        }
 
         property color target: mArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.08) : mArea.containsPress ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.1) : enabled ? Colours.m3Colors.m3OnSurfaceVariant : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
         property color cFrom
@@ -217,6 +241,16 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            radius: iconButton.font.pixelSize
+            color: "transparent"
+            border.color: Colours.m3Colors.m3Primary
+            border.width: 2
+            visible: iconButton.activeFocus
+            z: 2
         }
     }
 }

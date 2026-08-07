@@ -33,6 +33,10 @@ Item {
     property color rippleColor: "#FFFFFF"
     property IconComponent icon: IconComponent {}
 
+    readonly property bool kbFocused: root.activeFocus
+
+    property bool keyboardFocusable: true
+
     property int leftPad: icon.name !== "" ? 16 : 24
     property int rightPad: 24
     property int topPad: 10
@@ -40,6 +44,20 @@ Item {
     property int spacing: 8
 
     signal clicked
+
+    Keys.onReturnPressed: event => {
+        if (root.enabled) {
+            root.clicked();
+            event.accepted = true;
+        }
+    }
+
+    Keys.onSpacePressed: event => {
+        if (root.enabled) {
+            root.clicked();
+            event.accepted = true;
+        }
+    }
 
     implicitWidth: contentRow.implicitWidth + leftPad + rightPad
     implicitHeight: 40
@@ -63,8 +81,16 @@ Item {
             }
         },
         State {
+            name: "focused"
+            when: root.enabled && root.kbFocused
+            PropertyChanges {
+                target: focusRing
+                opacity: 1
+            }
+        },
+        State {
             name: "normal"
-            when: root.enabled && !root.hovered && !root.pressed
+            when: root.enabled && !root.hovered && !root.pressed && !root.kbFocused
         }
     ]
     // qmllint enable
@@ -95,6 +121,23 @@ Item {
             xClipRadius: background.radius
             yClipRadius: background.radius
             color: Colours.m3Colors.m3OnSurfaceVariant
+        }
+    }
+
+    Rectangle {
+        id: focusRing
+
+        anchors.fill: parent
+        radius: background.radius
+        color: "transparent"
+        border.color: Colours.m3Colors.m3Primary
+        border.width: 2
+        opacity: 0
+
+        Behavior on opacity {
+            NAnim {
+                duration: Appearance.animations.durations.small
+            }
         }
     }
 

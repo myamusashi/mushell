@@ -185,49 +185,75 @@ Item {
         }
     }
 
-    Rectangle {
-        id: dotsCaret
+    Connections {
+        target: root.passwordInput
 
-        anchors.verticalCenter: parent.verticalCenter
-        x: {
-            if (!dotsView.visible)
-                return 12;
-
-            return root.passwordInput.cursorPosition * root.dotStep - dotsView.contentX + 15;
-        }
-        implicitWidth: 2
-        implicitHeight: 20
-        radius: 1
-        color: Colours.m3Colors.m3Primary
-        visible: root.isFocused && !root.unlockInProgress && !root.hasSelection
-
-        onVisibleChanged: {
-            if (visible)
-                opacity = 1;
+        function onCursorPositionChanged() {
+            root.scrollToCursor();
         }
 
-        Behavior on x {
-            NAnim {
-                duration: Appearance.animations.durations.small
-            }
+        function onTextChanged() {
+            root.scrollToCursor();
         }
+    }
 
-        SequentialAnimation on opacity {
-            running: dotsCaret.visible
-            loops: Animation.Infinite
-            NAnim {
-                to: 1
-                duration: 0
+    function scrollToCursor() {
+        if (root.dotsModel.count > 0)
+            dotsView.positionViewAtIndex(Math.min(root.passwordInput.cursorPosition, root.dotsModel.count - 1), ListView.Contain);
+    }
+
+    Item {
+        id: caretArea
+
+        anchors {
+            left: parent.left
+            leftMargin: Appearance.margin.large
+            right: parent.right
+            rightMargin: root.toggleButton.width + Appearance.margin.normal + Appearance.margin.large
+            verticalCenter: parent.verticalCenter
+        }
+        implicitHeight: 28
+        clip: true
+
+        Rectangle {
+            id: dotsCaret
+
+            anchors.verticalCenter: parent.verticalCenter
+            x: root.passwordInput.cursorPosition * root.dotStep - dotsView.contentX
+            implicitWidth: 2
+            implicitHeight: 20
+            radius: 1
+            color: Colours.m3Colors.m3Primary
+            visible: root.isFocused && !root.unlockInProgress && !root.hasSelection
+
+            onVisibleChanged: {
+                if (visible)
+                    opacity = 1;
             }
-            PauseAnimation {
-                duration: 530
+
+            Behavior on x {
+                NAnim {
+                    duration: Appearance.animations.durations.small
+                }
             }
-            NAnim {
-                to: 0
-                duration: 0
-            }
-            PauseAnimation {
-                duration: 530
+
+            SequentialAnimation on opacity {
+                running: dotsCaret.visible
+                loops: Animation.Infinite
+                NAnim {
+                    to: 1
+                    duration: 0
+                }
+                PauseAnimation {
+                    duration: 530
+                }
+                NAnim {
+                    to: 0
+                    duration: 0
+                }
+                PauseAnimation {
+                    duration: 530
+                }
             }
         }
     }
