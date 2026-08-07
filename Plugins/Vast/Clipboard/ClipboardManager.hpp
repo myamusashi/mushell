@@ -15,8 +15,6 @@
 #include <qtclasshelpermacros.h>
 #include <qtypes.h>
 
-class QTimer;
-
 namespace vast {
 
     class ClipboardDatabase;
@@ -54,10 +52,11 @@ namespace vast {
         void                           setActiveWindow(const QString& window);
 
         Q_INVOKABLE [[nodiscard]] bool copyToClipboard(qint64 id);
+        Q_INVOKABLE [[nodiscard]] bool copySelection(const QVariantList& ids);
+        Q_INVOKABLE [[nodiscard]] int  removeMany(const QVariantList& ids);
         Q_INVOKABLE void               pin(qint64 id, bool pinned);
         Q_INVOKABLE void               remove(qint64 id);
         Q_INVOKABLE [[nodiscard]] bool clearUnpinned();
-        Q_INVOKABLE void               search(const QString& query);
         Q_INVOKABLE void               requestFullEntry(qint64 id);
 
       signals:
@@ -74,7 +73,6 @@ namespace vast {
         static void                         writePreviewFile(qint64 id, const QByteArray& pngData);
         static void                         writePreviewFileBackground(qint64 id, const QByteArray& pngData);
         static void                         removePreviewFile(qint64 id);
-        void                                performSearch(const QString& query);
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] static ClipboardType  mimeTypeToClipboardType(const QString& mimeType);
@@ -88,9 +86,6 @@ namespace vast {
 
         qint64                              mLastCopyId{-1};
         qint64                              mLastCopyTimestamp{0};
-
-        QTimer*                             mSearchDebounce{nullptr};
-        QString                             mPendingQuery;
 
         qint64                              mPendingEntryId{-1};
         int                                 mMaxEntries{500};

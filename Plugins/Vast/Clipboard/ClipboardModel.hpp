@@ -51,12 +51,14 @@ namespace vast {
         void                                       reset(QList<ClipboardEntry> entries);
         void                                       prepend(const ClipboardEntry& entry);
         void                                       removeById(qint64 id);
+        Q_INVOKABLE void                           removeByIds(const QVariantList& ids);
         void                                       setPinById(qint64 id, bool pinned);
-        void                                       setFilter(const QString& query, const QList<qint64>& orderedIds = {});
+        Q_INVOKABLE void                           setFilter(const QString& query);
 
         void                                       bumpToTop(qint64 id);
 
         [[nodiscard]] Q_INVOKABLE qint64           idAtRow(int row) const;
+        [[nodiscard]] Q_INVOKABLE QString          typeAtRow(int row) const;
 
       signals:
         void countChanged();

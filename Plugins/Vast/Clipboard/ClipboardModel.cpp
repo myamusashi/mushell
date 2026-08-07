@@ -4,8 +4,10 @@
 #include <ClipboardEntry.hpp>
 #include <iterator>
 #include <cstddef>
+#include <qcontainerfwd.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
+#include <qset.h>
 
 #include <algorithm>
 #include <qobject.h>
@@ -150,6 +152,26 @@ namespace vast {
         }
     }
 
+    void ClipboardModel::removeByIds(const QVariantList& ids) {
+        if (ids.isEmpty())
+            return;
+
+        QSet<qint64> toRemove;
+        toRemove.reserve(ids.size());
+        for (const QVariant& v : ids)
+            toRemove.insert(v.toLongLong());
+
+        if (mFiltering) {
+            mEntries.removeIf([&](const ClipboardEntry& e) { return toRemove.contains(e.id); });
+            rebuildFilter();
+        } else {
+            mEntries.removeIf([&](const ClipboardEntry& e) { return toRemove.contains(e.id); });
+            beginResetModel();
+            endResetModel();
+        }
+        emit countChanged();
+    }
+
     void ClipboardModel::setPinById(qint64 id, bool pinned) {
         const int idx = indexById(id);
         if (idx < 0)
@@ -172,26 +194,11 @@ namespace vast {
         emit countChanged();
     }
 
-    void ClipboardModel::setFilter(const QString& query, const QList<qint64>& orderedIds) {
+    void ClipboardModel::setFilter(const QString& query) {
         beginResetModel();
         mFilterQuery = query;
         mFiltering   = !query.isEmpty();
-        mFiltered.clear();
-
-        if (mFiltering) {
-            mFiltered.reserve(static_cast<size_t>(orderedIds.size()));
-            for (qint64 const id : orderedIds) {
-                const int idx = indexById(id);
-                if (idx >= 0)
-                    mFiltered.push_back(idx);
-            }
-        } else {
-            std::ranges::stable_sort(mEntries, [](const ClipboardEntry& a, const ClipboardEntry& b) {
-                if (a.pinned != b.pinned)
-                    return a.pinned > b.pinned;
-                return a.timestamp > b.timestamp;
-            });
-        }
+        rebuildFilter();
 
         endResetModel();
         emit countChanged();
@@ -270,6 +277,12 @@ namespace vast {
         if (row < 0 || row >= visibleCount())
             return -1;
         return visibleAt(row).id;
+    }
+
+    QString ClipboardModel::typeAtRow(int row) const {
+        if (row < 0 || row >= visibleCount())
+            return {};
+        return visibleAt(row).typeString();
     }
 
     const ClipboardEntry& ClipboardModel::visibleAt(int row) const {

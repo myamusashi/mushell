@@ -21,6 +21,7 @@ ItemDelegate {
     required property var timestamp
     required property string fileName
     required property bool isSelected
+    property bool inVisual: false
 
     readonly property bool isImage: root.type === "image"
     readonly property bool isFiles: root.type === "files"
@@ -51,7 +52,7 @@ ItemDelegate {
 
     background: Rectangle {
         radius: Appearance.rounding.small
-        color: "transparent"
+        color: root.inVisual && !root.isImage && !root.isFiles ? Qt.alpha(Colours.m3Colors.m3Primary, 0.15) : "transparent"
 
         Rectangle {
             anchors {
@@ -196,7 +197,8 @@ ItemDelegate {
     TapHandler {
         onDoubleTapped: {
             ClipboardManager.copyToClipboard(root.entryId);
-            GlobalStates.isClipboardOpen = false;
+            if (!Configs.clipboard.keepOpenAfterCopy)
+                GlobalStates.isClipboardOpen = false;
         }
     }
 }

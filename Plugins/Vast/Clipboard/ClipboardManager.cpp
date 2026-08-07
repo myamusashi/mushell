@@ -1,13 +1,11 @@
 #include "ClipboardManager.hpp"
 #include "ClipboardDatabase.hpp"
 #include "WaylandDataControl.hpp"
-#include "../FuzzyMatcher.hpp"
 
 #include <ClipboardModel.hpp>
 #include <memory>
 #include <ClipboardEntry.hpp>
 #include <qcontainerfwd.h>
-#include <cstddef>
 #include <qobject.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -22,22 +20,15 @@
 #include <qfileinfo.h>
 
 #include <algorithm>
-#include <functional>
 #include <qtypes.h>
 #include <qtmetamacros.h>
 #include <utility>
-#include <vector>
 
 namespace vast {
 
     ClipboardManager::ClipboardManager(QObject* parent) :
-        QObject{parent}, mModel{new ClipboardModel{this}}, mWayland{std::make_unique<WaylandDataControl>(this)}, mDatabase{std::make_unique<ClipboardDatabase>(this)},
-        mSearchDebounce{new QTimer{this}} {
+        QObject{parent}, mModel{new ClipboardModel{this}}, mWayland{std::make_unique<WaylandDataControl>(this)}, mDatabase{std::make_unique<ClipboardDatabase>(this)} {
         qRegisterMetaType<ClipboardEntry>();
-
-        mSearchDebounce->setSingleShot(true);
-        mSearchDebounce->setInterval(150);
-        connect(mSearchDebounce, &QTimer::timeout, this, [this]() { performSearch(mPendingQuery); });
     }
 
     ClipboardManager::~ClipboardManager() = default;
@@ -282,6 +273,83 @@ namespace vast {
         return true;
     }
 
+    [[nodiscard]] bool ClipboardManager::copySelection(const QVariantList& ids) {
+        if (!mModel || !mWayland || ids.isEmpty())
+            return false;
+
+        // Merge the selected text/html entries into a single plain-text paste,
+        // skipping images and files.
+        QStringList parts;
+        parts.reserve(ids.size());
+
+        const auto& entries = mModel->allEntries();
+        for (const QVariant& v : ids) {
+            const qint64 id = v.toLongLong();
+            const auto   it = std::ranges::find_if(entries, [id](const ClipboardEntry& e) { return e.id == id; });
+            if (it == entries.end())
+                continue;
+
+            if (it->type == ClipboardType::Text) {
+                if (!it->content.trimmed().isEmpty())
+                    parts.append(it->content.trimmed());
+            } else if (it->type == ClipboardType::Html) {
+                const QString plain = QString::fromUtf8(WaylandDataControl::htmlToPlainText(it->content.toUtf8()));
+                if (!plain.isEmpty())
+                    parts.append(plain);
+            }
+        }
+
+        if (parts.isEmpty())
+            return false;
+
+        const QByteArray merged = parts.join(u'\n').toUtf8();
+
+        mWayland->setClipboardContent(QStringLiteral("text/plain;charset=utf-8"), merged);
+
+        mLastSelfSetContent   = merged;
+        mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
+
+        return true;
+    }
+
+    [[nodiscard]] int ClipboardManager::removeMany(const QVariantList& ids) {
+        if (!mModel || !mDatabase || ids.isEmpty())
+            return 0;
+
+        QList<qint64> toRemove;
+        toRemove.reserve(ids.size());
+        for (const QVariant& v : ids)
+            toRemove.append(v.toLongLong());
+
+        // Skip pinned entries, mirroring the single-item delete behaviour.
+        QList<qint64> unpinned;
+        unpinned.reserve(toRemove.size());
+        for (qint64 const id : toRemove) {
+            const auto& entries = mModel->allEntries();
+            const auto  it      = std::ranges::find_if(entries, [id](const ClipboardEntry& e) { return e.id == id; });
+            if (it == entries.end() || !it->pinned)
+                unpinned.append(id);
+        }
+
+        const int count = static_cast<int>(unpinned.size());
+        if (count == 0)
+            return 0;
+
+        mModel->removeByIds(QVariantList(unpinned.begin(), unpinned.end()));
+
+        for (qint64 const id : unpinned)
+            removePreviewFile(id);
+
+        QTimer::singleShot(0, this, [this, unpinned = std::move(unpinned)]() {
+            if (!mDatabase)
+                return;
+            if (auto r = mDatabase->removeMany(unpinned); !r)
+                qWarning() << "[ClipboardManager] removeMany failed:" << r.error();
+        });
+
+        return count;
+    }
+
     void ClipboardManager::pin(qint64 id, bool pinned) {
         if (mModel)
             mModel->setPinById(id, pinned);
@@ -360,50 +428,6 @@ namespace vast {
 
             emit fullEntryReady(std::move(map));
         });
-    }
-
-    void ClipboardManager::search(const QString& query) {
-        if (!mModel)
-            return;
-
-        if (query.isEmpty()) {
-            if (mSearchDebounce)
-                mSearchDebounce->stop();
-            mModel->setFilter({}, {});
-            return;
-        }
-
-        mPendingQuery = query;
-        if (mSearchDebounce)
-            mSearchDebounce->start();
-    }
-
-    void ClipboardManager::performSearch(const QString& query) {
-        if (!mModel || query.isEmpty())
-            return;
-
-        const auto&                            entries = mModel->allEntries();
-        std::vector<std::pair<double, qint64>> scored;
-        scored.reserve(static_cast<size_t>(entries.size()));
-
-        for (const auto& entry : entries) {
-            QString haystack = entry.content.left(200) + u' ' + entry.sourceApp;
-            if (entry.isImage())
-                haystack = entry.fileName + u' ' + entry.sourceApp;
-
-            const double score = FuzzyMatcher::fuzzyScore(query, haystack.trimmed());
-            if (score > 0.0)
-                scored.emplace_back(score, entry.id);
-        }
-
-        std::ranges::sort(scored, std::ranges::greater{}, [](const auto& pair) { return pair.first; });
-
-        QList<qint64> orderedIds;
-        orderedIds.reserve(static_cast<qsizetype>(scored.size()));
-        for (const auto& [score, id] : scored)
-            orderedIds.append(id);
-
-        mModel->setFilter(query, orderedIds);
     }
 
     void ClipboardManager::pruneIfNeeded() {

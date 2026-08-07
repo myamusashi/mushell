@@ -46,6 +46,7 @@ Item {
 
     signal accepted
     signal editingFinished
+    signal keyPressed(var event)
 
     implicitWidth: 240
     implicitHeight: 44
@@ -89,6 +90,12 @@ Item {
         }
 
         Keys.onPressed: event => {
+            // Let consumers (e.g. the clipboard vim keybinds) intercept and
+            // accept the key before it becomes text input.
+            root.keyPressed(event);
+            if (event.accepted)
+                return;
+
             if (event.key === Qt.Key_A && (event.modifiers & Qt.ControlModifier)) {
                 passwordInput.selectAll();
                 event.accepted = true;

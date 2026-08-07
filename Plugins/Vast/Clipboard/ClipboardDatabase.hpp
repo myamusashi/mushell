@@ -32,6 +32,7 @@ namespace vast {
 
         [[nodiscard]] std::expected<qint64, QString>                insert(const ClipboardEntry& entry);
         [[nodiscard]] std::expected<void, QString>                  remove(qint64 id);
+        [[nodiscard]] std::expected<qint64, QString>                removeMany(const QList<qint64>& ids, bool skipPinned = true);
         [[nodiscard]] std::expected<void, QString>                  setPin(qint64 id, bool pinned);
         [[nodiscard]] std::expected<void, QString>                  clearUnpinned();
         [[nodiscard]] std::expected<void, QString>                  bumpTimestamp(qint64 id);

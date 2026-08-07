@@ -29,6 +29,24 @@ SettingsPageBase {
                 onCheckedChanged: Configs.clipboard.enablePreview = checked
             }
         }
+
+        SettingRow {
+            label: qsTr("Enable Vim Keybinds:")
+
+            StyledSwitch {
+                checked: Configs.clipboard.enableVimKeybinds
+                onCheckedChanged: Configs.clipboard.enableVimKeybinds = checked
+            }
+        }
+
+        SettingRow {
+            label: qsTr("Keep Clipboard Open After Copy:")
+
+            StyledSwitch {
+                checked: Configs.clipboard.keepOpenAfterCopy
+                onCheckedChanged: Configs.clipboard.keepOpenAfterCopy = checked
+            }
+        }
     }
 
     SettingsCard {

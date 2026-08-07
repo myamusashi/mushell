@@ -21,6 +21,9 @@ WrapperRectangle {
 
     signal closeRequested
 
+    // visualStart/visualEnd are computed on the GridView (entryList), which is
+    // where the selected row range is known.
+
     implicitWidth: d.listWidth + (Configs.clipboard.enablePreview ? (d.previewWidth + Appearance.spacing.small * 2) : 0)
     implicitHeight: GlobalStates.isClipboardOpen ? Configs.clipboard.height : 0
     radius: Appearance.rounding.normal
@@ -47,6 +50,17 @@ WrapperRectangle {
         readonly property int previewWidth: 400
 
         property bool previewFocused: false
+        property bool visualActive: false
+        property int visualAnchor: 0
+    }
+
+    Connections {
+        target: GlobalStates
+
+        function onIsClipboardOpenChanged() {
+            if (!GlobalStates.isClipboardOpen)
+                d.visualActive = false;
+        }
     }
 
     FileView {
@@ -155,21 +169,140 @@ WrapperRectangle {
                             Layout.preferredHeight: 35
 
                             placeHolderText: qsTr("Search clipboard…")
+
+                            Timer {
+                                id: searchDebounce
+
+                                interval: 150
+                                repeat: false
+                                onTriggered: ClipboardManager.model.setFilter(searchField.text)
+                            }
+
                             onTextChanged: {
-                                ClipboardManager.search(text);
-                                if (text.length === 0)
-                                    ClipboardManager.search("");
+                                if (text.length === 0) {
+                                    searchDebounce.stop();
+                                    ClipboardManager.model.setFilter("");
+                                } else {
+                                    searchDebounce.restart();
+                                }
                             }
                             toggleButtonVisible: false
 
                             onAccepted: {
+                                if (Configs.clipboard.enableVimKeybinds) {
+                                    // Copy moved to "y" in vim mode.
+                                    return;
+                                }
+
                                 if (clipboardLayout.currentId >= 0) {
                                     ClipboardManager.copyToClipboard(clipboardLayout.currentId);
-                                    GlobalStates.isClipboardOpen = false;
+                                    if (!Configs.clipboard.keepOpenAfterCopy)
+                                        GlobalStates.isClipboardOpen = false;
                                 }
                             }
 
-                            Keys.onPressed: event => {
+                            onKeyPressed: event => {
+                                const vim = Configs.clipboard.enableVimKeybinds;
+
+                                // Vim mode: letter keys act as commands instead of
+                                // text input, so they are consumed here.
+                                if (vim) {
+                                    if (event.key === Qt.Key_Escape && d.visualActive) {
+                                        d.visualActive = false;
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_V) {
+                                        d.visualActive = !d.visualActive;
+                                        if (d.visualActive)
+                                            d.visualAnchor = entryList.currentIndex;
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_J) {
+                                        entryList.moveCurrentIndexDown();
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_K) {
+                                        entryList.moveCurrentIndexUp();
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_H) {
+                                        entryList.moveCurrentIndexLeft();
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_L) {
+                                        entryList.moveCurrentIndexRight();
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (d.visualActive && event.key === Qt.Key_Y) {
+                                        const ids = entryList.visualSelectedIds();
+                                        const copied = ids.length > 0 && ClipboardManager.copySelection(ids);
+                                        if (copied) {
+                                            const n = ids.length === 1 ? qsTr("entry") : qsTr("entries");
+                                            ToastService.show(qsTr("Copied %1 %2").arg(ids.length).arg(n), qsTr("Clipboard"), "edit-paste");
+                                            if (!Configs.clipboard.keepOpenAfterCopy)
+                                                GlobalStates.isClipboardOpen = false;
+                                        }
+                                        d.visualActive = false;
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (d.visualActive && event.key === Qt.Key_D) {
+                                        const ids = entryList.visualSelectedIds();
+                                        const removed = ClipboardManager.removeMany(ids);
+                                        if (removed > 0) {
+                                            const n = removed === 1 ? qsTr("entry") : qsTr("entries");
+                                            ToastService.show(qsTr("Deleted %1 %2").arg(removed).arg(n), qsTr("Clipboard"), "edit-delete");
+                                        }
+                                        d.visualActive = false;
+                                        entryList.currentIndex = Math.min(entryList.currentIndex, entryList.count - 1);
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_Y && clipboardLayout.currentId >= 0) {
+                                        ClipboardManager.copyToClipboard(clipboardLayout.currentId);
+                                        if (!Configs.clipboard.keepOpenAfterCopy)
+                                            GlobalStates.isClipboardOpen = false;
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_D) {
+                                        const item = entryList.currentItem;
+                                        if (clipboardLayout.currentId >= 0 && item && !item.pinned) // qmllint disable
+                                            ClipboardManager.remove(clipboardLayout.currentId);
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_P) {
+                                        const item = entryList.currentItem;
+                                        if (clipboardLayout.currentId >= 0 && item)
+                                            ClipboardManager.pin(clipboardLayout.currentId, !item.pinned); // qmllint disable
+                                        event.accepted = true;
+                                        return;
+                                    }
+
+                                    if (event.key === Qt.Key_Q) {
+                                        GlobalStates.isClipboardOpen = false;
+                                        event.accepted = true;
+                                        return;
+                                    }
+                                }
+
                                 if (event.key === Qt.Key_Up) {
                                     entryList.moveCurrentIndexUp();
                                     event.accepted = true;
@@ -190,7 +323,7 @@ WrapperRectangle {
                                     event.accepted = true;
                                 }
 
-                                if (event.key === Qt.Key_Q) {
+                                if (event.key === Qt.Key_Q && !vim) {
                                     GlobalStates.isClipboardOpen = false;
                                     event.accepted = true;
                                 }
@@ -201,14 +334,14 @@ WrapperRectangle {
                                     return;
                                 }
 
-                                if (event.key === Qt.Key_Delete) {
+                                if (event.key === Qt.Key_Delete && !vim) {
                                     const item = entryList.currentItem;
                                     if (clipboardLayout.currentId >= 0 && item && !item.pinned) // qmllint disable
                                         ClipboardManager.remove(clipboardLayout.currentId);
                                     event.accepted = true;
                                 }
 
-                                if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_P) {
+                                if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_P && !vim) {
                                     const item = entryList.currentItem;
                                     if (clipboardLayout.currentId >= 0 && item)
                                         ClipboardManager.pin(clipboardLayout.currentId, !item.pinned); // qmllint disable
@@ -227,7 +360,15 @@ WrapperRectangle {
                             text: (entryList.currentPage + 1) + " / " + entryList.totalPages
                             font.pixelSize: Appearance.fonts.size.small
                             color: Colours.m3Colors.m3OnSurfaceVariant
-                            visible: entryList.totalPages > 0 && searchField.text.length === 0
+                            visible: entryList.totalPages > 0 && searchField.text.length === 0 && !d.visualActive
+                        }
+
+                        StyledText {
+                            text: qsTr("VISUAL") + " " + entryList.visualSelectableCount
+                            font.pixelSize: Appearance.fonts.size.small
+                            font.bold: true
+                            color: Colours.m3Colors.m3Primary
+                            visible: d.visualActive
                         }
                     }
                 }
@@ -258,6 +399,12 @@ WrapperRectangle {
                             clip: true
                             flickableDirection: Flickable.VerticalFlick
 
+                            onDraggingChanged: scrollAnim.stop()
+
+                            onDragStarted: scrollAnim.stop()
+
+                            onFlickStarted: scrollAnim.stop()
+
                             ScrollBar.vertical: ScrollBar {
                                 policy: ScrollBar.AsNeeded
                             }
@@ -267,6 +414,28 @@ WrapperRectangle {
 
                                 width: verticalFlick.width
                                 height: Math.max(1, Configs.clipboard.listEntries) * (64 + Appearance.spacing.small)
+
+                                readonly property int visualStart: d.visualActive ? Math.min(d.visualAnchor, currentIndex) : -1
+                                readonly property int visualEnd: d.visualActive ? Math.max(d.visualAnchor, currentIndex) : -1
+
+                                readonly property int visualSelectableCount: {
+                                    let n = 0;
+                                    for (let i = visualStart; i <= visualEnd; ++i) {
+                                        const t = ClipboardManager.model.typeAtRow(i);
+                                        if (t === "text" || t === "html")
+                                            ++n;
+                                    }
+                                    return n;
+                                }
+
+                                function visualSelectedIds(): var {
+                                    const ids = [];
+                                    const start = Math.min(d.visualAnchor, currentIndex);
+                                    const end = Math.max(d.visualAnchor, currentIndex);
+                                    for (let i = start; i <= end; ++i)
+                                        ids.push(ClipboardManager.model.idAtRow(i));
+                                    return ids;
+                                }
 
                                 clip: false
                                 currentIndex: 0
@@ -292,13 +461,31 @@ WrapperRectangle {
                                     }
                                 }
 
-                                onCurrentIndexChanged: {
-                                    var itemY = (currentIndex % itemsPerPage) * cellHeight;
-                                    if (itemY < verticalFlick.contentY) {
-                                        verticalFlick.contentY = itemY;
-                                    } else if (itemY + cellHeight > verticalFlick.contentY + verticalFlick.height) {
-                                        verticalFlick.contentY = itemY + cellHeight - verticalFlick.height;
-                                    }
+                                function ensureCurrentVisible() {
+                                    const itemY = (currentIndex % itemsPerPage) * cellHeight;
+                                    const viewport = verticalFlick.height;
+                                    const currentY = verticalFlick.contentY;
+                                    let targetY = -1;
+                                    if (itemY < currentY)
+                                        targetY = itemY;
+                                    else if (itemY + cellHeight > currentY + viewport)
+                                        targetY = itemY + cellHeight - viewport;
+                                    if (targetY < 0)
+                                        return;
+                                    targetY = Math.max(0, Math.min(targetY, verticalFlick.contentHeight - viewport));
+                                    scrollAnim.stop();
+                                    scrollAnim.to = targetY;
+                                    scrollAnim.start();
+                                }
+
+                                onCurrentIndexChanged: ensureCurrentVisible()
+
+                                NAnim {
+                                    id: scrollAnim
+
+                                    target: verticalFlick
+                                    property: "contentY"
+                                    duration: Appearance.animations.durations.small
                                 }
 
                                 ScrollBar.vertical: ScrollBar {
@@ -378,6 +565,7 @@ WrapperRectangle {
                                     sourceApp: modelData.sourceApp
                                     fileName: modelData.fileName
                                     isSelected: GridView.isCurrentItem
+                                    inVisual: d.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
 
                                     width: GridView.view.cellWidth
                                     height: 64

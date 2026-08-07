@@ -2,6 +2,7 @@
 #include "ClipboardEntry.hpp"
 
 #include <expected>
+#include <qcontainerfwd.h>
 #include <qdatetime.h>
 #include <qsqldatabase.h>
 #include <qsqlrecord.h>
@@ -173,6 +174,46 @@ namespace vast {
 
         emit entryRemoved(id);
         return {};
+    }
+
+    [[nodiscard]] std::expected<qint64, QString> ClipboardDatabase::removeMany(const QList<qint64>& ids, bool skipPinned) {
+        if (!mOpen || !mDb)
+            return std::unexpected(QStringLiteral("Database is not open"));
+
+        if (ids.isEmpty())
+            return 0LL;
+
+        const QSqlDatabase& db = *mDb;
+        QSqlDatabase::database(mConnectionName, false).transaction();
+
+        QStringList placeholders;
+        placeholders.reserve(ids.size());
+        for (int i = 0; i < ids.size(); ++i)
+            placeholders.append(QStringLiteral(":id%1").arg(i));
+
+        QString where = QStringLiteral("id IN (%1)").arg(placeholders.join(QStringLiteral(", ")));
+        if (skipPinned)
+            where += QStringLiteral(" AND pinned = 0");
+
+        QSqlQuery q{db};
+        q.prepare(QStringLiteral("DELETE FROM clipboard_entries WHERE %1").arg(where));
+        for (int i = 0; i < ids.size(); ++i)
+            q.bindValue(placeholders[i], ids[i]);
+
+        qint64 removed = 0;
+        if (q.exec()) {
+            removed = q.numRowsAffected() > 0 ? q.numRowsAffected() : removed;
+            for (qint64 const id : ids)
+                emit entryRemoved(id);
+        } else {
+            QSqlDatabase::database(mConnectionName, false).rollback();
+            return std::unexpected(lastError());
+        }
+
+        if (!QSqlDatabase::database(mConnectionName, false).commit())
+            return std::unexpected(lastError());
+
+        return removed;
     }
 
     [[nodiscard]] std::expected<void, QString> ClipboardDatabase::setPin(qint64 id, bool pinned) {
