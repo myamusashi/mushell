@@ -1,7 +1,7 @@
+#include "ClipboardEntry.hpp"
 #include "ClipboardModel.hpp"
 
 #include <qabstractitemmodel.h>
-#include <ClipboardEntry.hpp>
 #include <iterator>
 #include <cstddef>
 #include <qcontainerfwd.h>

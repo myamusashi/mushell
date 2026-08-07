@@ -55,6 +55,12 @@ namespace vast {
         constexpr const char* K_MIME_TEXT       = "text/plain";
         constexpr const char* K_MIME_X11_STRING = "UTF8_STRING";
         constexpr const char* K_PASSWORD_HINT   = "x-kde-passwordManagerHint";
+
+        inline const QString  K_MIME_TEXT_UTF8_Q  = QStringLiteral("text/plain;charset=utf-8");
+        inline const QString  K_MIME_TEXT_Q       = QStringLiteral("text/plain");
+        inline const QString  K_MIME_X11_STRING_Q = QStringLiteral("UTF8_STRING");
+        inline const QString  K_MIME_URI_LIST_Q   = QStringLiteral("text/uri-list");
+        inline const QString  K_MIME_SUGGESTED_Q  = QStringLiteral("application/x-kde-suggestedfilename");
     }
     using namespace constants;
 
@@ -456,13 +462,13 @@ namespace vast {
         }
 
         if (metaMime == QLatin1StringView{K_MIME_URI_LIST}) {
-            const auto lines = QString::fromUtf8(metaContent).split(QLatin1Char('\n'));
+            const auto lines = metaContent.split('\n');
             for (const auto& line : lines) {
-                const QString trimmed = line.trimmed();
+                const QByteArray trimmed = line.trimmed();
                 if (trimmed.isEmpty())
                     continue;
 
-                const QUrl url = QUrl::fromEncoded(trimmed.toUtf8());
+                const QUrl url = QUrl::fromEncoded(trimmed);
                 if (url.isValid() && url.scheme() == QLatin1String("file"))
                     return url.toLocalFile();
                 return {};
@@ -473,15 +479,18 @@ namespace vast {
     }
 
     [[nodiscard]] QByteArray WaylandDataControl::htmlToPlainText(const QByteArray& html) {
-        QString              text = QString::fromUtf8(html);
+        QString                         text = QString::fromUtf8(html);
 
-        static const QString scriptBlock = QLatin1String("<script[^>]*>.*?</script>");
-        static const QString styleBlock  = QLatin1String("<style[^>]*>.*?</style>");
-        text.remove(QRegularExpression{scriptBlock, QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption});
-        text.remove(QRegularExpression{styleBlock, QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption});
-
-        text.replace(QRegularExpression{QStringLiteral("<br\\s*/?>"), QRegularExpression::CaseInsensitiveOption}, QStringLiteral("\n"));
-        text.replace(QRegularExpression{QStringLiteral("</(p|div|li|tr|h[1-6]|pre|blockquote|section|article)>"), QRegularExpression::CaseInsensitiveOption}, QStringLiteral("\n"));
+        static const QRegularExpression scriptRegex{QStringLiteral("<script[^>]*>.*?</script>"),
+                                                    QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption};
+        static const QRegularExpression styleRegex{QStringLiteral("<style[^>]*>.*?</style>"),
+                                                   QRegularExpression::CaseInsensitiveOption | QRegularExpression::DotMatchesEverythingOption};
+        static const QRegularExpression brRegex{QStringLiteral("<br\\s*/?>"), QRegularExpression::CaseInsensitiveOption};
+        static const QRegularExpression blockRegex{QStringLiteral("</(p|div|li|tr|h[1-6]|pre|blockquote|section|article)>"), QRegularExpression::CaseInsensitiveOption};
+        text.remove(scriptRegex);
+        text.remove(styleRegex);
+        text.replace(brRegex, QStringLiteral("\n"));
+        text.replace(blockRegex, QStringLiteral("\n"));
 
         QTextDocument doc;
         doc.setHtml(text);
@@ -493,7 +502,7 @@ namespace vast {
             QThread::currentThread()->setPriority(QThread::LowPriority);
 
             QByteArray              content;
-            std::array<char, 65536> buf{};
+            std::array<char, 65536> buf; // NOLINT(cppcoreguidelines-pro-type-member-init): read() initializes the written range.
             ssize_t                 n = 0;
             while ((n = ::read(fd, buf.data(), buf.size())) > 0)
                 content.append(buf.data(), static_cast<qsizetype>(n));
@@ -515,35 +524,35 @@ namespace vast {
         payload.insert(mimeType, content);
 
         if (mimeType == QLatin1StringView{K_MIME_TEXT_UTF8} || mimeType == QLatin1StringView{K_MIME_TEXT}) {
-            payload.insert(QString::fromLatin1(K_MIME_TEXT_UTF8), content);
-            payload.insert(QString::fromLatin1(K_MIME_TEXT), content);
-            payload.insert(QString::fromLatin1(K_MIME_X11_STRING), content);
+            payload.insert(K_MIME_TEXT_UTF8_Q, content);
+            payload.insert(K_MIME_TEXT_Q, content);
+            payload.insert(K_MIME_X11_STRING_Q, content);
         }
 
         if (mimeType == QLatin1StringView{K_MIME_HTML}) {
             QByteArray plain = htmlToPlainText(content);
             if (plain.isEmpty())
                 plain = content;
-            payload.insert(QString::fromLatin1(K_MIME_TEXT_UTF8), plain);
-            payload.insert(QString::fromLatin1(K_MIME_TEXT), plain);
-            payload.insert(QString::fromLatin1(K_MIME_X11_STRING), plain);
+            payload.insert(K_MIME_TEXT_UTF8_Q, plain);
+            payload.insert(K_MIME_TEXT_Q, plain);
+            payload.insert(K_MIME_X11_STRING_Q, plain);
         }
 
         if (mimeType == QLatin1StringView{K_MIME_URI_LIST}) {
-            const QString path = extractFileName(QString::fromLatin1(K_MIME_URI_LIST), content);
+            const QString path = extractFileName(K_MIME_URI_LIST_Q, content);
             if (!path.isEmpty()) {
                 const QByteArray pathBytes = path.toUtf8();
-                payload.insert(QString::fromLatin1(K_MIME_TEXT_UTF8), pathBytes);
-                payload.insert(QString::fromLatin1(K_MIME_TEXT), pathBytes);
-                payload.insert(QString::fromLatin1(K_MIME_X11_STRING), pathBytes);
+                payload.insert(K_MIME_TEXT_UTF8_Q, pathBytes);
+                payload.insert(K_MIME_TEXT_Q, pathBytes);
+                payload.insert(K_MIME_X11_STRING_Q, pathBytes);
             }
         }
 
         if (mimeType == QLatin1StringView{K_MIME_IMAGE_PNG} && !fileName.isEmpty()) {
             if (QFileInfo::exists(fileName)) {
-                payload.insert(QString::fromLatin1(K_MIME_URI_LIST), QUrl::fromLocalFile(fileName).toString(QUrl::FullyEncoded).toUtf8());
+                payload.insert(K_MIME_URI_LIST_Q, QUrl::fromLocalFile(fileName).toString(QUrl::FullyEncoded).toUtf8());
             } else {
-                payload.insert(QString::fromLatin1(K_MIME_SUGGESTED), QFileInfo(fileName).fileName().toUtf8());
+                payload.insert(K_MIME_SUGGESTED_Q, QFileInfo(fileName).fileName().toUtf8());
             }
         }
 

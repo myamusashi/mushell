@@ -19,6 +19,7 @@
 #include <qdatetime.h>
 #include <qcryptographichash.h>
 #include <qfileinfo.h>
+#include <qhash.h>
 
 #include <algorithm>
 #include <qtypes.h>
@@ -271,7 +272,7 @@ namespace vast {
         if (!queueClipboardContent(mimeType, content, entry.fileName))
             return false;
 
-        mLastSelfSetContent   = content;
+        mLastSelfSetHash      = QCryptographicHash::hash(content, QCryptographicHash::Sha256);
         mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
 
         const bool alreadyTop = mModel && mModel->idAtRow(0) == id;
@@ -297,18 +298,24 @@ namespace vast {
         QStringList parts;
         parts.reserve(ids.size());
 
-        const auto& entries = mModel->allEntries();
+        const auto&                          entries = mModel->allEntries();
+        QHash<qint64, const ClipboardEntry*> entryMap;
+        entryMap.reserve(entries.size());
+        for (const auto& entry : entries)
+            entryMap.insert(entry.id, &entry);
+
         for (const QVariant& v : ids) {
             const qint64 id = v.toLongLong();
-            const auto   it = std::ranges::find_if(entries, [id](const ClipboardEntry& e) { return e.id == id; });
-            if (it == entries.end())
+            const auto   it = entryMap.constFind(id);
+            if (it == entryMap.cend())
                 continue;
 
-            if (it->type == ClipboardType::Text) {
-                if (!it->content.trimmed().isEmpty())
-                    parts.append(it->content.trimmed());
-            } else if (it->type == ClipboardType::Html) {
-                const QString plain = QString::fromUtf8(WaylandDataControl::htmlToPlainText(it->content.toUtf8()));
+            const ClipboardEntry* entry = it.value();
+            if (entry->type == ClipboardType::Text) {
+                if (!entry->content.trimmed().isEmpty())
+                    parts.append(entry->content.trimmed());
+            } else if (entry->type == ClipboardType::Html) {
+                const QString plain = QString::fromUtf8(WaylandDataControl::htmlToPlainText(entry->content.toUtf8()));
                 if (!plain.isEmpty())
                     parts.append(plain);
             }
@@ -322,7 +329,7 @@ namespace vast {
         if (!queueClipboardContent(QStringLiteral("text/plain;charset=utf-8"), merged, {}))
             return false;
 
-        mLastSelfSetContent   = merged;
+        mLastSelfSetHash      = QCryptographicHash::hash(merged, QCryptographicHash::Sha256);
         mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
 
         return true;
@@ -475,16 +482,16 @@ namespace vast {
     }
 
     void ClipboardManager::onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName) {
-        if (mLastSelfSetContent.has_value()) {
+        if (mLastSelfSetHash.has_value()) {
             constexpr qint64 kLoopbackWindowMs = 60000;
             const bool       withinWindow      = QDateTime::currentMSecsSinceEpoch() - mLastSelfSetTimestamp < kLoopbackWindowMs;
-            const bool       contentMatches    = *mLastSelfSetContent == content;
+            const bool       contentMatches    = *mLastSelfSetHash == QCryptographicHash::hash(content, QCryptographicHash::Sha256);
             if (withinWindow && contentMatches) {
                 qWarning() << "[ClipboardManager] loopback suppressed: mime=" << mimeType << "size=" << content.size();
-                mLastSelfSetContent.reset();
+                mLastSelfSetHash.reset();
                 return;
             }
-            mLastSelfSetContent.reset();
+            mLastSelfSetHash.reset();
         }
 
         persistToHistory(mimeType, content, fileName);

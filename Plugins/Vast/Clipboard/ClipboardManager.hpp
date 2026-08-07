@@ -84,7 +84,7 @@ namespace vast {
         std::unique_ptr<WaylandDataControl> mWayland;
         std::unique_ptr<ClipboardDatabase>  mDatabase;
 
-        std::optional<QByteArray>           mLastSelfSetContent;
+        std::optional<QByteArray>           mLastSelfSetHash;
         qint64                              mLastSelfSetTimestamp{0};
 
         qint64                              mLastCopyId{-1};
