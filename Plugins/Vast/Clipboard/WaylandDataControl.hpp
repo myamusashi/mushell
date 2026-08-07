@@ -36,7 +36,7 @@ namespace vast {
         WaylandDataControl(WaylandDataControl&&)                        = delete;
         WaylandDataControl&             operator=(WaylandDataControl&&) = delete;
 
-        [[nodiscard]] bool              initialize();
+        Q_INVOKABLE [[nodiscard]] bool  initialize();
         [[nodiscard]] bool              isAvailable() const noexcept;
 
         void                            setClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName = {});
@@ -57,7 +57,7 @@ namespace vast {
         friend void                  sourceSend(void* /*data*/, ext_data_control_source_v1* /*source*/, const char* /*mimeType*/, int32_t /*fd*/);
         friend void                  sourceCancelled(void* /*data*/, ext_data_control_source_v1* /*source*/);
 
-        void                         shutdown();
+        Q_INVOKABLE void             shutdown();
         void                         reconnect();
 
         void                         receiveSelection(ext_data_control_offer_v1* offer);

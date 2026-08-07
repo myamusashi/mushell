@@ -872,9 +872,6 @@ vast-shell/
 - [ ] Warp (Cloudflare) and WireGuard connection detection
 - [ ] Generic VPN status indicator in the network settings page
 
-> [!NOTE]
-> When you copy and want to recopy again from history, the clipboard UI freezing/hangs for a seconds. This is because wayland clipboard management is just full of garbage. We only just wait and see
-> Issue from CopyQ: https://github.com/hluk/CopyQ/issues/3125
 **Clipboard Manager**
 - [x] Persistent clipboard history with image preview
 - [x] Selected text snippets with source context

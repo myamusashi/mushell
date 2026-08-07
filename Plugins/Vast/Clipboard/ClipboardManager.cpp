@@ -12,6 +12,7 @@
 #include <qlist.h>
 #include <qstringview.h>
 #include <qthreadpool.h>
+#include <qobjectdefs.h>
 #include <qtimer.h>
 #include <qimage.h>
 #include <qdir.h>
@@ -27,11 +28,19 @@
 namespace vast {
 
     ClipboardManager::ClipboardManager(QObject* parent) :
-        QObject{parent}, mModel{new ClipboardModel{this}}, mWayland{std::make_unique<WaylandDataControl>(this)}, mDatabase{std::make_unique<ClipboardDatabase>(this)} {
+        QObject{parent}, mModel{new ClipboardModel{this}}, mWayland{std::make_unique<WaylandDataControl>()}, mDatabase{std::make_unique<ClipboardDatabase>(this)} {
         qRegisterMetaType<ClipboardEntry>();
     }
 
-    ClipboardManager::~ClipboardManager() = default;
+    ClipboardManager::~ClipboardManager() {
+        if (mWayland && mWaylandThread.isRunning()) {
+            QMetaObject::invokeMethod(mWayland.get(), "shutdown", Qt::BlockingQueuedConnection);
+            mWayland->deleteLater();
+            mWaylandThread.quit();
+            mWaylandThread.wait();
+            [[maybe_unused]] auto* releasedWayland = mWayland.release();
+        }
+    }
 
     [[nodiscard]] bool ClipboardManager::initialize(const QString& dbPath) {
         if (!mDatabase) {
@@ -47,7 +56,12 @@ namespace vast {
         setupConnections();
         loadAllEntries();
 
-        if (!mWayland->initialize())
+        mWayland->moveToThread(&mWaylandThread);
+        mWaylandThread.start();
+
+        bool waylandInitialized = false;
+        QMetaObject::invokeMethod(mWayland.get(), "initialize", Qt::BlockingQueuedConnection, Q_RETURN_ARG(bool, waylandInitialized));
+        if (!waylandInitialized)
             qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
 
         return true;
@@ -56,7 +70,7 @@ namespace vast {
     void ClipboardManager::setupConnections() {
         connect(mWayland.get(), &WaylandDataControl::selectionReceived, this, &ClipboardManager::onSelectionReceived, Qt::QueuedConnection);
 
-        connect(mWayland.get(), &WaylandDataControl::deviceFinished, this, []() { qWarning() << "[ClipboardManager] Wayland data control device finished"; }, Qt::DirectConnection);
+        connect(mWayland.get(), &WaylandDataControl::deviceFinished, this, []() { qWarning() << "[ClipboardManager] Wayland data control device finished"; }, Qt::QueuedConnection);
 
         connect(
             mDatabase.get(), &ClipboardDatabase::entryInserted, this,
@@ -254,7 +268,8 @@ namespace vast {
             return false;
         }
 
-        mWayland->setClipboardContent(mimeType, content, entry.fileName);
+        if (!queueClipboardContent(mimeType, content, entry.fileName))
+            return false;
 
         mLastSelfSetContent   = content;
         mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
@@ -304,12 +319,21 @@ namespace vast {
 
         const QByteArray merged = parts.join(u'\n').toUtf8();
 
-        mWayland->setClipboardContent(QStringLiteral("text/plain;charset=utf-8"), merged);
+        if (!queueClipboardContent(QStringLiteral("text/plain;charset=utf-8"), merged, {}))
+            return false;
 
         mLastSelfSetContent   = merged;
         mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
 
         return true;
+    }
+
+    [[nodiscard]] bool ClipboardManager::queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName) {
+        if (!mWayland || !mWaylandThread.isRunning())
+            return false;
+
+        return QMetaObject::invokeMethod(
+            mWayland.get(), [wayland = mWayland.get(), mimeType, content, fileName]() { wayland->setClipboardContent(mimeType, content, fileName); }, Qt::QueuedConnection);
     }
 
     [[nodiscard]] int ClipboardManager::removeMany(const QVariantList& ids) {

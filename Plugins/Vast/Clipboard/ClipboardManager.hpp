@@ -14,6 +14,7 @@
 #include <qtmetamacros.h>
 #include <qtclasshelpermacros.h>
 #include <qtypes.h>
+#include <qthread.h>
 
 namespace vast {
 
@@ -74,10 +75,12 @@ namespace vast {
         static void                         writePreviewFileBackground(qint64 id, const QByteArray& pngData);
         static void                         removePreviewFile(qint64 id);
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
+        [[nodiscard]] bool                  queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] static ClipboardType  mimeTypeToClipboardType(const QString& mimeType);
 
         QPointer<ClipboardModel>            mModel;
+        QThread                             mWaylandThread;
         std::unique_ptr<WaylandDataControl> mWayland;
         std::unique_ptr<ClipboardDatabase>  mDatabase;
 
