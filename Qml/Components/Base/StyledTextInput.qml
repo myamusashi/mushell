@@ -31,6 +31,7 @@ Item {
     readonly property bool hasText: passwordInput.text.length > 0
 
     property bool keyboardFocusable: true
+    property bool autoFocus: true
 
     property string placeHolderText: ""
     property var pam: null
@@ -82,6 +83,10 @@ Item {
         }
 
         Keys.onEscapePressed: event => {
+            root.keyPressed(event);
+            if (event.accepted)
+                return;
+
             if (root.hasSelection) {
                 passwordInput.cursorPosition = passwordInput.selectionEnd;
                 passwordInput.deselect();
@@ -102,7 +107,10 @@ Item {
             }
         }
 
-        Component.onCompleted: forceActiveFocus()
+        Component.onCompleted: {
+            if (root.autoFocus)
+                forceActiveFocus();
+        }
     }
 
     Connections {

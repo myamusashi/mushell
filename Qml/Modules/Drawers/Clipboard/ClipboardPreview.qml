@@ -292,12 +292,12 @@ Item {
 
             TextEdit {
                 width: textScroll.width
-                text: d.entryType === "html" ? ("```\n" + d.content + "\n```") : d.content
+                text: d.content
                 readOnly: true
                 selectByMouse: true
                 selectByKeyboard: true
                 wrapMode: TextEdit.Wrap
-                textFormat: d.entryType === "html" ? TextEdit.MarkdownText : TextEdit.PlainText
+                textFormat: TextEdit.PlainText
 
                 font.pixelSize: Appearance.fonts.size.medium
                 font.family: Appearance.fonts.family.mono

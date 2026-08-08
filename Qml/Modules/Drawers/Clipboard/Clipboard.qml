@@ -86,8 +86,17 @@ WrapperRectangle {
 
         FocusCage {
             active: GlobalStates.isClipboardOpen
-            defaultFocus: searchField
+            defaultFocus: Configs.clipboard.enableVimKeybinds ? vimFocus : searchField
             anchors.fill: parent
+
+            Item {
+                id: vimFocus
+
+                width: 0
+                height: 0
+
+                Keys.onPressed: event => searchField.keyPressed(event)
+            }
 
             ColumnLayout {
                 id: clipboardLayout
@@ -126,7 +135,7 @@ WrapperRectangle {
 
                         Icon {
                             id: searchIcon
-                            property color target: searchField.activeFocus ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
+                            property color target: searchField.isFocused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
                             property color cFrom
                             property color cTo
                             property bool cActive: false
@@ -168,6 +177,8 @@ WrapperRectangle {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 35
 
+                            autoFocus: !Configs.clipboard.enableVimKeybinds
+
                             placeHolderText: qsTr("Search clipboard…")
 
                             Timer {
@@ -189,7 +200,7 @@ WrapperRectangle {
                             toggleButtonVisible: false
 
                             onAccepted: {
-                                if (Configs.clipboard.enableVimKeybinds) {
+                                if (Configs.clipboard.enableVimKeybinds && !searchField.isFocused) {
                                     // Copy moved to "y" in vim mode.
                                     return;
                                 }
@@ -202,11 +213,25 @@ WrapperRectangle {
                             }
 
                             onKeyPressed: event => {
+                                if (searchField.isFocused) {
+                                    if (!searchField.hasSelection && event.key === Qt.Key_Escape) {
+                                        vimFocus.forceActiveFocus();
+                                        event.accepted = true;
+                                    }
+                                    return;
+                                }
+
                                 const vim = Configs.clipboard.enableVimKeybinds;
 
                                 // Vim mode: letter keys act as commands instead of
                                 // text input, so they are consumed here.
                                 if (vim) {
+                                    if (event.key === Qt.Key_Slash) {
+                                        searchField.requestKeyboardFocus();
+                                        event.accepted = true;
+                                        return;
+                                    }
+
                                     if (event.key === Qt.Key_Escape && d.visualActive) {
                                         d.visualActive = false;
                                         event.accepted = true;
