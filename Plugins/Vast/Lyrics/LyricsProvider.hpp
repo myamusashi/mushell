@@ -11,6 +11,8 @@
 #include <qtmetamacros.h>
 #include <qtypes.h>
 
+#include "LrcParser.hpp"
+
 class LyricsProvider : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -97,12 +99,8 @@ class LyricsProvider : public QObject {
     void                         onWordTimer();
 
     void                         setState(State s);
-    bool                         parseLrc(const QString& lrc, double totalDurationSecs);
-    void                         parsePlain(const QString& plain);
+    void                         applyParseResult(const vast::LrcParser::Result& result);
     void                         rebuildBoundaries();
-
-    static qint64                parseTimestamp(const QString& mm, const QString& ss, const QString& frac);
-    static QVariantList          interpolateWords(const QString& text, qint64 lineStartMs, qint64 lineEndMs);
 
     [[nodiscard]] static QString cacheKey(const QString& title, const QString& artist, double durationSecs);
     [[nodiscard]] static QString cachePath(const QString& key);
