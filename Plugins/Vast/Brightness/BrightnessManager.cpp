@@ -283,19 +283,29 @@ namespace vast {
     }
 
     void BrightnessManager::saveProfile(const QString& name, const QVariantMap& targets) {
+        std::unique_lock const lock(mProfilesMutex);
         mProfiles.insert_or_assign(name, targets);
     }
 
     void BrightnessManager::applyProfile(const QString& name) {
-        if (const auto it = mProfiles.find(name); it != mProfiles.end())
-            setBrightnessGroup(it->second);
+        QVariantMap targets;
+        {
+            std::shared_lock const lock(mProfilesMutex);
+            const auto              it = mProfiles.find(name);
+            if (it == mProfiles.end())
+                return;
+            targets = it->second;
+        }
+        setBrightnessGroup(targets);
     }
 
     void BrightnessManager::removeProfile(const QString& name) {
+        std::unique_lock const lock(mProfilesMutex);
         mProfiles.erase(name);
     }
 
     QStringList BrightnessManager::profileNames() const {
+        std::shared_lock const lock(mProfilesMutex);
         const auto keys = mProfiles | std::views::keys;
         return QStringList(std::ranges::begin(keys), std::ranges::end(keys));
     }

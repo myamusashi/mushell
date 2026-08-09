@@ -203,6 +203,7 @@ namespace vast {
         WorkerMap                                                      mWorkers;
         ProfileMap                                                     mProfiles;
         mutable std::shared_mutex                                      mWorkersMutex;
+        mutable std::shared_mutex                                      mProfilesMutex;
     };
 
 }
