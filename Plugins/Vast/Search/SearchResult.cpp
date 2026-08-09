@@ -6,15 +6,7 @@
 
 SearchResult* SearchResult::makeFile(const QString& title, const QString& subtitle, const QString& icon, double score, const QVariantMap& data, const QVariantList& ranges,
                                      QObject* parent) {
-    auto* r             = new SearchResult(parent);
-    r->mType            = QStringLiteral("file");
-    r->mTitle           = title;
-    r->mSubtitle        = subtitle;
-    r->mIcon            = icon;
-    r->mScore           = score;
-    r->mData            = data;
-    r->mHighlightRanges = ranges;
-    return r;
+    return new SearchResult(QStringLiteral("file"), title, subtitle, icon, score, data, ranges, parent);
 }
 
 QString SearchResult::highlightedTitle(const QString& color) const {

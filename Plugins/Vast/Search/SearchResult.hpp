@@ -9,6 +9,8 @@
 #include <qlist.h>
 #include <qvariant.h>
 
+#include <utility>
+
 class SearchResult : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -23,46 +25,22 @@ class SearchResult : public QObject {
     Q_PROPERTY(QVariantList highlightRanges READ highlightRanges CONSTANT)
 
   public:
-    explicit SearchResult(QObject* parent = nullptr) : QObject(parent) {}
+    [[nodiscard]] static SearchResult* makeFile(const QString& title, const QString& subtitle, const QString& icon, double score, const QVariantMap& data,
+                                                 const QVariantList& ranges, QObject* parent = nullptr);
 
-    void setType(const QString& v) {
-        mType = v;
-    }
-    void setTitle(const QString& v) {
-        mTitle = v;
-    }
-    void setSubtitle(const QString& v) {
-        mSubtitle = v;
-    }
-    void setIcon(const QString& v) {
-        mIcon = v;
-    }
-    void setScore(double v) {
-        mScore = v;
-    }
-    void setData(const QVariantMap& v) {
-        mData = v;
-    }
-    void setHighlightRanges(const QVariantList& v) {
-        mHighlightRanges = v;
-    }
-
-    static SearchResult*  makeFile(const QString& title, const QString& subtitle, const QString& icon, double score, const QVariantMap& data, const QVariantList& ranges,
-                                   QObject* parent = nullptr);
-
-    [[nodiscard]] QString type() const {
+    [[nodiscard]] QString type() const noexcept {
         return mType;
     }
-    [[nodiscard]] QString title() const {
+    [[nodiscard]] QString title() const noexcept {
         return mTitle;
     }
-    [[nodiscard]] QString subtitle() const {
+    [[nodiscard]] QString subtitle() const noexcept {
         return mSubtitle;
     }
-    [[nodiscard]] QString icon() const {
+    [[nodiscard]] QString icon() const noexcept {
         return mIcon;
     }
-    [[nodiscard]] double score() const {
+    [[nodiscard]] double score() const noexcept {
         return mScore;
     }
     [[nodiscard]] QVariantMap data() const {
@@ -75,11 +53,16 @@ class SearchResult : public QObject {
     [[nodiscard]] Q_INVOKABLE QString highlightedTitle(const QString& color) const;
 
   private:
-    QString                 mType;
-    QString                 mTitle;
-    QString                 mSubtitle;
-    QString                 mIcon;
-    double                  mScore = 0.0;
-    QMap<QString, QVariant> mData;
-    QList<QVariant>         mHighlightRanges;
+    explicit SearchResult(QString type, QString title, QString subtitle, QString icon, double score, QVariantMap data, QVariantList highlightRanges,
+                           QObject* parent = nullptr) :
+        QObject(parent), mType(std::move(type)), mTitle(std::move(title)), mSubtitle(std::move(subtitle)), mIcon(std::move(icon)), mScore(score),
+        mData(std::move(data)), mHighlightRanges(std::move(highlightRanges)) {}
+
+    const QString                 mType; // NOLINT(readability-identifier-naming)
+    const QString                 mTitle; // NOLINT(readability-identifier-naming)
+    const QString                 mSubtitle; // NOLINT(readability-identifier-naming)
+    const QString                 mIcon; // NOLINT(readability-identifier-naming)
+    const double                  mScore; // NOLINT(readability-identifier-naming)
+    const QMap<QString, QVariant> mData; // NOLINT(readability-identifier-naming)
+    const QList<QVariant>         mHighlightRanges; // NOLINT(readability-identifier-naming)
 };
