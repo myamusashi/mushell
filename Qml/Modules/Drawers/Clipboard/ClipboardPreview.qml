@@ -44,7 +44,6 @@ Item {
         target: ClipboardManager
 
         function onFullEntryReady(entry) {
-            // Drop stale responses if user moved selection during fetch
             if (entry.id !== root.entryId)
                 return;
             d.entryType = entry.type ?? "text";
@@ -297,7 +296,6 @@ Item {
                 selectByMouse: true
                 selectByKeyboard: true
                 wrapMode: TextEdit.Wrap
-                textFormat: TextEdit.PlainText
 
                 font.pixelSize: Appearance.fonts.size.medium
                 font.family: Appearance.fonts.family.mono
@@ -309,14 +307,11 @@ Item {
             }
         }
 
-        // Image preview
         ScrollView {
             id: imageScroll
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // When visible flips false the Image element is hidden and
-            // Qt releases the decoded GPU texture.
             visible: d.isImage
             clip: true
 

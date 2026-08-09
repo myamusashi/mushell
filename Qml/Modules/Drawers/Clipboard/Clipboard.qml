@@ -21,9 +21,6 @@ WrapperRectangle {
 
     signal closeRequested
 
-    // visualStart/visualEnd are computed on the GridView (entryList), which is
-    // where the selected row range is known.
-
     implicitWidth: d.listWidth + (Configs.clipboard.enablePreview ? (d.previewWidth + Appearance.spacing.small * 2) : 0)
     implicitHeight: GlobalStates.isClipboardOpen ? Configs.clipboard.height : 0
     radius: Appearance.rounding.normal
@@ -223,8 +220,6 @@ WrapperRectangle {
 
                                 const vim = Configs.clipboard.enableVimKeybinds;
 
-                                // Vim mode: letter keys act as commands instead of
-                                // text input, so they are consumed here.
                                 if (vim) {
                                     if (event.key === Qt.Key_Slash) {
                                         searchField.requestKeyboardFocus();
@@ -466,7 +461,6 @@ WrapperRectangle {
                                 currentIndex: 0
                                 model: ClipboardManager.model
 
-                                // Pagination setup
                                 flow: GridView.FlowTopToBottom
                                 cellWidth: width
                                 cellHeight: 64 + Appearance.spacing.small
@@ -610,7 +604,6 @@ WrapperRectangle {
                             color: Colours.m3Colors.m3OnSurfaceVariant
                         }
 
-                        // Page Indicator
                         Row {
                             id: pageIndicatorRow
 
@@ -684,39 +677,3 @@ WrapperRectangle {
         }
     }
 }
-// Scope {
-//     Connections {
-//         target: Configs.clipboard
-//         function onEnabledChanged() {
-//             ClipboardManager.enabled = Configs.clipboard.enabled;
-//         }
-//     }
-//
-//     LazyLoader {
-//         activeAsync: GlobalStates.isClipboardOpen
-//         component: PanelWindow {
-//             id: window
-//
-//             anchors {
-//                 top: true
-//                 right: true
-//                 left: true
-//                 bottom: true
-//             }
-//
-//             color: "transparent"
-//             exclusionMode: ExclusionMode.Ignore
-//             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-//             WlrLayershell.namespace: "shell:clipboard"
-//             WlrLayershell.layer: WlrLayer.Overlay
-//
-//             mask: Region {
-//                 item: root
-//             }
-//
-//             HyprlandWindow.visibleMask: Region { // qmllint disable
-//                 item: root // qmllint disable
-//             }
-//         }
-//     }
-// }
