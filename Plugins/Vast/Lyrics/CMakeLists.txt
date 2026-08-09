@@ -5,6 +5,8 @@ vast_module(vast-lyrics
         LyricsProvider.cpp
         LrcParser.hpp
         LrcParser.cpp
+        LyricsCache.hpp
+        LyricsCache.cpp
     LIBRARIES
         Qt::Gui
         Qt::Network

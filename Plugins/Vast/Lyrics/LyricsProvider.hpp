@@ -12,6 +12,7 @@
 #include <qtypes.h>
 
 #include "LrcParser.hpp"
+#include "LyricsCache.hpp"
 
 class LyricsProvider : public QObject {
     Q_OBJECT
@@ -101,11 +102,7 @@ class LyricsProvider : public QObject {
     void                         setState(State s);
     void                         applyParseResult(const vast::LrcParser::Result& result);
     void                         rebuildBoundaries();
-
-    [[nodiscard]] static QString cacheKey(const QString& title, const QString& artist, double durationSecs);
-    [[nodiscard]] static QString cachePath(const QString& key);
-    [[nodiscard]] bool           loadFromCache(const QString& key);
-    static void                  saveToCache(const QString& key, const QByteArray& data);
+    [[nodiscard]] bool           tryLoadFromCache(const QString& cacheKey);
 
     QNetworkAccessManager*       mNam;
 

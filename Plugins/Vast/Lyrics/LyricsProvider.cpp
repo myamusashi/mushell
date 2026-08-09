@@ -2,10 +2,7 @@
 
 #include <iterator>
 #include <qcontainerfwd.h>
-#include <qcryptographichash.h>
 #include <qdatetime.h>
-#include <qdir.h>
-#include <qfile.h>
 #include <qhashfunctions.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
@@ -16,7 +13,6 @@
 #include <qnetworkrequest.h>
 #include <qobject.h>
 #include <qnumeric.h>
-#include <qstandardpaths.h>
 #include <qtypes.h>
 #include <qtmetamacros.h>
 #include <qurlquery.h>
@@ -80,8 +76,8 @@ void LyricsProvider::fetch(const QString& title, const QString& artist, double d
         return;
     }
 
-    const QString key = cacheKey(title, artist, durationSecs);
-    if (loadFromCache(key))
+    const QString key = vast::LyricsCache::key(title, artist, durationSecs);
+    if (tryLoadFromCache(key))
         return;
 
     setState(State::Loading);
@@ -116,14 +112,14 @@ void LyricsProvider::fetch(const QString& title, const QString& artist, double d
         const QString lrc = json["syncedLyrics"].toString();
         if (!lrc.isEmpty()) {
             applyParseResult(vast::LrcParser::parseLrc(lrc, durationSecs));
-            saveToCache(key, data);
+            vast::LyricsCache::save(key, data);
             return;
         }
 
         const QString plain = json["plainLyrics"].toString();
         if (!plain.isEmpty()) {
             applyParseResult(vast::LrcParser::parsePlain(plain));
-            saveToCache(key, data);
+            vast::LyricsCache::save(key, data);
             return;
         }
 
@@ -257,23 +253,12 @@ void LyricsProvider::setState(State s) {
     emit stateChanged();
 }
 
-QString LyricsProvider::cacheKey(const QString& title, const QString& artist, double durationSecs) {
-    const QString raw = artist + "|" + title + "|" + QString::number(qRound(durationSecs));
-    return QCryptographicHash::hash(raw.toUtf8(), QCryptographicHash::Sha1).toHex();
-}
-
-QString LyricsProvider::cachePath(const QString& key) {
-    const QString dir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/lyrics";
-    QDir().mkpath(dir);
-    return dir + "/" + key + ".json";
-}
-
-bool LyricsProvider::loadFromCache(const QString& key) {
-    QFile f(cachePath(key));
-    if (!f.open(QIODevice::ReadOnly))
+bool LyricsProvider::tryLoadFromCache(const QString& cacheKey) {
+    const auto raw = vast::LyricsCache::load(cacheKey);
+    if (!raw)
         return false;
-    const auto json = QJsonDocument::fromJson(f.readAll()).object();
-    f.close();
+
+    const auto json = QJsonDocument::fromJson(*raw).object();
     const QString lrc = json["syncedLyrics"].toString();
     if (!lrc.isEmpty()) {
         applyParseResult(vast::LrcParser::parseLrc(lrc, 0));
@@ -285,10 +270,4 @@ bool LyricsProvider::loadFromCache(const QString& key) {
         return true;
     }
     return false;
-}
-
-void LyricsProvider::saveToCache(const QString& key, const QByteArray& data) {
-    QFile f(cachePath(key));
-    if (f.open(QIODevice::WriteOnly))
-        f.write(data);
 }
