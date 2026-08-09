@@ -84,11 +84,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786241039,
-        "narHash": "sha256-ZQZmAiYsbeopomV2hyHMl1UYJAOQuFRwXhC9/TH8zro=",
+        "lastModified": 1786279336,
+        "narHash": "sha256-74X5Kty+4d1WKJhR4hkTRXooocRO+k2VGtcQYRy38qY=",
         "owner": "myamusashi",
         "repo": "wl-screenrec",
-        "rev": "14ec0fc809cbd576d8ffc42f84bb52cc4d3e1b6e",
+        "rev": "0d23ae192bb6b6e365cb9c79bd711a6637c0e853",
         "type": "github"
       },
       "original": {
