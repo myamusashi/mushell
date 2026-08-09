@@ -1,5 +1,7 @@
 #pragma once
 
+#include "BrightnessProfileStore.hpp"
+
 #include <ddcutil_types.h>
 #include <functional>
 #include <qcontainerfwd.h>
@@ -186,8 +188,6 @@ namespace vast {
 
       private:
         using WorkerMap  = std::map<QString, std::unique_ptr<DisplayWorker>>;
-        using ProfileMap = std::map<QString, QVariantMap>;
-
         [[nodiscard]] static std::expected<DdcHandle, BrightnessError> openDdcHandle(DDCA_Display_Ref ref) noexcept;
         [[nodiscard]] static std::expected<int, BrightnessError>       readDdcBrightness(const DdcHandle& handle) noexcept;
         [[nodiscard]] static std::expected<void, BrightnessError>      writeDdcBrightness(const DdcHandle& handle, int percent) noexcept;
@@ -201,9 +201,8 @@ namespace vast {
         [[nodiscard]] static constexpr int                             clampPercent(int v) noexcept;
 
         WorkerMap                                                      mWorkers;
-        ProfileMap                                                     mProfiles;
+        BrightnessProfileStore                                         mProfileStore;
         mutable std::shared_mutex                                      mWorkersMutex;
-        mutable std::shared_mutex                                      mProfilesMutex;
     };
 
 }

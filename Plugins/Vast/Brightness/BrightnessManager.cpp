@@ -15,6 +15,7 @@
 #include <qlist.h>
 #include <qobject.h>
 #include <qlogging.h>
+#include <qstring.h>
 #include <qtmetamacros.h>
 #include <qtypes.h>
 #include <ranges>
@@ -283,31 +284,20 @@ namespace vast {
     }
 
     void BrightnessManager::saveProfile(const QString& name, const QVariantMap& targets) {
-        std::unique_lock const lock(mProfilesMutex);
-        mProfiles.insert_or_assign(name, targets);
+        mProfileStore.save(name, targets);
     }
 
     void BrightnessManager::applyProfile(const QString& name) {
-        QVariantMap targets;
-        {
-            std::shared_lock const lock(mProfilesMutex);
-            const auto              it = mProfiles.find(name);
-            if (it == mProfiles.end())
-                return;
-            targets = it->second;
-        }
-        setBrightnessGroup(targets);
+        if (const auto targets = mProfileStore.find(name))
+            setBrightnessGroup(*targets);
     }
 
     void BrightnessManager::removeProfile(const QString& name) {
-        std::unique_lock const lock(mProfilesMutex);
-        mProfiles.erase(name);
+        mProfileStore.remove(name);
     }
 
     QStringList BrightnessManager::profileNames() const {
-        std::shared_lock const lock(mProfilesMutex);
-        const auto keys = mProfiles | std::views::keys;
-        return QStringList(std::ranges::begin(keys), std::ranges::end(keys));
+        return mProfileStore.names();
     }
 
 }

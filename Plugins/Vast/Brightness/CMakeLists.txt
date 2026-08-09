@@ -5,6 +5,8 @@ vast_module(vast-brightness
     SOURCES
         BrightnessManager.hpp
         BrightnessManager.cpp
+        BrightnessProfileStore.hpp
+        BrightnessProfileStore.cpp
     LIBRARIES
         PkgConfig::DDCUTIL
 )
