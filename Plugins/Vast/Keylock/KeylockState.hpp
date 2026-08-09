@@ -11,11 +11,6 @@ struct KeyboardDevice {
     bool hasLED;
 };
 
-struct OpenDevice {
-    int              fd       = -1;
-    QSocketNotifier* notifier = nullptr;
-};
-
 class Keylock : public QObject {
     Q_OBJECT
     QML_ELEMENT
