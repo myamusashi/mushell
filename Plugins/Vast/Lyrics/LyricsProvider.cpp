@@ -419,13 +419,15 @@ QVariantList LyricsProvider::interpolateWords(const QString& text, qint64 lineSt
     const qint64 maxDuration = tokens.size() * 800;
     durationGap              = std::min(durationGap, maxDuration);
 
+    const auto   totalWeight = static_cast<double>(totalLen + tokens.size());
+
     QVariantList words;
     qint64       currentMs = lineStartMs;
     for (int i = 0; i < tokens.size(); ++i) {
-        qsizetype const fraction  = static_cast<qsizetype>(tokens[i].length() + 1) / (totalLen + tokens.size());
-        auto const      wDuration = static_cast<qint64>(durationGap * fraction);
+        const double fraction  = static_cast<double>(tokens[i].length() + 1) / totalWeight;
+        const auto   wDuration = static_cast<qint64>(static_cast<double>(durationGap) * fraction);
 
-        QVariantMap     w;
+        QVariantMap  w;
         w["time"]     = currentMs;
         w["text"]     = tokens[i];
         w["duration"] = wDuration;
