@@ -81,8 +81,8 @@ QString ImageCache::copyAndPreload(const QString& path, QSize targetSize) {
         return {};
     }
 
-    const QString stablePath = u"/tmp/vast-shell/art-cache/%1.png"_s.arg(QString::number(qHash(path), 16));
-    QDir{}.mkpath(u"/tmp/vast-shell/art-cache"_s);
+    const QString stablePath = u"%1/%2.png"_s.arg(artCacheDir(), QString::number(qHash(path), 16));
+    QDir{}.mkpath(artCacheDir());
 
     if (!img.save(stablePath))
         return {};
@@ -136,7 +136,7 @@ std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QStr
     if (img.isNull())
         return std::unexpected(ImageCacheError::NullImage);
 
-    const QString dir  = u"/tmp/vast-shell/notif-images"_s;
+    const QString dir  = notifImagesDir();
     const QString path = u"%1/%2.png"_s.arg(dir, cacheKey);
     QDir{}.mkpath(dir);
 
@@ -198,7 +198,15 @@ QString ImageCache::fromFileUrl(const QString& url) {
 }
 
 QString ImageCache::indexPath() {
-    return u"/tmp/vast-shell/notif-images/.index.json"_s;
+    return u"%1/.index.json"_s.arg(notifImagesDir());
+}
+
+QString ImageCache::artCacheDir() {
+    return u"/tmp/vast-shell/art-cache"_s;
+}
+
+QString ImageCache::notifImagesDir() {
+    return u"/tmp/vast-shell/notif-images"_s;
 }
 
 void ImageCache::loadIndex() {
