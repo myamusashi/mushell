@@ -272,8 +272,7 @@ namespace vast {
         if (!queueClipboardContent(mimeType, content, entry.fileName))
             return false;
 
-        mLastSelfSetHash      = QCryptographicHash::hash(content, QCryptographicHash::Sha256);
-        mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
+        mLoopbackGuard.arm(content);
 
         const bool alreadyTop = mModel && mModel->idAtRow(0) == id;
 
@@ -329,8 +328,7 @@ namespace vast {
         if (!queueClipboardContent(QStringLiteral("text/plain;charset=utf-8"), merged, {}))
             return false;
 
-        mLastSelfSetHash      = QCryptographicHash::hash(merged, QCryptographicHash::Sha256);
-        mLastSelfSetTimestamp = QDateTime::currentMSecsSinceEpoch();
+        mLoopbackGuard.arm(merged);
 
         return true;
     }
@@ -482,16 +480,9 @@ namespace vast {
     }
 
     void ClipboardManager::onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName) {
-        if (mLastSelfSetHash.has_value()) {
-            constexpr qint64 kLoopbackWindowMs = 60000;
-            const bool       withinWindow      = QDateTime::currentMSecsSinceEpoch() - mLastSelfSetTimestamp < kLoopbackWindowMs;
-            const bool       contentMatches    = *mLastSelfSetHash == QCryptographicHash::hash(content, QCryptographicHash::Sha256);
-            if (withinWindow && contentMatches) {
-                qWarning() << "[ClipboardManager] loopback suppressed: mime=" << mimeType << "size=" << content.size();
-                mLastSelfSetHash.reset();
-                return;
-            }
-            mLastSelfSetHash.reset();
+        if (mLoopbackGuard.shouldSuppress(content)) {
+            qWarning() << "[ClipboardManager] loopback suppressed: mime=" << mimeType << "size=" << content.size();
+            return;
         }
 
         persistToHistory(mimeType, content, fileName);

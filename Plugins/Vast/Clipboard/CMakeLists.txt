@@ -40,6 +40,8 @@ vast_module(vast-clipboard
         ClipboardModel.cpp
         ClipboardManager.hpp
         ClipboardManager.cpp
+        LoopbackGuard.hpp
+        LoopbackGuard.cpp
         WaylandDataControl.hpp
         WaylandDataControl.cpp
     LIBRARIES

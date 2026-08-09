@@ -2,6 +2,7 @@
 
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
+#include "LoopbackGuard.hpp"
 
 #include <qcontainerfwd.h>
 #include <qobject.h>
@@ -10,7 +11,6 @@
 #include <qpointer.h>
 
 #include <memory>
-#include <optional>
 #include <qtmetamacros.h>
 #include <qtclasshelpermacros.h>
 #include <qtypes.h>
@@ -84,8 +84,7 @@ namespace vast {
         std::unique_ptr<WaylandDataControl> mWayland;
         std::unique_ptr<ClipboardDatabase>  mDatabase;
 
-        std::optional<QByteArray>           mLastSelfSetHash;
-        qint64                              mLastSelfSetTimestamp{0};
+        LoopbackGuard                       mLoopbackGuard;
 
         qint64                              mLastCopyId{-1};
         qint64                              mLastCopyTimestamp{0};
