@@ -154,13 +154,6 @@ namespace vast {
         }
         const QByteArray& content = contentIt.value();
 
-        // Offload the synchronous write to a dedicated worker so the main
-        // thread (and therefore Qt's wl_display_roundtrip / dispatch) is never
-        // blocked by a slow or stalled pipe reader. Deliberately NOT the
-        // global QThreadPool: that pool is shared with unrelated background
-        // work (preview thumbnailing, inbound offer reads), and a send queued
-        // behind those can arrive too late for the requesting client's read
-        // timeout, stalling the whole exchange.
         WaylandDataControl::sendPool()->start([content, fd]() {
             const std::string msg     = std::system_category().message(errno);
             qint64            written = 0;

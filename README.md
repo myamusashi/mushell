@@ -875,11 +875,10 @@ vast-shell/
 **Clipboard Manager**
 - [x] Persistent clipboard history with image preview
 - [x] Selected text snippets with source context
+- [x] Vim keybindings for navigation, visual mode for selection, copy, delete and search
 - [x] Built-in storage via `sqlite`
-- [x] Native `ext_data_control_v1` Wayland backend (replaces `QClipboard`)
-- [x] Password-manager sensitive-content exclusion (`x-kde-passwordManagerHint`)
+- [x] Native `ext_data_control_v1` Wayland backend
 - [x] Fuzzy search over history
-- [x] Original filenames preserved for image copies (`text/uri-list` / `application/x-kde-suggestedfilename`) and re-offered on paste
 
 ---
 
