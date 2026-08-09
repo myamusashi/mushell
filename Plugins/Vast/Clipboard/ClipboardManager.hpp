@@ -3,6 +3,7 @@
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
 #include "ClipboardContentClassifier.hpp"
+#include "ClipboardPreviewCache.hpp"
 #include "LoopbackGuard.hpp"
 
 #include <qcontainerfwd.h>
@@ -72,9 +73,6 @@ namespace vast {
         void                                setupConnections();
         void                                loadAllEntries();
         void                                pruneIfNeeded();
-        static void                         writePreviewFile(qint64 id, const QByteArray& pngData);
-        static void                         writePreviewFileBackground(qint64 id, const QByteArray& pngData);
-        static void                         removePreviewFile(qint64 id);
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] bool                  queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);

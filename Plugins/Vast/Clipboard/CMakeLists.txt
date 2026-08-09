@@ -36,6 +36,8 @@ vast_module(vast-clipboard
         ClipboardEntry.hpp
         ClipboardContentClassifier.hpp
         ClipboardContentClassifier.cpp
+        ClipboardPreviewCache.hpp
+        ClipboardPreviewCache.cpp
         ClipboardDatabase.hpp
         ClipboardDatabase.cpp
         ClipboardModel.hpp

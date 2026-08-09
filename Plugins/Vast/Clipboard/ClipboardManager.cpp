@@ -1,6 +1,7 @@
 #include "ClipboardManager.hpp"
 #include "ClipboardDatabase.hpp"
 #include "ClipboardContentClassifier.hpp"
+#include "ClipboardPreviewCache.hpp"
 #include "WaylandDataControl.hpp"
 
 #include <ClipboardModel.hpp>
@@ -14,8 +15,6 @@
 #include <qthreadpool.h>
 #include <qobjectdefs.h>
 #include <qtimer.h>
-#include <qimage.h>
-#include <qdir.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qhash.h>
@@ -81,8 +80,12 @@ namespace vast {
                 mModel->prepend(entry);
                 pruneIfNeeded();
 
-                if (entry.isImage() && !entry.data.isEmpty())
-                    writePreviewFile(entry.id, entry.data);
+                if (entry.isImage() && !entry.data.isEmpty()) {
+                    QThreadPool::globalInstance()->start([id = entry.id, data = entry.data]() {
+                        QThread::currentThread()->setPriority(QThread::LowPriority);
+                        ClipboardPreviewCache::write(id, data);
+                    });
+                }
             },
             Qt::DirectConnection);
 
@@ -119,8 +122,7 @@ namespace vast {
             if (!entry.isImage())
                 continue;
 
-            const QString path = QStringLiteral("/tmp/vast-shell/clipboard-preview/%1.png").arg(entry.id);
-            if (QFile::exists(path))
+            if (ClipboardPreviewCache::exists(entry.id))
                 continue;
 
             QTimer::singleShot(0, this, [this, id = entry.id]() {
@@ -133,38 +135,10 @@ namespace vast {
                 QByteArray data = r->data;
                 QThreadPool::globalInstance()->start([id, data = std::move(data)]() {
                     QThread::currentThread()->setPriority(QThread::LowPriority);
-                    writePreviewFileBackground(id, data);
+                    ClipboardPreviewCache::write(id, data);
                 });
             });
         }
-    }
-
-    void ClipboardManager::writePreviewFile(qint64 id, const QByteArray& pngData) {
-        QThreadPool::globalInstance()->start([id, pngData]() {
-            QThread::currentThread()->setPriority(QThread::LowPriority);
-            writePreviewFileBackground(id, pngData);
-        });
-    }
-
-    void ClipboardManager::writePreviewFileBackground(qint64 id, const QByteArray& pngData) {
-        const QString dir  = QStringLiteral("/tmp/vast-shell/clipboard-preview");
-        const QString path = QStringLiteral("%1/%2.png").arg(dir).arg(id);
-
-        QDir{}.mkpath(dir);
-
-        QImage img;
-        if (!img.loadFromData(pngData, "PNG"))
-            return;
-
-        constexpr int kThumbMaxDim = 400;
-        const QImage  thumb =
-            (img.width() > kThumbMaxDim || img.height() > kThumbMaxDim) ? img.scaled(kThumbMaxDim, kThumbMaxDim, Qt::KeepAspectRatio, Qt::SmoothTransformation) : img;
-
-        thumb.save(path, "PNG");
-    }
-
-    void ClipboardManager::removePreviewFile(qint64 id) {
-        QFile::remove(QStringLiteral("/tmp/vast-shell/clipboard-preview/%1.png").arg(id));
     }
 
     ClipboardModel* ClipboardManager::model() const noexcept {
@@ -366,7 +340,7 @@ namespace vast {
         mModel->removeByIds(QVariantList(unpinned.begin(), unpinned.end()));
 
         for (qint64 const id : unpinned)
-            removePreviewFile(id);
+            ClipboardPreviewCache::remove(id);
 
         QTimer::singleShot(0, this, [this, unpinned = std::move(unpinned)]() {
             if (!mDatabase)
@@ -393,7 +367,7 @@ namespace vast {
         if (mModel)
             mModel->removeById(id);
 
-        removePreviewFile(id);
+        ClipboardPreviewCache::remove(id);
 
         QTimer::singleShot(0, this, [this, id]() {
             if (mDatabase)
@@ -443,15 +417,11 @@ namespace vast {
             map[QStringLiteral("fileName")]  = entry.fileName.isEmpty() ? QString{} : QFileInfo(entry.fileName).fileName();
 
             if (entry.isImage()) {
-                const QString path = QStringLiteral("/tmp/vast-shell/clipboard-preview/%1.png").arg(entry.id);
-                if (!QFile::exists(path)) {
-                    if (!entry.data.isEmpty())
-                        writePreviewFileBackground(entry.id, entry.data);
-                    if (QFile::exists(path))
-                        map[QStringLiteral("previewPath")] = path;
-                } else {
-                    map[QStringLiteral("previewPath")] = path;
-                }
+                if (!ClipboardPreviewCache::exists(entry.id) && !entry.data.isEmpty())
+                    ClipboardPreviewCache::write(entry.id, entry.data);
+
+                if (ClipboardPreviewCache::exists(entry.id))
+                    map[QStringLiteral("previewPath")] = ClipboardPreviewCache::path(entry.id);
             }
 
             emit fullEntryReady(std::move(map));
@@ -474,7 +444,7 @@ namespace vast {
         for (qint64 const droppedId : *prunedIds) {
             if (mModel)
                 mModel->removeById(droppedId);
-            removePreviewFile(droppedId);
+            ClipboardPreviewCache::remove(droppedId);
         }
     }
 
