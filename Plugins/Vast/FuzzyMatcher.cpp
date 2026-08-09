@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+namespace vast {
+
 // char normalisation table
 const QHash<QChar, QChar>& FuzzyMatcher::charLookup() {
     static QHash<QChar, QChar> const map = []() {
@@ -336,4 +338,6 @@ double FuzzyMatcher::fuzzyScore(const QString& query, const QString& text) {
     const QStringList queryWords = normQuery.split(kWhitespace, Qt::SkipEmptyParts);
 
     return getMultiWordScore(queryWords, normText, tWords);
+}
+
 }

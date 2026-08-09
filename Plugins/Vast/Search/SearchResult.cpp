@@ -4,6 +4,8 @@
 #include <qcontainerfwd.h>
 #include <qvariant.h>
 
+namespace vast {
+
 SearchResult* SearchResult::makeFile(const QString& title, const QString& subtitle, const QString& icon, double score, const QVariantMap& data, const QVariantList& ranges,
                                      QObject* parent) {
     return new SearchResult(QStringLiteral("file"), title, subtitle, icon, score, data, ranges, parent);
@@ -35,4 +37,6 @@ QString SearchResult::highlightedTitle(const QString& color) const {
         result += FuzzyMatcher::escapeHtml(mTitle.mid(last));
 
     return result;
+}
+
 }

@@ -15,6 +15,8 @@
 #include <qtypes.h>
 #include <qnumeric.h>
 
+namespace vast {
+
 class SearchEngine : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -83,3 +85,4 @@ class SearchEngine : public QObject {
     double               mAppThreshold  = 0.35;
     double               mFileThreshold = 0.40;
 };
+}

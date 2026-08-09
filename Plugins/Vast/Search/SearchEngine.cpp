@@ -12,6 +12,8 @@
 #include <qstringview.h>
 #include <qvariant.h>
 
+namespace vast {
+
 SearchEngine::SearchEngine(QObject* parent) : QObject(parent), mHistory(new LaunchHistoryStore(this)) {
     connect(mHistory, &LaunchHistoryStore::historyLimitChanged, this, &SearchEngine::historyLimitChanged);
 }
@@ -123,4 +125,6 @@ QVariantList SearchEngine::highlightRanges(const QString& text, const QString& q
 
 double SearchEngine::score(const QString& query, const QString& text) {
     return FuzzyMatcher::fuzzyScore(query, text);
+}
+
 }

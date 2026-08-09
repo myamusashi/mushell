@@ -11,6 +11,8 @@
 
 #include <utility>
 
+namespace vast {
+
 class SearchResult : public QObject {
     Q_OBJECT
     QML_ELEMENT
@@ -66,3 +68,4 @@ class SearchResult : public QObject {
     const QMap<QString, QVariant> mData; // NOLINT(readability-identifier-naming)
     const QList<QVariant>         mHighlightRanges; // NOLINT(readability-identifier-naming)
 };
+}

@@ -8,6 +8,8 @@
 
 class QSettings;
 
+namespace vast {
+
 class LaunchHistoryStore : public QObject {
     Q_OBJECT
 
@@ -42,3 +44,4 @@ class LaunchHistoryStore : public QObject {
     QList<HistoryEntry> mHistory;
     int                 mHistoryLimit{50};
 };
+}

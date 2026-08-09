@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <cmath>
 
+namespace vast {
+
 LaunchHistoryStore::LaunchHistoryStore(QObject* parent) : QObject(parent) {
     mSettings = new QSettings("vast-shell", "myamusashi", this);
     loadHistory();
@@ -90,4 +92,6 @@ void LaunchHistoryStore::recordLaunch(const QString& appId) {
 void LaunchHistoryStore::clearHistory() {
     mHistory.clear();
     saveHistory();
+}
+
 }

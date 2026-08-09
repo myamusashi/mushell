@@ -7,6 +7,8 @@
 #include <qstringlist.h>
 #include <qtypes.h>
 
+namespace vast {
+
 class FuzzyMatcher {
   public:
     static constexpr double           K_PREFIX_WEIGHT        = 0.30;
@@ -39,3 +41,4 @@ class FuzzyMatcher {
 
     [[nodiscard]] static const QHash<QChar, QChar>& charLookup();
 };
+}
