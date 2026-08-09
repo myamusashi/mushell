@@ -13,6 +13,7 @@
 
 #include "LrcParser.hpp"
 #include "LyricsCache.hpp"
+#include "LyricsScheduler.hpp"
 
 class LyricsProvider : public QObject {
     Q_OBJECT
@@ -58,16 +59,16 @@ class LyricsProvider : public QObject {
         return mWordLines;
     }
     [[nodiscard]] int currentLineIndex() const {
-        return mCurLine;
+        return mScheduler->currentLineIndex();
     }
     [[nodiscard]] int currentWordIndex() const {
-        return mCurWord;
+        return mScheduler->currentWordIndex();
     }
     [[nodiscard]] qint64 currentWordDuration() const {
-        return mCurWordDuration;
+        return mScheduler->currentWordDuration();
     }
     [[nodiscard]] int offsetMs() const {
-        return mOffsetMs;
+        return mScheduler->offsetMs();
     }
     void setOffsetMs(int offset);
 
@@ -87,24 +88,12 @@ class LyricsProvider : public QObject {
     void offsetMsChanged();
 
   private:
-    // Dead-reckoning: returns current estimated position in ms
-    [[nodiscard]] qint64 currentPositionMs() const;
+    void                   setState(State s);
+    void                   applyParseResult(const vast::LrcParser::Result& result);
+    [[nodiscard]] bool     tryLoadFromCache(const QString& cacheKey);
 
-    // Seek m_boundaryPos to the correct entry for posMs, update m_curLine/m_curWord
-    void seekTo(qint64 posMs);
-
-    // Schedule singleShot for the next word boundary after posMs
-    void scheduleNext();
-
-    // Fired by m_wordTimer
-    void                         onWordTimer();
-
-    void                         setState(State s);
-    void                         applyParseResult(const vast::LrcParser::Result& result);
-    void                         rebuildBoundaries();
-    [[nodiscard]] bool           tryLoadFromCache(const QString& cacheKey);
-
-    QNetworkAccessManager*       mNam;
+    QNetworkAccessManager* mNam;
+    vast::LyricsScheduler* mScheduler;
 
     // Lyrics data
     QVariantList mLines;
@@ -112,27 +101,4 @@ class LyricsProvider : public QObject {
     State        mState      = State::Idle;
     bool         mSynced     = false;
     bool         mWordSynced = false;
-
-    // Flat sorted list of every word boundary for O(1) scheduling
-    struct WordBoundary {
-        qint64 timeMs;
-        int    lineIndex;
-        int    wordIndex;
-    };
-    QList<WordBoundary> mBoundaries;
-    qsizetype           mBoundaryPos = 0;
-
-    // Current playback state
-    int    mCurLine         = -1;
-    int    mCurWord         = -1;
-    qint64 mCurWordDuration = 0;
-    int    mOffsetMs        = 150;
-
-    // Dead-reckoning anchors
-    qint64 mAnchorMs   = 0;
-    qint64 mAnchorWall = 0; // QDateTime::currentMSecsSinceEpoch() at last setPlayback()
-    double mRate       = 1.0;
-    bool   mPlaying    = false;
-
-    QTimer mWordTimer;
 };

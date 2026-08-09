@@ -33,8 +33,8 @@ namespace vast {
         if (raw.isEmpty())
             return {};
 
-        Result       result;
-        const auto   totalMs = static_cast<qint64>(totalDurationSecs * 1000.0);
+        Result     result;
+        const auto totalMs = static_cast<qint64>(totalDurationSecs * 1000.0);
 
         for (int i = 0; i < raw.size(); ++i) {
             const qint64  lineStart = raw[i].timeMs;

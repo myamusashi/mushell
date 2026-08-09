@@ -7,6 +7,8 @@ vast_module(vast-lyrics
         LrcParser.cpp
         LyricsCache.hpp
         LyricsCache.cpp
+        LyricsScheduler.hpp
+        LyricsScheduler.cpp
     LIBRARIES
         Qt::Gui
         Qt::Network
