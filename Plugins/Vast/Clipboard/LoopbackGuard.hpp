@@ -9,7 +9,7 @@ namespace vast {
     /// Suppresses re-ingesting clipboard content just written by this manager.
     class LoopbackGuard {
       public:
-        void arm(const QByteArray& content) noexcept;
+        void               arm(const QByteArray& content) noexcept;
 
         [[nodiscard]] bool shouldSuppress(const QByteArray& content) noexcept;
 
@@ -17,6 +17,6 @@ namespace vast {
         std::optional<QByteArray> mHash;
         qint64                    mArmedAtMs{0};
 
-        static constexpr qint64 K_WINDOW_MS{60000};
+        static constexpr qint64   K_WINDOW_MS{60000};
     };
 }

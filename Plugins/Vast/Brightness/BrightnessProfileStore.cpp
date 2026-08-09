@@ -4,7 +4,7 @@
 #include <optional>
 #include <qcontainerfwd.h>
 #include <qlist.h> // NOLINT(misc-include-cleaner): QStringList alias must be complete, symbol only used via qcontainerfwd.h
-#include <qmap.h> // NOLINT(misc-include-cleaner): QVariantMap alias must be complete, symbol only used via qcontainerfwd.h
+#include <qmap.h>  // NOLINT(misc-include-cleaner): QVariantMap alias must be complete, symbol only used via qcontainerfwd.h
 #include <qvariant.h>
 #include <ranges>
 #include <shared_mutex>
@@ -23,7 +23,7 @@ namespace vast {
 
     std::optional<QVariantMap> BrightnessProfileStore::find(const QString& name) const {
         std::shared_lock const lock(mMutex);
-        const auto              it = mProfiles.find(name);
+        const auto             it = mProfiles.find(name);
         if (it == mProfiles.end())
             return std::nullopt;
         return it->second;
@@ -31,7 +31,7 @@ namespace vast {
 
     QStringList BrightnessProfileStore::names() const {
         std::shared_lock const lock(mMutex);
-        const auto              keys = mProfiles | std::views::keys;
+        const auto             keys = mProfiles | std::views::keys;
         return QStringList(std::ranges::begin(keys), std::ranges::end(keys));
     }
 }

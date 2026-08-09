@@ -187,7 +187,7 @@ namespace vast {
         void displayListChanged();
 
       private:
-        using WorkerMap  = std::map<QString, std::unique_ptr<DisplayWorker>>;
+        using WorkerMap = std::map<QString, std::unique_ptr<DisplayWorker>>;
         [[nodiscard]] static std::expected<DdcHandle, BrightnessError> openDdcHandle(DDCA_Display_Ref ref) noexcept;
         [[nodiscard]] static std::expected<int, BrightnessError>       readDdcBrightness(const DdcHandle& handle) noexcept;
         [[nodiscard]] static std::expected<void, BrightnessError>      writeDdcBrightness(const DdcHandle& handle, int percent) noexcept;

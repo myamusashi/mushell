@@ -24,6 +24,6 @@ class ImageCacheIndex {
     void                         save() const;
     [[nodiscard]] static QString path();
 
-    mutable std::shared_mutex mRwMutex;
-    QHash<QString, QString>   mKeyToPath;
+    mutable std::shared_mutex    mRwMutex;
+    QHash<QString, QString>      mKeyToPath;
 };

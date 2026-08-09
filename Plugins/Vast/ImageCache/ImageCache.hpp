@@ -65,18 +65,18 @@ class ImageCache : public QObject {
 
   private:
     explicit ImageCache(QObject* parent = nullptr);
-    static ImageCache*        sInstance;
+    static ImageCache*           sInstance;
 
     [[nodiscard]] static QString artCacheDir();
 
-    QQmlEngine*               mEngine = nullptr;
+    QQmlEngine*                  mEngine = nullptr;
 
-    mutable std::shared_mutex mRwMutex;
+    mutable std::shared_mutex    mRwMutex;
 
-    QSet<QString>             mLoading;
-    QSet<QString>             mDone;
-    ImageCacheIndex           mIndex;
+    QSet<QString>                mLoading;
+    QSet<QString>                mDone;
+    ImageCacheIndex              mIndex;
 
-    void                      store(const QString& path);
+    void                         store(const QString& path);
     friend class DecodeTask;
 };

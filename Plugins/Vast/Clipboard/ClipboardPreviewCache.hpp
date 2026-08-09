@@ -15,7 +15,7 @@ namespace vast {
         static void                  remove(qint64 id);
 
       private:
-        static constexpr int K_THUMB_MAX_DIM{400};
+        static constexpr int         K_THUMB_MAX_DIM{400};
 
         [[nodiscard]] static QString cacheDir();
     };
