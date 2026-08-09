@@ -19,14 +19,9 @@
 #include <expected>
 #include <qtmetamacros.h>
 #include <qtypes.h>
-#include <shared_mutex>
 #include <utility>
 
 using namespace Qt::StringLiterals;
-
-namespace {
-    const auto K_FILE_URL_PREFIX = u"file://"_s;
-}
 
 class DecodeTask : public QObject, public QRunnable {
     Q_OBJECT
@@ -62,7 +57,8 @@ ImageCache* ImageCache::sInstance = nullptr;
 ImageCache::ImageCache(QObject* parent) : QObject(parent) {
     Q_ASSERT_X(sInstance == nullptr, "ImageCache::ImageCache", "ImageCache constructed more than once");
     sInstance = this;
-    loadIndex();
+    for (const auto& path : mIndex.allPaths())
+        mDone.insert(path);
 }
 
 ImageCache* ImageCache::create(QQmlEngine* engine, QJSEngine* /*unused*/) {
@@ -93,7 +89,7 @@ QString ImageCache::copyAndPreload(const QString& path, QSize targetSize) {
         return {};
 
     preload(stablePath, targetSize);
-    return toFileUrl(stablePath);
+    return ImageCacheIndex::toFileUrl(stablePath);
 }
 
 void ImageCache::preload(const QString& path, QSize targetSize) {
@@ -108,9 +104,9 @@ void ImageCache::preload(const QString& path, QSize targetSize) {
 
 std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QString& qsUrl, const QString& cacheKey) {
     {
-        std::shared_lock const lock(mRwMutex);
-        if (mKeyToPath.contains(cacheKey))
-            return mKeyToPath.value(cacheKey);
+        QString existing = mIndex.lookup(cacheKey);
+        if (!existing.isEmpty())
+            return existing;
     }
 
     if (!mEngine)
@@ -141,20 +137,15 @@ std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QStr
     if (img.isNull())
         return std::unexpected(ImageCacheError::NullImage);
 
-    const QString dir  = notifImagesDir();
+    const QString dir  = ImageCacheIndex::directory();
     const QString path = u"%1/%2.png"_s.arg(dir, cacheKey);
     QDir{}.mkpath(dir);
 
     if (!img.save(path))
         return std::unexpected(ImageCacheError::SaveFailed);
 
-    QString fileUrl = toFileUrl(path);
-    {
-        std::unique_lock lock(mRwMutex);
-        mKeyToPath.insert(cacheKey, fileUrl);
-        lock.unlock();
-        saveIndex();
-    }
+    QString fileUrl = ImageCacheIndex::toFileUrl(path);
+    mIndex.insert(cacheKey, fileUrl);
     return fileUrl;
 }
 
@@ -179,71 +170,19 @@ void ImageCache::store(const QString& path) {
 }
 
 QString ImageCache::cachedPath(const QString& cacheKey) const {
-    std::shared_lock const lock(mRwMutex);
-    return mKeyToPath.value(cacheKey);
+    return mIndex.lookup(cacheKey);
 }
 
 void ImageCache::evictKey(const QString& cacheKey) {
-    std::unique_lock const lock(mRwMutex);
-    const QString          url = mKeyToPath.take(cacheKey);
+    const QString url = mIndex.remove(cacheKey);
     if (url.isEmpty())
         return;
 
-    const QString path = fromFileUrl(url);
+    const QString path = ImageCacheIndex::fromFileUrl(url);
     if (!QFile::remove(path))
         qWarning() << "[ImageCache] evictKey: failed to remove" << path << "for key" << cacheKey;
 }
 
-QString ImageCache::toFileUrl(const QString& path) {
-    return K_FILE_URL_PREFIX + path;
-}
-
-QString ImageCache::fromFileUrl(const QString& url) {
-    return url.startsWith(K_FILE_URL_PREFIX) ? url.mid(K_FILE_URL_PREFIX.size()) : url;
-}
-
-QString ImageCache::indexPath() {
-    return u"%1/.index.json"_s.arg(notifImagesDir());
-}
-
 QString ImageCache::artCacheDir() {
     return u"/tmp/vast-shell/art-cache"_s;
-}
-
-QString ImageCache::notifImagesDir() {
-    return u"/tmp/vast-shell/notif-images"_s;
-}
-
-void ImageCache::loadIndex() {
-    QFile f(indexPath());
-    if (!f.open(QIODevice::ReadOnly))
-        return;
-
-    const auto doc = QJsonDocument::fromJson(f.readAll());
-    if (!doc.isObject())
-        return;
-
-    std::unique_lock const lock(mRwMutex);
-    const auto             obj = doc.object();
-    for (auto it = obj.begin(); it != obj.end(); ++it) {
-        const QString filePath = it.value().toString();
-        if (QFile::exists(filePath)) {
-            mKeyToPath.insert(it.key(), filePath);
-            mDone.insert(filePath);
-        }
-    }
-}
-
-void ImageCache::saveIndex() {
-    std::shared_lock lock(mRwMutex);
-    QJsonObject      obj;
-    for (auto it = mKeyToPath.constBegin(); it != mKeyToPath.constEnd(); ++it) {
-        obj.insert(it.key(), it.value());
-    }
-    lock.unlock();
-
-    QFile f(indexPath());
-    QDir().mkpath(QFileInfo(f).absolutePath());
-    if (f.open(QIODevice::WriteOnly))
-        f.write(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }

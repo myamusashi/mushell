@@ -3,6 +3,8 @@ vast_module(vast-imagecache
     SOURCES
         ImageCache.hpp
         ImageCache.cpp
+        ImageCacheIndex.hpp
+        ImageCacheIndex.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

@@ -1,11 +1,12 @@
 #pragma once
 
+#include "ImageCacheIndex.hpp"
+
 #include <qlogging.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
 #include <qthreadpool.h>
 #include <qset.h>
-#include <qhash.h>
 #include <qsize.h>
 #include <QtQml/qqml.h>
 #include <expected>
@@ -66,13 +67,7 @@ class ImageCache : public QObject {
     explicit ImageCache(QObject* parent = nullptr);
     static ImageCache*        sInstance;
 
-    void                      loadIndex();
-    void                      saveIndex();
-    static QString            indexPath();
     [[nodiscard]] static QString artCacheDir();
-    [[nodiscard]] static QString notifImagesDir();
-    [[nodiscard]] static QString toFileUrl(const QString& path);
-    [[nodiscard]] static QString fromFileUrl(const QString& url);
 
     QQmlEngine*               mEngine = nullptr;
 
@@ -80,7 +75,7 @@ class ImageCache : public QObject {
 
     QSet<QString>             mLoading;
     QSet<QString>             mDone;
-    QHash<QString, QString>   mKeyToPath;
+    ImageCacheIndex           mIndex;
 
     void                      store(const QString& path);
     friend class DecodeTask;
