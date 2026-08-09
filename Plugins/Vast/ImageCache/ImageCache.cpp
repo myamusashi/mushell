@@ -23,6 +23,10 @@
 
 using namespace Qt::StringLiterals;
 
+namespace {
+    const auto K_FILE_URL_PREFIX = u"file://"_s;
+}
+
 class DecodeTask : public QObject, public QRunnable {
     Q_OBJECT
 
@@ -84,7 +88,7 @@ QString ImageCache::copyAndPreload(const QString& path, QSize targetSize) {
         return {};
 
     preload(stablePath, targetSize);
-    return u"file://"_s + stablePath;
+    return toFileUrl(stablePath);
 }
 
 void ImageCache::preload(const QString& path, QSize targetSize) {
@@ -139,7 +143,7 @@ std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QStr
     if (!img.save(path))
         return std::unexpected(ImageCacheError::SaveFailed);
 
-    QString fileUrl = u"file://"_s + path;
+    QString fileUrl = toFileUrl(path);
     {
         std::unique_lock lock(mRwMutex);
         mKeyToPath.insert(cacheKey, fileUrl);
@@ -176,9 +180,21 @@ QString ImageCache::cachedPath(const QString& cacheKey) const {
 
 void ImageCache::evictKey(const QString& cacheKey) {
     std::unique_lock const lock(mRwMutex);
-    const QString          path = mKeyToPath.take(cacheKey);
-    if (!path.isEmpty())
-        QFile::remove(path.mid(7));
+    const QString          url = mKeyToPath.take(cacheKey);
+    if (url.isEmpty())
+        return;
+
+    const QString path = fromFileUrl(url);
+    if (!QFile::remove(path))
+        qWarning() << "[ImageCache] evictKey: failed to remove" << path << "for key" << cacheKey;
+}
+
+QString ImageCache::toFileUrl(const QString& path) {
+    return K_FILE_URL_PREFIX + path;
+}
+
+QString ImageCache::fromFileUrl(const QString& url) {
+    return url.startsWith(K_FILE_URL_PREFIX) ? url.mid(K_FILE_URL_PREFIX.size()) : url;
 }
 
 QString ImageCache::indexPath() {

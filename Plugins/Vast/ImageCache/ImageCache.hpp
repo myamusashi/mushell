@@ -67,6 +67,8 @@ class ImageCache : public QObject {
     void                      loadIndex();
     void                      saveIndex();
     static QString            indexPath();
+    [[nodiscard]] static QString toFileUrl(const QString& path);
+    [[nodiscard]] static QString fromFileUrl(const QString& url);
 
     QQmlEngine*               mEngine = nullptr;
 
