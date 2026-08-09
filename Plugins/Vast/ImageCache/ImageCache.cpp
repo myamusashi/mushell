@@ -14,6 +14,7 @@
 #include <qthreadpool.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qassert.h>
 #include <qquickimageprovider.h>
 #include <expected>
 #include <qtmetamacros.h>
@@ -59,13 +60,17 @@ class DecodeTask : public QObject, public QRunnable {
 ImageCache* ImageCache::sInstance = nullptr;
 
 ImageCache::ImageCache(QObject* parent) : QObject(parent) {
+    Q_ASSERT_X(sInstance == nullptr, "ImageCache::ImageCache", "ImageCache constructed more than once");
     sInstance = this;
     loadIndex();
 }
 
 ImageCache* ImageCache::create(QQmlEngine* engine, QJSEngine* /*unused*/) {
-    if (!sInstance)
+    if (!sInstance) {
+        // Intentionally parentless: QML singleton ownership manages this
+        // instance after it is returned from the factory.
         new ImageCache();
+    }
     sInstance->mEngine = engine;
     return sInstance;
 }

@@ -24,6 +24,8 @@ enum class ImageCacheError : std::uint8_t {
 
 class QQmlEngine;
 
+/// QML singleton created through create(). The QML engine owns the returned
+/// instance for its lifetime; the parentless allocation in create() is intentional.
 class ImageCache : public QObject {
     Q_OBJECT
     QML_SINGLETON
