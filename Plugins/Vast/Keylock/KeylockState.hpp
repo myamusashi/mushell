@@ -6,11 +6,6 @@
 #include <qtmetamacros.h>
 #include <vector>
 
-struct KeyboardDevice {
-    int  fd;
-    bool hasLED;
-};
-
 class Keylock : public QObject {
     Q_OBJECT
     QML_ELEMENT

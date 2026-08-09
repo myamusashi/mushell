@@ -3,6 +3,8 @@ vast_module(vast-keylock
     SOURCES
         KeylockState.hpp
         KeylockState.cpp
+        KeyboardDeviceScanner.hpp
+        KeyboardDeviceScanner.cpp
     LIBRARIES
         Qt::Gui
 )
