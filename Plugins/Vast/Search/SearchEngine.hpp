@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SearchResult.hpp"
+#include "LaunchHistoryStore.hpp"
 
 #include <qcontainerfwd.h>
 #include <qjsengine.h>
@@ -8,7 +9,6 @@
 #include <qobject.h>
 #include <qqmlengine.h>
 #include <qqmlintegration.h>
-#include <qsettings.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qtmetamacros.h>
@@ -43,7 +43,7 @@ class SearchEngine : public QObject {
     [[nodiscard]] static Q_INVOKABLE double       score(const QString& query, const QString& text);
 
     [[nodiscard]] int                             historyLimit() const {
-        return mHistoryLimit;
+        return mHistory->historyLimit();
     }
     [[nodiscard]] double appThreshold() const {
         return mAppThreshold;
@@ -53,10 +53,7 @@ class SearchEngine : public QObject {
     }
 
     void setHistoryLimit(int v) {
-        if (mHistoryLimit != v) {
-            mHistoryLimit = v;
-            emit historyLimitChanged();
-        }
+        mHistory->setHistoryLimit(v);
     }
     void setAppThreshold(double v) {
         if (!qFuzzyCompare(mAppThreshold, v)) {
@@ -82,22 +79,9 @@ class SearchEngine : public QObject {
   private:
     explicit SearchEngine(QObject* parent = nullptr);
 
-    void loadHistory();
-    void saveHistory();
-
-    struct HistoryEntry {
-        QString id;
-        qint64  timestamp = 0;
-        int     count     = 0;
-    };
-
     static double        scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery);
 
-    QSettings*           mSettings = nullptr;
-
-    QList<SearchResult*> mFileResults;
-    QList<HistoryEntry>  mHistory;
-    int                  mHistoryLimit  = 50;
+    LaunchHistoryStore*  mHistory       = nullptr;
     double               mAppThreshold  = 0.35;
     double               mFileThreshold = 0.40;
 };

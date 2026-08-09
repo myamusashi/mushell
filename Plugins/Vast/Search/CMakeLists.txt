@@ -3,6 +3,8 @@ vast_module(vast-search
     SOURCES
         SearchResult.hpp
         SearchResult.cpp
+        LaunchHistoryStore.hpp
+        LaunchHistoryStore.cpp
         SearchEngine.hpp
         SearchEngine.cpp
     LIBRARIES

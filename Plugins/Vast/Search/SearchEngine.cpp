@@ -1,68 +1,19 @@
 #include "SearchEngine.hpp"
 #include "../FuzzyMatcher.hpp"
+#include "LaunchHistoryStore.hpp"
 
 #include <qcontainerfwd.h>
-#include <qdatetime.h>
-#include <qjsonarray.h>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
 #include <qobject.h>
 #include <qnamespace.h>
 #include <qlist.h>
 #include <qregularexpression.h>
 #include <algorithm>
 #include <cmath>
-#include <qsettings.h>
 #include <qstringview.h>
-#include <qtypes.h>
 #include <qvariant.h>
 
-SearchEngine::SearchEngine(QObject* parent) : QObject(parent) {
-    mSettings = new QSettings("vast-shell", "myamusashi", this);
-    loadHistory();
-}
-
-void SearchEngine::loadHistory() {
-    mHistory.clear();
-    const QByteArray raw = mSettings->value("launchHistory").toByteArray();
-    if (raw.isEmpty())
-        return;
-
-    const QJsonArray arr = QJsonDocument::fromJson(raw).array();
-    for (const auto& v : arr) {
-        const QJsonObject obj = v.toObject();
-        HistoryEntry      e;
-        e.id        = obj["id"].toString();
-        e.timestamp = obj["timestamp"].toVariant().toLongLong();
-        e.count     = obj["count"].toInt();
-        if (!e.id.isEmpty())
-            mHistory.append(e);
-    }
-}
-
-void SearchEngine::saveHistory() {
-    QJsonArray arr;
-    for (const HistoryEntry& e : mHistory) {
-        QJsonObject obj;
-        obj["id"]        = e.id;
-        obj["timestamp"] = e.timestamp;
-        obj["count"]     = e.count;
-        arr.append(obj);
-    }
-    mSettings->setValue("launchHistory", QJsonDocument(arr).toJson(QJsonDocument::Compact));
-}
-
-double SearchEngine::recencyScore(const QString& appId) const {
-    const qint64 now = QDateTime::currentMSecsSinceEpoch();
-    auto         it  = std::ranges::find_if(mHistory, [&](const HistoryEntry& e) { return e.id == appId; });
-
-    if (it == mHistory.end())
-        return 0.0;
-
-    const auto   age       = static_cast<double>(now - it->timestamp);
-    const double recency   = std::exp(-age / (86400000.0 * 7.0));
-    const double frequency = std::min(it->count / 10.0, 1.0);
-    return recency * 0.7 + frequency * 0.3;
+SearchEngine::SearchEngine(QObject* parent) : QObject(parent), mHistory(new LaunchHistoryStore(this)) {
+    connect(mHistory, &LaunchHistoryStore::historyLimitChanged, this, &SearchEngine::historyLimitChanged);
 }
 
 double SearchEngine::scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery) {
@@ -107,7 +58,7 @@ QVariantList SearchEngine::searchApps(const QVariantList& apps, const QString& q
             auto* entry = qvariant_cast<QObject*>(v);
             if (!entry)
                 continue;
-            const double r = recencyScore(entry->property("id").toString());
+            const double r = mHistory->recencyScore(entry->property("id").toString());
             hits.append({r, v});
         }
         std::ranges::stable_sort(hits, [](const QPair<double, QVariant>& a, const QPair<double, QVariant>& b) { return a.first > b.first; });
@@ -137,7 +88,7 @@ QVariantList SearchEngine::searchApps(const QVariantList& apps, const QString& q
         if (base < mAppThreshold)
             continue;
 
-        const double finalScore = base + recencyScore(entry->property("id").toString()) * FuzzyMatcher::K_RECENCY_WEIGHT;
+        const double finalScore = base + mHistory->recencyScore(entry->property("id").toString()) * FuzzyMatcher::K_RECENCY_WEIGHT;
 
         hits.append({.score = finalScore, .variant = v, .name = entry->property("name").toString()});
     }
@@ -156,26 +107,11 @@ QVariantList SearchEngine::searchApps(const QVariantList& apps, const QString& q
 }
 
 void SearchEngine::recordLaunch(const QString& appId) {
-    const qint64 now = QDateTime::currentMSecsSinceEpoch();
-    auto         it  = std::ranges::find_if(mHistory, [&](const HistoryEntry& e) { return e.id == appId; });
-
-    if (it != mHistory.end()) {
-        it->timestamp = now;
-        it->count++;
-    } else
-        mHistory.append({.id = appId, .timestamp = now, .count = 1});
-
-    if (mHistory.size() > mHistoryLimit) {
-        std::ranges::sort(mHistory, [](const HistoryEntry& a, const HistoryEntry& b) { return a.timestamp > b.timestamp; });
-        mHistory.resize(mHistoryLimit);
-    }
-
-    saveHistory();
+    mHistory->recordLaunch(appId);
 }
 
 void SearchEngine::clearHistory() {
-    mHistory.clear();
-    saveHistory();
+    mHistory->clearHistory();
 }
 
 QVariantList SearchEngine::searchFiles(const QVariantList& files, const QString& query) const {
