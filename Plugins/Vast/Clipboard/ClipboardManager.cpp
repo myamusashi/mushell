@@ -1,5 +1,6 @@
 #include "ClipboardManager.hpp"
 #include "ClipboardDatabase.hpp"
+#include "ClipboardContentClassifier.hpp"
 #include "WaylandDataControl.hpp"
 
 #include <ClipboardModel.hpp>
@@ -10,14 +11,12 @@
 #include <qlogging.h>
 #include <qnamespace.h>
 #include <qlist.h>
-#include <qstringview.h>
 #include <qthreadpool.h>
 #include <qobjectdefs.h>
 #include <qtimer.h>
 #include <qimage.h>
 #include <qdir.h>
 #include <qdatetime.h>
-#include <qcryptographichash.h>
 #include <qfileinfo.h>
 #include <qhash.h>
 
@@ -488,16 +487,6 @@ namespace vast {
         persistToHistory(mimeType, content, fileName);
     }
 
-    [[nodiscard]] ClipboardType ClipboardManager::mimeTypeToClipboardType(const QString& mimeType) {
-        if (mimeType == QStringLiteral("image/png"))
-            return ClipboardType::Image;
-        if (mimeType == QStringLiteral("text/html"))
-            return ClipboardType::Html;
-        if (mimeType == QStringLiteral("text/uri-list"))
-            return ClipboardType::Files;
-        return ClipboardType::Text;
-    }
-
     void ClipboardManager::persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName) {
         if (!mDatabase) [[unlikely]]
             return;
@@ -505,27 +494,11 @@ namespace vast {
         if (content.isEmpty())
             return;
 
-        const ClipboardType type = mimeTypeToClipboardType(mimeType);
+        const ClipboardType type = ClipboardContentClassifier::typeFromMime(mimeType);
+        if (ClipboardContentClassifier::isBlankTextOrHtml(type, content))
+            return;
 
-        if (type == ClipboardType::Text || type == ClipboardType::Html) {
-            const auto text                = QString::fromUtf8(content);
-            const auto isEmptyOrWhitespace = [](QStringView sv) noexcept { return sv.isEmpty() || std::ranges::all_of(sv, [](QChar c) { return c.isSpace(); }); };
-            if (isEmptyOrWhitespace(text))
-                return;
-        }
-
-        ClipboardEntry entry;
-        entry.type                 = type;
-        entry.content              = entry.isImage() ? QString{} : QString::fromUtf8(content);
-        entry.data                 = entry.isImage() ? content : QByteArray{};
-        entry.mimeType             = mimeType;
-        entry.pinned               = false;
-        entry.sourceApp            = mActiveWindow;
-        entry.sizeBytes            = content.size();
-        entry.timestamp            = QDateTime::currentMSecsSinceEpoch();
-        const QByteArray hashInput = entry.isImage() ? content : entry.content.toUtf8();
-        entry.hash                 = QCryptographicHash::hash(hashInput, QCryptographicHash::Sha256);
-        entry.fileName             = entry.isImage() ? fileName : QString{};
+        const ClipboardEntry entry = ClipboardContentClassifier::buildEntry(mimeType, content, fileName, mActiveWindow);
 
         if (auto result = mDatabase->insert(entry); !result) {
             if (result.error() == QStringLiteral("duplicate")) {

@@ -2,6 +2,7 @@
 
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
+#include "ClipboardContentClassifier.hpp"
 #include "LoopbackGuard.hpp"
 
 #include <qcontainerfwd.h>
@@ -77,7 +78,6 @@ namespace vast {
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] bool                  queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
-        [[nodiscard]] static ClipboardType  mimeTypeToClipboardType(const QString& mimeType);
 
         QPointer<ClipboardModel>            mModel;
         QThread                             mWaylandThread;

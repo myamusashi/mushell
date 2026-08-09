@@ -34,6 +34,8 @@ vast_module(vast-clipboard
     URI Vast.Clipboard
     SOURCES
         ClipboardEntry.hpp
+        ClipboardContentClassifier.hpp
+        ClipboardContentClassifier.cpp
         ClipboardDatabase.hpp
         ClipboardDatabase.cpp
         ClipboardModel.hpp
