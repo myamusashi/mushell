@@ -3,6 +3,8 @@
 #include <qcryptographichash.h>
 #include <qdir.h>
 #include <qfile.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
 #include <qstandardpaths.h>
 
 namespace vast {
@@ -18,16 +20,29 @@ namespace vast {
         return dir + "/" + cacheKey + ".json";
     }
 
-    std::optional<QByteArray> LyricsCache::load(const QString& cacheKey) {
+    std::optional<LyricsCache::CachedLyrics> LyricsCache::load(const QString& cacheKey) {
         QFile f(path(cacheKey));
         if (!f.open(QIODevice::ReadOnly))
             return std::nullopt;
-        return f.readAll();
+
+        const auto envelope = QJsonDocument::fromJson(f.readAll()).object();
+        const auto rawB64   = envelope["raw"].toString().toUtf8();
+        if (rawB64.isEmpty())
+            return std::nullopt;
+
+        return CachedLyrics{
+            .rawJson      = QByteArray::fromBase64(rawB64),
+            .durationSecs = envelope["duration"].toDouble(),
+        };
     }
 
-    void LyricsCache::save(const QString& cacheKey, const QByteArray& data) {
+    void LyricsCache::save(const QString& cacheKey, const QByteArray& rawJson, double durationSecs) {
+        QJsonObject envelope;
+        envelope["raw"]      = QString::fromUtf8(rawJson.toBase64());
+        envelope["duration"] = durationSecs;
+
         QFile f(path(cacheKey));
         if (f.open(QIODevice::WriteOnly))
-            f.write(data);
+            f.write(QJsonDocument(envelope).toJson(QJsonDocument::Compact));
     }
 }
