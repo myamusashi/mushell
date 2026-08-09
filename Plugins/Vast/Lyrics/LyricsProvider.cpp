@@ -1,5 +1,9 @@
 #include "LyricsProvider.hpp"
 
+#include "LrcParser.hpp"
+#include "LyricsCache.hpp"
+#include "LyricsScheduler.hpp"
+
 #include <qcontainerfwd.h>
 #include <qhashfunctions.h>
 #include <qjsondocument.h>
@@ -9,7 +13,6 @@
 #include <qnetworkrequest.h>
 #include <qobject.h>
 #include <qnumeric.h>
-#include <qtypes.h>
 #include <qtmetamacros.h>
 #include <qurlquery.h>
 

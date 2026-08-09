@@ -1,7 +1,11 @@
 #include "LyricsScheduler.hpp"
 
+#include <qcontainerfwd.h>
 #include <qdatetime.h>
 #include <qnamespace.h>
+#include <qobject.h>
+#include <qtmetamacros.h>
+#include <qtypes.h>
 
 #include <algorithm>
 #include <cmath>

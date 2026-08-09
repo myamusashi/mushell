@@ -1,7 +1,12 @@
 #include "LrcParser.hpp"
 
+#include <qcontainerfwd.h>
+#include <qlist.h>
 #include <qminmax.h>
+#include <qnamespace.h>
 #include <qregularexpression.h>
+#include <qstring.h>
+#include <qtypes.h>
 
 #include <algorithm>
 
@@ -150,13 +155,13 @@ namespace vast {
 
         QVariantList words;
         qint64       currentMs = lineStartMs;
-        for (int i = 0; i < tokens.size(); ++i) {
-            const double fraction  = static_cast<double>(tokens[i].length() + 1) / totalWeight;
+        for (const QString& t : tokens) {
+            const double fraction  = static_cast<double>(t.length() + 1) / totalWeight;
             const auto   wDuration = static_cast<qint64>(static_cast<double>(durationGap) * fraction);
 
             QVariantMap  w;
             w["time"]     = currentMs;
-            w["text"]     = tokens[i];
+            w["text"]     = t;
             w["duration"] = wDuration;
             words.append(w);
             currentMs += wDuration;

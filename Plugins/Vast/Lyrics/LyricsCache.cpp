@@ -5,7 +5,10 @@
 #include <qfile.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
+#include <qnumeric.h>
 #include <qstandardpaths.h>
+
+#include <optional>
 
 namespace vast {
 
