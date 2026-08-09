@@ -16,40 +16,6 @@ SearchEngine::SearchEngine(QObject* parent) : QObject(parent), mHistory(new Laun
     connect(mHistory, &LaunchHistoryStore::historyLimitChanged, this, &SearchEngine::historyLimitChanged);
 }
 
-double SearchEngine::scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery) {
-    const QString                   name        = FuzzyMatcher::normalizeText(entry->property("name").toString());
-    const QString                   genericName = FuzzyMatcher::normalizeText(entry->property("genericName").toString());
-    const QString                   comment     = FuzzyMatcher::normalizeText(entry->property("comment").toString());
-    static const QRegularExpression kWhitespace(R"(\s+)");
-
-    const QStringList               nameWords = name.split(kWhitespace, Qt::SkipEmptyParts);
-
-    double                          nameScore = 0.0;
-    if (name == normQuery)
-        nameScore = 1.0;
-    else if (name.contains(normQuery))
-        nameScore = 0.95;
-    else
-        nameScore = FuzzyMatcher::getMultiWordScore(normQueryWords, name, nameWords);
-
-    if (nameScore >= 0.9)
-        return nameScore;
-
-    double genericScore = 0.0;
-    if (!genericName.isEmpty()) {
-        const QStringList gWords = genericName.split(kWhitespace, Qt::SkipEmptyParts);
-        genericScore             = FuzzyMatcher::getMultiWordScore(normQueryWords, genericName, gWords) * 0.7;
-    }
-
-    double commentScore = 0.0;
-    if (!comment.isEmpty()) {
-        const QStringList cWords = comment.split(kWhitespace, Qt::SkipEmptyParts);
-        commentScore             = FuzzyMatcher::getMultiWordScore(normQueryWords, comment, cWords) * 0.5;
-    }
-
-    return std::max({nameScore, genericScore, commentScore});
-}
-
 QVariantList SearchEngine::searchApps(const QVariantList& apps, const QString& query) const {
     if (query.trimmed().isEmpty()) {
         QList<QPair<double, QVariant>> hits;
@@ -84,7 +50,9 @@ QVariantList SearchEngine::searchApps(const QVariantList& apps, const QString& q
         if (!entry)
             continue;
 
-        const double base = scoreApp(entry, normQueryWords, normQuery);
+        const double base = FuzzyMatcher::multiFieldScore(
+            normQueryWords, normQuery, FuzzyMatcher::normalizeText(entry->property("name").toString()), FuzzyMatcher::normalizeText(entry->property("genericName").toString()),
+            FuzzyMatcher::normalizeText(entry->property("comment").toString()));
         if (base < mAppThreshold)
             continue;
 

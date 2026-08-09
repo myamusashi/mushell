@@ -79,8 +79,6 @@ class SearchEngine : public QObject {
   private:
     explicit SearchEngine(QObject* parent = nullptr);
 
-    static double        scoreApp(QObject* entry, const QStringList& normQueryWords, const QString& normQuery);
-
     LaunchHistoryStore*  mHistory       = nullptr;
     double               mAppThreshold  = 0.35;
     double               mFileThreshold = 0.40;

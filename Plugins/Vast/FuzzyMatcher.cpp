@@ -284,6 +284,38 @@ double FuzzyMatcher::getMultiWordScore(const QStringList& qWords, const QString&
     return total / static_cast<double>(qWords.size());
 }
 
+double FuzzyMatcher::multiFieldScore(const QStringList& queryWords, const QString& normQuery, const QString& primaryField, const QString& secondaryField,
+                                     const QString& tertiaryField, double secondaryWeight, double tertiaryWeight) {
+    static const QRegularExpression kWhitespace(R"(\s+)");
+
+    const QStringList primaryWords = primaryField.split(kWhitespace, Qt::SkipEmptyParts);
+
+    double primaryScore = 0.0;
+    if (primaryField == normQuery)
+        primaryScore = 1.0;
+    else if (primaryField.contains(normQuery))
+        primaryScore = 0.95;
+    else
+        primaryScore = getMultiWordScore(queryWords, primaryField, primaryWords);
+
+    if (primaryScore >= 0.9)
+        return primaryScore;
+
+    double secondaryScore = 0.0;
+    if (!secondaryField.isEmpty()) {
+        const QStringList words = secondaryField.split(kWhitespace, Qt::SkipEmptyParts);
+        secondaryScore          = getMultiWordScore(queryWords, secondaryField, words) * secondaryWeight;
+    }
+
+    double tertiaryScore = 0.0;
+    if (!tertiaryField.isEmpty()) {
+        const QStringList words = tertiaryField.split(kWhitespace, Qt::SkipEmptyParts);
+        tertiaryScore           = getMultiWordScore(queryWords, tertiaryField, words) * tertiaryWeight;
+    }
+
+    return std::max({primaryScore, secondaryScore, tertiaryScore});
+}
+
 double FuzzyMatcher::fuzzyScore(const QString& query, const QString& text) {
     static const QRegularExpression kWhitespace(R"(\s+)");
 

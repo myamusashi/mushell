@@ -23,6 +23,9 @@ class FuzzyMatcher {
     [[nodiscard]] static QString      escapeHtml(const QString& text);
     [[nodiscard]] static double       getScore(const QString& q, const QString& t, const QStringList& tWords);
     [[nodiscard]] static double       getMultiWordScore(const QStringList& qWords, const QString& t, const QStringList& tWords);
+    [[nodiscard]] static double       multiFieldScore(const QStringList& queryWords, const QString& normQuery, const QString& primaryField,
+                                                      const QString& secondaryField = {}, const QString& tertiaryField = {}, double secondaryWeight = 0.7,
+                                                      double tertiaryWeight = 0.5);
     [[nodiscard]] static double       fuzzyScore(const QString& query, const QString& text);
 
   private:
