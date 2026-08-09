@@ -30,7 +30,7 @@ init_globals() {
 	PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)" || die "Failed to determine project root"
 	M3SHAPES_REV="1c8e6751febf230d7f94bf8015eaeb643bb4521e"
 	ANOTHER_RIPPLE_REV="main"
-	WL_SCREENREC_REV="cc280b238ab99cdeefa70afcceaf09a1f98fe982"
+	WL_SCREENREC_REV="14ec0fc809cbd576d8ffc42f84bb52cc4d3e1b6e"
 
 	readonly INSTALL_DIR BIN_DIR FONT_DIR QML_DIR BUILD_DIR PROJECT_ROOT M3SHAPES_REV ANOTHER_RIPPLE_REV WL_SCREENREC_REV
 }
