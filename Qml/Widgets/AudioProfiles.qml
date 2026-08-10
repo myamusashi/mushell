@@ -7,9 +7,9 @@ import Vast.Audio
 import qs.Core.Configs
 import qs.Services
 
-import "../Components/Base"
+import qs.Components.Menu
 
-StyledComboBox {
+DropdownField {
     model: Audio.models
     textRole: "readable"
     valueRole: "index"

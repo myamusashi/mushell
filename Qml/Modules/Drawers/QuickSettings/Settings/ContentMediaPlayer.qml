@@ -468,7 +468,7 @@ RowLayout {
 
                         IconImage {
                             anchors.verticalCenter: parent.verticalCenter
-                            source: Quickshell.iconPath(Players.active?.desktopEntry === "" ? "helium" : Players.active?.desktopEntry, "image-missing")
+                            source: Players.active?.desktopEntry === "" ? Quickshell.iconPath("helium", "image-missing") : IconUtils.iconForId(Players.active.desktopEntry)
                             implicitWidth: 20
                             implicitHeight: 20
                             asynchronous: true
@@ -633,7 +633,7 @@ RowLayout {
 
                             IconImage {
                                 anchors.verticalCenter: parent.verticalCenter
-                                source: Players.active?.desktopEntry === "" ? "Helium" : Quickshell.iconPath(DesktopEntries.heuristicLookup(itemDel.modelData.desktopEntry)?.icon, "image-missing")
+                                source: Players.active?.desktopEntry === "" ? "Helium" : IconUtils.iconForId(itemDel.modelData.desktopEntry)
                                 asynchronous: true
                                 implicitWidth: 20
                                 implicitHeight: 20

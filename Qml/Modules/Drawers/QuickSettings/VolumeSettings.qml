@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 
 import qs.Core.Configs
+import qs.Core.Utils
 import qs.Widgets
 import qs.Services
 import qs.Components.Base
@@ -133,8 +134,12 @@ ScrollView {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignLeft
 
+                    PwObjectTracker {
+                        objects: [groups.modelData.source]
+                    }
+
                     IconImage {
-                        source: Quickshell.iconPath(DesktopEntries.heuristicLookup(groups.modelData.source.name)?.icon, "image-missing")
+                        source: IconUtils.guessIconPath(groups.modelData.source)
                         asynchronous: true
                         Layout.preferredWidth: 60
                         Layout.preferredHeight: 60

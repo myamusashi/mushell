@@ -25,27 +25,12 @@ ColumnLayout {
     }
 
     Loader {
-        active: true
+        active: root.useCustomProperties
 
         Layout.fillWidth: true
         Layout.fillHeight: true
         Layout.alignment: Qt.AlignLeft
-        sourceComponent: root.useCustomProperties ? root.customProperty : defaultNode
-    }
-
-    Component {
-        id: defaultNode
-
-        StyledText {
-            text: {
-                const app = root.node.properties["application.name"] ?? (root.node.description != "" ? root.node.description : root.node.name);
-                const media = root.node.properties["media.name"];
-                return media != undefined ? `${app} - ${media}` : app;
-            }
-            elide: Text.ElideRight
-            wrapMode: Text.Wrap
-            Layout.fillWidth: true
-        }
+        sourceComponent: root.customProperty
     }
 
     RowLayout {

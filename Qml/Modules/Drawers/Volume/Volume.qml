@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
@@ -334,15 +333,7 @@ Item {
                 implicitHeight: 30
                 opacity: mixer.showVolume ? 0 : 1
                 scale: mixer.showVolume ? 0.5 : 1
-                source: {
-                    const appName = mixer.node.name.split(".").pop();
-                    const isZen = ["zen", "zen-twilight", "Twilight", "twilight"].includes(appName);
-                    if (isZen) {
-                        const entry = DesktopEntries.heuristicLookup("zen-twilight") ?? DesktopEntries.heuristicLookup("zen");
-                        return Quickshell.iconPath(entry?.icon, "image-missing");
-                    }
-                    return Quickshell.iconPath(DesktopEntries.heuristicLookup(appName)?.icon, "image-missing");
-                }
+                source: IconUtils.guessIconPath(mixer.node)
 
                 Behavior on opacity {
                     NAnim {
