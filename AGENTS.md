@@ -72,8 +72,10 @@
 ## QML style guidelines
 
 - Follow the existing `.qmlformat.ini` run the formatter before submitting.
+- Avoid violated the `.qmllint.ini`, always run `Assets/shell/qmllint_qs.sh` to check the code warning/error.
+- Always use `qs.<start_from_qml_directory>` when import files unless the directory we need is inside the current file directory, for example: `qs.Core.Configs`
 - Component IDs: `camelCase`, descriptive, no abbreviations unless already established in the file (`root`, `rect`, `mouseArea` are fine defaults).
-- Wannable `local property/variable` names: `camelCase`, descriptive, no shortname, no abbbreviations, no underscore. Flag the local property with a comment above them.
+- When You create a local property/variable follow this. names: `camelCase`, descriptive, no shortname, no abbbreviations, no underscore. Flag the local property with a comment above them if too many.
 - Property declarations grouped and ordered: `id`, then `property` declarations, then signal handlers, then child items. Don't interleave.
 - Avoid deeply nested `Loader`/`Instantiator` chains where a `Repeater` or direct binding would do — nesting hurts both readability and reactivity debugging.
 - Anonymous inline `Component {}` blocks should be extracted to their own `.qml` file once they exceed ~30 lines or are reused more than once.
