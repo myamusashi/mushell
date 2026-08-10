@@ -4,6 +4,7 @@ import QtQuick.Controls
 
 import qs.Core.Configs
 import qs.Components.Base
+import qs.Components.Menu
 
 import "../Components"
 
@@ -51,7 +52,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Workspace Indicator Style:")
 
-            StyledComboBox {
+            DropdownField {
                 ToolTip.text: "Available values: 'dot', 'interactive'"
                 model: [
                     {

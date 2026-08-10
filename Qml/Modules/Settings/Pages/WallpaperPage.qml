@@ -7,6 +7,7 @@ import Quickshell
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
+import qs.Components.Menu
 import qs.Components.Dialog.FileDialog
 
 import "../Components"
@@ -222,7 +223,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Transition Animation Mode:")
 
-            StyledComboBox {
+            DropdownField {
                 model: [
                     {
                         display: "none"

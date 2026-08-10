@@ -7,6 +7,7 @@ import Quickshell
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
+import qs.Components.Menu
 
 import "../Components"
 
@@ -176,7 +177,7 @@ SettingsPageBase {
 
         onConfigValueChanged: appCombo.currentIndex = appModel.values.findIndex(item => item.display === configValue)
 
-        StyledComboBox {
+        DropdownField {
             id: appCombo
 
             Layout.preferredWidth: 250

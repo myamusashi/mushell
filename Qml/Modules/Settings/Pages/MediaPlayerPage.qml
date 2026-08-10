@@ -3,6 +3,7 @@ import QtQuick.Layouts
 
 import qs.Core.Configs
 import qs.Components.Base
+import qs.Components.Menu
 
 import "../Components"
 
@@ -37,7 +38,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Slider type:")
 
-            StyledComboBox {
+            DropdownField {
                 id: waveTypeCombo
 
                 Layout.preferredWidth: 250

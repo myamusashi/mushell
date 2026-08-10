@@ -2,6 +2,7 @@ import QtQuick
 
 import qs.Core.Configs
 import qs.Components.Base
+import qs.Components.Menu
 import qs.Services.ScreenRecorder
 
 import "../Components"
@@ -14,7 +15,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Frame Rate")
-            StyledComboBox {
+            DropdownField {
                 textRole: "display"
                 valueRole: "value"
                 model: [
@@ -41,7 +42,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Bitrate")
-            StyledComboBox {
+            DropdownField {
                 textRole: "display"
                 valueRole: "value"
                 model: [
@@ -72,7 +73,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Video Codec")
-            StyledComboBox {
+            DropdownField {
                 textRole: "display"
                 valueRole: "value"
                 model: [
@@ -111,7 +112,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Audio Codec")
-            StyledComboBox {
+            DropdownField {
                 textRole: "display"
                 valueRole: "value"
                 model: [
@@ -146,7 +147,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Power Mode")
-            StyledComboBox {
+            DropdownField {
                 textRole: "display"
                 valueRole: "value"
                 model: [

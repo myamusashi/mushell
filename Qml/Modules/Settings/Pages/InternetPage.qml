@@ -9,6 +9,7 @@ import Quickshell.Networking
 import qs.Components.Feedback
 import qs.Components.Base
 import qs.Components.Dialog
+import qs.Components.Menu
 import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
@@ -144,7 +145,7 @@ Item {
                     SettingRow {
                         label: qsTr("Bandwidth:")
 
-                        StyledComboBox {
+                        DropdownField {
                             implicitWidth: 240
                             currentIndex: Hotspot.band === "a" ? 1 : 0
                             model: [
