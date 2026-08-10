@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 
 import qs.Components.Base
@@ -17,17 +16,12 @@ LazyLoader {
 
     property int currentPage: 0
 
-    // Content area keeps a constant width so the pages flex when the
-    // navigation rail expands/collapses; only the rail width changes.
     readonly property int contentWidth: 640
 
     activeAsync: GlobalStates.isSettingsOpen
     component: FloatingWindow {
         color: "transparent"
         onClosed: GlobalStates.isSettingsOpen = false
-
-        // Window width is explicit and constant: the rail's animation is
-        // absorbed by the pages column, which therefore resizes on toggle.
         implicitWidth: Appearance.margin.large * 2 + Appearance.spacing.large * 2 + 1 + navRail.expandedWidth + settingsLoader.contentWidth
 
         Rectangle {
@@ -42,8 +36,6 @@ LazyLoader {
                 radius: parent.radius
             }
 
-            // Pure anchor geometry (no Layouts): the rail's width change must
-            // not pass through Layout pixel-quantization for a smooth resize.
             Item {
                 anchors.fill: parent
                 anchors.margins: Appearance.margin.large
@@ -84,26 +76,65 @@ LazyLoader {
                         anchors.bottom: parent.bottom
 
                         model: [
-                            { icon: "settings", label: qsTr("General") },
-                            { icon: "palette", label: qsTr("Appearance") },
-                            { icon: "table_rows", label: qsTr("Top Bar") },
-                            { icon: "wall_art", label: qsTr("Wallpaper") },
-                            { icon: "genres", label: qsTr("Media Player") },
-                            { icon: "cloud", label: qsTr("Weather") },
-                            { icon: "language", label: qsTr("Language") },
-                            { icon: "wifi", label: qsTr("Network & Internet") },
-                            { icon: "assignment", label: qsTr("Clipboard") },
-                            { icon: "notifications", label: qsTr("Notification") },
-                            { icon: "smartphone", label: qsTr("KDE Connect") },
-                            { icon: "screen_record", label: qsTr("Screen Recorder") },
-                            { icon: "hourglass", label: qsTr("Idle") }
+                            {
+                                icon: "settings",
+                                label: qsTr("General")
+                            },
+                            {
+                                icon: "palette",
+                                label: qsTr("Appearance")
+                            },
+                            {
+                                icon: "table_rows",
+                                label: qsTr("Top Bar")
+                            },
+                            {
+                                icon: "wall_art",
+                                label: qsTr("Wallpaper")
+                            },
+                            {
+                                icon: "genres",
+                                label: qsTr("Media Player")
+                            },
+                            {
+                                icon: "cloud",
+                                label: qsTr("Weather")
+                            },
+                            {
+                                icon: "language",
+                                label: qsTr("Language")
+                            },
+                            {
+                                icon: "wifi",
+                                label: qsTr("Network & Internet")
+                            },
+                            {
+                                icon: "assignment",
+                                label: qsTr("Clipboard")
+                            },
+                            {
+                                icon: "notifications",
+                                label: qsTr("Notification")
+                            },
+                            {
+                                icon: "smartphone",
+                                label: qsTr("KDE Connect")
+                            },
+                            {
+                                icon: "screen_record",
+                                label: qsTr("Screen Recorder")
+                            },
+                            {
+                                icon: "hourglass",
+                                label: qsTr("Idle")
+                            }
                         ]
                         currentIndex: settingsLoader.currentPage
                         expanded: true
                         fabIcon: ""
                         backgroundColor: "transparent"
 
-                        onActivated: function(index) {
+                        onActivated: function (index) {
                             settingsLoader.currentPage = index;
                         }
                     }
@@ -130,62 +161,98 @@ LazyLoader {
                     anchors.right: parent.right
                     color: "transparent"
 
-                    StackLayout {
-                        id: stackLayout
-
+                    Column {
                         anchors.fill: parent
-                        currentIndex: settingsLoader.currentPage
 
                         Loader {
-                            active: stackLayout.currentIndex === 0
+                            visible: settingsLoader.currentPage === 0
+                            active: settingsLoader.currentPage === 0
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: GeneralPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 1
+                            visible: settingsLoader.currentPage === 1
+                            active: settingsLoader.currentPage === 1
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: AppearancePage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 2
+                            visible: settingsLoader.currentPage === 2
+                            active: settingsLoader.currentPage === 2
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: BarPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 3
+                            visible: settingsLoader.currentPage === 3
+                            active: settingsLoader.currentPage === 3
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: WallpaperPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 4
+                            visible: settingsLoader.currentPage === 4
+                            active: settingsLoader.currentPage === 4
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: MediaPlayerPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 5
+                            visible: settingsLoader.currentPage === 5
+                            active: settingsLoader.currentPage === 5
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: WeatherPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 6
+                            visible: settingsLoader.currentPage === 6
+                            active: settingsLoader.currentPage === 6
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: LanguagePage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 7
+                            visible: settingsLoader.currentPage === 7
+                            active: settingsLoader.currentPage === 7
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: InternetPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 8
+                            visible: settingsLoader.currentPage === 8
+                            active: settingsLoader.currentPage === 8
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: ClipboardPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 9
+                            visible: settingsLoader.currentPage === 9
+                            active: settingsLoader.currentPage === 9
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: NotificationPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 10
+                            visible: settingsLoader.currentPage === 10
+                            active: settingsLoader.currentPage === 10
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: KDEConnectPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 11
+                            visible: settingsLoader.currentPage === 11
+                            active: settingsLoader.currentPage === 11
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: ScreenRecorderPage {}
                         }
                         Loader {
-                            active: stackLayout.currentIndex === 12
+                            visible: settingsLoader.currentPage === 12
+                            active: settingsLoader.currentPage === 12
+                            width: parent.width
+                            height: parent.height
                             sourceComponent: IdlePage {}
                         }
                     }

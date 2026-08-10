@@ -8,8 +8,6 @@ import Quickshell.Services.Pipewire
 Singleton {
     id: root
 
-    // Icon source for a pipewire node: prefers the application.icon-name
-    // property, then resolves a desktop entry from the derived id
     function guessIconPath(node: PwNode): string {
         if (!node)
             return "image-missing";
@@ -19,7 +17,6 @@ Singleton {
         return root.iconForId(root.desktopId(node));
     }
 
-    // Icon source for a desktop id, e.g. mpris player desktop entries
     function iconForId(desktopId: string): string {
         if (!desktopId)
             return "image-missing";
@@ -30,7 +27,6 @@ Singleton {
         return Quickshell.iconPath(DesktopEntries.heuristicLookup(desktopId)?.icon, "image-missing");
     }
 
-    // Pipewire nodes don't carry a desktop id, so derive one from its properties
     function desktopId(node: PwNode): string {
         const appId = node.properties["application.id"];
         if (appId)

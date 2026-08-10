@@ -1,14 +1,14 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
+import Quickshell.Widgets
 
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 
-Item {
+WrapperItem {
     id: root
 
     property string icon: ""
@@ -16,8 +16,6 @@ Item {
     property bool selected: false
     property bool expanded: false
 
-    // Badge: set badgeText for a numeric/short count, or badgeDot: true
-    // for a plain unread-style dot. badgeText takes priority if both set.
     property string badgeText: ""
     property bool badgeDot: false
 
@@ -26,123 +24,105 @@ Item {
     readonly property real compactPillHeight: 32
     readonly property real compactPillWidth: 56
     readonly property real expandedItemHeight: 56
+    readonly property real compactLabelGap: 5
+    readonly property real expandedLabelWidth: 124
+    readonly property real iconCellSize: 24
+    readonly property real iconCellX: Appearance.margin.normal
 
-    // implicitWidth must not depend on parent width: containers stretch this
-    // item via Layout.fillWidth, and a parent-relative implicit size would
-    // create a recursive rearrange with Qt Quick Layouts.
-    // Compact mode is icon-only (no label), per M3 rail design.
     implicitWidth: compactPillWidth
-    implicitHeight: expanded ? Math.max(root.expandedItemHeight, expandedLabelText.implicitHeight) : compactPillHeight
+    implicitHeight: expanded ? Math.max(root.expandedItemHeight, labelText.implicitHeight) : root.compactPillHeight + root.compactLabelGap + labelText.implicitHeight
 
-    Behavior on implicitHeight {
-        NAnim {}
-    }
+    leftMargin: root.expanded ? Appearance.margin.normal : Math.max(0, (root.width - root.compactPillWidth) / 2)
+    rightMargin: leftMargin
+    bottomMargin: root.expanded ? 0 : root.height - root.compactPillHeight
 
     MArea {
         id: area
 
-        anchors.fill: parent
         layerRadius: root.expanded ? Appearance.rounding.large : Appearance.rounding.full
         onClicked: root.triggered()
 
-        // Compact layout: centered pill + icon, no label
-        ColumnLayout {
-            anchors.centerIn: parent
-            spacing: Appearance.spacing.smaller
-            visible: !root.expanded
-            opacity: root.expanded ? 0 : 1
+        layerRect.anchors.fill: undefined
+        layerRect.x: background.x
+        layerRect.y: background.y
+        layerRect.width: background.width
+        layerRect.height: background.height
 
-            Behavior on opacity {
+        StyledRect {
+            id: background
+
+            x: root.expanded ? 0 : root.iconCellX + root.iconCellSize / 2 - root.compactPillWidth / 2
+            y: 0
+            width: root.expanded ? parent.width : root.compactPillWidth
+            height: root.expanded ? root.expandedItemHeight : root.compactPillHeight
+            radius: root.expanded ? Appearance.rounding.large : Appearance.rounding.full
+            color: root.selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
+
+            Behavior on height {
                 NAnim {}
             }
-
-            StyledRect {
-                id: compactPill
-
-                Layout.preferredWidth: root.compactPillWidth
-                Layout.preferredHeight: root.compactPillHeight
-                Layout.alignment: Qt.AlignHCenter
-                radius: Appearance.rounding.full
-                color: root.selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
-
-                Icon {
-                    anchors.centerIn: parent
-                    icon: root.icon
-                    font.pixelSize: Appearance.fonts.size.larger
-                    color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
-                }
-
-                RailBadge {
-                    anchors.top: parent.top
-                    anchors.right: parent.right
-                    anchors.topMargin: -4
-                    anchors.rightMargin: -4
-                    text: root.badgeText
-                    dot: root.badgeDot
-                }
+            Behavior on width {
+                NAnim {}
+            }
+            Behavior on x {
+                NAnim {}
             }
         }
 
-        // Expanded layout: full-width pill, icon+label inline, badge trailing
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: Appearance.margin.normal
-            anchors.rightMargin: Appearance.margin.normal
-            spacing: Appearance.spacing.normal
-            visible: root.expanded
-            opacity: root.expanded ? 1 : 0
+        Item {
+            id: iconCell
 
-            Behavior on opacity {
-                NAnim {}
+            x: root.iconCellX
+            width: root.iconCellSize
+            height: root.iconCellSize
+            anchors.verticalCenter: background.verticalCenter
+
+            Icon {
+                anchors.centerIn: parent
+                icon: root.icon
+                font.pixelSize: Appearance.fonts.size.larger
+                color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             }
 
-            StyledRect {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                radius: Appearance.rounding.large
-                color: root.selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
+            RailBadge {
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.topMargin: -4
+                anchors.rightMargin: root.expanded ? -6 : -4
+                text: root.badgeText
+                dot: root.badgeDot
+            }
+        }
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: Appearance.margin.normal
-                    anchors.rightMargin: Appearance.margin.normal
-                    spacing: Appearance.spacing.normal
+        StyledText {
+            id: labelText
 
-                    Item {
-                        Layout.preferredWidth: 24
-                        Layout.preferredHeight: 24
+            readonly property real expandedLabelX: iconCell.x + iconCell.width + Appearance.spacing.normal
+            readonly property real expandedLabelHeight: font.pixelSize * 1.2
 
-                        Icon {
-                            anchors.centerIn: parent
-                            icon: root.icon
-                            font.pixelSize: Appearance.fonts.size.large
-                            color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
-                        }
+            readonly property real compactX: (parent.width - root.compactPillWidth) / 2
+            readonly property real compactY: root.compactPillHeight + root.compactLabelGap
+            readonly property real expandedX: expandedLabelX
+            readonly property real expandedY: (root.expandedItemHeight - expandedLabelHeight) / 2
 
-                        RailBadge {
-                            anchors.top: parent.top
-                            anchors.right: parent.right
-                            anchors.topMargin: -4
-                            anchors.rightMargin: -6
-                            text: root.badgeText
-                            dot: root.badgeDot
-                        }
-                    }
+            property real progress: root.expanded ? 1 : 0
 
-                    StyledText {
-                        id: expandedLabelText
-
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.alignment: Qt.AlignVCenter
-                        text: root.label
-                        wrapMode: Text.Wrap
-                        font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: root.selected ? Font.Medium : Font.Normal
-                        color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurface
-                    }
+            Behavior on progress {
+                NAnim {
+                    duration: Appearance.animations.durations.normal
                 }
             }
+
+            text: root.label
+            wrapMode: Text.Wrap
+            horizontalAlignment: Text.AlignLeft
+            font.pixelSize: Appearance.fonts.size.normal
+            font.weight: root.selected ? Font.Medium : Font.Normal
+            color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurface
+
+            x: compactX + (expandedX - compactX) * progress
+            y: compactY + (expandedY - compactY) * progress
+            width: root.compactPillWidth + (root.expandedLabelWidth - root.compactPillWidth) * progress
         }
     }
 }

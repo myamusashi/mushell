@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
+import Quickshell.Widgets
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -11,13 +11,10 @@ import qs.Services
 Item {
     id: root
 
-    // Model items: [{ icon, label, badgeText?, badgeDot? }, ...]
     property var model: []
     property int currentIndex: 0
     property bool expanded: false
 
-    // Optional primary/FAB-style action shown below the toggle.
-    // Leave fabIcon empty to omit it entirely.
     property string fabIcon: ""
     property string fabLabel: ""
     signal fabTriggered
@@ -29,8 +26,6 @@ Item {
     readonly property real compactWidth: 80
     readonly property real expandedWidth: 220
 
-    // Animated internal width: implicitWidth cannot carry a Behavior because
-    // it is bound, so toggling triggers an explicit NumberAnimation instead.
     property real animatedRailWidth: root.expanded ? root.expandedWidth : root.compactWidth
 
     implicitWidth: root.animatedRailWidth
@@ -48,7 +43,7 @@ Item {
         target: root
         property: "animatedRailWidth"
         duration: Appearance.animations.durations.normal
-        easing.bezierCurve: Appearance.animations.curves.emphasized
+        easing.bezierCurve: Appearance.animations.curves.standard
     }
 
     StyledRect {
@@ -57,32 +52,29 @@ Item {
         radius: 0
     }
 
-    ColumnLayout {
+    Column {
+        id: railColumn
+
         anchors.fill: parent
         anchors.topMargin: Appearance.margin.normal
         anchors.bottomMargin: Appearance.margin.normal
-        spacing: Appearance.spacing.large
+        spacing: Appearance.spacing.small
 
-        // Toggle button, icon-only. Alignment grid (per mode):
-        // - expanded: full width inset by margin.normal, icon at left+normal
-        // - compact:  56px footprint centered on the column, icon centered
-        // Explicit width keeps the resize off Layout pixel-quantization.
         Item {
-            Layout.preferredHeight: 40
-            width: root.expanded ? parent.width - Appearance.margin.normal * 2 : 56 // qmllint disable
-            Layout.alignment: Qt.AlignHCenter
+            height: 40
+            width: railColumn.width - Appearance.margin.normal * 2
+            anchors.left: parent.left
+            anchors.leftMargin: Appearance.margin.normal
 
             MArea {
                 anchors.fill: parent
+                anchors.rightMargin: parent.width - 40
                 layerRadius: Appearance.rounding.full
                 onClicked: root.expanded = !root.expanded
 
                 Icon {
                     anchors.left: parent.left
-                    // Compact centered via leftMargin compensation instead of
-                    // switching anchors (conditional anchors stick after the
-                    // first mode change). Expanded: left-inset grid point.
-                    anchors.leftMargin: root.expanded ? Appearance.margin.normal : parent.width / 2 - width / 2
+                    anchors.leftMargin: (parent.width - width) / 2
                     anchors.verticalCenter: parent.verticalCenter
                     icon: root.expanded ? "menu_open" : "menu"
                     font.pixelSize: Appearance.fonts.size.larger
@@ -91,18 +83,56 @@ Item {
             }
         }
 
-        // Optional FAB-style primary action, same alignment grid as the
-        // toggle: expanded full width inset by margin.normal, compact
-        // centered 56px footprint.
         Item {
+            visible: fabItem.visible
+            width: 1
+            height: Appearance.spacing.large - Appearance.spacing.small * 2
+        }
+
+        WrapperItem {
+            id: fabItem
+
             visible: root.fabIcon !== ""
-            Layout.preferredHeight: 56
-            width: root.expanded ? parent.width - Appearance.margin.normal * 2 : 56 // qmllint disable
-            Layout.alignment: Qt.AlignHCenter
+            implicitHeight: 56
+            anchors.left: parent.left
+            anchors.leftMargin: Appearance.margin.normal
+
+            states: [
+                State {
+                    name: "compact"
+                    when: !root.expanded
+
+                    // qmllint disable Quick.property-changes-parsed
+                    PropertyChanges {
+                        target: fabItem
+                        implicitWidth: 56
+                    }
+                },
+                State {
+                    name: "expanded"
+                    when: root.expanded
+
+                    PropertyChanges {
+                        target: fabItem
+                        implicitWidth: railColumn.width - Appearance.margin.normal * 2
+                    }
+                }
+                // qmllint enable Quick.property-changes-parsed
+
+
+            ]
+
+            transitions: Transition {
+                ParallelAnimation {
+                    NAnim {
+                        properties: "implicitWidth"
+                    }
+                }
+            }
 
             MArea {
-                anchors.fill: parent
                 layerRadius: Appearance.rounding.large
+                layerRect.opacity: 0.0
                 onClicked: root.fabTriggered()
 
                 StyledRect {
@@ -110,79 +140,89 @@ Item {
                     radius: Appearance.rounding.large
                     color: Colours.m3Colors.m3PrimaryContainer
 
-                    // Expanded: icon + label row on the left-inset grid
-                    RowLayout {
-                        anchors.fill: parent
+                    Icon {
+                        id: fabLeadingIcon
+
+                        anchors.left: parent.left
                         anchors.leftMargin: Appearance.margin.normal
+                        anchors.verticalCenter: parent.verticalCenter
+                        icon: root.fabIcon
+                        font.pixelSize: Appearance.fonts.size.larger
+                        color: Colours.m3Colors.m3OnPrimaryContainer
+                    }
+
+                    StyledText {
+                        anchors.left: fabLeadingIcon.right
+                        anchors.leftMargin: Appearance.spacing.normal
+                        anchors.right: parent.right
                         anchors.rightMargin: Appearance.margin.normal
-                        spacing: Appearance.spacing.normal
-                        visible: root.expanded
-
-                        Icon {
-                            icon: root.fabIcon
-                            font.pixelSize: Appearance.fonts.size.larger
-                            color: Colours.m3Colors.m3OnPrimaryContainer
-                        }
-
-                        StyledText {
-                            Layout.fillWidth: true
-                            text: root.fabLabel
-                            font.pixelSize: Appearance.fonts.size.normal
-                            font.weight: Font.Medium
-                            color: Colours.m3Colors.m3OnPrimaryContainer
-                            elide: Text.ElideRight
-                        }
-                    }
-
-                    // Compact: icon centered in the 56px footprint
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: Appearance.spacing.normal
-                        visible: !root.expanded
-
-                        Icon {
-                            icon: root.fabIcon
-                            font.pixelSize: Appearance.fonts.size.larger
-                            color: Colours.m3Colors.m3OnPrimaryContainer
-                        }
-                    }
-                }
-            }
-        }
-
-        // Destination items, explicit width (Layout would pixel-quantize the
-        // animated resize).
-        ColumnLayout {
-            width: parent.width // qmllint disable
-            Layout.topMargin: Appearance.spacing.normal
-            spacing: Appearance.spacing.small
-
-            Repeater {
-                model: root.model
-
-                NavigationRailItem {
-                    required property int index
-                    required property var modelData
-
-                    width: parent.width - (root.expanded ? Appearance.margin.normal : Appearance.margin.smaller) * 2 // qmllint disable
-
-                    icon: modelData.icon ?? ""
-                    label: modelData.label ?? ""
-                    badgeText: modelData.badgeText ?? ""
-                    badgeDot: modelData.badgeDot ?? false
-                    selected: index === root.currentIndex
-                    expanded: root.expanded
-
-                    onTriggered: {
-                        root.currentIndex = index;
-                        root.activated(index);
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: root.fabLabel
+                        font.pixelSize: Appearance.fonts.size.normal
+                        font.weight: Font.Medium
+                        color: Colours.m3Colors.m3OnPrimaryContainer
+                        elide: Text.ElideRight
                     }
                 }
             }
         }
 
         Item {
-            Layout.fillHeight: true
+            width: 1
+            height: Appearance.spacing.large + Appearance.spacing.normal - Appearance.spacing.small * 2
+        }
+
+        Flickable {
+            id: destinationsFlick
+
+            width: railColumn.width
+            height: railColumn.height - y
+            contentWidth: width
+            contentHeight: destinationsColumn.height
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            boundsMovement: Flickable.StopAtBounds
+            flickableDirection: Flickable.VerticalFlick
+
+            WheelHandler {
+                target: destinationsFlick
+                onWheel: event => {
+                    const maxY = Math.max(0, destinationsFlick.contentHeight - destinationsFlick.height);
+                    destinationsFlick.contentY = Math.max(0, Math.min(maxY, destinationsFlick.contentY - event.angleDelta.y));
+                }
+            }
+
+            Column {
+                id: destinationsColumn
+
+                width: destinationsFlick.width
+                spacing: railColumn.spacing
+
+                Repeater {
+                    model: root.model
+
+                    delegate: NavigationRailItem {
+                        required property int index
+                        required property var modelData
+
+                        x: (destinationsColumn.width - width) / 2
+                        width: destinationsColumn.width - (root.expanded ? Appearance.margin.normal : Appearance.margin.smaller) * 2
+                        height: implicitHeight
+
+                        icon: modelData.icon ?? ""
+                        label: modelData.label ?? ""
+                        badgeText: modelData.badgeText ?? ""
+                        badgeDot: modelData.badgeDot ?? false
+                        selected: index === root.currentIndex
+                        expanded: root.expanded
+
+                        onTriggered: {
+                            root.currentIndex = index;
+                            root.activated(index);
+                        }
+                    }
+                }
+            }
         }
     }
 }

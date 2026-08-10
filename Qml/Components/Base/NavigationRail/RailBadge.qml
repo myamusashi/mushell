@@ -4,8 +4,6 @@ import qs.Components.Base
 import qs.Core.Configs
 import qs.Services
 
-// Numeric/short-text badge (e.g. "3") or a plain unread dot.
-// text takes priority over dot if both are set. Renders nothing if neither is set.
 Item {
     id: root
 
