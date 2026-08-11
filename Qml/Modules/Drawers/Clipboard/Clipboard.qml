@@ -40,6 +40,30 @@ WrapperRectangle {
         value: ToplevelManager.activeToplevel ? ToplevelManager.activeToplevel.appId : ""
     }
 
+    IpcHandler {
+        target: "clipboard"
+
+        function list(): string {
+            return JSON.stringify(ClipboardManager.model.entries());
+        }
+        function status(): string {
+            return JSON.stringify({
+                enabled: ClipboardManager.enabled,
+                count: ClipboardManager.model.count,
+                maxEntries: ClipboardManager.maxEntries
+            });
+        }
+        function remove(id: int): void {
+            ClipboardManager.remove(id);
+        }
+        function clear(): bool {
+            return ClipboardManager.clearAll();
+        }
+        function search(query: string): void {
+            ClipboardManager.model.setFilter(query);
+        }
+    }
+
     QtObject {
         id: d
 

@@ -389,6 +389,19 @@ namespace vast {
         return true;
     }
 
+    [[nodiscard]] bool ClipboardManager::clearAll() {
+        if (!mDatabase)
+            return false;
+
+        if (auto r = mDatabase->clearAll(); !r) {
+            qWarning() << "[ClipboardManager] clearAll failed:" << r.error();
+            return false;
+        }
+
+        QTimer::singleShot(0, this, &ClipboardManager::loadAllEntries);
+        return true;
+    }
+
     void ClipboardManager::requestFullEntry(qint64 id) {
         mPendingEntryId = id;
         if (id < 0 || !mDatabase)

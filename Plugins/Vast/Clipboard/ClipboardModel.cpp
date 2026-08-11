@@ -279,6 +279,25 @@ namespace vast {
         return visibleAt(row).id;
     }
 
+    QVariantList ClipboardModel::entries() const {
+        QVariantList out;
+        out.reserve(mEntries.size());
+        for (const auto& e : mEntries) {
+            QVariantMap map;
+            map[QStringLiteral("entryId")]   = e.id;
+            map[QStringLiteral("type")]      = e.typeString();
+            map[QStringLiteral("preview")]   = makePreview(e);
+            map[QStringLiteral("timestamp")] = e.timestamp;
+            map[QStringLiteral("pinned")]    = e.pinned;
+            map[QStringLiteral("sourceApp")] = e.sourceApp;
+            map[QStringLiteral("mimeType")]  = e.mimeType;
+            map[QStringLiteral("sizeBytes")] = e.sizeBytes;
+            map[QStringLiteral("fileName")]  = QFileInfo(e.fileName).fileName();
+            out.append(map);
+        }
+        return out;
+    }
+
     QString ClipboardModel::typeAtRow(int row) const {
         if (row < 0 || row >= visibleCount())
             return {};

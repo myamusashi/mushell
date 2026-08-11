@@ -247,6 +247,17 @@ namespace vast {
         return {};
     }
 
+    [[nodiscard]] std::expected<void, QString> ClipboardDatabase::clearAll() {
+        if (!mOpen || !mDb)
+            return std::unexpected(QStringLiteral("Database is not open"));
+
+        QSqlQuery q{*mDb};
+        if (!q.exec(QStringLiteral("DELETE FROM clipboard_entries")))
+            return std::unexpected(lastError());
+
+        return {};
+    }
+
     [[nodiscard]] std::expected<void, QString> ClipboardDatabase::clearUnpinned() {
         if (!mOpen || !mDb)
             return std::unexpected(QStringLiteral("Database is not open"));

@@ -35,6 +35,7 @@ namespace vast {
         [[nodiscard]] std::expected<qint64, QString>                removeMany(const QList<qint64>& ids, bool skipPinned = true);
         [[nodiscard]] std::expected<void, QString>                  setPin(qint64 id, bool pinned);
         [[nodiscard]] std::expected<void, QString>                  clearUnpinned();
+        [[nodiscard]] std::expected<void, QString>                  clearAll();
         [[nodiscard]] std::expected<void, QString>                  bumpTimestamp(qint64 id);
         [[nodiscard]] std::expected<std::vector<qint64>, QString>   pruneToLimit(int maxEntries, qint64 maxBytes);
         [[nodiscard]] bool                                          existsByHash(const QByteArray& hash);

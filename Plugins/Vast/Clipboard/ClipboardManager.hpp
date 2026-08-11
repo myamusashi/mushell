@@ -60,6 +60,7 @@ namespace vast {
         Q_INVOKABLE void               pin(qint64 id, bool pinned);
         Q_INVOKABLE void               remove(qint64 id);
         Q_INVOKABLE [[nodiscard]] bool clearUnpinned();
+        Q_INVOKABLE [[nodiscard]] bool clearAll();
         Q_INVOKABLE void               requestFullEntry(qint64 id);
 
       signals:

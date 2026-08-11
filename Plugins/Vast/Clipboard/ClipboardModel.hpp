@@ -58,6 +58,7 @@ namespace vast {
         void                                       bumpToTop(qint64 id);
 
         [[nodiscard]] Q_INVOKABLE qint64           idAtRow(int row) const;
+        [[nodiscard]] Q_INVOKABLE QVariantList     entries() const;
         [[nodiscard]] Q_INVOKABLE QString          typeAtRow(int row) const;
 
       signals:
