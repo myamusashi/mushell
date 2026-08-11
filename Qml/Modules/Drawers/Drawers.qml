@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 
 import qs.Core.Configs
 import qs.Core.States
@@ -53,13 +54,7 @@ Variants {
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.namespace: "shell:drawers"
         WlrLayershell.keyboardFocus: needFocusKeyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-        // HyprlandWindow.visibleMask: Region {
-        //     item: window.contentItem.children
-        // }
-        // BackgroundEffect.blurRegion: Region {
-        //     item: window.contentItem.children
-        // }
-
+        HyprlandWindow.visibleMask: childRegions.instances
         mask: Region {
             regions: childRegions.instances
             item: cornersArea
