@@ -110,7 +110,8 @@ Item {
 
             implicitWidth: 20
             implicitHeight: 20
-            shape: root.shapeList[index % root.shapeList.length]
+            shape: MaterialShape.Circle
+            animationDuration: 350
             property color shapeTarget: root.unlockInProgress ? Colours.m3Colors.m3OnSurfaceVariant : root.isUnlocked ? Colours.m3Colors.m3Green : Colours.m3Colors.m3Primary
             property color cFrom
             property color cTo
@@ -136,6 +137,26 @@ Item {
                 cAnim.start();
             }
 
+            Component.onCompleted: {
+                shape = root.shapeList[index % root.shapeList.length];
+
+                cAnim.stop();
+                color = "white";
+                cFrom = "white";
+                cTo = shapeTarget;
+                cActive = true;
+                cBlend = 0.0;
+                cAnim.start();
+            }
+
+            Connections {
+                target: root
+                function onIsUnlockedChanged() {
+                    if (root.isUnlocked)
+                        shapeDelegate.shape = MaterialShape.Circle;
+                }
+            }
+
             NAnim {
                 id: cAnim
                 target: shapeDelegate
@@ -153,11 +174,13 @@ Item {
                     to: 1
                     duration: Appearance.animations.durations.small
                 }
-                NAnim {
+                SpringAnimation {
                     property: "scale"
                     from: 0.5
                     to: 1
-                    duration: Appearance.animations.durations.small
+                    spring: 3.0
+                    damping: 0.4
+                    mass: 1.0
                 }
             }
         }
@@ -169,18 +192,22 @@ Item {
                     to: 0
                     duration: Appearance.animations.durations.small
                 }
-                NAnim {
+                SpringAnimation {
                     property: "scale"
                     from: 1
                     to: 0.5
-                    duration: Appearance.animations.durations.small
+                    spring: 4.0
+                    damping: 0.6
+                    mass: 1.0
                 }
             }
         }
         displaced: Transition {
-            NAnim {
+            SpringAnimation {
                 properties: "x"
-                duration: Appearance.animations.durations.small
+                spring: 3.0
+                damping: 0.4
+                mass: 1.0
             }
         }
     }
