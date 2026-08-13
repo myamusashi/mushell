@@ -8,7 +8,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 
-import "TextInputComponents/" as TI
+import "TextInputComponents" as TI
 
 Item {
     id: root

@@ -168,6 +168,18 @@
                 --prefix PATH : ${lib.makeBinPath (runtimeDeps ++ [app2unit])} \
                 --suffix PATH : /run/current-system/sw/bin \
 
+            makeWrapper ${quickshell.packages.${stdenv.hostPlatform.system}.default}/bin/quickshell \
+              $out/bin/quickshell \
+                --set VAST_SHELL_DIRECTORY "$out/share/quickshell" \
+                --set QT_QPA_FONTDIR "${material-symbols}/share/fonts/truetype" \
+                --prefix QML2_IMPORT_PATH : "$out/lib/qt-${qt6.qtbase.version}/qml" \
+                --prefix QML2_IMPORT_PATH : "${qt6.qt5compat}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${qt6.qtgraphs}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${another-ripple}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${vastPlugin}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix PATH : ${lib.makeBinPath runtimeDeps} \
+                --suffix PATH : /run/current-system/sw/bin \
+
             mkdir -p $out/share/fonts/truetype
             cp -r ${material-symbols}/share/fonts/truetype/* $out/share/fonts/truetype/
 
