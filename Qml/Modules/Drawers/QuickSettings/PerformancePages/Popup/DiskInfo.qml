@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 
@@ -6,6 +8,8 @@ import qs.Services
 import qs.Components.Base
 
 PopupWidget {
+    id: diskInfo
+
     icon: "storage"
     text: qsTr("Storage")
     content: ColumnLayout {
@@ -86,16 +90,7 @@ PopupWidget {
         }
 
         Repeater {
-            model: SystemUsage.filesystemNames.map(e => ({
-                        fs: e.name,
-                        fsType: e.type,
-                        mountPoint: e.mountpoint,
-                        totalMountPointData: e.totalFormatted,
-                        totalUsed: e.usedFormatted,
-                        freeSize: e.freeFormatted,
-                        values1: e.usedKB / 1024 / 1024,
-                        values2: e.totalKB / 1024 / 1024
-                    }))
+            model: fsModel
             delegate: ColumnLayout {
                 id: delegate
 
@@ -185,6 +180,54 @@ PopupWidget {
         }
     }
 
+    ListModel {
+        id: fsModel
+    }
+
+    function syncFsList() {
+        const list = SystemUsage.filesystemNames;
+
+        for (let i = fsModel.count - 1; i >= 0; i--) {
+            if (!list.some(e => e.name === fsModel.get(i).fs))
+                fsModel.remove(i, 1);
+        }
+
+        for (let i = 0; i < list.length; i++) {
+            const e = list[i];
+            const row = {
+                fs: e.name,
+                fsType: e.type,
+                mountPoint: e.mountpoint,
+                totalMountPointData: e.totalFormatted,
+                totalUsed: e.usedFormatted,
+                freeSize: e.freeFormatted,
+                values1: e.usedKB / 1024 / 1024,
+                values2: e.totalKB / 1024 / 1024
+            };
+            let index = -1;
+            for (let j = 0; j < fsModel.count; j++) {
+                if (fsModel.get(j).fs === e.name) {
+                    index = j;
+                    break;
+                }
+            }
+            if (index >= 0)
+                fsModel.set(index, row);
+            else
+                fsModel.append(row);
+        }
+    }
+
+    Connections {
+        target: SystemUsage
+
+        function onFilesystemNamesChanged() {
+            diskInfo.syncFsList();
+        }
+    }
+
+    Component.onCompleted: syncFsList()
+
     component Slider3Values: Item {
         id: root
 
@@ -250,7 +293,10 @@ PopupWidget {
             z: 1
 
             Behavior on width {
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.5
+                }
             }
         }
 
@@ -300,7 +346,10 @@ PopupWidget {
             z: 2
 
             Behavior on width {
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.5
+                }
             }
         }
     }
@@ -367,7 +416,10 @@ PopupWidget {
             radius: height / 2
 
             Behavior on implicitWidth {
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.5
+                }
             }
         }
     }
