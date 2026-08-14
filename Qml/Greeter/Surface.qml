@@ -16,7 +16,6 @@ WlSessionLockSurface {
     required property Auth auth
 
     signal successSequenceFinished
-    signal logoutRequested
 
     readonly property var _transitionNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll", "hexTile"]
     readonly property var _transitionConfigNames: ["fade", "wipedown", "circle", "dissolve", "splith", "slideup", "pixelate", "diagonal", "box", "roll", "hextile"]
@@ -95,8 +94,6 @@ WlSessionLockSurface {
             anchors.fill: parent
             auth: root.auth
             playEntrance: false
-
-            onLogoutRequested: root.logoutRequested()
         }
     }
 

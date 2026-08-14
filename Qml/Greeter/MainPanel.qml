@@ -16,7 +16,6 @@ PanelWindow {
     property bool launching: false
 
     signal entranceFinished
-    signal logoutRequested
 
     anchors {
         left: true
@@ -36,7 +35,6 @@ PanelWindow {
         visible: !root.launching
 
         onEntranceFinished: root.entranceFinished()
-        onLogoutRequested: root.logoutRequested()
     }
 
     Item {

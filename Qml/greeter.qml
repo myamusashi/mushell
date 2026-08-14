@@ -26,10 +26,6 @@ ShellRoot {
             if (!rootFlow.launching)
                 lock.locked = true;
         }
-        onLogoutRequested: {
-            lock.locked = false;
-            Qt.quit();
-        }
     }
 
     WlSessionLock {
@@ -43,10 +39,6 @@ ShellRoot {
             auth: authenticator
 
             onSuccessSequenceFinished: rootFlow.launchSession()
-            onLogoutRequested: {
-                lock.locked = false;
-                Qt.quit();
-            }
         }
     }
 

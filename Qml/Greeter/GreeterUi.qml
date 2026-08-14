@@ -17,7 +17,6 @@ Item {
     property bool playEntrance: true
 
     signal entranceFinished
-    signal logoutRequested
 
     Column {
         id: clockColumn
@@ -72,16 +71,6 @@ Item {
             id: powerRow
 
             spacing: Appearance.spacing.small
-
-            StyledButton {
-                icon.name: "logout"
-                icon.color: Colours.m3Colors.m3OnSurface
-                color: Qt.alpha(Colours.m3Colors.m3SurfaceContainerHighest, 0.8)
-                leftPad: 12
-                rightPad: 12
-
-                onClicked: root.logoutRequested()
-            }
 
             StyledButton {
                 icon.name: "restart_alt"
