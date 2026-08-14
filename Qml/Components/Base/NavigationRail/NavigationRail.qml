@@ -31,19 +31,11 @@ Item {
     implicitWidth: root.animatedRailWidth
     implicitHeight: parent ? parent.height : 480
 
-    onExpandedChanged: {
-        railWidthAnimation.stop();
-        railWidthAnimation.to = root.expanded ? root.expandedWidth : root.compactWidth;
-        railWidthAnimation.start();
-    }
-
-    NumberAnimation {
-        id: railWidthAnimation
-
-        target: root
-        property: "animatedRailWidth"
-        duration: Appearance.animations.durations.normal
-        easing.bezierCurve: Appearance.animations.curves.standard
+    Behavior on animatedRailWidth {
+        SpringAnimation {
+            spring: 2
+            damping: 0.2
+        }
     }
 
     StyledRect {

@@ -53,19 +53,26 @@ WrapperItem {
 
             x: root.expanded ? 0 : root.iconCellX + root.iconCellSize / 2 - root.compactPillWidth / 2
             y: 0
-            width: root.expanded ? parent.width : root.compactPillWidth
+            width: root.expanded ? parent.width : parent.width - Appearance.margin.normal
             height: root.expanded ? root.expandedItemHeight : root.compactPillHeight
             radius: root.expanded ? Appearance.rounding.large : Appearance.rounding.full
             color: root.selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
 
-            Behavior on height {
-                NAnim {}
+            Behavior on color {
+                CAnim {}
             }
-            Behavior on width {
-                NAnim {}
-            }
+
             Behavior on x {
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.2
+                }
+            }
+            Behavior on height {
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.2
+                }
             }
         }
 
@@ -82,6 +89,10 @@ WrapperItem {
                 icon: root.icon
                 font.pixelSize: Appearance.fonts.size.larger
                 color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
+
+                Behavior on color {
+                    CAnim {}
+                }
             }
 
             RailBadge {
@@ -119,6 +130,10 @@ WrapperItem {
             font.pixelSize: Appearance.fonts.size.normal
             font.weight: root.selected ? Font.Medium : Font.Normal
             color: root.selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurface
+
+            Behavior on color {
+                CAnim {}
+            }
 
             x: compactX + (expandedX - compactX) * progress
             y: compactY + (expandedY - compactY) * progress

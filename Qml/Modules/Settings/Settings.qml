@@ -22,7 +22,7 @@ LazyLoader {
     component: FloatingWindow {
         color: "transparent"
         onClosed: GlobalStates.isSettingsOpen = false
-        implicitWidth: Appearance.margin.large * 2 + Appearance.spacing.large * 2 + 1 + navRail.expandedWidth + settingsLoader.contentWidth
+        implicitWidth: Appearance.margin.large * 2 + Appearance.spacing.large * 2 + 1 + navRail.animatedRailWidth + settingsLoader.contentWidth
 
         Rectangle {
             anchors.fill: parent
