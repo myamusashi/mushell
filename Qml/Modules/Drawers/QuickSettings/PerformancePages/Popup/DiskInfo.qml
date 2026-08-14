@@ -198,9 +198,9 @@ PopupWidget {
                 fs: e.name,
                 fsType: e.type,
                 mountPoint: e.mountpoint,
-                totalMountPointData: e.totalFormatted,
-                totalUsed: e.usedFormatted,
-                freeSize: e.freeFormatted,
+                totalMountPointData: SystemUsage.formatKB(e.totalKB),
+                totalUsed: SystemUsage.formatKB(e.usedKB),
+                freeSize: SystemUsage.formatKB(e.freeKB),
                 values1: e.usedKB / 1024 / 1024,
                 values2: e.totalKB / 1024 / 1024
             };

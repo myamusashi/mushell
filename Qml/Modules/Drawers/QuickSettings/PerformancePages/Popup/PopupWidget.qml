@@ -16,6 +16,7 @@ WrapperRectangle {
     property alias icon: header.icon
     required property Component content
     property bool isVisible: false
+    property bool closing: false
     property real zoomOriginX: parent.width / 2
     property real zoomOriginY: parent.height / 2
 
@@ -28,6 +29,8 @@ WrapperRectangle {
     margin: Appearance.margin.small
     radius: Appearance.rounding.small
     color: Colours.m3Colors.m3SurfaceContainer
+    visible: root.isVisible || root.closing
+    enabled: root.isVisible
     scale: isVisible ? 1.0 : 0.5
     opacity: isVisible ? 1.0 : 0.0
     transformOrigin: Item.Center
@@ -61,6 +64,23 @@ WrapperRectangle {
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
+    }
+
+    onIsVisibleChanged: {
+        if (!root.isVisible) {
+            root.closing = true;
+            hideTimer.restart();
+        }
+    }
+
+    Timer {
+        id: hideTimer
+
+        // keep the popup visible only while the fade-out animation plays;
+        // once invisible it leaves the hit-test path entirely (a visible item
+        // at opacity 0 still swallows wheel/touch on the page below)
+        interval: Appearance.animations.durations.expressiveDefaultSpatial + 50
+        onTriggered: root.closing = false
     }
 
     ScrollView {
