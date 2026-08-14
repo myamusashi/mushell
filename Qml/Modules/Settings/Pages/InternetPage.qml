@@ -277,11 +277,6 @@ Item {
                                         onTapped: networkDelegate.tryConnect()
                                     }
 
-                                    TapHandler {
-                                        acceptedButtons: Qt.RightButton
-                                        onTapped: wifiContextMenu.popup()
-                                    }
-
                                     function tryConnect() {
                                         const net = networkDelegate.modelData;
                                         if (!net || net.connected)
@@ -297,20 +292,6 @@ Item {
                                         function onConnectionFailed(reason) {
                                             if (reason === ConnectionFailReason.NoSecrets)
                                                 wifiPskDialog.show(networkDelegate.modelData);
-                                        }
-                                    }
-
-                                    StyledMenu {
-                                        id: wifiContextMenu
-
-                                        StyledMenuItem {
-                                            text: networkDelegate.modelData?.connected ? qsTr("Disconnect") : qsTr("Connect")
-                                            onTriggered: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.tryConnect()
-                                        }
-
-                                        StyledMenuItem {
-                                            text: qsTr("Forget Network")
-                                            onTriggered: networkDelegate.modelData?.forget()
                                         }
                                     }
 
@@ -372,6 +353,18 @@ Item {
                                             }
                                         }
 
+                                        NetActionButton {
+                                            icon: networkDelegate.modelData?.connected ? "link_off" : "wifi_add"
+                                            iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                            onClicked: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.tryConnect()
+                                        }
+
+                                        NetActionButton {
+                                            icon: "delete"
+                                            iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                            onClicked: networkDelegate.modelData?.forget()
+                                        }
+
                                         Icon {
                                             visible: networkDelegate.modelData?.known === false
                                             icon: "lock"
@@ -389,6 +382,32 @@ Item {
                     Layout.fillHeight: true
                 }
             }
+        }
+    }
+
+    component NetActionButton: Item {
+        id: actionButton
+
+        signal clicked
+
+        required property string icon
+        required property color iconColor
+
+        implicitWidth: 28
+        implicitHeight: 28
+
+        Icon {
+            anchors.fill: parent
+            icon: actionButton.icon
+            color: actionButton.iconColor
+            font.pixelSize: Appearance.fonts.size.large * 1.5
+        }
+
+        MArea {
+            anchors.fill: parent
+            layerColor: Colours.m3Colors.m3OnSurface
+            cursorShape: Qt.PointingHandCursor
+            onClicked: actionButton.clicked()
         }
     }
 }
