@@ -29,6 +29,17 @@ RowLayout {
         readonly property WiredDevice wiredDevice: Networking.devices.values.find(d => d.type === DeviceType.Wired) ?? null
         readonly property bool isConnected: (wiredDevice?.state ?? ConnectionState.Disconnected) === ConnectionState.Connected
 
+        MArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: content && content.ethernet.isVisible ? Qt.ArrowCursor : Qt.PointingHandCursor // qmllint disable
+            enabled: content && !content.ethernet.isVisible // qmllint disable
+            onClicked: {
+                if (content) // qmllint disable
+                    content.ethernet.isVisible = !content.ethernet.isVisible; // qmllint disable
+            }
+        }
+
         RowLayout {
             anchors.fill: parent
             anchors.margins: Appearance.margin.normal

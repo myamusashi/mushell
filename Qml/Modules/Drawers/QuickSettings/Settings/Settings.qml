@@ -12,6 +12,7 @@ Item {
     anchors.fill: parent
 
     property alias wifi: wifi
+    property alias ethernet: ethernet
     readonly property bool isConnected: SystemUsage.statusWiredInterface === "connected"
     readonly property string wifiConnectedName: {
         const dev = Networking.devices.values.find(d => d.type === DeviceType.Wifi);
@@ -58,9 +59,16 @@ Item {
         z: 99
     }
 
+    EthernetList {
+        id: ethernet
+
+        anchors.centerIn: parent
+        z: 99
+    }
+
     StyledRect {
         anchors.fill: parent
-        visible: wifi.isVisible
+        visible: wifi.isVisible || ethernet.isVisible
         color: Qt.alpha(Colours.m3Colors.m3Surface, 0.7)
         z: 98
 
@@ -70,6 +78,9 @@ Item {
             onClicked: mouse => {
                 if (mouse.x < wifi.x || mouse.x > wifi.x + wifi.width || mouse.y < wifi.y || mouse.y > wifi.y + wifi.height) {
                     wifi.isVisible = false;
+                }
+                if (mouse.x < ethernet.x || mouse.x > ethernet.x + ethernet.width || mouse.y < ethernet.y || mouse.y > ethernet.y + ethernet.height) {
+                    ethernet.isVisible = false;
                 }
             }
         }

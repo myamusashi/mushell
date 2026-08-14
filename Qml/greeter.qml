@@ -22,7 +22,10 @@ ShellRoot {
         auth: authenticator
         launching: rootFlow.launching
 
-        onEntranceFinished: if (!rootFlow.launching) lock.locked = true
+        onEntranceFinished: {
+            if (!rootFlow.launching)
+                lock.locked = true;
+        }
         onLogoutRequested: {
             lock.locked = false;
             Qt.quit();
