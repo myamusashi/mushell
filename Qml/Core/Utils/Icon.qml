@@ -17,6 +17,8 @@ Text {
     antialiasing: true
     color: "transparent"
     renderType: Text.NativeRendering
+    horizontalAlignment: Text.AlignHCenter
+    verticalAlignment: Text.AlignVCenter
 
     font {
         family: root.type === Icon.Weather ? "Weather Icons" : Appearance.fonts.family.material
