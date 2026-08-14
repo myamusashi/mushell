@@ -134,7 +134,10 @@ PopupWidget {
             radius: height / 2
 
             Behavior on implicitWidth {
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.5
+                }
             }
 
             NAnim {

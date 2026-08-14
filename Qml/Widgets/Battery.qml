@@ -70,7 +70,10 @@ Item {
 
             Behavior on implicitWidth {
                 enabled: !root.batCharging
-                NAnim {}
+                SpringAnimation {
+                    spring: 2
+                    damping: 0.5
+                }
             }
         }
 

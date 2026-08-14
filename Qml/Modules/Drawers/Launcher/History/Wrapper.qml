@@ -70,9 +70,9 @@ Item {
 
     Behavior on x {
         enabled: !root.isRemoving && !delegateMouseNotif.drag.active
-        NAnim {
-            duration: Appearance.animations.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+        SpringAnimation {
+            spring: 2
+            damping: 0.3
         }
     }
 

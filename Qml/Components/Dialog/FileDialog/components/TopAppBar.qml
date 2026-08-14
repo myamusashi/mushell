@@ -131,8 +131,15 @@ Rectangle {
                 ]
 
                 transitions: Transition {
-                    NAnim {
-                        duration: Appearance.animations.durations.small
+                    ParallelAnimation {
+                        NAnim {
+                            properties: "implicitWidth,implicitHeight"
+                            duration: Appearance.animations.durations.small
+                        }
+                        CAnim {
+                            property: "color"
+                            duration: Appearance.animations.durations.small
+                        }
                     }
                 }
             }

@@ -247,7 +247,7 @@ Item {
             border.width: button.isCurrent ? 1 : 0
 
             Behavior on color {
-                NAnim {
+                CAnim {
                     duration: Appearance.animations.durations.small
                 }
             }

@@ -16,7 +16,10 @@ MouseArea {
 
     property real clickOpacity: 0.2
     property real hoverOpacity: 0.08
-    property NumberAnimation layerOpacityAnimation: NAnim {}
+    property Animation layerOpacityAnimation: SpringAnimation {
+        spring: 2
+        damping: 0.3
+    }
 
     hoverEnabled: true
     onContainsMouseChanged: layer.opacity = (area.containsMouse) ? area.hoverOpacity : 0

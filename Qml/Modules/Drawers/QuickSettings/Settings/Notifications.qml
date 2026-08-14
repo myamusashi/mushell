@@ -149,13 +149,14 @@ StyledRect {
                         duration: Appearance.animations.durations.small
                     }
 
-                    NAnim {
+                    SpringAnimation {
                         id: springBackAnim
 
                         target: root
                         property: "x"
                         to: 0
-                        duration: Appearance.animations.durations.small
+                        spring: 2
+                        damping: 0.3
                     }
 
                     Timer {
