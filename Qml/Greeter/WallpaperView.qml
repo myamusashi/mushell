@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Qt5Compat.GraphicalEffects
 
-import qs.Services
 import qs.Core.Utils
 
 Item {
@@ -30,24 +29,6 @@ Item {
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             cache: true
-        }
-    }
-
-    Rectangle {
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop {
-                position: 0.0
-                color: Qt.alpha(Colours.m3Colors.m3Scrim, 0.45)
-            }
-            GradientStop {
-                position: 0.5
-                color: Qt.alpha(Colours.m3Colors.m3Scrim, 0.25)
-            }
-            GradientStop {
-                position: 1.0
-                color: Qt.alpha(Colours.m3Colors.m3Scrim, 0.6)
-            }
         }
     }
 }

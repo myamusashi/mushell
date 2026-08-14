@@ -33,6 +33,7 @@ PanelWindow {
 
         anchors.fill: parent
         auth: root.auth
+        visible: !root.launching
 
         onEntranceFinished: root.entranceFinished()
         onLogoutRequested: root.logoutRequested()
