@@ -67,7 +67,11 @@ Item {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
-            onClicked: wifi.isVisible = false
+            onClicked: mouse => {
+                if (mouse.x < wifi.x || mouse.x > wifi.x + wifi.width || mouse.y < wifi.y || mouse.y > wifi.y + wifi.height) {
+                    wifi.isVisible = false;
+                }
+            }
         }
     }
 }
