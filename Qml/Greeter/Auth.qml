@@ -23,6 +23,9 @@ Scope {
     property bool launched: false
     property var users: []
     property ListModel sessions: ListModel {}
+    property string lastSessionCommand: ""
+
+    onLastSessionCommandChanged: root.selectSession(root.sessionIndexForCommand(root.lastSessionCommand))
 
     signal authenticated
 
@@ -60,6 +63,24 @@ Scope {
         root.statusMessage = "";
     }
 
+    function selectSession(index) {
+        if (index < 0 || index >= root.sessions.count)
+            return;
+        root.selectedSessionIndex = index;
+        const session = root.sessions.get(index);
+        if (session && session.command)
+            root.saveLastSession(session.command);
+    }
+
+    function saveLastSession(command) {
+        if (root.lastSessionCommand === command)
+            return;
+        root.lastSessionCommand = command;
+        Quickshell.execDetached({
+            command: [Paths.projectRoot + "/Assets/shell/last-session.sh", command]
+        });
+    }
+
     function launch() {
         if (root.launched)
             return;
@@ -69,6 +90,8 @@ Scope {
             index = 0;
         const session = root.sessions.get(index);
         const rawCommand = session && session.command ? session.command : "bash";
+        if (session && session.command)
+            root.saveLastSession(session.command);
         Greetd.launch(rawCommand.split(" ").filter(part => part.length > 0));
     }
 
@@ -151,7 +174,33 @@ Scope {
                         command: parts[1].trim()
                     });
                 }
+                root.selectSession(root.sessionIndexForCommand(root.lastSessionCommand));
             }
         }
+    }
+
+    Process {
+        id: lastSessionProcess
+
+        command: [Paths.projectRoot + "/Assets/shell/last-session.sh"]
+        running: true
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const value = text.trim();
+                if (value.length > 0)
+                    root.lastSessionCommand = value;
+            }
+        }
+    }
+
+    function sessionIndexForCommand(command) {
+        if (command === "")
+            return -1;
+        for (let i = 0; i < root.sessions.count; i++) {
+            if (root.sessions.get(i).command === command)
+                return i;
+        }
+        return -1;
     }
 }

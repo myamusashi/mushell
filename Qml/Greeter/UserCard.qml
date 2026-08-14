@@ -126,7 +126,7 @@ Item {
             placeholderText: qsTr("Session")
 
             onActivated: index => {
-                root.auth.selectedSessionIndex = index;
+                root.auth.selectSession(index);
                 passwordInput.forceActiveFocus();
             }
         }
