@@ -155,39 +155,50 @@ RowLayout {
                     Layout.alignment: Qt.AlignCenter
                     spacing: Appearance.spacing.normal
 
-                    StyledButton {
-                        implicitWidth: 18
-                        implicitHeight: 18
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: "discover_tune"
-                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        color: "transparent"
-                        onClicked: Configs.mediaPlayer.showLyrics = false
-                    }
+                    Icon {
+                        icon: "discover_tune"
+                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
+                        font.pixelSize: Appearance.fonts.size.large
+                        Layout.preferredWidth: 18
+                        Layout.preferredHeight: 18
 
-                    StyledButton {
-                        implicitWidth: 18
-                        implicitHeight: 18
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
-                        icon.color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
-                        color: "transparent"
-                        enabled: Players.active?.shuffleSupported
-                        onClicked: {
-                            if (Players.active)
-                                Players.active.shuffle = !Players.active.shuffle;
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Configs.mediaPlayer.showLyrics = false
                         }
                     }
 
-                    StyledButton {
-                        implicitWidth: 22
-                        implicitHeight: 22
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: "skip_previous"
-                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onPrimary : Colours.m3Colors.m3OnPrimary
-                        icon.size: Appearance.fonts.size.large
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        onClicked: Players.active?.previous()
+                    Icon {
+                        icon: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
+                        color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
+                        font.pixelSize: Appearance.fonts.size.large
+                        Layout.preferredWidth: 18
+                        Layout.preferredHeight: 18
+                        enabled: Players.active?.shuffleSupported
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Players.active)
+                                    Players.active.shuffle = !Players.active.shuffle;
+                            }
+                        }
+                    }
+
+                    Icon {
+                        Layout.preferredWidth: 22
+                        Layout.preferredHeight: 22
+                        icon: "skip_previous"
+                        font.pixelSize: Appearance.fonts.size.extraLarge
+                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Players.active?.previous()
+                        }
                     }
 
                     Icon {
@@ -202,15 +213,18 @@ RowLayout {
                         }
                     }
 
-                    StyledButton {
-                        implicitWidth: 22
-                        implicitHeight: 22
-                        icon.name: "skip_next"
-                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onPrimary : Colours.m3Colors.m3OnPrimary
-                        icon.size: Appearance.fonts.size.large
-                        bgRadius: Appearance.rounding.normal
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        onClicked: Players.active?.next()
+                    Icon {
+                        Layout.preferredWidth: 22
+                        Layout.preferredHeight: 22
+                        icon: "skip_next"
+                        font.pixelSize: Appearance.fonts.size.extraLarge
+                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Players.active?.next()
+                        }
                     }
 
                     StyledButton {
@@ -360,42 +374,54 @@ RowLayout {
                     anchors.centerIn: parent
                     spacing: Appearance.spacing.small
 
-                    StyledButton {
-                        implicitWidth: 24
-                        implicitHeight: 24
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: "lyrics"
-                        icon.color: enabled ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurfaceVariant : Colours.m3Colors.m3OnSurfaceVariant)
-                        color: "transparent"
+                    Icon {
+                        icon: "lyrics"
+                        color: enabled ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurfaceVariant : Colours.m3Colors.m3OnSurfaceVariant)
+                        font.pixelSize: Appearance.fonts.size.larger
+                        Layout.preferredWidth: 24
+                        Layout.preferredHeight: 24
                         enabled: LyricsProvider.state === LyricsProvider.State.Ready
-                        onClicked: {
-                            if (LyricsProvider.state === LyricsProvider.State.Ready)
-                                Configs.mediaPlayer.showLyrics = true;
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (LyricsProvider.state === LyricsProvider.State.Ready)
+                                    Configs.mediaPlayer.showLyrics = true;
+                            }
                         }
                     }
 
-                    StyledButton {
-                        implicitWidth: 24
-                        implicitHeight: 24
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
-                        icon.color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
-                        color: "transparent"
+                    Icon {
+                        icon: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
+                        color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
+                        font.pixelSize: Appearance.fonts.size.larger
+                        Layout.preferredWidth: 24
+                        Layout.preferredHeight: 24
                         enabled: Players.active?.shuffleSupported
-                        onClicked: {
-                            if (Players.active)
-                                Players.active.shuffle = !Players.active.shuffle;
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                if (Players.active)
+                                    Players.active.shuffle = !Players.active.shuffle;
+                            }
                         }
                     }
 
-                    StyledButton {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        bgRadius: Appearance.rounding.normal
-                        icon.name: "skip_previous"
-                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onPrimary : Colours.m3Colors.m3OnPrimary
+                    Icon {
+                        icon: "skip_previous"
                         color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        onClicked: Players.active?.previous()
+                        font.pixelSize: Appearance.fonts.size.extraLarge
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Players.active?.previous()
+                        }
                     }
 
                     Icon {
@@ -410,14 +436,18 @@ RowLayout {
                         }
                     }
 
-                    StyledButton {
-                        implicitWidth: 32
-                        implicitHeight: 32
-                        icon.name: "skip_next"
-                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onPrimary : Colours.m3Colors.m3OnPrimary
-                        bgRadius: Appearance.rounding.normal
+                    Icon {
+                        icon: "skip_next"
                         color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        onClicked: Players.active?.next()
+                        font.pixelSize: Appearance.fonts.size.extraLarge
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
+
+                        MArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Players.active?.next()
+                        }
                     }
 
                     StyledButton {
@@ -633,7 +663,7 @@ RowLayout {
 
                             IconImage {
                                 anchors.verticalCenter: parent.verticalCenter
-                                source: Players.active?.desktopEntry === "" ? "Helium" : IconUtils.iconForId(itemDel.modelData.desktopEntry)
+                                source: IconUtils.iconForId(itemDel.modelData.desktopEntry)
                                 asynchronous: true
                                 implicitWidth: 20
                                 implicitHeight: 20
