@@ -14,6 +14,7 @@ Item {
     default property alias content: itemColumn.data
     property int elevationLevel: 2
     property real maxHeight: 336
+    property bool showScrollBar: false
 
     readonly property real minWidth: 112
     readonly property real maxWidth: 280
@@ -49,7 +50,8 @@ Item {
             }
 
             ScrollBar.vertical: ScrollBar {
-                policy: ScrollBar.AsNeeded
+                visible: root.showScrollBar
+                policy: root.showScrollBar ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
 
                 contentItem: StyledRect {
                     implicitWidth: 4

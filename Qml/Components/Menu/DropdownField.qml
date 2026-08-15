@@ -21,6 +21,7 @@ Item {
     property var isItemEnabled: model => true
     property var disabledLabel: model => qsTr("N/A")
     property var isItemActive: (model, itemIndex) => itemIndex === root.currentIndex
+    property bool showScrollBar: false
 
     signal activated(int index)
 
@@ -131,6 +132,7 @@ Item {
         isItemEnabled: root.isItemEnabled
         disabledLabel: root.disabledLabel
         isItemActive: root.isItemActive
+        showScrollBar: root.showScrollBar
 
         onActivated: index => {
             root.currentIndex = index;

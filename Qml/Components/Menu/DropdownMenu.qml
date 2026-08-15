@@ -17,6 +17,7 @@ Popup {
     property var isItemEnabled: modelData => true
     property var disabledLabel: modelData => ""
     property var isItemActive: (modelData, itemIndex) => itemIndex === root.currentIndex
+    property bool showScrollBar: false
 
     signal activated(int index)
 
@@ -38,6 +39,7 @@ Popup {
         id: menuSurface
 
         anchors.fill: parent
+        showScrollBar: root.showScrollBar
 
         Repeater {
             id: itemRepeater

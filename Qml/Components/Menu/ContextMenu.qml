@@ -12,6 +12,8 @@ Popup {
 
     default property alias items: menuSurface.content
 
+    property bool showScrollBar: false
+
     padding: 0
     background: null
     focus: true
@@ -22,6 +24,7 @@ Popup {
         id: menuSurface
 
         anchors.fill: parent
+        showScrollBar: root.showScrollBar
         implicitWidth: 220
     }
 
