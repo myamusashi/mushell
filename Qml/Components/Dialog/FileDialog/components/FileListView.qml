@@ -7,6 +7,7 @@ import QtQuick.Controls
 
 import qs.Core.Configs
 import qs.Services
+import qs.Components.Menu
 
 import "../../../Base"
 import "../delegate"
@@ -50,12 +51,14 @@ ColumnLayout {
         implicitHeight: 40
         color: Colours.m3Colors.m3SurfaceContainer
 
-        StyledMenu {
+        ContextMenu {
             id: contextMenu
 
-            StyledMenuItem {
-                text: qsTr("Show hidden")
-                trailingIcon: root.folderHidden ? "check" : ""
+            showScrollBar: false
+
+            MenuItem {
+                label: qsTr("Show hidden")
+                selected: root.folderHidden
                 onTriggered: root.folderHidden = !root.folderHidden
             }
         }
@@ -126,9 +129,14 @@ ColumnLayout {
         currentIndex: root.currentIndex
 
         MouseArea {
+            id: fileListMouseArea
+
             anchors.fill: parent
             acceptedButtons: Qt.RightButton
-            onClicked: mouse => contextMenu.popup(mouse.x, mouse.y)
+            onClicked: mouse => {
+                contextMenu.parent = fileListMouseArea;
+                contextMenu.openAt(mouse.x, mouse.y);
+            }
         }
 
         ScrollBar.vertical: ScrollBar {
