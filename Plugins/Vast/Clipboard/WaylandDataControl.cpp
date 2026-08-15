@@ -46,6 +46,25 @@ namespace vast {
         void registryGlobalRemove(void* /*unused*/, wl_registry* /*unused*/, uint32_t /*unused*/) {};
     }
 
+    void WaylandDataControl::DisplayDeleter::operator()(wl_display* display) const {
+        wl_display_disconnect(display);
+    }
+    void WaylandDataControl::RegistryDeleter::operator()(wl_registry* registry) const {
+        wl_registry_destroy(registry);
+    }
+    void WaylandDataControl::SeatDeleter::operator()(wl_seat* seat) const {
+        wl_seat_destroy(seat);
+    }
+    void WaylandDataControl::ManagerDeleter::operator()(ext_data_control_manager_v1* manager) const {
+        ext_data_control_manager_v1_destroy(manager);
+    }
+    void WaylandDataControl::DeviceDeleter::operator()(ext_data_control_device_v1* device) const {
+        ext_data_control_device_v1_destroy(device);
+    }
+    void WaylandDataControl::OfferDeleter::operator()(ext_data_control_offer_v1* offer) const {
+        ext_data_control_offer_v1_destroy(offer);
+    }
+
     namespace constants {
         constexpr const char* K_MIME_IMAGE_PNG  = "image/png";
         constexpr const char* K_MIME_HTML       = "text/html";
@@ -67,11 +86,10 @@ namespace vast {
     void registryGlobal(void* data, wl_registry* registry, uint32_t name, const char* interface, uint32_t version) {
         auto* self = static_cast<WaylandDataControl*>(data);
 
-        if (std::strcmp(interface, ext_data_control_manager_v1_interface.name) == 0) {
-            self->mManager = static_cast<ext_data_control_manager_v1*>(wl_registry_bind(registry, name, &ext_data_control_manager_v1_interface, std::min(version, 1u)));
-        } else if (std::strcmp(interface, wl_seat_interface.name) == 0) {
-            self->mSeat = static_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, version));
-        }
+        if (std::strcmp(interface, ext_data_control_manager_v1_interface.name) == 0)
+            self->mManager.reset(static_cast<ext_data_control_manager_v1*>(wl_registry_bind(registry, name, &ext_data_control_manager_v1_interface, std::min(version, 1u))));
+        else if (std::strcmp(interface, wl_seat_interface.name) == 0)
+            self->mSeat.reset(static_cast<wl_seat*>(wl_registry_bind(registry, name, &wl_seat_interface, version)));
     }
 
     static constexpr wl_registry_listener REGISTRY_LISTENER = {
@@ -97,10 +115,12 @@ namespace vast {
     void deviceSelection(void* data, ext_data_control_device_v1* /*unused*/, ext_data_control_offer_v1* offer) {
         auto* self = static_cast<WaylandDataControl*>(data);
 
-        if (self->mCurrentOffer && self->mCurrentOffer != offer) {
-            ext_data_control_offer_v1_destroy(self->mCurrentOffer);
-        }
-        self->mCurrentOffer = offer;
+        // Matches the original guard: only touch mCurrentOffer if the new offer differs
+        // from the one already held. Re-sending the same offer is a no-op; reset(offer)
+        // in that case would destroy the offer via the deleter and then immediately store
+        // the now-dangling pointer, so it's skipped entirely rather than worked around.
+        if (self->mCurrentOffer.get() != offer)
+            self->mCurrentOffer.reset(offer);
 
         if (!offer) {
             self->mPendingMimeTypes.clear();
@@ -112,6 +132,8 @@ namespace vast {
     }
 
     void devicePrimarySelection(void* data, ext_data_control_device_v1* /*unused*/, ext_data_control_offer_v1* offer) {
+        // This offer is discarded immediately and never passes through mCurrentOffer,
+        // so it's destroyed directly rather than via the unique_ptr member.
         auto* self = static_cast<WaylandDataControl*>(data);
         if (offer)
             ext_data_control_offer_v1_destroy(offer);
@@ -120,8 +142,15 @@ namespace vast {
 
     void deviceFinished(void* data, ext_data_control_device_v1* device) {
         auto* self = static_cast<WaylandDataControl*>(data);
-        ext_data_control_device_v1_destroy(device);
-        self->mDevice = nullptr;
+        // Per protocol, the client must still destroy the proxy on the finished event.
+        // If this is the device we're tracking, reset() the unique_ptr its own deleter
+        // performs the destroy, so nothing further is needed. Otherwise it's some other
+        // (unexpected) device handle, which is destroyed directly.
+        if (self->mDevice.get() == device)
+            self->mDevice.reset();
+        else
+            ext_data_control_device_v1_destroy(device);
+
         emit self->deviceFinished();
 
         if (!self->mReconnecting) {
@@ -174,6 +203,8 @@ namespace vast {
     }
 
     void sourceCancelled(void* data, ext_data_control_source_v1* source) {
+        // mPendingSources is intentionally not RAII-wrapped -- see the field comment in
+        // the header. Destroy is still explicit and paired with the map removal here.
         auto* self = static_cast<WaylandDataControl*>(data);
         self->mPendingSources.remove(source);
         ext_data_control_source_v1_destroy(source);
@@ -185,11 +216,17 @@ namespace vast {
     };
 
     QThreadPool* WaylandDataControl::sendPool() {
-        static QThreadPool                 pool{};
-        [[maybe_unused]] static const bool initialized = [] {
-            pool.setMaxThreadCount(2);
-            return true;
-        }();
+        // A pool bounded at 2 threads for clipboard-content writes. Previously this was a
+        // Meyers singleton plus a second static bool whose only job was to run
+        // setMaxThreadCount(2) exactly once -- more moving parts than the one line of
+        // setup needed. A tiny self-configuring subclass does the same thing with one
+        // static and no IIFE.
+        struct BoundedSendPool : QThreadPool {
+            BoundedSendPool() {
+                setMaxThreadCount(2);
+            }
+        };
+        static BoundedSendPool pool;
         return &pool;
     }
 
@@ -208,54 +245,67 @@ namespace vast {
             return false;
         }
 
-        mDisplay = wl_display_connect(nullptr);
+        return connectAndBind(/*isReconnect=*/false);
+    }
+
+    [[nodiscard]] bool WaylandDataControl::isAvailable() const noexcept {
+        return mInitialized && mDisplay && mManager && mDevice;
+    }
+
+    // Connects to the Wayland display, binds the registry (waiting for the manager and
+    // seat globals), and sets up the data device -- the full sequence initialize() and
+    // reconnect() both need. isReconnect only changes log wording; every failure path
+    // calls shutdown() so callers always end up in a clean, fully-torn-down state rather
+    // than a partially-bound one.
+    bool WaylandDataControl::connectAndBind(bool isReconnect) {
+        const char* logPrefix = isReconnect ? "[WaylandDataControl] reconnect" : "[WaylandDataControl]";
+
+        mDisplay.reset(wl_display_connect(nullptr));
         if (!mDisplay) {
-            qWarning() << "[WaylandDataControl] failed to connect to Wayland display";
+            qWarning() << logPrefix << "failed to connect to Wayland display";
             return false;
         }
 
-        mRegistry = wl_display_get_registry(mDisplay);
-        wl_registry_add_listener(mRegistry, &REGISTRY_LISTENER, this);
+        mRegistry.reset(wl_display_get_registry(mDisplay.get()));
+        wl_registry_add_listener(mRegistry.get(), &REGISTRY_LISTENER, this);
 
-        if (wl_display_roundtrip(mDisplay) < 0) {
-            qWarning() << "[WaylandDataControl] initial registry roundtrip failed";
+        if (wl_display_roundtrip(mDisplay.get()) < 0) {
+            qWarning() << logPrefix << "registry roundtrip failed";
             shutdown();
             return false;
         }
 
         if (!mManager) {
-            qWarning() << "[WaylandDataControl] Compositor does not support ext_data_control_v1; clipboard history disabled";
+            qWarning() << logPrefix << "compositor does not support ext_data_control_v1; clipboard history disabled";
             shutdown();
             return false;
         }
         if (!mSeat) {
-            qWarning() << "[WaylandDataControl] No wl_seat advertised; clipboard history disabled";
+            qWarning() << logPrefix << "no wl_seat advertised; clipboard history disabled";
             shutdown();
             return false;
         }
 
-        mDisplayNotifier = new QSocketNotifier(wl_display_get_fd(mDisplay), QSocketNotifier::Read, this);
+        mDisplayNotifier = new QSocketNotifier(wl_display_get_fd(mDisplay.get()), QSocketNotifier::Read, this);
         connect(mDisplayNotifier, &QSocketNotifier::activated, this, [this]() { dispatchWayland(); });
 
-        mDevice = ext_data_control_manager_v1_get_data_device(mManager, mSeat);
-        if (ext_data_control_device_v1_add_listener(mDevice, &DEVICE_LISTENER, this) < 0) {
-            qWarning() << "[WaylandDataControl] failed to add device listener";
+        mDevice.reset(ext_data_control_manager_v1_get_data_device(mManager.get(), mSeat.get()));
+        if (ext_data_control_device_v1_add_listener(mDevice.get(), &DEVICE_LISTENER, this) < 0) {
+            qWarning() << logPrefix << "failed to add device listener";
             shutdown();
             return false;
         }
 
-        if (wl_display_roundtrip(mDisplay) < 0) {
-            qWarning() << "[WaylandDataControl] device roundtrip failed";
+        if (wl_display_roundtrip(mDisplay.get()) < 0) {
+            qWarning() << logPrefix << "device roundtrip failed";
             shutdown();
             return false;
         }
 
         mInitialized = true;
+        if (isReconnect)
+            qWarning() << "[WaylandDataControl] reconnected";
         return true;
-    }
-
-    [[nodiscard]] bool WaylandDataControl::isAvailable() const noexcept {
-        return mInitialized && mDisplay && mManager && mDevice;
     }
 
     void WaylandDataControl::reconnect() {
@@ -265,39 +315,7 @@ namespace vast {
         }
 
         shutdown();
-
-        mDisplay = wl_display_connect(nullptr);
-        if (!mDisplay) {
-            qWarning() << "[WaylandDataControl] reconnect failed to connect to Wayland display";
-            mReconnecting = false;
-            return;
-        }
-
-        mRegistry = wl_display_get_registry(mDisplay);
-        wl_registry_add_listener(mRegistry, &REGISTRY_LISTENER, this);
-
-        if (wl_display_roundtrip(mDisplay) < 0) {
-            qWarning() << "[WaylandDataControl] reconnect registry roundtrip failed";
-            shutdown();
-            mReconnecting = false;
-            return;
-        }
-
-        mDisplayNotifier = new QSocketNotifier(wl_display_get_fd(mDisplay), QSocketNotifier::Read, this);
-        connect(mDisplayNotifier, &QSocketNotifier::activated, this, [this]() { dispatchWayland(); });
-
-        if (mManager && mSeat) {
-            mDevice = ext_data_control_manager_v1_get_data_device(mManager, mSeat);
-            if (ext_data_control_device_v1_add_listener(mDevice, &DEVICE_LISTENER, this) == 0) {
-                wl_display_roundtrip(mDisplay);
-                mInitialized = true;
-                qWarning() << "[WaylandDataControl] reconnected";
-            }
-        } else {
-            qWarning() << "[WaylandDataControl] reconnect: compositor no longer supports ext_data_control_v1";
-            shutdown();
-        }
-
+        connectAndBind(/*isReconnect=*/true);
         mReconnecting = false;
     }
 
@@ -305,42 +323,30 @@ namespace vast {
         delete mDisplayNotifier;
         mDisplayNotifier = nullptr;
 
+        // Not unique_ptr-wrapped -- see the field comment in the header.
         for (auto it = mPendingSources.cbegin(); it != mPendingSources.cend(); ++it)
             ext_data_control_source_v1_destroy(it.key());
         mPendingSources.clear();
 
-        if (mCurrentOffer) {
-            ext_data_control_offer_v1_destroy(mCurrentOffer);
-            mCurrentOffer = nullptr;
-        }
+        mCurrentOffer.reset();
         mPendingMimeTypes.clear();
 
-        if (mDevice) {
-            ext_data_control_device_v1_destroy(mDevice);
-            mDevice = nullptr;
-        }
-        if (mManager) {
-            ext_data_control_manager_v1_destroy(mManager);
-            mManager = nullptr;
-        }
-        if (mSeat) {
-            wl_seat_destroy(mSeat);
-            mSeat = nullptr;
-        }
-        if (mRegistry) {
-            wl_registry_destroy(mRegistry);
-            mRegistry = nullptr;
-        }
-        if (mDisplay) {
-            wl_display_disconnect(mDisplay);
-            mDisplay = nullptr;
-        }
+        // Order matters here and is now enforced by declaration order in the header
+        // (members are destroyed in reverse declaration order) for the destructor path;
+        // for this explicit shutdown() call we still reset in the same dependency order
+        // the original hand-written teardown used -- device before manager/seat before
+        // registry before display, since later ones own or outlive the earlier ones.
+        mDevice.reset();
+        mManager.reset();
+        mSeat.reset();
+        mRegistry.reset();
+        mDisplay.reset();
 
         mInitialized = false;
     }
 
     void WaylandDataControl::dispatchWayland() {
-        if (!mDisplay || wl_display_dispatch(mDisplay) >= 0)
+        if (!mDisplay || wl_display_dispatch(mDisplay.get()) >= 0)
             return;
 
         if (mDisplayNotifier)
@@ -362,7 +368,7 @@ namespace vast {
         const QString metaMime   = pickMetaMimeType(mimeType);
 
         const auto    startPrimaryRead = [this, offer, mimeType, generation]() {
-            if (!mDevice || mCurrentOffer != offer) {
+            if (!mDevice || mCurrentOffer.get() != offer) {
                 qWarning() << "[WaylandDataControl] offer invalidated before payload read; selection skipped";
                 return;
             }
@@ -376,7 +382,7 @@ namespace vast {
 
             ext_data_control_offer_v1_receive(offer, mimeType.toUtf8().constData(), fds[1]);
             ::close(fds[1]);
-            wl_display_flush(mDisplay);
+            wl_display_flush(mDisplay.get());
 
             readOfferAsync(fds[0], [this, mimeType, generation](const QByteArray& content) {
                 const QString fileName = mMetaGeneration == generation ? mPendingMeta : QString{};
@@ -399,7 +405,7 @@ namespace vast {
 
         ext_data_control_offer_v1_receive(offer, metaMime.toUtf8().constData(), fds[1]);
         ::close(fds[1]);
-        wl_display_flush(mDisplay);
+        wl_display_flush(mDisplay.get());
 
         readOfferAsync(fds[0], [this, generation, metaMime, startPrimaryRead](const QByteArray& meta) {
             mPendingMeta    = extractFileName(metaMime, meta);
@@ -420,10 +426,9 @@ namespace vast {
 
         for (const char* wanted : kPriority) {
             const QLatin1StringView wantedView{wanted};
-            for (const auto& offered : mPendingMimeTypes) {
+            for (const auto& offered : mPendingMimeTypes)
                 if (offered == wantedView)
                     return offered;
-            }
         }
 
         return {};
@@ -440,19 +445,17 @@ namespace vast {
 
         for (const char* wanted : kMetaPriority) {
             const QLatin1StringView wantedView{wanted};
-            for (const auto& offered : mPendingMimeTypes) {
+            for (const auto& offered : mPendingMimeTypes)
                 if (offered == wantedView)
                     return offered;
-            }
         }
 
         return {};
     }
 
     [[nodiscard]] QString WaylandDataControl::extractFileName(const QString& metaMime, const QByteArray& metaContent) {
-        if (metaMime == QLatin1StringView{K_MIME_SUGGESTED}) {
+        if (metaMime == QLatin1StringView{K_MIME_SUGGESTED})
             return QString::fromUtf8(metaContent).trimmed();
-        }
 
         if (metaMime == QLatin1StringView{K_MIME_URI_LIST}) {
             const auto lines = metaContent.split('\n');
@@ -511,7 +514,7 @@ namespace vast {
             return;
         }
 
-        auto*                      source = ext_data_control_manager_v1_create_data_source(mManager);
+        auto*                      source = ext_data_control_manager_v1_create_data_source(mManager.get());
 
         QHash<QString, QByteArray> payload;
         payload.insert(mimeType, content);
@@ -555,7 +558,7 @@ namespace vast {
         mPendingSources[source] = std::move(payload);
 
         ext_data_control_source_v1_add_listener(source, &SOURCE_LISTENER, this);
-        ext_data_control_device_v1_set_selection(mDevice, source);
-        wl_display_flush(mDisplay);
+        ext_data_control_device_v1_set_selection(mDevice.get(), source);
+        wl_display_flush(mDisplay.get());
     }
 }
