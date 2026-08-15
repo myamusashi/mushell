@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Vast.ImageCache
+import Vast.Utils
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -49,24 +50,8 @@ Item {
             Quickshell.execDetached({
                 command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
             });
-            Quickshell.execDetached({
-                command: [
-                    "generate-colors-material",
-                    "--path", path,
-                    "--mode", "dark",
-                    "--scheme", Configs.colors.scheme,
-                    "--json-out", Configs.colors.toDarkColor
-                ]
-            });
-            Quickshell.execDetached({
-                command: [
-                    "generate-colors-material",
-                    "--path", path,
-                    "--mode", "light",
-                    "--scheme", Configs.colors.scheme,
-                    "--json-out", Configs.colors.toWhiteColor
-                ]
-            });
+            ColorGenerator.generate(path, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
+            ColorGenerator.generate(path, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
         }
         function get(): string {
             return Paths.currentWallpaper;

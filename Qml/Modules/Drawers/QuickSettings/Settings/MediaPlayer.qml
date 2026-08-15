@@ -13,14 +13,14 @@ import qs.Core.States
 import qs.Services
 import qs.Components.Base
 import Vast.ImageCache
+import Vast.Utils
 
 ClippingWrapperRectangle {
     id: root
 
     property url url: ""
     // thx claude
-    property var trackArtColors: {
-        const FALLBACK = {
+    readonly property var fallbackTrackArtColors: ({
             primary: "#D0BCFF",
             onPrimary: "#381E72",
             primaryContainer: "#4F378B",
@@ -34,86 +34,8 @@ ClippingWrapperRectangle {
             onSurface: "#E6E1E5",
             onSurfaceVariant: "#CAC4D0",
             outline: "#938F99"
-        };
-
-        if (colorTrackArt.colors.length === 0)
-            return FALLBACK;
-
-        function toHex(c) {
-            const ch = v => Math.round(v * 255).toString(16).padStart(2, '0');
-            return `#${ch(c.r)}${ch(c.g)}${ch(c.b)}`;
-        }
-
-        function luminance(c) {
-            const lin = v => v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
-            return 0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b);
-        }
-
-        function contrastRatio(l1, l2) {
-            const [lighter, darker] = l1 > l2 ? [l1, l2] : [l2, l1];
-            return (lighter + 0.05) / (darker + 0.05);
-        }
-
-        function hslSaturation(c) {
-            const max = Math.max(c.r, c.g, c.b);
-            const min = Math.min(c.r, c.g, c.b);
-            const lightness = (max + min) / 2;
-            return (max === min) ? 0 : (max - min) / (1 - Math.abs(2 * lightness - 1));
-        }
-
-        function chroma(c) {
-            return hslSaturation(c) * luminance(c);
-        }
-
-        function onColor(bgLuminance, lightEntry, darkEntry) {
-            const contrastWithLight = contrastRatio(bgLuminance, lightEntry.lum);
-            const contrastWithDark = contrastRatio(bgLuminance, darkEntry.lum);
-            return toHex(contrastWithLight >= contrastWithDark ? lightEntry.color : darkEntry.color);
-        }
-
-        const tones = Array.from(colorTrackArt.colors).map(c => ({
-                    color: c,
-                    lum: luminance(c)
-                })).sort((a, b) => a.lum - b.lum);
-
-        const n = tones.length;
-        const black = tones[0];            // tone ~0  – darkest sample
-        const white = tones[n - 1];        // tone ~100 – lightest sample
-
-        function atTone(t) {
-            return tones[Math.max(0, Math.min(n - 1, Math.round(t * (n - 1))))];
-        }
-
-        const surfaceTone = atTone(0.06);
-        const surfaceVariantTone = atTone(0.17);
-        const outlineTone = atTone(0.60);
-
-        function mostVivid(fromRatio, toRatio) {
-            return tones.slice(Math.floor(fromRatio * n), Math.ceil(toRatio * n)).reduce((best, cur) => chroma(cur.color) > chroma(best.color) ? cur : best);
-        }
-
-        const primaryTone = mostVivid(0.70, 1.00); // tone ~80
-        const primaryContainerTone = mostVivid(0.20, 0.45); // tone ~30
-
-        const secondaryTone = atTone(0.75);
-        const tertiaryTone = atTone(0.88);
-
-        return {
-            surface: toHex(surfaceTone.color),
-            surfaceVariant: toHex(surfaceVariantTone.color),
-            onSurface: toHex(white.color),
-            onSurfaceVariant: toHex(outlineTone.color),
-            outline: toHex(outlineTone.color),
-            primary: toHex(primaryTone.color),
-            onPrimary: onColor(primaryTone.lum, white, black),
-            primaryContainer: toHex(primaryContainerTone.color),
-            onPrimaryContainer: onColor(primaryContainerTone.lum, white, black),
-            secondary: toHex(secondaryTone.color),
-            onSecondary: onColor(secondaryTone.lum, white, black),
-            tertiary: toHex(tertiaryTone.color),
-            onTertiary: onColor(tertiaryTone.lum, white, black)
-        };
-    }
+        });
+    property var trackArtColors: fallbackTrackArtColors
     property string cachedArtPath: ""
 
     Layout.alignment: Qt.AlignTop | Qt.AlignCenter
@@ -180,12 +102,19 @@ ClippingWrapperRectangle {
         }
     }
 
-    ColorQuantizer {
-        id: colorTrackArt
+    Connections {
+        target: ColorGenerator
 
-        source: Qt.resolvedUrl(root.cachedArtPath !== "" ? root.cachedArtPath : `file://${Paths.projectRoot}/Assets/images/kuru.gif`)
-        depth: 3
-        rescaleSize: 64
+        function onColorsReady(imagePath, colors) {
+            if (imagePath === root.cachedArtPath.replace(/^file:\/\//, ""))
+                root.trackArtColors = colors;
+        }
+    }
+
+    onCachedArtPathChanged: {
+        trackArtColors = fallbackTrackArtColors;
+        if (cachedArtPath !== "")
+            ColorGenerator.generateColors(cachedArtPath.replace(/^file:\/\//, ""), Configs.colors.scheme);
     }
 
     Item {
