@@ -761,9 +761,10 @@ vast-shell/
 │   ├── Components/
 │   │   ├── Base/              # CAnim, Circular, Corner, CornerPair, Elevation,
 │   │   │                      # FocusCage, NAnim, SettingRow, StyledButton,
-│   │   │                      # StyledComboBox, StyledMenu, StyledMenuItem,
 │   │   │                      # StyledRect, StyledSlide, StyledSwitch,
 │   │   │                      # StyledText, StyledTextInput, Wallpaper, Wavy
+│   │   ├── Menu/              # ContextMenu, DropdownField, DropdownMenu,
+│   │   │                      # MenuDivider, MenuItem, MenuSurface
 │   │   ├── Dialog/
 │   │   │   ├── DialogBox.qml
 │   │   │   └── FileDialog/    # BottomActionBar, FileListView, PlacesSidebar,

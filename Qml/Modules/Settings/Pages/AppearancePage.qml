@@ -8,6 +8,7 @@ import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
 import qs.Components.Dialog.FileDialog
+import qs.Components.Menu
 
 import "../Components"
 
@@ -84,6 +85,18 @@ Item {
                     label: qsTr("Material Colors Path (Dark):")
                     configValue: Configs.colors.toDarkColor
                     onConfigChanged: value => Configs.colors.toDarkColor = value
+                }
+
+                SettingRow {
+                    label: qsTr("Material Scheme:")
+
+                    DropdownField {
+                        Layout.preferredWidth: 220
+                        model: ["vibrant", "tonal-spot", "expressive", "monochrome", "rainbow", "fruit-salad", "neutral", "fidelity", "content"].map(name => ({display: name}))
+                        placeholderText: Configs.colors.scheme
+                        isItemActive: (md, _) => md.display === Configs.colors.scheme
+                        onActivated: index => Configs.colors.scheme = model[index].display
+                    }
                 }
             }
 
