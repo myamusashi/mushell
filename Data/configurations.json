@@ -25,10 +25,10 @@
 	},
 	"colors": {
 		"isDarkMode": true,
-		"matugenConfigPathForDarkColor": "$HOME/.config/vast-shell/dark-colors.json",
-		"matugenConfigPathForLightColor": "$HOME/.config/vast-shell/light-colors.json",
+		"toDarkColor": "$HOME/.config/vast-shell/dark-colors.json",
+		"toWhiteColor": "$HOME/.config/vast-shell/light-colors.json",
 		"staticColorsPath": "$HOME/.config/vast-shell/colors.json",
-		"useMatugenColor": false,
+		"useMaterialColor": false,
 		"useStaticColors": false
 	},
 	"generals": {

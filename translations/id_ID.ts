@@ -101,18 +101,18 @@
     </message>
     <message>
         <location filename="../Qml/Modules/Settings/Pages/AppearancePage.qml" line="64"/>
-        <source>Use Matugen Colors:</source>
-        <translation>Gunakan Warna Matugen:</translation>
+        <source>Use Material Colors:</source>
+        <translation>Gunakan Warna Material:</translation>
     </message>
     <message>
         <location filename="../Qml/Modules/Settings/Pages/AppearancePage.qml" line="78"/>
-        <source>Matugen Path (Light):</source>
-        <translation>Jalur Matugen (Terang):</translation>
+        <source>Material Colors Path (White):</source>
+        <translation>Jalur Warna Material (Terang):</translation>
     </message>
     <message>
         <location filename="../Qml/Modules/Settings/Pages/AppearancePage.qml" line="84"/>
-        <source>Matugen Path (Dark):</source>
-        <translation>Jalur Matugen (Gelap):</translation>
+        <source>Material Colors Path (Dark):</source>
+        <translation>Jalur Warna Material (Gelap):</translation>
     </message>
     <message>
         <location filename="../Qml/Modules/Settings/Pages/AppearancePage.qml" line="91"/>

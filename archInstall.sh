@@ -55,6 +55,7 @@ install_system_packages() {
 		base-devel git cmake ninja extra-cmake-modules patchelf pkgconf
 		qt6-base qt6-declarative qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
 		rust pipewire ddcutil i2c-tools go wayland
+		python python-pillow
 		findutils grep sed gawk util-linux libnotify wireplumber
 		iw polkit wl-clipboard ffmpeg foot hyprland xdg-desktop-portal
 	)
@@ -95,7 +96,7 @@ install_aur_packages() {
 	local -r aur_user="${SUDO_USER:-}"
 	local -a missing=()
 	local -r pkg_list=(
-		google-breakpad matugen-bin ttf-weather-icons
+		google-breakpad python-materialyoucolor ttf-weather-icons
 		app2unit ttf-material-symbols-variable-git quickshell-git
 	)
 
@@ -488,6 +489,9 @@ install_quickshell_config() {
 
 	[[ -d $PROJECT_ROOT/Assets ]] && cp -r "$PROJECT_ROOT/Assets" "$INSTALL_DIR/"
 
+	log "Installing generate-colors-material to $BIN_DIR..."
+	install -Dm755 "$PROJECT_ROOT/Assets/shell/generate_colors_material.py" "$BIN_DIR/generate-colors-material"
+
 	chmod -R 755 "$INSTALL_DIR"
 	chown -R root:root "$INSTALL_DIR"
 
@@ -512,29 +516,17 @@ setup_user_config() {
 	}
 
 	local -r vast_config_dir="$user_home/.config/vast-shell"
-	local -r matugen_config_dir="$user_home/.config/matugen"
 
 	log "Setting up user configuration for $target_user..."
 
-	# Create directories
-	mkdir -p "$vast_config_dir" "$matugen_config_dir"
+	# Create directory
+	mkdir -p "$vast_config_dir"
 
 	# Copy vast-shell data
 	cp -r "$PROJECT_ROOT/Data/"* "$vast_config_dir/"
 
-	# Setup matugen config
-	if [[ ! -f "$matugen_config_dir/config.toml" ]]; then
-		if [[ -f "$PROJECT_ROOT/Data/matugen/matugen.toml" ]]; then
-			cp "$PROJECT_ROOT/Data/matugen/matugen.toml" "$matugen_config_dir/config.toml"
-			# Replace placeholder paths in matugen config
-			sed -i "s|/home/<user>|$user_home|g" "$matugen_config_dir/config.toml"
-			# Fix input_path after flattening Data/ contents into vast-shell config dir
-			sed -i "s|vast-shell/Data/matugen/|vast-shell/matugen/|g" "$matugen_config_dir/config.toml"
-		fi
-	fi
-
 	# Fix ownership
-	chown -R "$target_user:$target_user" "$vast_config_dir" "$matugen_config_dir"
+	chown -R "$target_user:$target_user" "$vast_config_dir"
 }
 
 create_wrapper() {

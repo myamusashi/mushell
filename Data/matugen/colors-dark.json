@@ -1,7 +1,0 @@
-{
-	"colors": {
-		<* for name, value in colors *>"{{name | camel_case}}": "{{value.default.hex}}",
-		<* endfor *>
-		"end": "end"
-	}
-}

@@ -12,3 +12,4 @@ log
 plugins/*/build
 *.tmp
 .cache
+*pycache*

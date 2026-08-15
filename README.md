@@ -29,7 +29,7 @@
 - [Configuration](#configuration)
   - [configurations.json](#configurationsjson)
   - [Reference](#reference)
-  - [Matugen](#matugen)
+  - [Material Colors](#material-colors)
 - [Translations](#translations)
 - [Project Structure](#project-structure)
 - [Upcoming Features](#upcoming-features)
@@ -240,7 +240,7 @@ shell
 | Fonts | `ttf-material-symbols-variable-git`, `ttf-weather-icons`, `google-sans-flex` (optional), `Hack` (optional) |
 | Utils | `findutils`, `grep`, `gawk`, `sed`, `util-linux` |
 | AI / Depth Wallpaper | `python-rembg` |
-| Other | `matugen-bin`, `app2unit` |
+| Other | `app2unit` |
 
 > [!IMPORTANT]
 > **Brightness control (ddcutil):** Controlling external monitor brightness requires non-root access to I2C devices. `archInstall.sh` handles this automatically. For manual setup, load the `i2c-dev` module, apply the appropriate udev rules (see `setup_i2c` in `archInstall.sh`), and add your user to the `i2c` and `video` groups.
@@ -264,7 +264,7 @@ The following packages must always be built from source, regardless of distro:
 | Package | Source |
 |---|---|
 | `quickshell` | https://github.com/quickshell/quickshell |
-| `matugen` | https://github.com/InioX/matugen |
+| `materialyoucolor` | https://github.com/T-Dynamos/materialyoucolor-python |
 | `app2unit` | https://github.com/valpackett/app2unit |
 | `wl-screenrec` | https://github.com/russelltg/wl-screenrec |
 | Material Symbols font | https://github.com/google/material-design-icons |
@@ -371,12 +371,10 @@ mkdir -p ~/.config/vast-shell
 cp -r /path/to/vast-shell/Data/{colors.json,configurations.json} ~/.config/vast-shell/
 ```
 
-For Matugen color generation:
+For Material color generation:
 
 ```bash
-mkdir -p ~/.config/matugen
-touch ~/.config/matugen/config.toml
-# Copy Data/matugen/matugen.toml content here and adjust paths
+pip install materialyoucolor pillow
 ```
 
 ### configurations.json
@@ -410,10 +408,10 @@ touch ~/.config/matugen/config.toml
   },
   "colors": {
     "isDarkMode": true,
-    "matugenConfigPathForDarkColor":  "$HOME/.config/vast-shell/dark-colors.json",
-    "matugenConfigPathForLightColor": "$HOME/.config/vast-shell/light-colors.json",
+    "toDarkColor":  "$HOME/.config/vast-shell/dark-colors.json",
+    "toWhiteColor": "$HOME/.config/vast-shell/light-colors.json",
     "staticColorsPath": "$HOME/.config/vast-shell/colors.json",
-    "useMatugenColor": false,
+    "useMaterialColor": false,
     "useStaticColors": false
   },
   "generals": {
@@ -500,12 +498,13 @@ touch ~/.config/matugen/config.toml
 | Key | Default | Description |
 |---|---|---|
 | `isDarkMode` | `true` | Prefer dark mode. |
-| `useMatugenColor` | `false` | Generate colors dynamically from the current wallpaper. |
+| `useMaterialColor` | `false` | Generate colors dynamically from the current wallpaper. |
+| `scheme` | `"tonal-spot"` | Material scheme for color generation (`vibrant`, `tonal-spot`, `expressive`, `monochrome`, `rainbow`, `fruit-salad`, `neutral`, `fidelity`, `content`). |
 | `useStaticColors` | `false` | Use a fixed color scheme from `colors.json`. |
 | `staticColorsPath` | `$HOME/.config/vast-shell/colors.json` | Path to your static color scheme file. |
 
 > [!NOTE]
-> If both `useMatugenColor` and `useStaticColors` are `true`, Matugen takes priority.
+> If both `useMaterialColor` and `useStaticColors` are `true`, Material colors take priority.
 
 #### Generals
 
@@ -583,12 +582,14 @@ touch ~/.config/matugen/config.toml
 
 ---
 
-### Matugen
+### Material Colors
 
-The `Data/matugen/` directory contains the Matugen config and color templates:
+Material You colors are generated from the current wallpaper by the Python script `Assets/shell/generate_colors_material.py` (wrapped as the `generate-colors-material` command). It writes two JSON files:
 
-- `matugen.toml` — main Matugen configuration
-- `dark-colors.json` / `light-colors.json` — generated color output
+- `dark-colors.json` — dark color scheme
+- `light-colors.json` — light color scheme
+
+Both are read at runtime by `Qml/Services/Colours.qml` via the configured `toDarkColor` / `toWhiteColor` paths.
 
 <details>
 <summary>Example generated color scheme (dark)</summary>
@@ -840,9 +841,10 @@ vast-shell/
 │   │   └── transitions/       # boxExpand, circleExpand, diagonalWipe, dissolve,
 │   │                          # fade, pixelate, roll, slideUp, splitHorizontal, wipeDown
 │   ├── shell/extract-fg.sh    # Depth wallpaper foreground extraction
+│   ├── shell/generate_colors_material.py  # Material You color generation
 │   └── weather_icon/          # Moon phase SVGs
 │
-├── Data/                      # matugen.toml, color templates
+├── Data/                      # colors.json, color/scheme JSON outputs
 └── translations/              # id_ID.ts, id_ID.qm
 ```
 

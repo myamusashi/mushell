@@ -50,7 +50,22 @@ Item {
                 command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
             });
             Quickshell.execDetached({
-                command: ["matugen", "image", path, "--source-color-index", "2"]
+                command: [
+                    "generate-colors-material",
+                    "--path", path,
+                    "--mode", "dark",
+                    "--scheme", Configs.colors.scheme,
+                    "--json-out", Configs.colors.toDarkColor
+                ]
+            });
+            Quickshell.execDetached({
+                command: [
+                    "generate-colors-material",
+                    "--path", path,
+                    "--mode", "light",
+                    "--scheme", Configs.colors.scheme,
+                    "--json-out", Configs.colors.toWhiteColor
+                ]
             });
         }
         function get(): string {

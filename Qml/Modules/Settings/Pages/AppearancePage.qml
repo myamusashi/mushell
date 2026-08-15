@@ -61,10 +61,10 @@ Item {
                 }
 
                 SettingRow {
-                    label: qsTr("Use Matugen Colors:")
+                    label: qsTr("Use Material Colors:")
                     StyledSwitch {
-                        checked: Configs.colors.useMatugenColor
-                        onCheckedChanged: Configs.colors.useMatugenColor = checked
+                        checked: Configs.colors.useMaterialColor
+                        onCheckedChanged: Configs.colors.useMaterialColor = checked
                     }
                 }
 
@@ -75,15 +75,15 @@ Item {
                 }
 
                 FilePathRow {
-                    label: qsTr("Matugen Path (Light):")
-                    configValue: Configs.colors.matugenConfigPathForLightColor
-                    onConfigChanged: value => Configs.colors.matugenConfigPathForLightColor = value
+                    label: qsTr("Material Colors Path (White):")
+                    configValue: Configs.colors.toWhiteColor
+                    onConfigChanged: value => Configs.colors.toWhiteColor = value
                 }
 
                 FilePathRow {
-                    label: qsTr("Matugen Path (Dark):")
-                    configValue: Configs.colors.matugenConfigPathForDarkColor
-                    onConfigChanged: value => Configs.colors.matugenConfigPathForDarkColor = value
+                    label: qsTr("Material Colors Path (Dark):")
+                    configValue: Configs.colors.toDarkColor
+                    onConfigChanged: value => Configs.colors.toDarkColor = value
                 }
             }
 

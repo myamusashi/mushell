@@ -10,6 +10,7 @@ pkgs.mkShell {
         qt6.qtdeclarative
         qt6.qt5compat
         qt6.qttranslations
+        python314Packages.materialyoucolor
         ddcutil
         pipewire.dev
         wayland
