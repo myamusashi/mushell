@@ -143,10 +143,10 @@ WrapperRectangle {
                 ScriptAction {
                     script: {
                         c0Anim.stop();
-                        c0From = lockIcon.color;
-                        c0To = Colours.m3Colors.m3Red;
-                        c0Active = true;
-                        c0Blend = 0.0;
+                        lockIcon.c0From = lockIcon.color;
+                        lockIcon.c0To = Colours.m3Colors.m3Red;
+                        lockIcon.c0Active = true;
+                        lockIcon.c0Blend = 0.0;
                         c0Anim.start();
                     }
                 }
