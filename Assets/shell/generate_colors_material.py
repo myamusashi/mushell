@@ -154,12 +154,14 @@ term_colors = {}
 
 # JSON output: write current mode's scheme in the format vast-shell reads
 if args.json_out is not None:
-    out = dict(material_colors)
-    if args.path is not None or args.color is not None:
-        out['sourceColor'] = argb_to_hex(argb)
-    with open(args.json_out, 'w') as f:
-        json.dump({'colors': out}, f, indent=4)
-    raise SystemExit(0)
+        out = dict(material_colors)
+        if args.path is not None or args.color is not None:
+            out['sourceColor'] = argb_to_hex(argb)
+        tmp_path = args.json_out + '.tmp'
+        with open(tmp_path, 'w') as f:
+            json.dump({'colors': out}, f, indent=4)
+        os.replace(tmp_path, args.json_out)
+        raise SystemExit(0)
 
 # Terminal Colors
 if args.termscheme is not None:

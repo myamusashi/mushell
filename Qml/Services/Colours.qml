@@ -13,9 +13,97 @@ Singleton {
     readonly property M3GeneratedTemplateComponent m3GeneratedColors: M3GeneratedTemplateComponent {}
     readonly property MaterialTemplateComponent materialColors: MaterialTemplateComponent {}
     readonly property StaticColorTemplateComponent staticColors: StaticColorTemplateComponent {}
-    readonly property var materialTemplateColors: Configs.colors.isDarkMode ? JSON.parse(darkColorFile.text()).colors : JSON.parse(lightColorFile.text()).colors
+    readonly property var materialTemplateColors: root.animatedMaterialColors
     readonly property var staticTemplateColors: JSON.parse(staticColorFile.text())
     readonly property M3TemplateColors m3Colors: Configs.colors.useMaterialColor ? materialColors : Configs.colors.useStaticColors ? staticColors : m3GeneratedColors
+
+    // Raw palette parsed from the active material JSON file (colors wrapper + sourceColor)
+    readonly property var materialPaletteSource: root.parseMaterialPalette()
+    property var lastValidPalette: ({})
+
+    function parseMaterialPalette() {
+        const text = Configs.colors.isDarkMode ? darkColorFile.text() : lightColorFile.text();
+        try {
+            const json = JSON.parse(text);
+            const merged = {};
+            for (const key in json.colors)
+                merged[key] = json.colors[key];
+            merged.sourceColor = json.sourceColor;
+            root.lastValidPalette = merged;
+            return merged;
+        } catch (error) {
+            return root.lastValidPalette;
+        }
+    }
+
+    // OKLab-blended wallpaper palette transition state
+    property var animatedMaterialColors: ({})
+    property var paletteFrom: ({})
+    property var paletteTo: ({})
+    property real paletteProgress: 1.0
+    property bool transitioning: false
+
+    onMaterialPaletteSourceChanged: {
+        if (!root.materialPaletteSource || Object.keys(root.materialPaletteSource).length === 0)
+            return;
+
+        if (!root.transitioning) {
+            const snapshot = {};
+            for (const key in root.animatedMaterialColors)
+                snapshot[key] = root.animatedMaterialColors[key];
+            root.paletteFrom = snapshot;
+        }
+
+        root.paletteTo = root.toColorMap(root.materialPaletteSource);
+        root.paletteProgress = 0.0;
+        root.transitioning = true;
+        colorTransitionTimer.start();
+    }
+
+    Component.onCompleted: {
+        if (root.materialPaletteSource && Object.keys(root.materialPaletteSource).length > 0)
+            root.animatedMaterialColors = root.toColorMap(root.materialPaletteSource);
+    }
+
+    function toColorMap(source) {
+        const result = {};
+        for (const key in source)
+            result[key] = root.toColorValue(source[key]);
+        return result;
+    }
+
+    function toColorValue(value) {
+        if (typeof value === "string") {
+            const hex = value.replace("#", "");
+            if (hex.length === 6 || hex.length === 8) {
+                const r = parseInt(hex.slice(0, 2), 16) / 255;
+                const g = parseInt(hex.slice(2, 4), 16) / 255;
+                const b = parseInt(hex.slice(4, 6), 16) / 255;
+                const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1.0;
+                return Qt.rgba(r, g, b, a);
+            }
+        }
+
+        return value;
+    }
+
+    function advancePaletteTransition() {
+        root.paletteProgress = Math.min(1, root.paletteProgress + colorTransitionTimer.interval / Appearance.animations.durations.expressiveDefaultSpatial);
+
+        // easeOutCubic
+        const eased = 1 - Math.pow(1 - root.paletteProgress, 3);
+        const blended = {};
+        for (const key in root.paletteTo)
+            blended[key] = root.paletteFrom[key] !== undefined ? root.blendColors(root.paletteFrom[key], root.paletteTo[key], eased) : root.paletteTo[key];
+
+        root.animatedMaterialColors = blended;
+
+        if (root.paletteProgress >= 1) {
+            root.animatedMaterialColors = root.paletteTo;
+            root.transitioning = false;
+            colorTransitionTimer.stop();
+        }
+    }
 
     function clamp01(x) {
         return Math.min(1, Math.max(0, x));
@@ -229,6 +317,14 @@ Singleton {
         path: Configs.colors.staticColorsPath
         watchChanges: true
         onFileChanged: reload()
+    }
+
+    Timer {
+        id: colorTransitionTimer
+
+        interval: 16
+        repeat: true
+        onTriggered: root.advancePaletteTransition()
     }
 
     component StaticColorTemplateComponent: M3TemplateColors {

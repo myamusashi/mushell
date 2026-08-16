@@ -4,7 +4,10 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import Vast.Utils
+
 import qs.Core.Configs
+import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 import qs.Components.Dialog.FileDialog
@@ -97,7 +100,11 @@ Item {
                                 }))
                         placeholderText: Configs.colors.scheme
                         isItemActive: (md, _) => md.display === Configs.colors.scheme
-                        onActivated: index => Configs.colors.scheme = model[index].display
+                        onActivated: index => {
+                            Configs.colors.scheme = model[index].display;
+                            ColorGenerator.generate(Paths.currentWallpaper, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
+                            ColorGenerator.generate(Paths.currentWallpaper, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
+                        }
                     }
                 }
             }
