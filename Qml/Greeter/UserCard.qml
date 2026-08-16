@@ -7,12 +7,12 @@ import qs.Components.Base
 import qs.Components.Menu
 import qs.Core.Configs
 import qs.Core.Utils
-import qs.Services
 
 Item {
     id: root
 
     required property Auth auth
+    required property var colors
 
     readonly property string initials: root.auth.currentUser.length > 0 ? root.auth.currentUser.charAt(0).toUpperCase() : "?"
 
@@ -44,9 +44,9 @@ Item {
         id: cardSurface
 
         anchors.fill: parent
-        color: Colours.m3Colors.m3SurfaceContainerHigh
+        color: root.colors.surfaceContainerHigh
         radius: Appearance.rounding.large
-        border.color: Qt.alpha(Colours.m3Colors.m3OutlineVariant, 0.4)
+        border.color: Qt.alpha(root.colors.outlineVariant, 0.4)
         border.width: 1
     }
 
@@ -68,14 +68,14 @@ Item {
 
             StyledRect {
                 anchors.fill: parent
-                color: Colours.m3Colors.m3PrimaryContainer
+                color: root.colors.primaryContainer
                 radius: Appearance.rounding.full
             }
 
             StyledText {
                 anchors.centerIn: parent
                 text: root.initials
-                color: Colours.m3Colors.m3OnPrimaryContainer
+                color: root.colors.onPrimaryContainer
                 font.pixelSize: Appearance.fonts.size.extraLarge * 1.4
                 font.weight: Font.Medium
                 horizontalAlignment: Text.AlignHCenter
@@ -85,7 +85,7 @@ Item {
         StyledText {
             Layout.alignment: Qt.AlignHCenter
             text: root.auth.currentUser
-            color: Colours.m3Colors.m3OnSurface
+            color: root.colors.onSurface
             font.pixelSize: Appearance.fonts.size.extraLarge
             font.weight: Font.Medium
         }
@@ -97,7 +97,7 @@ Item {
             Layout.fillWidth: true
             visible: root.auth.statusMessage !== ""
             text: root.auth.statusMessage
-            color: root.auth.messageIsError ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Primary
+            color: root.auth.messageIsError ? root.colors.error : root.colors.primary
             font.pixelSize: Appearance.fonts.size.medium
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
@@ -138,10 +138,10 @@ Item {
             Layout.preferredHeight: 48
             text: qsTr("Sign in")
             icon.name: "login"
-            icon.color: Colours.m3Colors.m3OnPrimary
-            color: Colours.m3Colors.m3Primary
-            textColor: Colours.m3Colors.m3OnPrimary
-            rippleColor: Colours.m3Colors.m3OnPrimary
+            icon.color: root.colors.onPrimary
+            color: root.colors.primary
+            textColor: root.colors.onPrimary
+            rippleColor: root.colors.onPrimary
             enabled: !root.auth.unlockInProgress
 
             onClicked: root.auth.tryUnlock()
@@ -241,9 +241,9 @@ Item {
 
         StyledRect {
             anchors.fill: parent
-            color: button.isCurrent ? Colours.m3Colors.m3SecondaryContainer : Colours.m3Colors.m3SurfaceContainerHighest
+            color: button.isCurrent ? root.colors.secondaryContainer : root.colors.surfaceContainerHighest
             radius: Appearance.rounding.full
-            border.color: button.isCurrent ? Colours.m3Colors.m3Secondary : "transparent"
+            border.color: button.isCurrent ? root.colors.secondary : "transparent"
             border.width: button.isCurrent ? 1 : 0
 
             Behavior on color {
@@ -256,7 +256,7 @@ Item {
         StyledText {
             anchors.centerIn: parent
             text: button.username.charAt(0).toUpperCase()
-            color: button.isCurrent ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
+            color: button.isCurrent ? root.colors.onSecondaryContainer : root.colors.onSurfaceVariant
             font.pixelSize: Appearance.fonts.size.large
             font.weight: Font.Medium
             horizontalAlignment: Text.AlignHCenter

@@ -20,16 +20,16 @@ Scope {
     property bool messageIsError: false
     property bool echoResponse: false
     property int selectedSessionIndex: -1
-    property bool launched: false
     property var users: []
     property ListModel sessions: ListModel {}
     property string lastSessionCommand: ""
+    property bool launching: false
 
-    onLastSessionCommandChanged: root.selectSession(root.sessionIndexForCommand(root.lastSessionCommand))
-
-    signal authenticated
+    signal launchReady
 
     readonly property bool available: Greetd.available
+
+    onLastSessionCommandChanged: root.selectSession(root.sessionIndexForCommand(root.lastSessionCommand))
 
     onCurrentTextChanged: {
         if (root.showFailure || root.messageIsError) {
@@ -50,6 +50,20 @@ Scope {
         root.statusMessage = qsTr("Authenticating…");
         root.unlockInProgress = true;
         Greetd.createSession(root.currentUser);
+    }
+
+    function launch() {
+        if (root.launching)
+            return;
+        root.launching = true;
+        let index = root.selectedSessionIndex;
+        if (index < 0 || index >= root.sessions.count)
+            index = 0;
+        const session = root.sessions.get(index);
+        const rawCommand = session && session.command ? session.command : "bash";
+        if (session && session.command)
+            root.saveLastSession(session.command);
+        Greetd.launch(rawCommand.split(" ").filter(part => part.length > 0));
     }
 
     function switchUser(username) {
@@ -81,18 +95,14 @@ Scope {
         });
     }
 
-    function launch() {
-        if (root.launched)
-            return;
-        root.launched = true;
-        let index = root.selectedSessionIndex;
-        if (index < 0 || index >= root.sessions.count)
-            index = 0;
-        const session = root.sessions.get(index);
-        const rawCommand = session && session.command ? session.command : "bash";
-        if (session && session.command)
-            root.saveLastSession(session.command);
-        Greetd.launch(rawCommand.split(" ").filter(part => part.length > 0));
+    function sessionIndexForCommand(command) {
+        if (command === "")
+            return -1;
+        for (let i = 0; i < root.sessions.count; i++) {
+            if (root.sessions.get(i).command === command)
+                return i;
+        }
+        return -1;
     }
 
     Connections {
@@ -122,8 +132,8 @@ Scope {
         }
 
         function onReadyToLaunch() {
-            root.statusMessage = qsTr("Launching session…");
-            root.authenticated();
+            root.statusMessage = qsTr("Session Start");
+            root.launchReady();
         }
 
         function onError(error) {
@@ -131,12 +141,6 @@ Scope {
             root.messageIsError = true;
             root.statusMessage = error;
             root.unlockInProgress = false;
-        }
-
-        function onLaunched() {
-            Quickshell.execDetached({
-                command: ["pkill", "-TERM", "-x", "mango"]
-            });
         }
     }
 
@@ -192,15 +196,5 @@ Scope {
                     root.lastSessionCommand = value;
             }
         }
-    }
-
-    function sessionIndexForCommand(command) {
-        if (command === "")
-            return -1;
-        for (let i = 0; i < root.sessions.count; i++) {
-            if (root.sessions.get(i).command === command)
-                return i;
-        }
-        return -1;
     }
 }

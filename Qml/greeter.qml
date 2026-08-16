@@ -6,39 +6,27 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 
+import qs.Components.Feedback
+import qs.Components.Base
+import qs.Core.Configs
+import qs.Core.Utils
+import qs.Services
 import "Greeter" as GREET
 
 ShellRoot {
-    GREET.BackdropPanel {
-        id: backdrop
-    }
-
-    GREET.MainPanel {
-        id: mainPanel
-
-        auth: authenticator
-        launching: rootFlow.launching
-
-        onEntranceFinished: {
-            if (!rootFlow.launching)
-                lock.locked = true;
-        }
-    }
+    id: root
 
     WlSessionLock {
         id: lock
         locked: false
 
         GREET.Surface {
-            id: surface
-
             lock: lock
             auth: authenticator
-
-            onSuccessSequenceFinished: rootFlow.launchSession()
         }
     }
 
@@ -49,39 +37,95 @@ ShellRoot {
     QtObject {
         id: rootFlow
 
+        property bool introducing: true
         property bool launching: false
-
-        function onAuthenticated() {
-            if (lock.locked)
-                surface.playSuccessSequence();
-            else
-                rootFlow.launchSession();
-        }
-
-        function launchSession() {
-            if (rootFlow.launching)
-                return;
-
-            rootFlow.launching = true;
-            lock.locked = false;
-            launchTimer.start();
-        }
     }
 
     Connections {
         target: authenticator
 
-        function onAuthenticated() {
-            rootFlow.onAuthenticated();
+        function onLaunchReady() {
+            if (rootFlow.launching)
+                return;
+            rootFlow.launching = true;
+            rootFlow.introducing = false;
+            sessionTimer.start();
         }
     }
 
     Timer {
-        id: launchTimer
+        id: introduceTimer
 
-        interval: 2000
-        repeat: false
+        interval: 3000
+        running: true
+
+        onTriggered: {
+            rootFlow.introducing = false;
+            lock.locked = true;
+        }
+    }
+
+    Timer {
+        id: sessionTimer
+
+        interval: 3000
 
         onTriggered: authenticator.launch()
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        delegate: PanelWindow {
+            id: splashPanel
+
+            anchors {
+                top: true
+                left: true
+                right: true
+                bottom: true
+            }
+
+            required property ShellScreen modelData
+
+            readonly property bool splashVisible: rootFlow.introducing || (rootFlow.launching && !lock.locked)
+
+            screen: modelData
+            color: "transparent"
+            contentItem.opacity: splashPanel.splashVisible ? 1 : 0
+
+            Behavior on contentItem.opacity {
+                NAnim {
+                    duration: Appearance.animations.durations.expressiveDefaultSpatial
+                    easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                }
+            }
+
+            Image {
+                anchors.fill: parent
+                source: Paths.projectRoot + "/Assets/images/wallpaper.png"
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+            }
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                anchors.margins: Appearance.margin.large
+                spacing: Appearance.spacing.normal
+
+                LoadingIndicator {
+                    implicitWidth: 64
+                    implicitHeight: 64
+                    status: splashPanel.splashVisible
+                }
+
+                StyledText {
+                    text: splashPanel.splashVisible && rootFlow.launching ? qsTr("Session Start") : "Loading..."
+                    font.pixelSize: Appearance.fonts.size.extraLarge
+                    color: Colours.m3Colors.m3OnSurface
+                }
+            }
+        }
     }
 }
