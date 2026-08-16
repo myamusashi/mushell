@@ -37,10 +37,69 @@ func ShellBinArgs() (string, []string) {
 	if _, err := exec.LookPath("shell"); err == nil {
 		return "shell", nil
 	}
-	if dir := os.Getenv("VAST_SHELL_DIRECTORY"); dir != "" {
+	if dir := shellDirectory(); dir != "" {
 		return "quickshell", []string{"-p", dir + "/Qml"}
 	}
 	return "quickshell", nil
+}
+
+// shellDirectory returns the VAST_SHELL_DIRECTORY value with any session
+// variables expanded, or "" if the variable is unset.
+func shellDirectory() string {
+	return ExpandEnv(os.Getenv("VAST_SHELL_DIRECTORY"))
+}
+
+// ExpandEnv expands session variable references in s. The supported forms
+// are $VAR, ${VAR}, and $env.VAR — all read from the process environment.
+// Unknown variables expand to an empty string.
+func ExpandEnv(s string) string {
+	if !strings.ContainsRune(s, '$') {
+		return s
+	}
+	isIdent := func(c byte) bool {
+		return c == '_' || c >= '0' && c <= '9' || c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
+	}
+	var b strings.Builder
+	for i := 0; i < len(s); {
+		if s[i] != '$' {
+			b.WriteByte(s[i])
+			i++
+			continue
+		}
+		if strings.HasPrefix(s[i:], "$env.") {
+			start := i + len("$env.")
+			j := start
+			for j < len(s) && isIdent(s[j]) {
+				j++
+			}
+			b.WriteString(os.Getenv(s[start:j]))
+			i = j
+			continue
+		}
+		if i+1 < len(s) && s[i+1] == '{' {
+			end := strings.IndexByte(s[i+2:], '}')
+			if end < 0 {
+				b.WriteString(s[i:])
+				break
+			}
+			b.WriteString(os.Getenv(s[i+2 : i+2+end]))
+			i += 2 + end + 1
+			continue
+		}
+		start := i + 1
+		if start < len(s) && isIdent(s[start]) {
+			j := start
+			for j < len(s) && isIdent(s[j]) {
+				j++
+			}
+			b.WriteString(os.Getenv(s[start:j]))
+			i = j
+			continue
+		}
+		b.WriteByte('$')
+		i++
+	}
+	return b.String()
 }
 
 func shellIPCArgs() (string, []string) {
