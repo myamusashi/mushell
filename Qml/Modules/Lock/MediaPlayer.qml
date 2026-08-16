@@ -18,9 +18,9 @@ import Vast.Lyrics
 import Vast.Utils
 
 StyledRect {
-	id: mediaPlayerRect
+    id: mediaPlayerRect
 
-	property alias mediaLayout: mediaLayout
+    property alias mediaLayout: mediaLayout
 
     visible: Players.active !== null
     color: GlobalStates.drawerColors
@@ -42,7 +42,7 @@ StyledRect {
             onSurface: "#E6E1E5",
             onSurfaceVariant: "#CAC4D0",
             outline: "#938F99"
-        });
+        })
     property var trackArtColors: fallbackTrackArtColors
 
     readonly property color dynPrimary: Configs.mediaPlayer.dynamicColorsCover ? trackArtColors.primary : Colours.m3Colors.m3Primary

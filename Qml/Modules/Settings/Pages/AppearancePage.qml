@@ -92,7 +92,9 @@ Item {
 
                     DropdownField {
                         Layout.preferredWidth: 220
-                        model: ["vibrant", "tonal-spot", "expressive", "monochrome", "rainbow", "fruit-salad", "neutral", "fidelity", "content"].map(name => ({display: name}))
+                        model: ["vibrant", "tonal-spot", "expressive", "monochrome", "rainbow", "fruit-salad", "neutral", "fidelity", "content"].map(name => ({
+                                    display: name
+                                }))
                         placeholderText: Configs.colors.scheme
                         isItemActive: (md, _) => md.display === Configs.colors.scheme
                         onActivated: index => Configs.colors.scheme = model[index].display

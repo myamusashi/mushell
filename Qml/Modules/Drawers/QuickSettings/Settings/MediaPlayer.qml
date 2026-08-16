@@ -34,7 +34,7 @@ ClippingWrapperRectangle {
             onSurface: "#E6E1E5",
             onSurfaceVariant: "#CAC4D0",
             outline: "#938F99"
-        });
+        })
     property var trackArtColors: fallbackTrackArtColors
     property string cachedArtPath: ""
 
