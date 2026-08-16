@@ -17,6 +17,7 @@
 
 import argparse
 import math
+import os
 import json
 from PIL import Image
 from materialyoucolor.quantize import QuantizeCelebi
@@ -149,19 +150,69 @@ def material_colors_for(scheme, dark: bool) -> dict:
         colors['onSuccessContainer'] = '#0C1F13'
     return colors
 
+# Roles consumers resolve through Colours.qml — both modes must always contain these.
+REQUIRED_ROLES = [
+    'background', 'onBackground', 'surface', 'surfaceDim', 'surfaceBright',
+    'surfaceContainerLowest', 'surfaceContainerLow', 'surfaceContainer',
+    'surfaceContainerHigh', 'surfaceContainerHighest',
+    'onSurface', 'surfaceVariant', 'onSurfaceVariant',
+    'outline', 'outlineVariant', 'shadow', 'scrim', 'surfaceTint',
+    'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer',
+    'error', 'onError', 'errorContainer', 'onErrorContainer',
+]
+SURFACE_ROLES = [r for r in REQUIRED_ROLES if 'surface' in r]
+
+def fix_surface_extremes(colors: dict) -> None:
+    # M3 emits pure #000000 / #FFFFFF for surfaceContainerLowest at its default
+    # tones 4/100. Clamp those to near-black tone 5 / near-white tone 99 so
+    # surfaces never hit pure black or white (they clip badly with the shell's
+    # blur/vibrancy), while keeping the container tone ordering intact.
+    key = colors.get('neutralPaletteKeyColor')
+    neutral = Hct.from_int(hex_to_argb(key)) if key else Hct.from_hct(50, 8, 50)
+    for role in SURFACE_ROLES:
+        if colors[role].upper() == '#000000':
+            colors[role] = argb_to_hex(Hct.from_hct(neutral.hue, neutral.chroma * 0.25, 5.0).to_int())
+        elif colors[role].upper() == '#FFFFFF':
+            colors[role] = argb_to_hex(Hct.from_hct(neutral.hue, neutral.chroma * 0.25, 99.0).to_int())
+
+def validate_palette(colors: dict) -> None:
+    missing = [r for r in REQUIRED_ROLES if r not in colors]
+    if missing:
+        raise ValueError('missing roles: ' + ', '.join(missing))
+    for role in REQUIRED_ROLES:
+        value = str(colors[role]).upper()
+        if not (len(value) == 7 and value.startswith('#')):
+            raise ValueError('role {} is not a hex color: {}'.format(role, colors[role]))
+    for role in SURFACE_ROLES:
+        if colors[role].upper() in ('#000000', '#FFFFFF'):
+            raise ValueError('surface role {} is pure {}'.format(role, colors[role]))
+    for fg, bg in [('onSurface', 'surface'), ('onPrimary', 'primary'), ('onError', 'error'),
+                   ('onSurfaceVariant', 'surfaceVariant'), ('onPrimaryContainer', 'primaryContainer')]:
+        fg_tone = Hct.from_int(hex_to_argb(colors[fg])).tone
+        bg_tone = Hct.from_int(hex_to_argb(colors[bg])).tone
+        if abs(fg_tone - bg_tone) < 40:
+            raise ValueError('low contrast: {} vs {} tone gap {}'.format(fg, bg, abs(fg_tone - bg_tone)))
+
 material_colors = material_colors_for(scheme, darkmode)
 term_colors = {}
 
 # JSON output: write current mode's scheme in the format vast-shell reads
 if args.json_out is not None:
-        out = dict(material_colors)
-        if args.path is not None or args.color is not None:
-            out['sourceColor'] = argb_to_hex(argb)
-        tmp_path = args.json_out + '.tmp'
+    out = dict(material_colors)
+    if args.path is not None or args.color is not None:
+        out['sourceColor'] = argb_to_hex(argb)
+    fix_surface_extremes(out)
+    validate_palette(out)
+    tmp_path = args.json_out + '.tmp'
+    try:
         with open(tmp_path, 'w') as f:
             json.dump({'colors': out}, f, indent=4)
         os.replace(tmp_path, args.json_out)
-        raise SystemExit(0)
+    except BaseException:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise
+    raise SystemExit(0)
 
 # Terminal Colors
 if args.termscheme is not None:

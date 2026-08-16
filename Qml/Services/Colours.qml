@@ -29,7 +29,6 @@ Singleton {
             for (const key in json.colors)
                 merged[key] = json.colors[key];
             merged.sourceColor = json.sourceColor;
-            root.lastValidPalette = merged;
             return merged;
         } catch (error) {
             return root.lastValidPalette;
@@ -46,6 +45,8 @@ Singleton {
     onMaterialPaletteSourceChanged: {
         if (!root.materialPaletteSource || Object.keys(root.materialPaletteSource).length === 0)
             return;
+
+        root.lastValidPalette = root.materialPaletteSource;
 
         if (!root.transitioning) {
             const snapshot = {};
@@ -390,6 +391,9 @@ Singleton {
         readonly property color m3Green: root.hctToRgb(145, 50, 70)
         readonly property color m3Blue: root.hctToRgb(220, 50, 70)
         readonly property color m3Yellow: root.hctToRgb(90, 60, 70)
+        readonly property color m3Orange: root.hctToRgb(30, 50, 70)
+        readonly property color m3Purple: root.hctToRgb(285, 50, 70)
+        readonly property color m3Maroon: root.hctToRgb(10, 30, 30)
     }
 
     component MaterialTemplateComponent: M3TemplateColors {
@@ -455,6 +459,9 @@ Singleton {
         readonly property color m3Green: root.hctToRgb(145, 50, 70)
         readonly property color m3Blue: root.hctToRgb(220, 50, 70)
         readonly property color m3Yellow: root.hctToRgb(90, 60, 70)
+        readonly property color m3Orange: root.hctToRgb(30, 50, 70)
+        readonly property color m3Purple: root.hctToRgb(285, 50, 70)
+        readonly property color m3Maroon: root.hctToRgb(10, 30, 30)
     }
 
     component M3GeneratedTemplateComponent: M3TemplateColors {
@@ -533,6 +540,9 @@ Singleton {
         readonly property color m3Green: root.hctToRgb(145, 50, Configs.colors.isDarkMode ? 70 : 40)
         readonly property color m3Blue: root.hctToRgb(220, 50, Configs.colors.isDarkMode ? 70 : 40)
         readonly property color m3Yellow: root.hctToRgb(90, 60, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Orange: root.hctToRgb(30, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Purple: root.hctToRgb(285, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Maroon: root.hctToRgb(10, 40, Configs.colors.isDarkMode ? 45 : 30)
     }
 
     component M3TemplateColors: QtObject {
@@ -589,5 +599,8 @@ Singleton {
         readonly property color m3Green: "transparent"
         readonly property color m3Blue: "transparent"
         readonly property color m3Yellow: "transparent"
+        readonly property color m3Orange: "transparent"
+        readonly property color m3Purple: "transparent"
+        readonly property color m3Maroon: "transparent"
     }
 }

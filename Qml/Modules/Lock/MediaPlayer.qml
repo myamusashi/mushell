@@ -29,19 +29,19 @@ StyledRect {
     property url url: ""
     property string cachedArtPath: ""
     readonly property var fallbackTrackArtColors: ({
-            primary: "#D0BCFF",
-            onPrimary: "#381E72",
-            primaryContainer: "#4F378B",
-            onPrimaryContainer: "#EADDFF",
-            secondary: "#CCC2DC",
-            onSecondary: "#332D41",
-            tertiary: "#EFB8C8",
-            onTertiary: "#492532",
-            surface: "#141218",
-            surfaceVariant: "#49454F",
-            onSurface: "#E6E1E5",
-            onSurfaceVariant: "#CAC4D0",
-            outline: "#938F99"
+            primary: Colours.m3Colors.m3Primary,
+            onPrimary: Colours.m3Colors.m3OnPrimary,
+            primaryContainer: Colours.m3Colors.m3PrimaryContainer,
+            onPrimaryContainer: Colours.m3Colors.m3OnPrimaryContainer,
+            secondary: Colours.m3Colors.m3Secondary,
+            onSecondary: Colours.m3Colors.m3OnSecondary,
+            tertiary: Colours.m3Colors.m3Tertiary,
+            onTertiary: Colours.m3Colors.m3OnTertiary,
+            surface: Colours.m3Colors.m3SurfaceContainerHighest,
+            surfaceVariant: Colours.m3Colors.m3SurfaceVariant,
+            onSurface: Colours.m3Colors.m3OnSurface,
+            onSurfaceVariant: Colours.m3Colors.m3OnSurfaceVariant,
+            outline: Colours.m3Colors.m3Outline
         })
     property var trackArtColors: fallbackTrackArtColors
 

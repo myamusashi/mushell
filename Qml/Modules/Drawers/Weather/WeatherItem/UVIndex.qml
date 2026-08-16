@@ -13,11 +13,11 @@ MaterialShape {
     id: canvas
 
     property int uvIndex: Weather.uvIndex
-    property var uvColors: ["#4CAF50"  // Low (0-2) - Green
-        , "#FFEB3B"  // Moderate (3-5) - Yellow
-        , "#FF9800"  // High (6-7) - Orange
-        , "#F44336"  // Very High (8-10) - Red
-        , "#9C27B0"   // Extreme (11+) - Purple
+    property var uvColors: [Colours.m3Colors.m3Green  // Low (0-2) - Green
+        , Colours.m3Colors.m3Yellow  // Moderate (3-5) - Yellow
+        , Colours.m3Colors.m3Orange  // High (6-7) - Orange
+        , Colours.m3Colors.m3Red  // Very High (8-10) - Red
+        , Colours.m3Colors.m3Purple   // Extreme (11+) - Purple
     ]
     property var uvLabels: [qsTr("Low"), qsTr("Moderate"), qsTr("High"), qsTr("Very High"), qsTr("Extreme")]
 

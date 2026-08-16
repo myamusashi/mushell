@@ -11,15 +11,7 @@ import qs.Services
 Item {
     id: root
 
-    readonly property color bgColor: {
-        if (!enabled)
-            return Qt.alpha(color, 0.12);
-        if (pressed)
-            return Qt.darker(color, 1.18);
-        if (hovered)
-            return Qt.darker(color, 1.08);
-        return color;
-    }
+    readonly property color bgColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
 
     property alias bgRadius: background.radius
     property string text: ""
@@ -28,9 +20,9 @@ Item {
     property bool pressed
     property bool hovered
     property bool outlined: false
-    property color color: "#6750A4"
-    property color textColor: "#FFFFFF"
-    property color rippleColor: "#FFFFFF"
+    property color color: Colours.m3Colors.m3Primary
+    property color textColor: Colours.m3Colors.m3OnPrimary
+    property color rippleColor: Colours.m3Colors.m3OnPrimary
     property IconComponent icon: IconComponent {}
 
     readonly property bool kbFocused: root.activeFocus
@@ -121,6 +113,21 @@ Item {
             xClipRadius: background.radius
             yClipRadius: background.radius
             color: Colours.m3Colors.m3OnSurfaceVariant
+        }
+    }
+
+    StyledRect {
+        id: stateOverlay
+
+        anchors.fill: parent
+        radius: background.radius
+        color: root.textColor
+        opacity: (root.enabled ? (root.pressed ? 0.12 : root.hovered ? 0.08 : 0.0) : 0.0)
+
+        Behavior on opacity {
+            NAnim {
+                duration: Appearance.animations.durations.small
+            }
         }
     }
 

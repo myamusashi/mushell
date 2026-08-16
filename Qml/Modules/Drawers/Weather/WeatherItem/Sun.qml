@@ -16,7 +16,7 @@ MaterialShape {
 
     property real sunriseProgress: calculateSunProgress()
 
-    color: "#1a1a1a"
+    color: Colours.m3Colors.m3SurfaceContainerHighest
     shape: MaterialShape.Square
     animationDuration: 0
 

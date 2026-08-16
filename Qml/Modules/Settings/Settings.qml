@@ -20,9 +20,11 @@ LazyLoader {
 
     activeAsync: GlobalStates.isSettingsOpen
     component: FloatingWindow {
-        color: "transparent"
+        color: GlobalStates.drawerColors
+        title: "settings window"
         onClosed: GlobalStates.isSettingsOpen = false
-        implicitWidth: Appearance.margin.large * 2 + Appearance.spacing.large * 2 + 1 + navRail.animatedRailWidth + settingsLoader.contentWidth
+        implicitWidth: 900
+        implicitHeight: 600
 
         Rectangle {
             anchors.fill: parent

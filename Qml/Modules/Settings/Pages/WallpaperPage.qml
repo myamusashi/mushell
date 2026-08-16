@@ -126,23 +126,23 @@ SettingsPageBase {
                             right: parent.right
                             bottom: parent.bottom
                         }
-                        height: fileNameText.implicitHeight + 4
-                        color: "transparent"
+height: fileNameText.implicitHeight + 4
+                color: Qt.alpha(Colours.m3Colors.m3Scrim, 0.35)
 
-                        StyledText {
-                            id: fileNameText
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                                verticalCenter: parent.verticalCenter
-                                margins: 2
-                            }
-                            text: delegateRoot.modelData.split('/').pop()
-                            font.pixelSize: Appearance.fonts.size.small
-                            color: "white"
-                            elide: Text.ElideRight
-                            horizontalAlignment: Text.AlignHCenter
-                        }
+                StyledText {
+                    id: fileNameText
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        verticalCenter: parent.verticalCenter
+                        margins: 2
+                    }
+                    text: delegateRoot.modelData.split('/').pop()
+                    font.pixelSize: Appearance.fonts.size.small
+                    color: Colours.m3Colors.m3OnSurface
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                }
                     }
 
                     MouseArea {

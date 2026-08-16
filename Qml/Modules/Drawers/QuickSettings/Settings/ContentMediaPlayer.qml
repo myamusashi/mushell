@@ -602,7 +602,7 @@ RowLayout {
 
                         background: StyledRect {
                             id: itemBg
-                            property color target: (playerComboBox.currentIndex === itemDel.index || itemDel.highlighted) ? Qt.darker(Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary, 1.5) : "transparent"
+                            property color target: (playerComboBox.currentIndex === itemDel.index || itemDel.highlighted) ? Qt.alpha(Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary, 0.18) : "transparent"
                             property color cFrom
                             property color cTo
                             property bool cActive: false

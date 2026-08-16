@@ -381,12 +381,12 @@ Item {
                 width: Math.abs(root.selEnd.x - root.selStart.x)
                 height: Math.abs(root.selEnd.y - root.selStart.y)
                 color: "transparent"
-                border.color: "white"
+                border.color: Colours.m3Colors.m3OnSurface
                 border.width: 2
 
                 Rectangle {
                     anchors.fill: parent
-                    color: "#40ffffff"
+                    color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.25)
                 }
             }
 
@@ -619,13 +619,13 @@ Item {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         height: Appearance.spacing.large
-                        color: Qt.alpha("black", 0.6)
+                        color: Qt.alpha(Colours.m3Colors.m3Scrim, 0.6)
                         radius: Appearance.rounding.small
                         visible: pickerMouse.containsMouse
                         StyledText {
                             anchors.centerIn: parent
                             text: Math.round(pickerDelegate.x) + "," + Math.round(pickerDelegate.y) + "  " + Math.round(pickerDelegate.width) + "×" + Math.round(pickerDelegate.height)
-                            color: "white"
+                            color: Colours.m3Colors.m3OnSurface
                             font.pixelSize: Appearance.fonts.size.small
                         }
                     }

@@ -126,7 +126,7 @@ Item {
                         property color lyricTarget: lineDelegate.isActiveLine ? root.activeColor : root.inactiveColor
                         renderType: Text.QtRendering
                         style: Text.Raised
-                        styleColor: "#80000000"
+                        styleColor: Qt.alpha(Colours.m3Colors.m3Scrim, 0.5)
 
                         onLyricTargetChanged: {
                             c0Anim.stop();
@@ -182,7 +182,7 @@ Item {
                 }
                 property color transTarget: lineDelegate.isActiveLine ? root.activeColor : root.inactiveColor
                 style: Text.Raised
-                styleColor: "#80000000"
+                styleColor: Qt.alpha(Colours.m3Colors.m3Scrim, 0.5)
                 opacity: 0.7
 
                 onTransTargetChanged: {

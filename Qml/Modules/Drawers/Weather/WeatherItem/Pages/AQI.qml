@@ -83,27 +83,27 @@ Pages {
                             orientation: Gradient.Horizontal
                             GradientStop {
                                 position: 0.0
-                                color: "#4CAF50"
+                                color: Colours.m3Colors.m3Green
                             }
                             GradientStop {
                                 position: 0.2
-                                color: "#FFEB3B"
+                                color: Colours.m3Colors.m3Yellow
                             }
                             GradientStop {
                                 position: 0.4
-                                color: "#FF9800"
+                                color: Colours.m3Colors.m3Orange
                             }
                             GradientStop {
                                 position: 0.6
-                                color: "#F44336"
+                                color: Colours.m3Colors.m3Red
                             }
                             GradientStop {
                                 position: 0.8
-                                color: "#9C27B0"
+                                color: Colours.m3Colors.m3Purple
                             }
                             GradientStop {
                                 position: 1.0
-                                color: "#8B0000"
+                                color: Colours.m3Colors.m3Maroon
                             }
                         }
                     }
