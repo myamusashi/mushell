@@ -63,12 +63,13 @@ StyledRect {
                 return;
             const hash = Qt.md5(url);
             targetPath = `/tmp/qs_art_${hash}.jpg`;
-            command = ["curl", "-sLz", targetPath, "-o", targetPath, url];
-            running = true;
+            exec(["curl", "-sLz", targetPath, "-o", targetPath, url]);
         }
 
-        onExited: function (exitCode) { // qmllint disable
-            if (exitCode === 0)
+        onExited: function (exitCode, exitStatus) { // qmllint disable
+            if (exitStatus !== 0)
+                return;
+            if (exitCode === 0 && targetPath === `/tmp/qs_art_${Qt.md5(Players.active?.trackArtUrl ?? "")}.jpg`)
                 mediaPlayerRect.cachedArtPath = targetPath;
         }
     }
@@ -86,8 +87,7 @@ StyledRect {
         target: Players
 
         function onIndexChanged() {
-            const url = Players.active?.trackArtUrl ?? "";
-            url.startsWith("http") ? artDownloader.download(url) : mediaPlayerRect.cachedArtPath = url;
+            mediaPlayerRect.refreshTrackArt();
         }
     }
 
@@ -101,21 +101,33 @@ StyledRect {
         target: Players.active
 
         function onTrackChanged() {
-            const url = Players.active?.trackArtUrl ?? "";
-            if (url.startsWith("http"))
-                artDownloader.download(url);
-            else
-                mediaPlayerRect.cachedArtPath = url;
+            mediaPlayerRect.refreshTrackArt();
+        }
 
-            const localPath = url.replace("file://", "");
-            if (localPath && !url.startsWith("http"))
-                ImageCache.copyAndPreload(localPath, Qt.size(300, 300));
+        function onPostTrackChanged() {
+            mediaPlayerRect.refreshTrackArt();
+        }
+
+        function onTrackArtUrlChanged() {
+            mediaPlayerRect.refreshTrackArt();
         }
     }
 
-    Component.onCompleted: {
+    function refreshTrackArt() {
         const url = Players.active?.trackArtUrl ?? "";
-        url.startsWith("http") ? artDownloader.download(url) : mediaPlayerRect.cachedArtPath = url;
+        mediaPlayerRect.cachedArtPath = "";
+        if (url.startsWith("http"))
+            artDownloader.download(url);
+        else
+            mediaPlayerRect.cachedArtPath = url;
+
+        const localPath = url.replace("file://", "");
+        if (localPath && !url.startsWith("http"))
+            ImageCache.copyAndPreload(localPath, Qt.size(300, 300));
+    }
+
+    Component.onCompleted: {
+        mediaPlayerRect.refreshTrackArt();
     }
 
     Elevation {

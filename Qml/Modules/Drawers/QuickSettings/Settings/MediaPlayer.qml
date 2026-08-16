@@ -67,12 +67,13 @@ ClippingWrapperRectangle {
                 return;
             const hash = Qt.md5(url);
             targetPath = `/tmp/qs_art_${hash}.jpg`;
-            command = ["curl", "-sLz", targetPath, "-o", targetPath, url];
-            running = true;
+            exec(["curl", "-sLz", targetPath, "-o", targetPath, url]);
         }
 
-        onExited: function (exitCode) { // qmllint disable
-            if (exitCode === 0)
+        onExited: function (exitCode, exitStatus) { // qmllint disable
+            if (exitStatus !== 0)
+                return;
+            if (exitCode === 0 && targetPath === `/tmp/qs_art_${Qt.md5(Players.active?.trackArtUrl ?? "")}.jpg`)
                 root.cachedArtPath = targetPath;
         }
     }
@@ -81,8 +82,7 @@ ClippingWrapperRectangle {
         target: Players
 
         function onIndexChanged() {
-            const url = Players.active?.trackArtUrl ?? "";
-            url.startsWith("http") ? artDownloader.download(url) : root.cachedArtPath = url;
+            root.refreshTrackArt();
         }
     }
 
@@ -90,16 +90,29 @@ ClippingWrapperRectangle {
         target: Players.active
 
         function onTrackChanged() {
-            const url = Players.active?.trackArtUrl ?? "";
-            if (url.startsWith("http"))
-                artDownloader.download(url);
-            else
-                root.cachedArtPath = url;
-
-            const localPath = url.replace("file://", "");
-            if (localPath && !url.startsWith("http"))
-                ImageCache.copyAndPreload(localPath, Qt.size(300, 300));
+            root.refreshTrackArt();
         }
+
+        function onPostTrackChanged() {
+            root.refreshTrackArt();
+        }
+
+        function onTrackArtUrlChanged() {
+            root.refreshTrackArt();
+        }
+    }
+
+    function refreshTrackArt() {
+        const url = Players.active?.trackArtUrl ?? "";
+        root.cachedArtPath = "";
+        if (url.startsWith("http"))
+            artDownloader.download(url);
+        else
+            root.cachedArtPath = url;
+
+        const localPath = url.replace("file://", "");
+        if (localPath && !url.startsWith("http"))
+            ImageCache.copyAndPreload(localPath, Qt.size(300, 300));
     }
 
     Connections {
