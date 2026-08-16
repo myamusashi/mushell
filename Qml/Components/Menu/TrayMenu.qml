@@ -27,7 +27,6 @@ Item {
 
     width: root.horizontal ? (root.open ? root.menuWidth : 1) : root.menuWidth
     height: root.open ? Math.min(root.contentHeight, root.maxHeight) : 1
-    clip: true
 
     Behavior on height {
         NAnim {
@@ -59,7 +58,7 @@ Item {
         id: surfaceBg
 
         anchors.fill: parent
-        radius: Appearance.rounding.normal
+        radius: 0
         color: GlobalStates.drawerColors
         clip: true
 

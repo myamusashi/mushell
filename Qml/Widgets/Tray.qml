@@ -20,6 +20,12 @@ StyledRect {
     property var activeIconItem: null
     property var menuLevels: []
 
+    property var glidePopup: null
+    property var glideItem: null
+    property var glideFrom: null
+    property var glideTo: null
+    property real glideProgress: 0
+
     implicitWidth: visible ? systemTrayRow.width + horizontalPadding * 1.2 : 0
     implicitHeight: 35
     radius: Appearance.rounding.small
@@ -28,6 +34,24 @@ StyledRect {
 
     Behavior on implicitWidth {
         NAnim {}
+    }
+
+    onGlideProgressChanged: {
+        if (!root.glidePopup || !root.glideFrom || !root.glideTo)
+            return;
+        const progress = root.glideProgress;
+        root.glidePopup.glideX = (root.glideTo.x - root.glideFrom.x) * progress;
+        root.glidePopup.glideY = (root.glideTo.y - root.glideFrom.y) * progress;
+        if (progress >= 1) {
+            if (root.glidePopup && root.glideItem)
+                root.glidePopup.positionAt(root.glideItem); // qmllint disable
+            root.glidePopup.glideX = 0;
+            root.glidePopup.glideY = 0;
+            root.glidePopup = null;
+            root.glideItem = null;
+            root.glideFrom = null;
+            root.glideTo = null;
+        }
     }
 
     Row {
@@ -135,13 +159,13 @@ StyledRect {
 
     Timer {
         id: closeTimer
-        interval: 250
+        interval: Appearance.animations.durations.normal
         onTriggered: root.closeMenu()
     }
 
     Timer {
         id: hideTimer
-        interval: Appearance.animations.durations.expressiveDefaultSpatial + 60
+        interval: Appearance.animations.durations.expressiveDefaultSpatial
         onTriggered: root.finishClose()
     }
 
@@ -158,32 +182,32 @@ StyledRect {
             root.closeMenu();
             return;
         }
-        if (root.activeIconItem === iconItem && root.menuLevels.length > 0) {
-            if (root.menuLevels[0].menuOpen)
-                return;
-            for (const levelPopup of root.menuLevels)
-                levelPopup.menuOpen = true;
+        const rootPopup = root.levelAt(0);
+        if (!rootPopup) {
+            root.activeIconItem = iconItem;
+            const popup = root.createLevel(0, item.menu, iconItem, iconItem.QsWindow.window); // qmllint disable
+            root.menuLevels = [popup];
             return;
         }
 
-        root.destroyLevels(0);
-        const oldRoot = root.menuLevels.find(levelPopup => levelPopup.level === 0);
-        if (oldRoot) {
-            root.menuLevels.splice(root.menuLevels.indexOf(oldRoot), 1);
-            oldRoot.visible = false;
-            oldRoot.destroy();
+        root.pruneLevels(0);
+        rootPopup.handle = item.menu; // qmllint disable
+        if (rootPopup.anchorWindow !== iconItem.QsWindow.window) { // qmllint disable
+            rootPopup.anchorWindow = iconItem.QsWindow.window; // qmllint disable
         }
-
+        if (root.activeIconItem === iconItem && rootPopup.menuOpen) // qmllint disable
+            return;
+        root.glideToPosition(rootPopup, iconItem);
+        rootPopup.visible = true;
+        rootPopup.menuOpen = true;
         root.activeIconItem = iconItem;
-
-        const popup = root.createLevel(0, item.menu, iconItem); // qmllint disable
-        root.menuLevels = [popup];
     }
 
-    function createLevel(level: int, handle, anchorItem): QtObject {
+    function createLevel(level: int, handle, anchorItem, anchorWindow): QtObject {
         const popup = popupComponent.createObject(null, {
             level: level,
-            handle: handle
+            handle: handle,
+            anchorWindow: anchorWindow
         });
         popup.entryHovered.connect((entry, entryItem) => root.onEntryHovered(popup, entry, entryItem));
         popup.entryClicked.connect(entry => root.onEntryClicked(entry));
@@ -193,11 +217,26 @@ StyledRect {
         });
         popup.exited.connect(() => root.scheduleClose());
         popup.closed.connect(() => root.popupClosed(popup));
-        popup.anchor.item = anchorItem;
-        popup.anchor.updateAnchor();
+        popup.positionAt(anchorItem);
         popup.menuOpen = true;
         popup.visible = true;
         return popup;
+    }
+
+    function glideToPosition(popup, item): void {
+        const fromX = popup.anchor.rect.x; // qmllint disable
+        const fromY = popup.anchor.rect.y; // qmllint disable
+        const to = popup.computePosition(item);
+        if (!to)
+            return;
+        root.glidePopup = popup;
+        root.glideItem = item;
+        root.glideFrom = {
+            x: fromX,
+            y: fromY
+        };
+        root.glideTo = to;
+        glideAnim.restart();
     }
 
     function popupClosed(popup): void {
@@ -226,12 +265,12 @@ StyledRect {
             let child = root.levelAt(level + 1);
             if (child) {
                 child.handle = entry;
-                child.anchor.item = entryItem; // qmllint disable
-                child.anchor.updateAnchor(); // qmllint disable
+                child.anchorWindow = popup;
+                root.glideToPosition(child, entryItem);
                 child.visible = true;
                 child.menuOpen = true;
             } else {
-                const created = root.createLevel(level + 1, entry, entryItem); // qmllint disable
+                const created = root.createLevel(level + 1, entry, entryItem, popup);
                 root.menuLevels.push(created);
             }
         } else {
@@ -295,6 +334,20 @@ StyledRect {
         root.destroyLevels(-1);
         root.menuLevels = [];
         root.activeIconItem = null;
+        root.glidePopup = null;
+        root.glideFrom = null;
+        root.glideTo = null;
+    }
+
+    NAnim {
+        id: glideAnim
+
+        target: root
+        property: "glideProgress"
+        from: 0
+        to: 1
+        duration: Appearance.animations.durations.expressiveDefaultSpatial
+        easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
     }
 
     component TrayMenuPopup: PopupWindow {
@@ -302,7 +355,10 @@ StyledRect {
 
         required property int level
         required property var handle
+        required property var anchorWindow
         property bool menuOpen: false
+        property real glideX: 0
+        property real glideY: 0
 
         signal entryHovered(var entry, var entryItem)
         signal entryClicked(var entry)
@@ -310,36 +366,80 @@ StyledRect {
         signal exited
 
         implicitWidth: trayMenu.menuWidth
-        implicitHeight: trayMenu.maxHeight
+        implicitHeight: trayMenu.maxHeight + 60
         color: "transparent"
         mask: Region {
-            item: trayMenu
+            item: menuHost
         }
 
         anchor {
-            item: null
+            window: popup.anchorWindow
             edges: popup.level === 0 ? (Edges.Bottom | Edges.Left) : (Edges.Top | Edges.Right)
             gravity: Edges.Bottom | Edges.Right
             adjustment: PopupAdjustment.Flip | PopupAdjustment.Slide
             margins {
-                bottom: popup.level === 0 ? -6 : 0
+                bottom: 0
                 right: popup.level === 0 ? 0 : -6
             }
         }
 
-        TrayMenu {
-            id: trayMenu
+        function computePosition(item): var {
+            let mapped;
+            const contentItem = popup.anchorWindow.contentItem;
+            if (contentItem)
+                mapped = contentItem.mapFromItem(item, 0, 0, item.width, item.height);
+            if (!mapped)
+                return null;
+            if (popup.level === 0) {
+                const barBottom = (Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize : 0) + Configs.bar.barHeight;
+                return {
+                    x: mapped.x,
+                    y: barBottom - mapped.height,
+                    w: mapped.width,
+                    h: mapped.height
+                };
+            }
+            return {
+                x: mapped.x,
+                y: mapped.y,
+                w: mapped.width,
+                h: mapped.height
+            };
+        }
 
-            anchors.top: parent.top
-            anchors.left: parent.left
-            handle: popup.handle
-            open: popup.menuOpen
-            horizontal: popup.level > 0
+        function positionAt(item): void {
+            const target = popup.computePosition(item);
+            if (!target)
+                return;
+            // qmllint disable
+            popup.anchor.rect.x = target.x;
+            popup.anchor.rect.y = target.y;
+            popup.anchor.rect.w = target.w;
+            popup.anchor.rect.h = target.h;
+            popup.anchor.updateAnchor();
+            // qmllint enable
+        }
 
-            onEntryHovered: (entry, entryItem) => popup.entryHovered(entry, entryItem)
-            onEntryClicked: entry => popup.entryClicked(entry)
-            onEntered: popup.entered()
-            onExited: popup.exited()
+        Item {
+            id: menuHost
+
+            x: popup.glideX
+            y: popup.glideY
+            width: trayMenu.width
+            height: trayMenu.height
+
+            TrayMenu {
+                id: trayMenu
+
+                handle: popup.handle
+                open: popup.menuOpen
+                horizontal: popup.level > 0
+
+                onEntryHovered: (entry, entryItem) => popup.entryHovered(entry, entryItem)
+                onEntryClicked: entry => popup.entryClicked(entry)
+                onEntered: popup.entered()
+                onExited: popup.exited()
+            }
         }
     }
 }

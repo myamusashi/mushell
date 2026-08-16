@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 
@@ -36,7 +35,9 @@ Item {
         color: Colours.m3Colors.m3OutlineVariant
     }
 
-    RowLayout {
+    Row {
+        id: contentRow
+
         visible: !root.isSeparator
         anchors.fill: parent
         anchors.leftMargin: Appearance.margin.larger
@@ -44,9 +45,11 @@ Item {
         spacing: Appearance.spacing.normal
 
         IconImage {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+            id: leadingIcon
+
+            width: 20
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
             visible: root.modelData.icon !== ""
             source: root.modelData.icon
             asynchronous: true
@@ -54,8 +57,17 @@ Item {
         }
 
         Text {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
+            id: contentText
+
+            width: {
+                let avail = contentRow.width - (leadingIcon.visible ? leadingIcon.width + contentRow.spacing : 0);
+                avail -= (checkIcon.visible ? checkIcon.width + contentRow.spacing : 0);
+                avail -= (radioIcon.visible ? radioIcon.width + contentRow.spacing : 0);
+                avail -= (chevronIcon.visible ? chevronIcon.width + contentRow.spacing : 0);
+                return Math.max(avail, 0);
+            }
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
             text: root.modelData.text
             color: Colours.m3Colors.m3OnSurface
             font.family: Appearance.fonts.family.sans
@@ -66,9 +78,11 @@ Item {
         }
 
         Icon {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+            id: checkIcon
+
+            width: 20
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
             visible: root.modelData.buttonType === QsMenuButtonType.CheckBox
             icon: root.modelData.checkState === Qt.Checked ? "check_box" : "check_box_outline_blank"
             color: root.modelData.checkState === Qt.Checked ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
@@ -76,9 +90,11 @@ Item {
         }
 
         Icon {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+            id: radioIcon
+
+            width: 20
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
             visible: root.modelData.buttonType === QsMenuButtonType.RadioButton
             icon: root.modelData.checkState === Qt.Checked ? "radio_button_checked" : "radio_button_unchecked"
             color: root.modelData.checkState === Qt.Checked ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
@@ -86,9 +102,11 @@ Item {
         }
 
         Icon {
-            Layout.alignment: Qt.AlignVCenter
-            Layout.preferredWidth: 20
-            Layout.preferredHeight: 20
+            id: chevronIcon
+
+            width: 20
+            height: 20
+            anchors.verticalCenter: parent.verticalCenter
             visible: root.modelData.hasChildren
             icon: "chevron_right"
             color: Colours.m3Colors.m3OnSurfaceVariant
