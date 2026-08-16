@@ -8,6 +8,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Services.Greetd
 import Quickshell.Wayland
 
 import qs.Components.Feedback
@@ -49,7 +50,16 @@ ShellRoot {
                 return;
             rootFlow.launching = true;
             rootFlow.introducing = false;
-            sessionTimer.start();
+            sessionTimer.restart();
+        }
+    }
+
+    Connections {
+        target: Greetd
+
+        function onError() {
+            sessionTimer.stop();
+            rootFlow.launching = false;
         }
     }
 
@@ -68,7 +78,7 @@ ShellRoot {
     Timer {
         id: sessionTimer
 
-        interval: 3000
+        interval: 0
 
         onTriggered: authenticator.launch()
     }

@@ -53,7 +53,7 @@ Scope {
     }
 
     function launch() {
-        if (root.launching)
+        if (root.launching || Greetd.state !== GreetdState.ReadyToLaunch)
             return;
         root.launching = true;
         let index = root.selectedSessionIndex;
@@ -137,6 +137,7 @@ Scope {
         }
 
         function onError(error) {
+            root.launching = false;
             root.showFailure = true;
             root.messageIsError = true;
             root.statusMessage = error;
