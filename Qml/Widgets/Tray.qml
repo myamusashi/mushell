@@ -25,6 +25,7 @@ StyledRect {
     property var glideFrom: null
     property var glideTo: null
     property real glideProgress: 0
+    readonly property int maxMenuDepth: 3
 
     implicitWidth: visible ? systemTrayRow.width + horizontalPadding * 1.2 : 0
     implicitHeight: 35
@@ -260,7 +261,7 @@ StyledRect {
 
         const level = popup.level;
 
-        if (entry.hasChildren) { // qmllint disable
+        if (entry.hasChildren && popup.level + 1 < root.maxMenuDepth) { // qmllint disable
             root.pruneLevels(level + 1);
             let child = root.levelAt(level + 1);
             if (child) {
@@ -368,7 +369,7 @@ StyledRect {
         signal exited
 
         implicitWidth: trayMenu.menuWidth
-        implicitHeight: popup.level === 0 ? trayMenu.maxHeight + 60 : 800 // Just follow the maxheight in TrayMenu
+        implicitHeight: trayMenu.maxHeight + 60
         color: "transparent"
         mask: Region {
             item: menuHost
@@ -376,9 +377,23 @@ StyledRect {
 
         anchor {
             window: popup.anchorWindow
-            edges: popup.level === 0 ? (Edges.Bottom | Edges.Left) : (Edges.Top | Edges.Right)
+            edges: {
+                if (popup.level === 0)
+                    return Edges.Bottom | Edges.Left;
+                if (popup.level === 1)
+                    return Edges.Top | Edges.Right;
+                if (popup.level === 2)
+                    return Edges.Bottom | Edges.Left;
+            }
             gravity: Edges.Bottom | Edges.Right
-            adjustment: popup.level === 0 ? PopupAdjustment.Flip | PopupAdjustment.Slide : PopupAdjustment.FlipX
+            adjustment: {
+                if (popup.level === 0)
+                    return PopupAdjustment.Flip | PopupAdjustment.Slide | PopupAdjustment.ResizeY;
+                if (popup.level === 1)
+                    return PopupAdjustment.FlipX | PopupAdjustment.FlipY | PopupAdjustment.SlideY | PopupAdjustment.ResizeY;
+                if (popup.level === 2)
+                    return PopupAdjustment.Flip | PopupAdjustment.Slide | PopupAdjustment.ResizeY;
+            }
             margins {
                 bottom: 0
                 right: popup.level === 0 ? 0 : -6
