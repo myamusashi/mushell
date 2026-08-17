@@ -15,8 +15,8 @@ Item {
     required property QsMenuHandle handle
     property bool open: false
     property bool horizontal: false
+    property real maxHeight: 800
     property real menuWidth: 280
-    property real maxHeight: 360
 
     signal entryHovered(var entry, var entryItem)
     signal entryClicked(var entry)

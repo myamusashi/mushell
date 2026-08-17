@@ -266,7 +266,9 @@ StyledRect {
             if (child) {
                 child.handle = entry;
                 child.anchorWindow = popup;
-                root.glideToPosition(child, entryItem);
+                child.glideX = 0;
+                child.glideY = 0;
+                child.positionAt(entryItem); // qmllint disable
                 child.visible = true;
                 child.menuOpen = true;
             } else {
@@ -366,7 +368,7 @@ StyledRect {
         signal exited
 
         implicitWidth: trayMenu.menuWidth
-        implicitHeight: trayMenu.maxHeight + 60
+        implicitHeight: popup.level === 0 ? trayMenu.maxHeight + 60 : 800 // Just follow the maxheight in TrayMenu
         color: "transparent"
         mask: Region {
             item: menuHost
@@ -376,7 +378,7 @@ StyledRect {
             window: popup.anchorWindow
             edges: popup.level === 0 ? (Edges.Bottom | Edges.Left) : (Edges.Top | Edges.Right)
             gravity: Edges.Bottom | Edges.Right
-            adjustment: PopupAdjustment.Flip | PopupAdjustment.Slide
+            adjustment: popup.level === 0 ? PopupAdjustment.Flip | PopupAdjustment.Slide : PopupAdjustment.FlipX
             margins {
                 bottom: 0
                 right: popup.level === 0 ? 0 : -6
