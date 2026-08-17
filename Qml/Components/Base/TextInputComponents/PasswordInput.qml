@@ -260,7 +260,7 @@ Item {
 
             Behavior on x {
                 NAnim {
-                    duration: Appearance.animations.durations.small
+                    duration: 50
                 }
             }
 

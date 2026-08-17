@@ -22,22 +22,22 @@ WlSessionLockSurface {
     readonly property string wallpaperPath: Paths.projectRoot + "/Assets/images/wallpaper.png"
 
     readonly property var fallbackColors: ({
-        scrim: Colours.m3Colors.m3Scrim,
-        onBackground: Colours.m3Colors.m3OnBackground,
-        onSurface: Colours.m3Colors.m3OnSurface,
-        onSurfaceVariant: Colours.m3Colors.m3OnSurfaceVariant,
-        surfaceContainerHigh: Colours.m3Colors.m3SurfaceContainerHigh,
-        surfaceContainerHighest: Colours.m3Colors.m3SurfaceContainerHighest,
-        outlineVariant: Colours.m3Colors.m3OutlineVariant,
-        primaryContainer: Colours.m3Colors.m3PrimaryContainer,
-        onPrimaryContainer: Colours.m3Colors.m3OnPrimaryContainer,
-        primary: Colours.m3Colors.m3Primary,
-        onPrimary: Colours.m3Colors.m3OnPrimary,
-        error: Colours.m3Colors.m3Error,
-        secondary: Colours.m3Colors.m3Secondary,
-        secondaryContainer: Colours.m3Colors.m3SecondaryContainer,
-        onSecondaryContainer: Colours.m3Colors.m3OnSecondaryContainer
-    })
+            scrim: Colours.m3Colors.m3Scrim,
+            onBackground: Colours.m3Colors.m3OnBackground,
+            onSurface: Colours.m3Colors.m3OnSurface,
+            onSurfaceVariant: Colours.m3Colors.m3OnSurfaceVariant,
+            surfaceContainerHigh: Colours.m3Colors.m3SurfaceContainerHigh,
+            surfaceContainerHighest: Colours.m3Colors.m3SurfaceContainerHighest,
+            outlineVariant: Colours.m3Colors.m3OutlineVariant,
+            primaryContainer: Colours.m3Colors.m3PrimaryContainer,
+            onPrimaryContainer: Colours.m3Colors.m3OnPrimaryContainer,
+            primary: Colours.m3Colors.m3Primary,
+            onPrimary: Colours.m3Colors.m3OnPrimary,
+            error: Colours.m3Colors.m3Error,
+            secondary: Colours.m3Colors.m3Secondary,
+            secondaryContainer: Colours.m3Colors.m3SecondaryContainer,
+            onSecondaryContainer: Colours.m3Colors.m3OnSecondaryContainer
+        })
     property var dynColors: root.fallbackColors
 
     color: "transparent"

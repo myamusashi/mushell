@@ -75,10 +75,10 @@ LazyLoader {
             border.color: Colours.m3Colors.m3OnSurface
             border.width: 2
 
-Rectangle {
-            anchors.fill: parent
-            color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.25)
-        }
+            Rectangle {
+                anchors.fill: parent
+                color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.25)
+            }
         }
 
         MouseArea {
