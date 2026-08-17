@@ -102,7 +102,7 @@ ShellRoot {
 
             screen: modelData
             color: "transparent"
-            contentItem.opacity: splashPanel.splashVisible ? 1 : 0
+            contentItem.opacity: splashVisible ? 1 : 0
 
             Behavior on contentItem.opacity {
                 NAnim {

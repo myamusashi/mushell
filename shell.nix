@@ -34,17 +34,33 @@ pkgs.mkShell {
     ];
 
     shellHook = ''
-        echo "Compiling shaders..."
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/ImageTransition.vert.qsb Assets/shaders/ImageTransition.vert
-        for name in fade wipeDown circleExpand dissolve splitHorizontal hexTile slideUp pixelate diagonalWipe boxExpand roll; do
-            qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/transitions/$name.frag.qsb Assets/shaders/transitions/$name.frag
+        FLAGS='--glsl "450,330,300 es" --hlsl 50 --msl 12'
+
+        compile_if_missing() {
+            local output="$1"
+            local input="$2"
+
+            if [ ! -f "$output" ]; then
+                echo "Compiling: $output"
+                eval qsb $FLAGS -o "$output" "$input"
+            fi
+        }
+
+        compile_if_missing "Assets/shaders/ImageTransition.vert.qsb" "Assets/shaders/ImageTransition.vert"
+
+        TRANSITIONS=(
+            fade wipeDown circleExpand dissolve splitHorizontal
+            hexTile slideUp pixelate diagonalWipe boxExpand roll
+        )
+        for name in "''${TRANSITIONS[@]}"; do
+            compile_if_missing "Assets/shaders/transitions/$name.frag.qsb" "Assets/shaders/transitions/$name.frag"
         done
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/borderProgress.vert.qsb Assets/shaders/borderProgress.vert
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/borderProgress.frag.qsb Assets/shaders/borderProgress.frag
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/wavy.vert.qsb Assets/shaders/wavy.vert
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/wavy.frag.qsb Assets/shaders/wavy.frag
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/waveForm.vert.qsb Assets/shaders/waveForm.vert
-        qsb --glsl "450,330,300 es" --hlsl 50 --msl 12 -o Assets/shaders/waveForm.frag.qsb Assets/shaders/waveForm.frag
+
+        SHADERS=(borderProgress wavy waveForm)
+        for shader in "''${SHADERS[@]}"; do
+            compile_if_missing "Assets/shaders/$shader.vert.qsb" "Assets/shaders/$shader.vert"
+            compile_if_missing "Assets/shaders/$shader.frag.qsb" "Assets/shaders/$shader.frag"
+        done
 
         echo "mushell environment"
     '';
