@@ -150,6 +150,15 @@ Item {
                         }
                         Component.onCompleted: text = WallpaperFileModels.searchQuery
                         Keys.onEscapePressed: GlobalStates.isWallpaperSwitcherOpen = false
+                        onAccepted: selectCurrentWallpaper()
+
+                        function selectCurrentWallpaper(): void {
+                            if (wallpaperPath.count === 0)
+                                return;
+                            const selectedPath = root.visibleWallpapers[wallpaperPath.currentIndex];
+                            root.setWallpaper(selectedPath, root.thumbnailPathFor(selectedPath));
+                        }
+
                         Keys.onPressed: event => {
                             if (event.key === Qt.Key_Down) {
                                 wallpaperPath.moveCurrentIndex(1);
@@ -163,12 +172,6 @@ Item {
                             } else if (event.key === Qt.Key_Left) {
                                 wallpaperPath.moveCurrentIndex(-1);
                                 event.accepted = true;
-                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                if (wallpaperPath.count > 0) {
-                                    const selectedPath = root.visibleWallpapers[wallpaperPath.currentIndex];
-                                    root.setWallpaper(selectedPath, root.thumbnailPathFor(selectedPath));
-                                    event.accepted = true;
-                                }
                             } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
                                 root.wallpaperType = (root.wallpaperType + (event.key === Qt.Key_Tab ? 1 : -1) + 2) % 2;
                                 Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());

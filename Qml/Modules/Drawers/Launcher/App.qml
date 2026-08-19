@@ -91,16 +91,17 @@ Item {
                         placeHolderText: qsTr("Search")
                         toggleButtonVisible: false
                         onTextChanged: searchDebounce.restart()
+                        onAccepted: launchCurrentApp()
+
+                        function launchCurrentApp(): void {
+                            if (listView.count === 0)
+                                return;
+                            root.launch(listView.searchResults[listView.currentIndex]);
+                            GlobalStates.isLauncherOpen = false;
+                        }
+
                         Keys.onPressed: function (event) {
                             switch (event.key) {
-                            case Qt.Key_Return:
-                            case Qt.Key_Enter:
-                                if (listView.count > 0) {
-                                    root.launch(listView.searchResults[listView.currentIndex]);
-                                    GlobalStates.isLauncherOpen = false;
-                                    event.accepted = true;
-                                }
-                                break;
                             case Qt.Key_Escape:
                                 GlobalStates.isLauncherOpen = false;
                                 event.accepted = true;
