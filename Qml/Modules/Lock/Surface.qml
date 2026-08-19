@@ -6,6 +6,7 @@ import Quickshell.Wayland
 
 import qs.Core.Configs
 import qs.Core.States
+import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 
@@ -236,12 +237,14 @@ WlSessionLockSurface {
     Image {
         id: fgLayer
 
+        readonly property bool currentWallpaperIsVideo: /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(Paths.currentWallpaper)
+
         anchors.fill: parent
-        source: Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" ? "file://" + Configs.wallpaper.depthFgPath : ""
+        source: !currentWallpaperIsVideo && Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" ? "file://" + Configs.wallpaper.depthFgPath : ""
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
-        visible: Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" && !DepthWallpaperController.generating
+        visible: !currentWallpaperIsVideo && Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" && !DepthWallpaperController.generating
         opacity: 0
         scale: 1.0
         transformOrigin: Item.Center

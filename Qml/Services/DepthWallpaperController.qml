@@ -18,6 +18,7 @@ Singleton {
 
     readonly property string cacheDir: Paths.home + "/.cache/vast-shell/depthwp"
     readonly property string scriptPath: Paths.projectRoot + "/Assets/shell/extract-fg.sh"
+    readonly property bool currentWallpaperIsVideo: /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(Paths.currentWallpaper)
 
     function onToggle(enabled) {
         if (enabled) {
@@ -29,6 +30,11 @@ Singleton {
     }
 
     function checkOrGenerate() {
+        if (currentWallpaperIsVideo) {
+            Configs.wallpaper.depthWallpaperEnabled = false;
+            root.state = "idle";
+            return;
+        }
         if (Configs.wallpaper.depthWallpaperSource !== "" && Configs.wallpaper.depthFgPath !== "") {
             if (!Configs.wallpaper.depthWallpaperEnabled)
                 Configs.wallpaper.depthWallpaperEnabled = true;
@@ -40,6 +46,8 @@ Singleton {
     }
 
     function runRembg() {
+        if (currentWallpaperIsVideo)
+            return;
         root.state = "processing";
         ToastService.show(qsTr("Generating depth wallpaper\u2026"), qsTr("Depth Wallpaper"), "image", 0);
         generateFg.running = true;
@@ -103,6 +111,12 @@ Singleton {
         target: Paths
 
         function onCurrentWallpaperChanged() {
+            if (root.currentWallpaperIsVideo) {
+                Configs.wallpaper.depthWallpaperEnabled = false;
+                root.state = "idle";
+                root.fgPath = "";
+                return;
+            }
             if (Configs.wallpaper.autoProcessedDepthWallpaper && Configs.wallpaper.depthWallpaperEnabled) {
                 root.state = "idle";
                 root.fgPath = "";
