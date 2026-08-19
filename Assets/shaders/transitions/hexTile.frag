@@ -3,7 +3,7 @@
 layout(location = 0) noperspective in vec2 texCoord;
 layout(location = 0) out vec4 fragColor;
 
-layout(std140, binding = 0) uniform FragBuf {
+layout(std140, binding = 0) uniform VertBuf {
     mat4  qt_Matrix;      // offset  0
     float qt_Opacity;     // offset 64
     float progress;       // offset 68
