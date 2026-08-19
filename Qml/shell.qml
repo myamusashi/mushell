@@ -2,7 +2,6 @@
 //@ pragma NativeTextRendering
 //@ pragma DropExpensiveFonts
 //@ pragma IconTheme MoreWaita
-//@ pragma Env QSG_RHI_BACKEND=vulkan
 
 import QtQuick
 import Quickshell

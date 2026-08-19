@@ -24,6 +24,7 @@
     qt6,
     callPackage,
     cmake,
+    libvdpau-va-gl,
 }: let
     app2unit = callPackage ./packages/app2unit.nix {};
     material-symbols = callPackage ./packages/material-symbols.nix {};
@@ -172,10 +173,14 @@
             makeWrapper ${quickshell.packages.${stdenv.hostPlatform.system}.default}/bin/quickshell \
               $out/bin/quickshell \
                 --set VAST_SHELL_DIRECTORY "$out/share/quickshell" \
+                --set QT_MEDIA_BACKEND ffmpeg \
+                --set VDPAU_DRIVER va_gl \
+                --set VDPAU_DRIVER_PATH "${libvdpau-va-gl}/lib/vdpau" \
                 --set QT_QPA_FONTDIR "${material-symbols}/share/fonts/truetype" \
                 --prefix QML2_IMPORT_PATH : "$out/lib/qt-${qt6.qtbase.version}/qml" \
                 --prefix QML2_IMPORT_PATH : "${qt6.qt5compat}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${qt6.qtgraphs}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${kdePackages.qtmultimedia}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${another-ripple}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${vastPlugin}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix PATH : ${lib.makeBinPath runtimeDeps} \

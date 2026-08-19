@@ -1,7 +1,6 @@
 //@ pragma UseQApplication
 //@ pragma NativeTextRendering
 //@ pragma DropExpensiveFonts
-//@ pragma Env QSG_RHI_BACKEND=vulkan
 
 pragma ComponentBehavior: Bound
 

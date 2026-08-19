@@ -8,6 +8,7 @@ pkgs.mkShell {
     buildInputs = with pkgs; [
         qt6.qtbase
         qt6.qtdeclarative
+        qt6.qtmultimedia
         qt6.qt5compat
         qt6.qttranslations
         python314Packages.materialyoucolor

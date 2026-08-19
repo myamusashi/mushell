@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtMultimedia
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
@@ -24,6 +25,64 @@ Item {
     }
 
     property bool isWallpaperSwitcherOpen: GlobalStates.isWallpaperSwitcherOpen
+    property int wallpaperType: 0
+    readonly property var visibleWallpapers: WallpaperFileModels.filteredWallpaperList.filter(path => wallpaperType === 1 ? /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) : !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path))
+
+    function setWallpaper(path, colorSource) {
+        Quickshell.execDetached({
+            command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
+        });
+        if (colorSource !== "")
+            colorSourceImage.source = "file://" + colorSource;
+    }
+
+    function updateWallpaperColors(path) {
+        colorSourceImage.source = "file://" + root.thumbnailPathFor(path);
+    }
+
+    function setVideoWallpaper(path, videoOutput) {
+        videoOutput.grabToImage(imageResult => {
+            if (!imageResult)
+                return;
+            const thumbnailPath = root.thumbnailPathFor(path);
+            if (imageResult.saveToFile(thumbnailPath))
+                root.setWallpaper(path, thumbnailPath);
+        });
+    }
+
+    function thumbnailPathFor(path) {
+        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? `/tmp/vast-wallpaper-${Qt.md5(path)}.png` : path;
+    }
+
+    Connections {
+        target: Paths
+
+        function onCurrentWallpaperChanged() {
+            root.updateWallpaperColors(Paths.currentWallpaper);
+        }
+    }
+
+    Connections {
+        target: Configs.colors
+
+        function onSchemeChanged() {
+            root.updateWallpaperColors(Paths.currentWallpaper);
+        }
+    }
+
+    Image {
+        id: colorSourceImage
+
+        asynchronous: true
+        visible: false
+        onStatusChanged: {
+            if (status !== Image.Ready)
+                return;
+            const path = source.toString().replace(/^file:\/\//, "");
+            ColorGenerator.generate(path, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
+            ColorGenerator.generate(path, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
+        }
+    }
 
     implicitWidth: parent.width * 0.6
     implicitHeight: GlobalStates.isWallpaperSwitcherOpen ? parent.height * 0.3 : 0
@@ -46,12 +105,9 @@ Item {
         target: "img"
 
         function set(path: string): void {
-            ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
-            Quickshell.execDetached({
-                command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
-            });
-            ColorGenerator.generate(path, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
-            ColorGenerator.generate(path, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
+            if (!/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path))
+                ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
+            root.setWallpaper(path, /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? "" : path);
         }
         function get(): string {
             return Paths.currentWallpaper;
@@ -109,12 +165,13 @@ Item {
                                 event.accepted = true;
                             } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
                                 if (wallpaperPath.count > 0) {
-                                    Quickshell.execDetached({
-                                        command: ["vastctl", "wallpaper", "set", WallpaperFileModels.filteredWallpaperList[wallpaperPath.currentIndex]]
-                                    });
+                                    const selectedPath = root.visibleWallpapers[wallpaperPath.currentIndex];
+                                    root.setWallpaper(selectedPath, root.thumbnailPathFor(selectedPath));
                                     event.accepted = true;
                                 }
                             } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                                root.wallpaperType = (root.wallpaperType + (event.key === Qt.Key_Tab ? 1 : -1) + 2) % 2;
+                                Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
                                 event.accepted = true;
                             }
                         }
@@ -125,6 +182,37 @@ Item {
 
                         interval: 300
                         onTriggered: WallpaperFileModels.debouncedSearchQuery = searchField.text
+                    }
+
+                    Row {
+                        Layout.alignment: Qt.AlignHCenter
+
+                        Repeater {
+                            model: [qsTr("Static"), qsTr("Video")]
+
+                            delegate: StyledButton {
+                                id: tabButton
+
+                                required property int index
+                                required property string modelData
+
+                                readonly property bool selected: root.wallpaperType === index
+
+                                text: modelData
+                                color: selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
+                                textColor: selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
+                                rippleColor: Colours.m3Colors.m3OnSurfaceVariant
+                                bgRadius: Appearance.rounding.full
+                                leftPad: 16
+                                rightPad: 16
+                                topPad: 8
+                                bottomPad: 8
+                                onClicked: {
+                                    root.wallpaperType = index;
+                                    Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
+                                }
+                            }
+                        }
                     }
 
                     PathView {
@@ -138,7 +226,7 @@ Item {
                         readonly property real unitWidth: width / (Configs.wallpaper.visibleWallpaper + 1)
 
                         function selectCurrentWallpaper(): void {
-                            const index = WallpaperFileModels.filteredWallpaperList.indexOf(Paths.currentWallpaper);
+                            const index = root.visibleWallpapers.indexOf(Paths.currentWallpaper);
                             currentIndex = index !== -1 ? index : 0;
                         }
 
@@ -149,7 +237,7 @@ Item {
                         }
 
                         model: ScriptModel {
-                            values: WallpaperFileModels.filteredWallpaperList
+                            values: root.visibleWallpapers
                         }
 
                         pathItemCount: Configs.wallpaper.visibleWallpaper
@@ -165,8 +253,7 @@ Item {
                         Connections {
                             target: WallpaperFileModels
                             function onFilteredWallpaperListChanged(): void {
-                                if (WallpaperFileModels.debouncedSearchQuery === "")
-                                    wallpaperPath.selectCurrentWallpaper();
+                                wallpaperPath.selectCurrentWallpaper();
                             }
                         }
 
@@ -189,7 +276,7 @@ Item {
                             readonly property bool isCurrent: PathView.isCurrentItem
 
                             onIsCurrentChanged: {
-                                if (isCurrent)
+                                if (isCurrent && !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
                                     ImageCache.preload(delegateItem.modelData, Qt.size(Screen.width, Screen.height));
                             }
 
@@ -248,7 +335,7 @@ Item {
 
                                 Image {
                                     anchors.fill: parent
-                                    source: "file://" + delegateItem.modelData
+                                    source: /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData) ? "" : "file://" + delegateItem.modelData
                                     sourceSize: Qt.size(200, 200)
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
@@ -259,6 +346,39 @@ Item {
                                         z: -1
                                         level: 3
                                     }
+                                }
+
+                                MediaPlayer {
+                                    id: videoThumbnailPlayer
+
+                                    source: delegateItem.isCurrent && /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData) ? "file://" + delegateItem.modelData : ""
+                                    videoOutput: videoThumbnailOutput
+                                    onMediaStatusChanged: {
+                                        if (mediaStatus === MediaPlayer.LoadedMedia) {
+                                            play();
+                                            thumbnailTimer.restart();
+                                            videoThumbnailOutput.grabToImage(imageResult => {
+                                                if (!imageResult)
+                                                    return;
+                                                imageResult.saveToFile(root.thumbnailPathFor(delegateItem.modelData));
+                                            });
+                                        }
+                                    }
+                                }
+
+                                Timer {
+                                    id: thumbnailTimer
+
+                                    interval: 100
+                                    onTriggered: videoThumbnailPlayer.pause()
+                                }
+
+                                VideoOutput {
+                                    id: videoThumbnailOutput
+
+                                    anchors.fill: parent
+                                    fillMode: VideoOutput.PreserveAspectCrop
+                                    visible: delegateItem.isCurrent && videoThumbnailPlayer.source !== ""
                                 }
 
                                 Rectangle {
@@ -306,9 +426,10 @@ Item {
                                         if (!delegateItem.isCurrent) {
                                             wallpaperPath.currentIndex = delegateItem.index;
                                         } else {
-                                            Quickshell.execDetached({
-                                                command: ["vastctl", "wallpaper", "set", delegateItem.modelData]
-                                            });
+                                            if (/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
+                                                root.setVideoWallpaper(delegateItem.modelData, videoThumbnailOutput);
+                                            else
+                                                root.setWallpaper(delegateItem.modelData, delegateItem.modelData);
                                         }
                                     }
                                 }

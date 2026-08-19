@@ -34,7 +34,7 @@ SettingsPageBase {
 
             FileDialog {
                 id: pickWallpaperDialog
-                nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.svg", "*.webp"]
+                nameFilters: ["*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp", "*.svg", "*.webp", "*.mp4", "*.mkv", "*.webm", "*.mov", "*.avi", "*.m4v"]
                 onFileSelected: path => Quickshell.execDetached({
                         command: ["vastctl", "wallpaper", "set", path]
                     })
@@ -107,7 +107,7 @@ SettingsPageBase {
                     Image {
                         anchors.fill: parent
                         anchors.bottomMargin: fileNameText.implicitHeight + 4
-                        source: (width > 0 && height > 0) ? delegateRoot.modelData : ""
+                        source: (width > 0 && height > 0 && !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateRoot.modelData)) ? delegateRoot.modelData : ""
                         sourceSize: Qt.size(150, 150)
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
