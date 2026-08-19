@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtMultimedia
 import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
@@ -26,6 +25,8 @@ Item {
 
     property bool isWallpaperSwitcherOpen: GlobalStates.isWallpaperSwitcherOpen
     property int wallpaperType: 0
+    property string pendingVideoPath: ""
+    property string thumbnailJobPath: ""
     readonly property var visibleWallpapers: WallpaperFileModels.filteredWallpaperList.filter(path => wallpaperType === 1 ? /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) : !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path))
 
     function setWallpaper(path, colorSource) {
@@ -37,21 +38,19 @@ Item {
     }
 
     function updateWallpaperColors(path) {
+        if (path === "")
+            return;
         colorSourceImage.source = "file://" + root.thumbnailPathFor(path);
     }
 
-    function setVideoWallpaper(path, videoOutput) {
-        videoOutput.grabToImage(imageResult => {
-            if (!imageResult)
-                return;
-            const thumbnailPath = root.thumbnailPathFor(path);
-            if (imageResult.saveToFile(thumbnailPath))
-                root.setWallpaper(path, thumbnailPath);
-        });
+    function setVideoWallpaper(path) {
+        pendingVideoPath = path;
+        thumbnailJobPath = path;
+        thumbnailExtractor.running = true;
     }
 
     function thumbnailPathFor(path) {
-        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? `/tmp/vast-wallpaper-${Qt.md5(path)}.png` : path;
+        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(path)}.png` : path;
     }
 
     Connections {
@@ -76,11 +75,38 @@ Item {
         asynchronous: true
         visible: false
         onStatusChanged: {
+            if (root.pendingVideoPath !== "") {
+                if (status === Image.Ready) {
+                    const videoPath = root.pendingVideoPath;
+                    root.pendingVideoPath = "";
+                    root.setWallpaper(videoPath, root.thumbnailPathFor(videoPath));
+                }
+                return;
+            }
             if (status !== Image.Ready)
                 return;
             const path = source.toString().replace(/^file:\/\//, "");
             ColorGenerator.generate(path, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
             ColorGenerator.generate(path, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
+        }
+    }
+
+    Process {
+        id: thumbnailGenerator
+
+        command: ["mkdir", "-p", `${Paths.cacheDir}/vast-shell`]
+        running: true
+    }
+
+    Process {
+        id: thumbnailExtractor
+
+        command: ["sh", "-c", `test -s ${JSON.stringify(root.thumbnailPathFor(root.thumbnailJobPath))} || ffmpeg -y -loglevel error -i ${JSON.stringify(root.thumbnailJobPath)} -frames:v 1 ${JSON.stringify(root.thumbnailPathFor(root.thumbnailJobPath))}`]
+        running: root.thumbnailJobPath !== ""
+        onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
+            root.thumbnailJobPath = "";
+            if (root.pendingVideoPath !== "")
+                colorSourceImage.source = "file://" + root.thumbnailPathFor(root.pendingVideoPath);
         }
     }
 
@@ -277,6 +303,7 @@ Item {
                             required property int index
 
                             readonly property bool isCurrent: PathView.isCurrentItem
+                            property bool thumbnailAvailable: false
 
                             onIsCurrentChanged: {
                                 if (isCurrent && !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
@@ -351,37 +378,38 @@ Item {
                                     }
                                 }
 
-                                MediaPlayer {
-                                    id: videoThumbnailPlayer
+                                Image {
+                                    id: videoThumbnailCache
 
-                                    source: delegateItem.isCurrent && /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData) ? "file://" + delegateItem.modelData : ""
-                                    videoOutput: videoThumbnailOutput
-                                    onMediaStatusChanged: {
-                                        if (mediaStatus === MediaPlayer.LoadedMedia) {
-                                            play();
-                                            thumbnailTimer.restart();
-                                            videoThumbnailOutput.grabToImage(imageResult => {
-                                                if (!imageResult)
-                                                    return;
-                                                imageResult.saveToFile(root.thumbnailPathFor(delegateItem.modelData));
-                                            });
+                                    anchors.fill: parent
+                                    source: delegateItem.thumbnailAvailable ? "file://" + root.thumbnailPathFor(delegateItem.modelData) : ""
+                                    fillMode: Image.PreserveAspectCrop
+                                    asynchronous: true
+                                    visible: status === Image.Ready
+                                }
+
+                                Process {
+                                    id: thumbnailCheck
+
+                                    command: ["test", "-s", root.thumbnailPathFor(delegateItem.modelData)]
+                                    running: delegateItem.isCurrent && /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData)
+                                    onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
+                                        delegateItem.thumbnailAvailable = exitCode === 0;
+                                        if (exitCode === 0)
+                                            return;
+                                        if (delegateItem.isCurrent && root.thumbnailJobPath === "") {
+                                            root.thumbnailJobPath = delegateItem.modelData;
+                                            thumbnailExtractor.running = true;
                                         }
+                                        thumbnailRetry.restart();
                                     }
                                 }
 
                                 Timer {
-                                    id: thumbnailTimer
+                                    id: thumbnailRetry
 
-                                    interval: 100
-                                    onTriggered: videoThumbnailPlayer.pause()
-                                }
-
-                                VideoOutput {
-                                    id: videoThumbnailOutput
-
-                                    anchors.fill: parent
-                                    fillMode: VideoOutput.PreserveAspectCrop
-                                    visible: delegateItem.isCurrent && videoThumbnailPlayer.source !== ""
+                                    interval: 5000
+                                    onTriggered: thumbnailCheck.running = true
                                 }
 
                                 Rectangle {
@@ -430,7 +458,7 @@ Item {
                                             wallpaperPath.currentIndex = delegateItem.index;
                                         } else {
                                             if (/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
-                                                root.setVideoWallpaper(delegateItem.modelData, videoThumbnailOutput);
+                                                root.setVideoWallpaper(delegateItem.modelData);
                                             else
                                                 root.setWallpaper(delegateItem.modelData, delegateItem.modelData);
                                         }

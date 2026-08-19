@@ -63,7 +63,7 @@ Item {
     }
 
     function videoThumbnail(url) {
-        return `/tmp/vast-wallpaper-${Qt.md5(url.toString().replace(/^file:\/\//, ""))}.png`;
+        return `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(url.toString().replace(/^file:\/\//, ""))}.png`;
     }
 
     function updateVideoPlayback() {

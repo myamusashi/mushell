@@ -102,7 +102,7 @@ Item {
                         isItemActive: (md, _) => md.display === Configs.colors.scheme
                         onActivated: index => {
                             Configs.colors.scheme = model[index].display;
-                            const wallpaperPath = /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(Paths.currentWallpaper) ? `/tmp/vast-wallpaper-${Qt.md5(Paths.currentWallpaper)}.png` : Paths.currentWallpaper;
+                            const wallpaperPath = /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(Paths.currentWallpaper) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(Paths.currentWallpaper)}.png` : Paths.currentWallpaper;
                             ColorGenerator.generate(wallpaperPath, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
                             ColorGenerator.generate(wallpaperPath, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
                         }
