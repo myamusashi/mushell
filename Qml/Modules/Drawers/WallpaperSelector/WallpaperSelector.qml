@@ -93,9 +93,31 @@ Item {
                                 wallpaperPath.currentIndex = 0;
                         }
                         Component.onCompleted: text = WallpaperFileModels.searchQuery
-                        Keys.onDownPressed: wallpaperPath.focus = true
                         Keys.onEscapePressed: GlobalStates.isWallpaperSwitcherOpen = false
-                        Keys.onTabPressed: wallpaperPath.forceActiveFocus()
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Down) {
+                                wallpaperPath.moveCurrentIndex(1);
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Up) {
+                                wallpaperPath.moveCurrentIndex(-1);
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Right) {
+                                wallpaperPath.moveCurrentIndex(1);
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Left) {
+                                wallpaperPath.moveCurrentIndex(-1);
+                                event.accepted = true;
+                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                if (wallpaperPath.count > 0) {
+                                    Quickshell.execDetached({
+                                        command: ["vastctl", "wallpaper", "set", WallpaperFileModels.filteredWallpaperList[wallpaperPath.currentIndex]]
+                                    });
+                                    event.accepted = true;
+                                }
+                            } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+                                event.accepted = true;
+                            }
+                        }
                     }
 
                     Timer {
@@ -113,8 +135,18 @@ Item {
 
                         // Center card gets 2 "units", each side card gets 1 "unit"
                         // Total units = Configs.wallpaper.visibleWallpaper + 1 (center counts double)
-                        readonly property bool isCurrent: PathView.isCurrentItem
                         readonly property real unitWidth: width / (Configs.wallpaper.visibleWallpaper + 1)
+
+                        function selectCurrentWallpaper(): void {
+                            const index = WallpaperFileModels.filteredWallpaperList.indexOf(Paths.currentWallpaper);
+                            currentIndex = index !== -1 ? index : 0;
+                        }
+
+                        function moveCurrentIndex(step: int): void {
+                            if (count === 0)
+                                return;
+                            currentIndex = (currentIndex + step + count) % count;
+                        }
 
                         model: ScriptModel {
                             values: WallpaperFileModels.filteredWallpaperList
@@ -127,10 +159,15 @@ Item {
                         cacheItemCount: Configs.wallpaper.visibleWallpaper + 2
 
                         Component.onCompleted: {
-                            Qt.callLater(() => {
-                                const idx = WallpaperFileModels.wallpaperList.indexOf(Paths.currentWallpaper);
-                                currentIndex = idx !== -1 ? idx : 0;
-                            });
+                            Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
+                        }
+
+                        Connections {
+                            target: WallpaperFileModels
+                            function onFilteredWallpaperListChanged(): void {
+                                if (WallpaperFileModels.debouncedSearchQuery === "")
+                                    wallpaperPath.selectCurrentWallpaper();
+                            }
                         }
 
                         path: Path {
@@ -279,26 +316,8 @@ Item {
                         }
 
                         Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                Quickshell.execDetached({
-                                    command: ["vastctl", "wallpaper", "set", WallpaperFileModels.filteredWallpaperList[currentIndex]]
-                                });
-                                event.accepted = true;
-                            }
                             if (event.key === Qt.Key_Escape) {
                                 GlobalStates.isWallpaperSwitcherOpen = false;
-                                event.accepted = true;
-                            }
-                            if (event.key === Qt.Key_Tab) {
-                                searchField.forceActiveFocus();
-                                event.accepted = true;
-                            }
-                            if (event.key === Qt.Key_Left) {
-                                decrementCurrentIndex();
-                                event.accepted = true;
-                            }
-                            if (event.key === Qt.Key_Right) {
-                                incrementCurrentIndex();
                                 event.accepted = true;
                             }
                         }

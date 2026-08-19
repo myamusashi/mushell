@@ -22,7 +22,6 @@ Item {
         bottomMargin: Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize - 0.05 : 0 // no gap
     }
 
-    property bool isNavigating: false
     property bool isLauncherOpen: GlobalStates.isLauncherOpen
     property int currentIndex: 0
 
@@ -79,7 +78,6 @@ Item {
                         interval: 80
                         repeat: false
                         onTriggered: {
-                            root.isNavigating = false;
                             listView.currentIndex = listView.count > 0 ? 0 : -1;
                             listView.positionViewAtBeginning();
                         }
@@ -96,11 +94,10 @@ Item {
                         Keys.onPressed: function (event) {
                             switch (event.key) {
                             case Qt.Key_Return:
-                            case Qt.Key_Tab:
                             case Qt.Key_Enter:
                                 if (listView.count > 0) {
-                                    listView.focus = true;
-                                    listView.currentItem.forceActiveFocus();
+                                    root.launch(listView.searchResults[listView.currentIndex]);
+                                    GlobalStates.isLauncherOpen = false;
                                     event.accepted = true;
                                 }
                                 break;
@@ -108,10 +105,19 @@ Item {
                                 GlobalStates.isLauncherOpen = false;
                                 event.accepted = true;
                                 break;
+                            case Qt.Key_Tab:
+                            case Qt.Key_Backtab:
+                                event.accepted = true;
+                                break;
                             case Qt.Key_Down:
                                 if (listView.count > 0) {
-                                    root.isNavigating = true;
-                                    listView.focus = true;
+                                    listView.currentIndex = Math.min(listView.currentIndex + 1, listView.count - 1);
+                                    event.accepted = true;
+                                }
+                                break;
+                            case Qt.Key_Up:
+                                if (listView.count > 0) {
+                                    listView.currentIndex = Math.max(listView.currentIndex - 1, 0);
                                     event.accepted = true;
                                 }
                                 break;
@@ -132,7 +138,7 @@ Item {
                         clip: true
                         spacing: Appearance.spacing.normal
                         cacheBuffer: implicitHeight
-                        highlightMoveDuration: root.isNavigating ? 200 : 0
+                        highlightMoveDuration: 200
                         maximumFlickVelocity: 1000
                         highlightMoveVelocity: -1
                         highlightFollowsCurrentItem: true
@@ -265,10 +271,6 @@ Item {
                             }
                             Keys.onPressed: function (event) {
                                 switch (event.key) {
-                                case Qt.Key_Tab:
-                                    search.focus = true;
-                                    event.accepted = true;
-                                    break;
                                 case Qt.Key_Return:
                                 case Qt.Key_Enter:
                                     root.launch(delegateItem.modelData);
