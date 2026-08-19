@@ -249,20 +249,6 @@ WlSessionLockSurface {
         scale: 1.0
         transformOrigin: Item.Center
         z: 2
-
-        Behavior on opacity {
-            NAnim {
-                duration: Appearance.animations.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-            }
-        }
-
-        Behavior on scale {
-            NAnim {
-                duration: Appearance.animations.durations.small
-                easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
-            }
-        }
     }
 
     BottomItem {
@@ -437,25 +423,9 @@ WlSessionLockSurface {
             }
 
             NAnim {
-                target: wallpaper
-                property: "scale"
-                to: 1.15
-                duration: Appearance.animations.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-            }
-
-            NAnim {
                 target: fgLayer
                 property: "opacity"
                 to: 0
-                duration: Appearance.animations.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-            }
-
-            NAnim {
-                target: fgLayer
-                property: "scale"
-                to: 1.15
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
             }
