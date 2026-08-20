@@ -41,10 +41,6 @@ stdenv.mkDerivation {
 
     dontWrapQtApps = true;
 
-    # The plugin is split into per-domain QML modules under the Vast
-    # namespace (Vast.Audio, Vast.Clipboard, ...). Backing targets live in
-    # <qml>/Vast/lib, plugins in <qml>/Vast/<Module>/. Patch an rpath on every
-    # shared object so they can find each other and the Qt deps.
     postInstall = ''
         VAST_DIR="$out/${qt6.qtbase.qtQmlPrefix}/Vast"
         DEPS="${lib.makeLibraryPath [

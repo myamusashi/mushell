@@ -103,7 +103,6 @@ WlSessionLockSurface {
 
         anchors.fill: parent
         opacity: 0
-        scale: 1.0
         transformOrigin: Item.Center
         property real blurRadius: 0
         layer.enabled: true
@@ -121,13 +120,6 @@ WlSessionLockSurface {
         Behavior on opacity {
             NAnim {
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
-            }
-        }
-
-        Behavior on scale {
-            NAnim {
-                duration: Appearance.animations.durations.small
-                easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
             }
         }
     }

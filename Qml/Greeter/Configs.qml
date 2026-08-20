@@ -20,24 +20,24 @@ Singleton {
     }
 
     function uploadStatic(path) {
-        const extension = root.extensionOf(path);
+        const extension = extensionOf(path);
         if (extension === "") {
             console.warn("[GreeterConfig] upload static: invalid path", path);
             return;
         }
-        root.lastStaticTarget = "/etc/vast-shell/wallpaper." + extension;
-        staticUpload.command = [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", `mkdir -p /etc/vast-shell && cp -f ${JSON.stringify(path)} ${JSON.stringify(root.lastStaticTarget)}`];
+        lastStaticTarget = "/etc/vast-shell/wallpaper." + extension;
+        staticUpload.command = [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", `mkdir -p /etc/vast-shell && cp -f ${JSON.stringify(path)} ${JSON.stringify(lastStaticTarget)}`];
         staticUpload.running = true;
     }
 
     function uploadVideo(path) {
-        const extension = root.extensionOf(path);
+        const extension = extensionOf(path);
         if (extension === "") {
             console.warn("[GreeterConfig] upload video: invalid path", path);
             return;
         }
-        root.lastVideoTarget = "/etc/vast-shell/wallpaper." + extension;
-        videoUpload.command = [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", `mkdir -p /etc/vast-shell && cp -f ${JSON.stringify(path)} ${JSON.stringify(root.lastVideoTarget)}`];
+        lastVideoTarget = "/etc/vast-shell/wallpaper." + extension;
+        videoUpload.command = [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", `mkdir -p /etc/vast-shell && cp -f ${JSON.stringify(path)} ${JSON.stringify(lastVideoTarget)}`];
         videoUpload.running = true;
     }
 
@@ -71,10 +71,10 @@ Singleton {
     }
 
     Component.onCompleted: {
-        const videoPath = root.greeterConfig.videoWallpaper;
-        if (root.greeterConfig.useVideoWallpaper && videoPath !== "") {
-            videoThumbGen.command = ["ffmpeg", "-y", "-loglevel", "error", "-i", videoPath, "-frames:v", "1", root.thumbnailCachePathFor(videoPath)];
-            root.videoThumbPending = true;
+        const videoPath = greeterConfig.videoWallpaper;
+        if (greeterConfig.useVideoWallpaper && videoPath !== "") {
+            videoThumbGen.command = ["ffmpeg", "-y", "-loglevel", "error", "-i", videoPath, "-frames:v", "1", thumbnailCachePathFor(videoPath)];
+            videoThumbPending = true;
         }
     }
 
@@ -126,7 +126,7 @@ Singleton {
     Process {
         id: etcSync
 
-        command: [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", `mkdir -p /etc/vast-shell && install -m 644 ${JSON.stringify(Paths.shellDir + "/greeter.json")} /etc/vast-shell/greeter.json`]
+        command: [Paths.projectRoot + "/Assets/shell/pkexec.sh", "sh", "-c", "mkdir -p /etc/vast-shell && install -m 644 " + JSON.stringify(Paths.shellDir + "/greeter.json") + "/etc/vast-shell/greeter.json"]
         stderr: SplitParser {
             onRead: data => console.log("[GreeterConfig] pkexec stderr:", data)
         }

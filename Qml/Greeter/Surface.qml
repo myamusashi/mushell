@@ -330,16 +330,8 @@ WlSessionLockSurface {
 
         NAnim {
             target: userCard
-            property: "opacity"
-            to: 1
-            duration: Appearance.animations.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-        }
-
-        NAnim {
-            target: userCard
-            property: "scale"
-            to: 1
+            property: "implicitWidth"
+            to: 380
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
@@ -383,16 +375,8 @@ WlSessionLockSurface {
 
             NAnim {
                 target: userCard
-                property: "opacity"
+                property: "implicitWidth"
                 to: 0
-                duration: Appearance.animations.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-            }
-
-            NAnim {
-                target: userCard
-                property: "scale"
-                to: 0.9
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
             }

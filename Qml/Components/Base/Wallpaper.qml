@@ -3,6 +3,7 @@ import QtMultimedia
 import Vast.ImageCache
 
 import qs.Core.Configs
+import qs.Core.States
 import qs.Core.Utils
 import qs.Services
 
@@ -55,7 +56,7 @@ Item {
     property bool _transitionStarted: false
     readonly property bool _pauseVideo: {
         const toplevels = Hypr.focusedWorkspace?.toplevels?.values ?? [];
-        return toplevels.some(toplevel => toplevel.wayland?.activated && (toplevel.wayland?.fullscreen || !toplevel.lastIpcObject?.floating));
+        return toplevels.some(toplevel => toplevel.wayland?.activated && (toplevel.wayland?.fullscreen || !toplevel.lastIpcObject?.floating) && !GlobalStates.isLockscreenOpen);
     }
 
     function isVideo(url) {

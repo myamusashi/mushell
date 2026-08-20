@@ -29,67 +29,67 @@ Scope {
 
     readonly property bool available: Greetd.available
 
-    onLastSessionCommandChanged: root.selectSession(root.sessionIndexForCommand(root.lastSessionCommand))
+    onLastSessionCommandChanged: selectSession(sessionIndexForCommand(lastSessionCommand))
 
     onCurrentTextChanged: {
-        if (root.showFailure || root.messageIsError) {
-            root.showFailure = false;
-            root.messageIsError = false;
-            root.statusMessage = "";
+        if (showFailure || messageIsError) {
+            showFailure = false;
+            messageIsError = false;
+            statusMessage = "";
         }
     }
 
     function tryUnlock() {
-        if (root.currentText === "" || root.currentUser === "")
+        if (currentText === "" || currentUser === "")
             return;
         if (Greetd.state !== GreetdState.Inactive)
             return;
 
-        root.showFailure = false;
-        root.messageIsError = false;
-        root.statusMessage = qsTr("Authenticating…");
-        root.unlockInProgress = true;
+        showFailure = false;
+        messageIsError = false;
+        statusMessage = qsTr("Authenticating…");
+        unlockInProgress = true;
         Greetd.createSession(root.currentUser);
     }
 
     function launch() {
-        if (root.launching || Greetd.state !== GreetdState.ReadyToLaunch)
+        if (launching || Greetd.state !== GreetdState.ReadyToLaunch)
             return;
-        root.launching = true;
-        let index = root.selectedSessionIndex;
-        if (index < 0 || index >= root.sessions.count)
+        launching = true;
+        let index = selectedSessionIndex;
+        if (index < 0 || index >= sessions.count)
             index = 0;
-        const session = root.sessions.get(index);
+        const session = sessions.get(index);
         const rawCommand = session && session.command ? session.command : "bash";
         if (session && session.command)
-            root.saveLastSession(session.command);
+            saveLastSession(session.command);
         Greetd.launch(rawCommand.split(" ").filter(part => part.length > 0));
     }
 
     function switchUser(username) {
-        if (root.currentUser === username || root.unlockInProgress)
+        if (currentUser === username || unlockInProgress)
             return;
 
-        root.currentUser = username;
-        root.currentText = "";
-        root.showFailure = false;
-        root.messageIsError = false;
-        root.statusMessage = "";
+        currentUser = username;
+        currentText = "";
+        showFailure = false;
+        messageIsError = false;
+        statusMessage = "";
     }
 
     function selectSession(index) {
-        if (index < 0 || index >= root.sessions.count)
+        if (index < 0 || index >= sessions.count)
             return;
-        root.selectedSessionIndex = index;
-        const session = root.sessions.get(index);
+        selectedSessionIndex = index;
+        const session = sessions.get(index);
         if (session && session.command)
-            root.saveLastSession(session.command);
+            saveLastSession(session.command);
     }
 
     function saveLastSession(command) {
-        if (root.lastSessionCommand === command)
+        if (lastSessionCommand === command)
             return;
-        root.lastSessionCommand = command;
+        lastSessionCommand = command;
         Quickshell.execDetached({
             command: [Paths.projectRoot + "/Assets/shell/last-session.sh", command]
         });
@@ -98,10 +98,10 @@ Scope {
     function sessionIndexForCommand(command) {
         if (command === "")
             return -1;
-        for (let i = 0; i < root.sessions.count; i++) {
-            if (root.sessions.get(i).command === command)
+        for (let i = 0; i < sessions.count; i++)
+            if (sessions.get(i).command === command)
                 return i;
-        }
+
         return -1;
     }
 
