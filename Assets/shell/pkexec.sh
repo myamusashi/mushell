@@ -7,12 +7,27 @@ if [[ $# -eq 0 ]]; then
     exit 64
 fi
 
-PKEXEC="/run/wrappers/bin/pkexec"
-if [[ ! -x "$PKEXEC" ]]; then
-    PKEXEC="$(command -v pkexec)"
+PKEXEC=""
+for candidate in "/run/wrappers/bin/pkexec" "$(command -v pkexec 2>/dev/null || true)"; do
+    if [[ -n "$candidate" && -x "$candidate" ]]; then
+        PKEXEC="$candidate"
+        break
+    fi
+done
+
+if [[ -z "$PKEXEC" ]]; then
+    echo "pkexec-wrapper: pkexec not found (checked /run/wrappers/bin and PATH)" >&2
+    exit 127
 fi
 
-SHELL="/run/current-system/sw/bin/bash"
+if [[ -x "/run/current-system/sw/bin/bash" ]]; then
+    SHELL="/run/current-system/sw/bin/bash"
+elif command -v bash >/dev/null 2>&1; then
+    SHELL="$(command -v bash)"
+else
+    echo "pkexec-wrapper: no bash found" >&2
+    exit 127
+fi
 export SHELL
 
 : "${XDG_RUNTIME_DIR:=/run/user/$(id -u)}"
