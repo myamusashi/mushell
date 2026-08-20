@@ -87,6 +87,10 @@ LazyLoader {
                                 label: qsTr("Appearance")
                             },
                             {
+                                icon: "lock",
+                                label: qsTr("Greeter")
+                            },
+                            {
                                 icon: "table_rows",
                                 label: qsTr("Top Bar")
                             },
@@ -185,74 +189,81 @@ LazyLoader {
                             active: settingsLoader.currentPage === 2
                             width: parent.width
                             height: parent.height
-                            sourceComponent: BarPage {}
+                            sourceComponent: GreeterPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 3
                             active: settingsLoader.currentPage === 3
                             width: parent.width
                             height: parent.height
-                            sourceComponent: WallpaperPage {}
+                            sourceComponent: BarPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 4
                             active: settingsLoader.currentPage === 4
                             width: parent.width
                             height: parent.height
-                            sourceComponent: MediaPlayerPage {}
+                            sourceComponent: WallpaperPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 5
                             active: settingsLoader.currentPage === 5
                             width: parent.width
                             height: parent.height
-                            sourceComponent: WeatherPage {}
+                            sourceComponent: MediaPlayerPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 6
                             active: settingsLoader.currentPage === 6
                             width: parent.width
                             height: parent.height
-                            sourceComponent: LanguagePage {}
+                            sourceComponent: WeatherPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 7
                             active: settingsLoader.currentPage === 7
                             width: parent.width
                             height: parent.height
-                            sourceComponent: InternetPage {}
+                            sourceComponent: LanguagePage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 8
                             active: settingsLoader.currentPage === 8
                             width: parent.width
                             height: parent.height
-                            sourceComponent: ClipboardPage {}
+                            sourceComponent: InternetPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 9
                             active: settingsLoader.currentPage === 9
                             width: parent.width
                             height: parent.height
-                            sourceComponent: NotificationPage {}
+                            sourceComponent: ClipboardPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 10
                             active: settingsLoader.currentPage === 10
                             width: parent.width
                             height: parent.height
-                            sourceComponent: KDEConnectPage {}
+                            sourceComponent: NotificationPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 11
                             active: settingsLoader.currentPage === 11
                             width: parent.width
                             height: parent.height
-                            sourceComponent: ScreenRecorderPage {}
+                            sourceComponent: KDEConnectPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 12
                             active: settingsLoader.currentPage === 12
+                            width: parent.width
+                            height: parent.height
+                            sourceComponent: ScreenRecorderPage {}
+                        }
+                        Loader {
+                            visible: settingsLoader.currentPage === 13
+                            active: settingsLoader.currentPage === 13
                             width: parent.width
                             height: parent.height
                             sourceComponent: IdlePage {}

@@ -112,7 +112,11 @@ ShellRoot {
 
             Image {
                 anchors.fill: parent
-                source: Paths.projectRoot + "/Assets/images/wallpaper.png"
+                onStatusChanged: {
+                    if (status === Image.Error)
+                        source = Paths.projectRoot + "/Assets/images/wallpaper.png";
+                }
+                source: "/etc/vast-shell/wallpaper.png"
                 fillMode: Image.PreserveAspectCrop
                 asynchronous: true
                 cache: true

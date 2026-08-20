@@ -281,7 +281,7 @@ LazyLoader {
                     } else {
                         if (fileListView.currentIsFolder)
                             window.navigateTo(fileListView.currentFilePath);
-                        else if (fileListView.hasSelection)
+                        else if (fileListView.hasSelection && fileListView.currentFilePath !== "")
                             root.fileSelected(fileListView.currentFilePath);
                         else if (fileName.length > 0) {
                             var p = root.currentFolder.toString().replace("file://", "") + "/" + fileName;

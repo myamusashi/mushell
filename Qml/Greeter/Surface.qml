@@ -2,9 +2,11 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtMultimedia
 import Qt5Compat.GraphicalEffects
 
 import Quickshell
+import Quickshell.Io
 import Quickshell.Wayland
 
 import qs.Components.Base
@@ -19,7 +21,19 @@ WlSessionLockSurface {
     required property WlSessionLock lock
     required property Auth auth
 
-    readonly property string wallpaperPath: Paths.projectRoot + "/Assets/images/wallpaper.png"
+    readonly property bool useVideoWallpaper: configLoaded ? configUseVideo : false
+    readonly property string wallpaperPath: useVideoWallpaper ? (configLoaded ? configVideoPath : "/etc/vast-shell/wallpaper.mp4") : (configLoaded ? configStaticPath : "/etc/vast-shell/wallpaper.png")
+    property bool configLoaded: false
+    property bool configUseVideo: false
+    property string configStaticPath: ""
+    property string configVideoPath: ""
+    readonly property string assetWallpaper: Paths.projectRoot + "/Assets/images/wallpaper.png"
+    property string greeterThumbnailJob: ""
+    function greeterThumbnailPath() {
+        return `${Paths.cacheDir}/vast-shell/greeter-wallpaper-${Qt.md5(root.greeterThumbnailJob)}.png`;
+    }
+    property url effectiveWallpaper: useVideoWallpaper ? "file://" + wallpaperPath : wallpaperPath
+    property bool effectiveIsVideo: useVideoWallpaper
 
     readonly property var fallbackColors: ({
             scrim: Colours.m3Colors.m3Scrim,
@@ -43,7 +57,8 @@ WlSessionLockSurface {
     color: "transparent"
 
     Component.onCompleted: {
-        ColorGenerator.generateColors(root.wallpaperPath, Configs.colors.scheme);
+        if (!root.effectiveIsVideo)
+            ColorGenerator.generateColors(root.effectiveWallpaper.toString().replace(/^file:\/\//, ""), Configs.colors.scheme);
         root.playEntrance();
     }
 
@@ -78,7 +93,7 @@ WlSessionLockSurface {
         target: ColorGenerator
 
         function onColorsReady(imagePath, colors) {
-            if (imagePath === root.wallpaperPath)
+            if (imagePath === root.effectiveWallpaper.toString().replace(/^file:\/\//, ""))
                 root.dynColors = colors;
         }
     }
@@ -100,10 +115,70 @@ WlSessionLockSurface {
 
         Image {
             anchors.fill: parent
-            source: root.wallpaperPath
+            source: root.effectiveIsVideo ? "" : root.effectiveWallpaper
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             cache: true
+        }
+
+        Image {
+            id: staticProbe
+
+            source: root.useVideoWallpaper ? "" : "file://" + root.wallpaperPath
+            visible: false
+            onStatusChanged: {
+                if (status === Image.Ready) {
+                    root.effectiveWallpaper = "file://" + root.wallpaperPath;
+                    root.effectiveIsVideo = false;
+                    ColorGenerator.generateColors(root.wallpaperPath, Configs.colors.scheme);
+                } else if (status === Image.Error) {
+                    root.effectiveWallpaper = root.assetWallpaper;
+                    root.effectiveIsVideo = false;
+                    ColorGenerator.generateColors(root.assetWallpaper.replace(/^file:\/\//, ""), Configs.colors.scheme);
+                }
+            }
+        }
+
+        MediaPlayer {
+            id: videoPlayer
+
+            source: root.useVideoWallpaper ? "file://" + root.wallpaperPath : ""
+            loops: MediaPlayer.Infinite
+            videoOutput: videoOutput
+            onMediaStatusChanged: {
+                if (!root.useVideoWallpaper)
+                    return;
+                if (mediaStatus === MediaPlayer.LoadedMedia) {
+                    root.effectiveWallpaper = "file://" + root.wallpaperPath;
+                    root.effectiveIsVideo = true;
+                    play();
+                    root.greeterThumbnailJob = root.wallpaperPath;
+                    greeterThumbnailExtractor.running = true;
+                } else if (mediaStatus === MediaPlayer.InvalidMedia) {
+                    root.effectiveWallpaper = root.assetWallpaper;
+                    root.effectiveIsVideo = false;
+                    ColorGenerator.generateColors(root.assetWallpaper.replace(/^file:\/\//, ""), Configs.colors.scheme);
+                }
+            }
+        }
+
+        Process {
+            id: greeterThumbnailExtractor
+
+            command: ["sh", "-c", `test -s ${JSON.stringify(root.greeterThumbnailPath())} || ffmpeg -y -loglevel error -i ${JSON.stringify(root.greeterThumbnailJob)} -frames:v 1 ${JSON.stringify(root.greeterThumbnailPath())}`]
+            running: root.greeterThumbnailJob !== ""
+            onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
+                root.greeterThumbnailJob = "";
+                ColorGenerator.generateColors(root.greeterThumbnailPath(), Configs.colors.scheme);
+            }
+        }
+
+        VideoOutput {
+            id: videoOutput
+
+            anchors.fill: parent
+            fillMode: VideoOutput.PreserveAspectCrop
+            visible: root.useVideoWallpaper
         }
 
         Behavior on opacity {
