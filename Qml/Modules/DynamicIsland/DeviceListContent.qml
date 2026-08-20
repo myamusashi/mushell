@@ -20,14 +20,14 @@ Item {
     readonly property real maxContentHeight: deviceCount * rowHeight + (deviceCount > 1 ? deviceCount - 1 : 0) * 4
     readonly property real visibleHeight: Math.min(200, maxContentHeight)
 
-    implicitWidth: root.active ? computeActiveWidth() : 180
+    implicitWidth: active ? computeActiveWidth() : 180
     implicitHeight: Math.max(44, visibleHeight + 40)
 
     function computeActiveWidth() {
-        if (root.deviceCount === 0)
+        if (deviceCount === 0)
             return 220;
         var maximum = 0;
-        for (var i = 0; i < root.deviceCount; i++) {
+        for (var i = 0; i < deviceCount; i++) {
             deviceMetrics.text = KDEConnect.availableDevices[i].name;
             maximum = Math.max(maximum, deviceMetrics.width);
         }

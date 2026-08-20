@@ -31,75 +31,75 @@ Scope {
     property var selectedDevice: null
     property bool transferSuccess: false
 
-    readonly property bool islandVisible: root.isArmed || root.closing || root.currentState !== DynamicIsland.State.Idle
+    readonly property bool islandVisible: isArmed || closing || currentState !== DynamicIsland.State.Idle
     readonly property bool isArmed: GlobalStates.isDynamicIslandActive
     readonly property real dotSize: 24
     readonly property int slideDuration: 300
     property bool closing: false
     property bool slidingUp: false
-    readonly property bool isDragging: root.currentState === DynamicIsland.State.Dragging
-    readonly property bool isFilesDropped: root.currentState === DynamicIsland.State.FilesDropped
-    readonly property bool isSelectingDevice: root.currentState === DynamicIsland.State.SelectingDevice
-    readonly property bool isConfirmDevice: root.currentState === DynamicIsland.State.ConfirmDevice
-    readonly property bool isTransferring: root.currentState === DynamicIsland.State.Transferring
-    readonly property bool isCompleted: root.currentState === DynamicIsland.State.Completed
+    readonly property bool isDragging: currentState === DynamicIsland.State.Dragging
+    readonly property bool isFilesDropped: currentState === DynamicIsland.State.FilesDropped
+    readonly property bool isSelectingDevice: currentState === DynamicIsland.State.SelectingDevice
+    readonly property bool isConfirmDevice: currentState === DynamicIsland.State.ConfirmDevice
+    readonly property bool isTransferring: currentState === DynamicIsland.State.Transferring
+    readonly property bool isCompleted: currentState === DynamicIsland.State.Completed
 
     function startTransfer() {
-        root.currentState = DynamicIsland.State.Transferring;
-        for (var i = 0; i < root.droppedFiles.length; i++)
-            KDEConnect.shareFile(root.selectedDevice.id, root.droppedFiles[i]);
+        currentState = DynamicIsland.State.Transferring;
+        for (var i = 0; i < droppedFiles.length; i++)
+            KDEConnect.shareFile(selectedDevice.id, droppedFiles[i]);
         transferTimer.start();
     }
 
     function cancelTransfer() {
         transferTimer.stop();
-        root.transferSuccess = false;
-        root.currentState = DynamicIsland.State.Completed;
+        transferSuccess = false;
+        currentState = DynamicIsland.State.Completed;
         resetTimer.start();
     }
 
     function dismiss() {
-        root.droppedFiles = [];
-        root.selectedDevice = null;
-        root.transferSuccess = false;
-        root.beginClose();
+        droppedFiles = [];
+        selectedDevice = null;
+        transferSuccess = false;
+        beginClose();
     }
 
     function beginClose() {
-        if (root.closing)
+        if (closing)
             return;
-        root.closing = true;
-        root.slidingUp = false;
-        root.droppedFiles = [];
-        root.selectedDevice = null;
-        root.transferSuccess = false;
-        root.currentState = DynamicIsland.State.Idle;
+        closing = true;
+        slidingUp = false;
+        droppedFiles = [];
+        selectedDevice = null;
+        transferSuccess = false;
+        currentState = DynamicIsland.State.Idle;
         contractTimer.start();
         slideTimer.start();
     }
 
     function finishClose() {
-        root.closing = false;
-        root.slidingUp = false;
-        root.droppedFiles = [];
-        root.selectedDevice = null;
-        root.transferSuccess = false;
-        root.currentState = DynamicIsland.State.Idle;
+        closing = false;
+        slidingUp = false;
+        droppedFiles = [];
+        selectedDevice = null;
+        transferSuccess = false;
+        currentState = DynamicIsland.State.Idle;
         if (GlobalStates.isDynamicIslandActive)
             GlobalStates.setDynamicIslandActive(false);
     }
 
     function goBack() {
-        if (root.currentState === DynamicIsland.State.SelectingDevice || root.currentState === DynamicIsland.State.ConfirmDevice)
-            root.currentState = DynamicIsland.State.FilesDropped;
+        if (currentState === DynamicIsland.State.SelectingDevice || currentState === DynamicIsland.State.ConfirmDevice)
+            currentState = DynamicIsland.State.FilesDropped;
     }
 
     function goToDeviceSelection() {
-        root.currentState = DynamicIsland.State.SelectingDevice;
+        currentState = DynamicIsland.State.SelectingDevice;
     }
 
     function goToConfirmation() {
-        root.currentState = DynamicIsland.State.ConfirmDevice;
+        currentState = DynamicIsland.State.ConfirmDevice;
     }
 
     Timer {
@@ -194,7 +194,7 @@ Scope {
                 item: islandBox // qmllint disable
             }
 
-            Component.onCompleted: Qt.callLater(win.updateContentSize)
+            Component.onCompleted: Qt.callLater(updateContentSize)
 
             function updateContentSize() {
                 if (root.currentState === DynamicIsland.State.Idle) {

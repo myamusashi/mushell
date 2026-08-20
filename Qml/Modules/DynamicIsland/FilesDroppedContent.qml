@@ -14,11 +14,11 @@ Item {
     required property var island
     required property bool active
 
-    readonly property int fileCount: root.island.droppedFiles.length
+    readonly property int fileCount: island.droppedFiles.length
     readonly property real maxContentHeight: fileCount * 18 + (fileCount > 1 ? fileCount - 1 : 0) * 4
     readonly property real visibleHeight: Math.min(200, maxContentHeight)
 
-    readonly property real fileNameMaxWidth: root.active ? computeMaxWidth() : 0
+    readonly property real fileNameMaxWidth: active ? computeMaxWidth() : 0
 
     implicitWidth: Math.max(220, fileNameMaxWidth + 80)
     implicitHeight: visibleHeight + 56
@@ -26,7 +26,7 @@ Item {
     function computeMaxWidth() {
         var maximum = 0;
         for (var i = 0; i < fileCount; i++)
-            maximum = Math.max(maximum, String(root.island.droppedFiles[i]).split("/").pop().length);
+            maximum = Math.max(maximum, String(island.droppedFiles[i]).split("/").pop().length);
         return Math.min(300, maximum * 8 + 40);
     }
 
