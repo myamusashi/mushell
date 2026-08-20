@@ -283,15 +283,17 @@ Scope {
                     clip: true
 
                     Behavior on implicitWidth {
-                        NAnim {
-                            duration: Appearance.animations.durations.expressiveDefaultSpatial
-                            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                        SpringAnimation {
+                            spring: 3
+                            damping: 0.3
+                            mass: 1
                         }
                     }
                     Behavior on implicitHeight {
-                        NAnim {
-                            duration: Appearance.animations.durations.expressiveDefaultSpatial
-                            easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
+                        SpringAnimation {
+                            spring: 3
+                            damping: 0.3
+                            mass: 1
                         }
                     }
                     Behavior on radius {
