@@ -254,7 +254,6 @@ WlSessionLockSurface {
         auth: root.auth
         colors: root.dynColors
         opacity: 0
-        scale: 0.9
     }
 
     Item {
@@ -330,8 +329,8 @@ WlSessionLockSurface {
 
         NAnim {
             target: userCard
-            property: "implicitWidth"
-            to: 380
+            property: "opacity"
+            to: 1.0
             duration: Appearance.animations.durations.expressiveDefaultSpatial
             easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
         }
@@ -375,7 +374,7 @@ WlSessionLockSurface {
 
             NAnim {
                 target: userCard
-                property: "implicitWidth"
+                property: "opacity"
                 to: 0
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial

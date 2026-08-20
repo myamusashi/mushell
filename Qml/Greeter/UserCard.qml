@@ -16,7 +16,7 @@ Item {
 
     readonly property string initials: root.auth.currentUser.length > 0 ? root.auth.currentUser.charAt(0).toUpperCase() : "?"
 
-    implicitWidth: 0
+    implicitWidth: 380
     implicitHeight: contentColumn.implicitHeight + Appearance.padding.large * 2
     transformOrigin: Item.Center
 
