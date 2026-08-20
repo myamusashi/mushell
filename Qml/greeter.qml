@@ -6,7 +6,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtMultimedia
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Greetd
 import Quickshell.Wayland
 
@@ -19,6 +21,28 @@ import "Greeter" as GREET
 
 ShellRoot {
     id: root
+
+    property bool cfgUseVideo: false
+    property string cfgStatic: "/etc/vast-shell/wallpaper.png"
+    property string cfgVideo: "/etc/vast-shell/wallpaper.mp4"
+
+    FileView {
+        id: greeterConfigFile
+
+        path: "/etc/vast-shell/greeter.json"
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: {
+            try {
+                const json = JSON.parse(text());
+                root.cfgUseVideo = json.useVideoWallpaper === true;
+                if (json.staticWallpaper)
+                    root.cfgStatic = json.staticWallpaper;
+                if (json.videoWallpaper)
+                    root.cfgVideo = json.videoWallpaper;
+            } catch (error) {}
+        }
+    }
 
     WlSessionLock {
         id: lock
@@ -110,33 +134,57 @@ ShellRoot {
                 }
             }
 
-            Image {
+            Item {
                 anchors.fill: parent
-                onStatusChanged: {
-                    if (status === Image.Error)
-                        source = Paths.projectRoot + "/Assets/images/wallpaper.png";
+
+                Image {
+                    anchors.fill: parent
+                    onStatusChanged: {
+                        if (status === Image.Error)
+                            source = Paths.projectRoot + "/Assets/images/wallpaper.png";
+                    }
+                    source: root.cfgUseVideo ? "" : root.cfgStatic
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: true
+
+                    MediaPlayer {
+                        id: splashVideoPlayer
+
+                        source: root.cfgUseVideo ? "file://" + root.cfgVideo : ""
+                        loops: MediaPlayer.Infinite
+                        videoOutput: splashVideoOutput
+                        onMediaStatusChanged: {
+                            if (root.cfgUseVideo && mediaStatus === MediaPlayer.LoadedMedia)
+                                play();
+                        }
+                    }
+
+                    VideoOutput {
+                        id: splashVideoOutput
+
+                        anchors.fill: parent
+                        fillMode: VideoOutput.PreserveAspectCrop
+                        visible: root.cfgUseVideo
+                    }
                 }
-                source: "/etc/vast-shell/wallpaper.png"
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                cache: true
-            }
 
-            ColumnLayout {
-                anchors.centerIn: parent
-                anchors.margins: Appearance.margin.large
-                spacing: Appearance.spacing.normal
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    anchors.margins: Appearance.margin.large
+                    spacing: Appearance.spacing.normal
 
-                LoadingIndicator {
-                    implicitWidth: 64
-                    implicitHeight: 64
-                    status: splashPanel.splashVisible
-                }
+                    LoadingIndicator {
+                        implicitWidth: 64
+                        implicitHeight: 64
+                        status: splashPanel.splashVisible
+                    }
 
-                StyledText {
-                    text: splashPanel.splashVisible && rootFlow.launching ? qsTr("Session Start") : "Loading..."
-                    font.pixelSize: Appearance.fonts.size.extraLarge
-                    color: Colours.m3Colors.m3OnSurface
+                    StyledText {
+                        text: splashPanel.splashVisible && rootFlow.launching ? qsTr("Session Start") : "Loading..."
+                        font.pixelSize: Appearance.fonts.size.extraLarge
+                        color: Colours.m3Colors.m3OnSurface
+                    }
                 }
             }
         }

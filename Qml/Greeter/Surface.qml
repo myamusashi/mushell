@@ -35,6 +35,23 @@ WlSessionLockSurface {
     property url effectiveWallpaper: useVideoWallpaper ? "file://" + wallpaperPath : wallpaperPath
     property bool effectiveIsVideo: useVideoWallpaper
 
+    FileView {
+        path: "/etc/vast-shell/greeter.json"
+        watchChanges: true
+        onFileChanged: reload()
+        onLoaded: {
+            try {
+                const json = JSON.parse(text());
+                root.configUseVideo = json.useVideoWallpaper === true;
+                if (json.staticWallpaper)
+                    root.configStaticPath = json.staticWallpaper;
+                if (json.videoWallpaper)
+                    root.configVideoPath = json.videoWallpaper;
+                root.configLoaded = true;
+            } catch (error) {}
+        }
+    }
+
     readonly property var fallbackColors: ({
             scrim: Colours.m3Colors.m3Scrim,
             onBackground: Colours.m3Colors.m3OnBackground,
