@@ -28,7 +28,6 @@ using material_color_utilities::RankedSuggestions;
 
 namespace {
 
-    // calculate_optimal_size() from generate_colors_material.py.
     std::pair<int, int> calculateOptimalSize(int width, int height, int bitmapSize) {
         const double imageArea  = width * height;
         const double bitmapArea = static_cast<double>(bitmapSize) * bitmapSize;
@@ -40,7 +39,6 @@ namespace {
         return {newWidth, newHeight};
     }
 
-    // PIL's BICUBIC convolution kernel (a = -0.5).
     double bicubicFilter(double x) {
         const double coeff = -0.5;
         const double absX  = std::fabs(x);
@@ -54,8 +52,6 @@ namespace {
         return 0.0;
     }
 
-    // Pillow's 8-bit resample uses fixed-point coefficients with 22
-    // fractional bits and rounds them half away from zero.
     constexpr int          K_PRECISION_BITS = 22;
     constexpr std::int32_t K_ROUNDING_BIAS  = 1 << (K_PRECISION_BITS - 1);
 
@@ -73,11 +69,8 @@ namespace {
         double scale = static_cast<double>(inSize) / outSize;
         scale        = std::max(scale, 1.0);
 
-        constexpr double kSupport = 2.0;
-        const double     support  = kSupport * scale;
-        // Pillow multiplies by the precomputed reciprocal rather than dividing
-        // per tap; the last-bit difference flips occasional fixed-point
-        // coefficient roundings.
+        constexpr double    kSupport = 2.0;
+        const double        support  = kSupport * scale;
         const double        invScale = 1.0 / scale;
 
         std::vector<double> kk;
@@ -200,7 +193,6 @@ Argb quantizeImage(const QString& imagePath, int bitmapSize) {
     QImageReader reader(imagePath);
     reader.setAutoTransform(true);
 
-    // The Python script seeks to the second frame for GIFs.
     if (reader.format() == QByteArrayLiteral("gif") && reader.imageCount() > 1)
         reader.jumpToImage(1);
 

@@ -7,7 +7,6 @@
 #include "cpp/palettes/tones.h"
 #include "cpp/utils/utils.h"
 
-// Hue-range predicates matching materialyoucolor's Hct.is_blue/is_yellow/is_cyan.
 inline bool isBlueHue(double hue) {
     return hue >= 250 && hue < 270;
 }
@@ -20,7 +19,6 @@ inline bool isCyanHue(double hue) {
     return hue >= 170 && hue < 207;
 }
 
-// Rounds half to even, matching Python's round() used by average_argb.
 inline int roundHalfToEven(double value) {
     const double floor = std::floor(value);
     const double diff  = value - floor;
@@ -35,9 +33,6 @@ inline bool toneNearlyEqual(double a, double b, double epsilon = 0.01) {
     return std::fabs(a - b) < epsilon;
 }
 
-// A tonal palette defined by a hue and chroma, mirroring
-// materialyoucolor.palettes.tonal_palette.TonalPalette including its
-// tone-99 yellow-hue averaging rule.
 struct SMaterialPalette {
     double                        hue    = 0.0;
     double                        chroma = 0.0;
@@ -51,7 +46,6 @@ struct SMaterialPalette {
         return palette;
     }
 
-    // Mirrors TonalPalette.from_hct: the HCT itself becomes the key color.
     static SMaterialPalette fromHct(const material_color_utilities::Hct& hct) {
         SMaterialPalette palette;
         palette.hue      = hct.get_hue();

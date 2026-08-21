@@ -118,11 +118,6 @@ namespace {
 
 } // namespace
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Palette construction (DynamicSchemePalettesDelegateImpl2021 / Impl2025,
-// phone platform only — the shell never requests the watch platform).
-// ─────────────────────────────────────────────────────────────────────────────
-
 namespace {
 
     SMaterialPalette primaryPalette2021(EMaterialVariant variant, const Hct& source) {
@@ -448,12 +443,6 @@ SMaterialContrastCurve defaultContrastCurve(double defaultContrast) {
     return {.low = defaultContrast, .normal = defaultContrast, .medium = 7, .high = 21};
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Role definitions. Ported from color_spec_2021.py (base table) and
-// color_spec_2025.py (overrides). Watch-platform branches are not ported:
-// the shell always uses the phone platform (materialyoucolor's default).
-// ─────────────────────────────────────────────────────────────────────────────
-
 namespace {
 
     struct SDynamicColorDef {
@@ -496,7 +485,7 @@ namespace {
         return name.ends_with("_fixed_dim") || name.ends_with("fixeddim");
     }
 
-    // ── 2021 base table (color_spec_2021.py) ────────────────────────────────────
+    // color_spec_2021.py
 
     const SDynamicColorDef& def2021(MaterialRole role) {
         switch (role) {
@@ -1139,7 +1128,7 @@ namespace {
         return def2021(MaterialRole::Background); // unreachable
     }
 
-    // ── 2025 overrides (color_spec_2025.py) ─────────────────────────────────────
+    // 2025 overrides (color_spec_2025.py)
 
     double surfaceTone2025(const MaterialScheme& s) {
         if (s.isDark)
@@ -1385,8 +1374,6 @@ namespace {
     }
 
 } // namespace
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 namespace {
 
@@ -1796,9 +1783,13 @@ namespace {
 
 } // namespace
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Tone/HCT resolution (ColorCalculationDelegateImpl2021 / Impl2025).
-// ─────────────────────────────────────────────────────────────────────────────
+namespace {
+    constexpr bool safeCompare(double a, double b, double epsilon = 1e-9) {
+        return std::abs(a - b) <= (epsilon * std::max({1.0, std::abs(a), std::abs(b)}));
+    }
+}
+
+// Tone/HCT resolution (ColorCalculationDelegateImpl2021 / Impl2025)
 
 double MaterialScheme::resolveTone(MaterialRole role) const {
     if (const auto it = mToneCache.find(role); it != mToneCache.end())
@@ -1907,9 +1898,9 @@ double MaterialScheme::resolveTone(MaterialRole role) const {
             const double        darkOption  = Darker(lower, desiredRatio);
 
             std::vector<double> availables;
-            if (!qFuzzyCompare(lightOption, -1))
+            if (!safeCompare(lightOption, -1))
                 availables.push_back(lightOption);
-            if (!qFuzzyCompare(darkOption, -1))
+            if (!safeCompare(darkOption, -1))
                 availables.push_back(darkOption);
 
             const bool prefersLight = TonePrefersLightForeground(bgTone1) || TonePrefersLightForeground(bgTone2);
@@ -1995,9 +1986,9 @@ double MaterialScheme::resolveTone(MaterialRole role) const {
             const double        darkOption  = Darker(lower, desiredRatio);
 
             std::vector<double> availables;
-            if (!qFuzzyCompare(lightOption, -1))
+            if (!safeCompare(lightOption, -1))
                 availables.push_back(lightOption);
-            if (!qFuzzyCompare(darkOption, -1))
+            if (!safeCompare(darkOption, -1))
                 availables.push_back(darkOption);
 
             const bool prefersLight = TonePrefersLightForeground(bgTone1) || TonePrefersLightForeground(bgTone2);

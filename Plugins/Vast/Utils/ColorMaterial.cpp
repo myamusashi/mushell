@@ -90,8 +90,14 @@ double ColorMaterial::contrastLevel() const {
     return mContrastLevel;
 }
 
+namespace {
+    constexpr bool safeCompare(double a, double b, double epsilon = 1e-9) {
+        return std::abs(a - b) <= (epsilon * std::max({1.0, std::abs(a), std::abs(b)}));
+    }
+}
+
 void ColorMaterial::setContrastLevel(double contrastLevel) {
-    if (qFuzzyCompare(mContrastLevel, contrastLevel))
+    if (safeCompare(mContrastLevel, contrastLevel))
         return;
     mContrastLevel = contrastLevel;
     contrastLevelChanged();
