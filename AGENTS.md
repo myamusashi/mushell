@@ -17,6 +17,12 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 - Never: `using namespace std;`, uninitialized primitives.
 - Avoid unless necessary: C stdlib, `malloc`/`free`, raw C-style pointers (use STL smart pointers; raw pointers OK only where misuse is impossible, e.g. destructors).
 - Avoid: `.clang-tidy` violations, manual C-style alloc/free pairs (wrap them).
+- QML-exposed types: use `QML_ELEMENT`/`QML_SINGLETON`, not manual `qmlRegisterType` (unless vast-shell already does otherwise there).
+- `Q_PROPERTY` needs `NOTIFY` unless truly constant (`CONSTANT`) — no silent non-reactive properties.
+- Document QObject ownership across the QML/C++ boundary (QML-parented vs. C++-held via `setObjectOwnership`) — common use-after-free/double-free source, always flag if unclear.
+- Prefer `QQmlListProperty`/`QAbstractListModel` over raw `QObject*` lists to QML for anything runtime-mutable.
+- Async work (D-Bus, file I/O, subprocess calls) must not block the QML/UI thread — use `QtConcurrent`/signals, never sync blocking calls in a QML-invoked slot.
+- Non-QObject types: `unique_ptr`/`shared_ptr`. QObject-derived types: use Qt parent-child ownership, don't also wrap in a smart pointer.
 
 ## QML style
 
@@ -53,12 +59,3 @@ Modules in use: Quickshell (core), .Bluetooth, .DBusMenu, .Hyprland, .I3, .Io, .
 - Prefer a single static binary: avoid CGo unless unavoidable (breaks the static-binary goal).
 - Table-driven tests for command logic; keep `main.go` minimal (build the root command, call `Execute()`, exit on error).
 - Context propagation: pass `context.Context` through for anything IPC/network-bound (matches Quickshell IPC calls) rather than using bare goroutines with no cancellation path.
-
-## Qt C++ guidelines
-
-- QML-exposed types: use `QML_ELEMENT`/`QML_SINGLETON`, not manual `qmlRegisterType` (unless vast-shell already does otherwise there).
-- `Q_PROPERTY` needs `NOTIFY` unless truly constant (`CONSTANT`) — no silent non-reactive properties.
-- Document QObject ownership across the QML/C++ boundary (QML-parented vs. C++-held via `setObjectOwnership`) — common use-after-free/double-free source, always flag if unclear.
-- Prefer `QQmlListProperty`/`QAbstractListModel` over raw `QObject*` lists to QML for anything runtime-mutable.
-- Async work (D-Bus, file I/O, subprocess calls) must not block the QML/UI thread — use `QtConcurrent`/signals, never sync blocking calls in a QML-invoked slot.
-- Non-QObject types: `unique_ptr`/`shared_ptr`. QObject-derived types: use Qt parent-child ownership, don't also wrap in a smart pointer.
