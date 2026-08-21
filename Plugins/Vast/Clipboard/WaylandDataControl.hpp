@@ -60,8 +60,8 @@ namespace vast {
 
         Q_INVOKABLE void shutdown();
 
-        // connect to the display, bind the registry/manager/seat, and wire up the data device. 
-        // Both entry points used to duplicate this sequence; isReconnect only changes logging 
+        // connect to the display, bind the registry/manager/seat, and wire up the data device.
+        // Both entry points used to duplicate this sequence; isReconnect only changes logging
         // and how mInitialized is left on failure.
         bool                         connectAndBind(bool isReconnect);
         void                         reconnect();
@@ -99,14 +99,14 @@ namespace vast {
         using DevicePtr   = std::unique_ptr<ext_data_control_device_v1, DeviceDeleter>;
         using OfferPtr    = std::unique_ptr<ext_data_control_offer_v1, OfferDeleter>;
 
-        DisplayPtr       mDisplay;
-        QSocketNotifier* mDisplayNotifier{nullptr};
-        RegistryPtr      mRegistry;
-        SeatPtr          mSeat;
-        ManagerPtr       mManager;
-        DevicePtr        mDevice;
-        OfferPtr         mCurrentOffer;
-        QList<QString>   mPendingMimeTypes;
+        DisplayPtr                                                     mDisplay;
+        QSocketNotifier*                                               mDisplayNotifier{nullptr};
+        RegistryPtr                                                    mRegistry;
+        SeatPtr                                                        mSeat;
+        ManagerPtr                                                     mManager;
+        DevicePtr                                                      mDevice;
+        OfferPtr                                                       mCurrentOffer;
+        QList<QString>                                                 mPendingMimeTypes;
 
         QHash<ext_data_control_source_v1*, QHash<QString, QByteArray>> mPendingSources;
         QString                                                        mPendingMeta;
