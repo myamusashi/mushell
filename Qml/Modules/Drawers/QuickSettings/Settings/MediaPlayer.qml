@@ -115,19 +115,20 @@ ClippingWrapperRectangle {
             ImageCache.copyAndPreload(localPath, Qt.size(300, 300));
     }
 
-    Connections {
-        target: ColorGenerator
+    ColorMaterial {
+        id: trackArtMaterial
 
-        function onColorsReady(imagePath, colors) {
-            if (imagePath === root.cachedArtPath.replace(/^file:\/\//, ""))
+        source: root.cachedArtPath
+        darkMode: Configs.colors.isDarkMode
+        scheme: Colours.schemeEnum(Configs.colors.scheme)
+        onColorsChanged: {
+            if (ready)
                 root.trackArtColors = colors;
         }
     }
 
     onCachedArtPathChanged: {
         trackArtColors = fallbackTrackArtColors;
-        if (cachedArtPath !== "")
-            ColorGenerator.generateColors(cachedArtPath.replace(/^file:\/\//, ""), Configs.colors.scheme);
     }
 
     Item {

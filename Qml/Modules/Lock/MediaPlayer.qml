@@ -74,11 +74,14 @@ StyledRect {
         }
     }
 
-    Connections {
-        target: ColorGenerator
+    ColorMaterial {
+        id: trackArtMaterial
 
-        function onColorsReady(imagePath, colors) {
-            if (imagePath === mediaPlayerRect.cachedArtPath.replace(/^file:\/\//, ""))
+        source: mediaPlayerRect.cachedArtPath
+        darkMode: Configs.colors.isDarkMode
+        scheme: Colours.schemeEnum(Configs.colors.scheme)
+        onColorsChanged: {
+            if (ready)
                 mediaPlayerRect.trackArtColors = colors;
         }
     }
@@ -93,8 +96,6 @@ StyledRect {
 
     onCachedArtPathChanged: {
         trackArtColors = fallbackTrackArtColors;
-        if (cachedArtPath !== "")
-            ColorGenerator.generateColors(cachedArtPath.replace(/^file:\/\//, ""), Configs.colors.scheme);
     }
 
     Connections {

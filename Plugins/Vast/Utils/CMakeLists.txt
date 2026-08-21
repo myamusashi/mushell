@@ -1,8 +1,11 @@
 vast_module(vast-utils
     URI Vast.Utils
     SOURCES
-        ColorGenerator.hpp
-        ColorGenerator.cpp
+        ColorMaterial.hpp
+        ColorMaterial.cpp
         Utils.hpp
         Utils.cpp
+    LIBRARIES
+        material-color-utilities
+        vast-materialcolor
 )

@@ -6,7 +6,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Vast.ImageCache
-import Vast.Utils
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -85,9 +84,6 @@ Item {
             }
             if (status !== Image.Ready)
                 return;
-            const path = source.toString().replace(/^file:\/\//, "");
-            ColorGenerator.generate(path, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
-            ColorGenerator.generate(path, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
         }
     }
 

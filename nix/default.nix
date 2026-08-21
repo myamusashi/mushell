@@ -33,7 +33,6 @@
     vastPlugin = callPackage ./plugins/vastPlugin.nix {};
     vastctl = callPackage ./packages/vastctl.nix {};
     remove-bg = callPackage ./packages/remove-bg.nix {};
-    generate-colors-material = callPackage ./packages/generate-colors-material.nix {};
 
     runtimeDeps = [
         findutils
@@ -48,7 +47,6 @@
         polkit
         weather-icons
         material-symbols
-        generate-colors-material
         wl-clipboard
         wl-screenrec-fork
         ffmpeg
@@ -151,7 +149,6 @@
             cp -r !(build) $out/share/quickshell/ 2>/dev/null || true
 
             install -Dm755 ${app2unit}/bin/app2unit $out/bin/app2unit
-            install -Dm755 ${generate-colors-material}/bin/generate-colors-material $out/bin/generate-colors-material
 
             cp -r ${vastctl}/share/bash-completion $out/share/ 2>/dev/null || true
             cp -r ${vastctl}/share/fish $out/share/ 2>/dev/null || true
@@ -210,7 +207,6 @@ in {
         material-symbols
         app2unit
         remove-bg
-        generate-colors-material
         runtimeDeps
         ;
     default = vast-shell;

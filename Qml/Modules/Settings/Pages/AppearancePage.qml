@@ -4,8 +4,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import Vast.Utils
-
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
@@ -78,18 +76,6 @@ Item {
                     onConfigChanged: value => Configs.colors.staticColorsPath = value
                 }
 
-                FilePathRow {
-                    label: qsTr("Material Colors Path (White):")
-                    configValue: Configs.colors.toWhiteColor
-                    onConfigChanged: value => Configs.colors.toWhiteColor = value
-                }
-
-                FilePathRow {
-                    label: qsTr("Material Colors Path (Dark):")
-                    configValue: Configs.colors.toDarkColor
-                    onConfigChanged: value => Configs.colors.toDarkColor = value
-                }
-
                 SettingRow {
                     label: qsTr("Material Scheme:")
 
@@ -102,9 +88,6 @@ Item {
                         isItemActive: (md, _) => md.display === Configs.colors.scheme
                         onActivated: index => {
                             Configs.colors.scheme = model[index].display;
-                            const wallpaperPath = /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(Paths.currentWallpaper) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(Paths.currentWallpaper)}.png` : Paths.currentWallpaper;
-                            ColorGenerator.generate(wallpaperPath, "dark", Configs.colors.toDarkColor, Configs.colors.scheme);
-                            ColorGenerator.generate(wallpaperPath, "light", Configs.colors.toWhiteColor, Configs.colors.scheme);
                         }
                     }
                 }

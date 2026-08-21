@@ -6,6 +6,8 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Core.Configs
+import qs.Core.Utils
+import Vast.Utils
 
 Singleton {
     id: root
@@ -17,21 +19,36 @@ Singleton {
     readonly property var staticTemplateColors: JSON.parse(staticColorFile.text())
     readonly property M3TemplateColors m3Colors: Configs.colors.useMaterialColor ? materialColors : Configs.colors.useStaticColors ? staticColors : m3GeneratedColors
 
-    // Raw palette parsed from the active material JSON file (colors wrapper + sourceColor)
-    readonly property var materialPaletteSource: root.parseMaterialPalette()
+    readonly property string wallpaperSource: {
+        const wp = Paths.currentWallpaper;
+        if (!wp)
+            return "";
+        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(wp) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(wp)}.png` : wp;
+    }
+
+    readonly property var materialPaletteSource: materialColor.ready ? materialColor.colors : root.lastValidPalette
     property var lastValidPalette: ({})
 
-    function parseMaterialPalette() {
-        const text = Configs.colors.isDarkMode ? darkColorFile.text() : lightColorFile.text();
-        try {
-            const json = JSON.parse(text);
-            const merged = {};
-            for (const key in json.colors)
-                merged[key] = json.colors[key];
-            merged.sourceColor = json.sourceColor;
-            return merged;
-        } catch (error) {
-            return root.lastValidPalette;
+    function schemeEnum(name) {
+        switch (name) {
+        case "vibrant":
+            return ColorMaterial.Vibrant;
+        case "expressive":
+            return ColorMaterial.Expressive;
+        case "monochrome":
+            return ColorMaterial.Monochrome;
+        case "rainbow":
+            return ColorMaterial.Rainbow;
+        case "fruit-salad":
+            return ColorMaterial.FruitSalad;
+        case "neutral":
+            return ColorMaterial.Neutral;
+        case "fidelity":
+            return ColorMaterial.Fidelity;
+        case "content":
+            return ColorMaterial.Content;
+        default:
+            return ColorMaterial.TonalSpot;
         }
     }
 
@@ -110,11 +127,9 @@ Singleton {
         return Math.min(1, Math.max(0, x));
     }
 
-    // ── OKLab perceptual color space ─────────────────────────────────────────
     // Converts between sRGB and OKLab for perceptually uniform color blending.
     // Use blendColors() for smooth theme transitions and animations.
     // Do NOT use for M3 tonal palette work — that lives in HCT (rgbToHct/hctToRgb).
-
     function oklabFromColor(c: color): var {
         const l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
         const m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
@@ -154,8 +169,6 @@ Singleton {
             b: s.b + (d.b - s.b) * t
         }, src.a + (dst.a - src.a) * t);
     }
-
-    // ─────────────────────────────────────────────────────────────────────────
 
     function overlayColor(baseColor, targetColor, overlayOpacity) {
         if (overlayOpacity <= 0)
@@ -297,27 +310,19 @@ Singleton {
     }
 
     FileView {
-        id: darkColorFile
-
-        path: Configs.colors.toDarkColor
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    FileView {
-        id: lightColorFile
-
-        path: Configs.colors.toWhiteColor
-        watchChanges: true
-        onFileChanged: reload()
-    }
-
-    FileView {
         id: staticColorFile
 
         path: Configs.colors.staticColorsPath
         watchChanges: true
         onFileChanged: reload()
+    }
+
+    ColorMaterial {
+        id: materialColor
+
+        source: root.wallpaperSource !== "" ? `file://${root.wallpaperSource}` : ""
+        darkMode: Configs.colors.isDarkMode
+        scheme: root.schemeEnum(Configs.colors.scheme)
     }
 
     Timer {

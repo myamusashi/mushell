@@ -46,4 +46,5 @@ message(STATUS "QML install dir: ${CMAKE_INSTALL_PREFIX}/${INSTALL_QMLDIR}")
 
 include(cmake/qml-module.cmake)
 
+add_subdirectory(third_party/mcu)
 add_subdirectory(Vast)

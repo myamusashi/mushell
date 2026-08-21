@@ -34,6 +34,7 @@ WlSessionLockSurface {
     }
     property url effectiveWallpaper: useVideoWallpaper ? "file://" + wallpaperPath : wallpaperPath
     property bool effectiveIsVideo: useVideoWallpaper
+    property url colorSource: ""
 
     FileView {
         path: "/etc/vast-shell/greeter.json"
@@ -75,7 +76,7 @@ WlSessionLockSurface {
 
     Component.onCompleted: {
         if (!root.effectiveIsVideo)
-            ColorGenerator.generateColors(root.effectiveWallpaper.toString().replace(/^file:\/\//, ""), Configs.colors.scheme);
+            root.colorSource = root.effectiveWallpaper;
         root.playEntrance();
     }
 
@@ -106,11 +107,12 @@ WlSessionLockSurface {
         }
     }
 
-    Connections {
-        target: ColorGenerator
-
-        function onColorsReady(imagePath, colors) {
-            if (imagePath === root.effectiveWallpaper.toString().replace(/^file:\/\//, ""))
+    ColorMaterial {
+        source: root.colorSource
+        darkMode: Configs.colors.isDarkMode
+        scheme: Colours.schemeEnum(Configs.colors.scheme)
+        onColorsChanged: {
+            if (ready)
                 root.dynColors = colors;
         }
     }
@@ -147,11 +149,11 @@ WlSessionLockSurface {
                 if (status === Image.Ready) {
                     root.effectiveWallpaper = "file://" + root.wallpaperPath;
                     root.effectiveIsVideo = false;
-                    ColorGenerator.generateColors(root.wallpaperPath, Configs.colors.scheme);
+                    root.colorSource = "file://" + root.wallpaperPath;
                 } else if (status === Image.Error) {
                     root.effectiveWallpaper = root.assetWallpaper;
                     root.effectiveIsVideo = false;
-                    ColorGenerator.generateColors(root.assetWallpaper.replace(/^file:\/\//, ""), Configs.colors.scheme);
+                    root.colorSource = root.assetWallpaper;
                 }
             }
         }
@@ -174,7 +176,7 @@ WlSessionLockSurface {
                 } else if (mediaStatus === MediaPlayer.InvalidMedia) {
                     root.effectiveWallpaper = root.assetWallpaper;
                     root.effectiveIsVideo = false;
-                    ColorGenerator.generateColors(root.assetWallpaper.replace(/^file:\/\//, ""), Configs.colors.scheme);
+                    root.colorSource = root.assetWallpaper;
                 }
             }
         }
@@ -186,7 +188,7 @@ WlSessionLockSurface {
             running: root.greeterThumbnailJob !== ""
             onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
                 root.greeterThumbnailJob = "";
-                ColorGenerator.generateColors(root.greeterThumbnailPath(), Configs.colors.scheme);
+                root.colorSource = "file://" + root.greeterThumbnailPath();
             }
         }
 
