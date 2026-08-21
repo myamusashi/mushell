@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/myamusashi/vast-shell/vastctl/internal/ipc"
 	"github.com/spf13/cobra"
@@ -78,20 +81,35 @@ func startDaemon(cmd *cobra.Command) error {
 		proc.Stderr = cmd.ErrOrStderr()
 		// Forward signals so systemd can manage the process.
 		proc.SysProcAttr = &syscall.SysProcAttr{Setpgid: false}
-	} else if daemonVerbose {
-		proc.Stdout = cmd.OutOrStdout()
-		proc.Stderr = cmd.ErrOrStderr()
-	}
-	if daemonForeground {
 		if err := proc.Run(); err != nil {
 			return err
 		}
 		return nil
 	}
+	// Background starts have no terminal; forward output to /tmp so
+	// logs survive after the launching shell exits.
+	logFile := ipc.LogFile()
+	if logFile != nil {
+		defer func() { _ = logFile.Close() }()
+		_, _ = fmt.Fprintf(logFile, "\n--- %s ---\n", time.Now().Format(time.RFC3339))
+		proc.Stdout = logFile
+		proc.Stderr = logFile
+	}
+	if daemonVerbose {
+		proc.Stdout = cmd.OutOrStdout()
+		proc.Stderr = cmd.ErrOrStderr()
+		if logFile != nil {
+			proc.Stdout = io.MultiWriter(proc.Stdout, logFile)
+			proc.Stderr = io.MultiWriter(proc.Stderr, logFile)
+		}
+	}
 	if err := proc.Start(); err != nil {
 		return err
 	}
 	cmd.Printf("vast-shell started (pid %d)\n", proc.Process.Pid)
+	if logFile != nil {
+		cmd.Printf("logs: %s\n", ipc.LogFilePath)
+	}
 	return nil
 }
 

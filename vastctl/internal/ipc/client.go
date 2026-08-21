@@ -10,6 +10,19 @@ import (
 	"time"
 )
 
+// LogFilePath is where background shell output is forwarded.
+const LogFilePath = "/tmp/vast-shell.log"
+
+// LogFile opens the background log file for appending, creating it if
+// needed. Returns nil if the file cannot be opened.
+func LogFile() *os.File {
+	f, err := os.OpenFile(LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
+	if err != nil {
+		return nil
+	}
+	return f
+}
+
 var ensureOnce sync.Once
 
 func ensureShellDaemon() {
@@ -19,8 +32,12 @@ func ensureShellDaemon() {
 		}
 		bin, args := ShellBinArgs()
 		cmd := exec.Command(bin, args...)
-		cmd.Stdout = nil
-		cmd.Stderr = nil
+		if logFile := LogFile(); logFile != nil {
+			defer func() { _ = logFile.Close() }()
+			_, _ = fmt.Fprintf(logFile, "\n--- %s ---\n", time.Now().Format(time.RFC3339))
+			cmd.Stdout = logFile
+			cmd.Stderr = logFile
+		}
 		_ = cmd.Start()
 		time.Sleep(500 * time.Millisecond)
 	})
