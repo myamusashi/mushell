@@ -3,12 +3,10 @@ pragma ComponentBehavior: Bound
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Core.States
 import qs.Services
 import qs.Components.Base
@@ -53,7 +51,7 @@ ClippingWrapperRectangle {
     }
 
     Component.onCompleted: {
-        const url = Players.active?.trackArtUrl ?? "";
+        const url = Players.active.trackArtUrl ?? "";
         url.startsWith("http") ? artDownloader.download(url) : root.cachedArtPath = url;
     }
 
@@ -103,7 +101,7 @@ ClippingWrapperRectangle {
     }
 
     function refreshTrackArt() {
-        const url = Players.active?.trackArtUrl ?? "";
+        const url = Players.active.trackArtUrl ?? "";
         root.cachedArtPath = "";
         if (url.startsWith("http"))
             artDownloader.download(url);
@@ -120,7 +118,7 @@ ClippingWrapperRectangle {
 
         source: root.cachedArtPath
         darkMode: Configs.colors.isDarkMode
-        scheme: Colours.schemeEnum(Configs.colors.scheme)
+        scheme: Colours.schemeEnum("TonalSpot")
         onColorsChanged: {
             if (ready)
                 root.trackArtColors = colors;
@@ -138,9 +136,8 @@ ClippingWrapperRectangle {
             id: trackArt
 
             anchors.fill: parent
-            source: Players.active?.trackArtUrl
+            source: Players.active.trackArtUrl
             fillMode: Image.PreserveAspectCrop
-            opacity: 0.7
             cache: false
             asynchronous: true
             visible: !!Players.active?.trackArtUrl
@@ -148,10 +145,6 @@ ClippingWrapperRectangle {
             layer.effect: FastBlur {
                 source: trackArt
                 radius: Configs.generals.coverBlurRadius
-            }
-
-            Behavior on opacity {
-                NAnim {}
             }
         }
 
