@@ -23,20 +23,13 @@ LazyLoader {
         color: GlobalStates.drawerColors
         title: "settings window"
         onClosed: GlobalStates.isSettingsOpen = false
-        implicitWidth: 900
-        implicitHeight: 600
+        minimumSize: Qt.size(1100, 600)
 
         Rectangle {
             anchors.fill: parent
-            color: GlobalStates.drawerColors
+            color: "transparent"
             radius: Appearance.rounding.large
             clip: true
-
-            Elevation {
-                anchors.fill: parent
-                level: 3
-                radius: parent.radius
-            }
 
             Item {
                 anchors.fill: parent
@@ -87,7 +80,7 @@ LazyLoader {
                                 label: qsTr("Appearance")
                             },
                             {
-                                icon: "lock",
+                                icon: "lock_person",
                                 label: qsTr("Greeter")
                             },
                             {
