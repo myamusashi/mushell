@@ -19,6 +19,7 @@ import "Weather"
 import "OSD"
 import "Bar"
 import "Volume"
+import "Brightness"
 import "ScreenRecorder"
 
 Variants {
@@ -222,7 +223,10 @@ Variants {
 
         OSD {
             id: osd
-            anchors.bottomMargin: app.height + Configs.generals.outerBorderSize
+        }
+
+        BrightnessOsd {
+            id: brightnessOsd
         }
 
         Notifications {

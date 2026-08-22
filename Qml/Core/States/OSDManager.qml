@@ -60,7 +60,8 @@ Item {
     readonly property var timers: ({
             "volume": volumeTimer,
             "capslock": capslockTimer,
-            "numlock": numlockTimer
+            "numlock": numlockTimer,
+            "brightness": brightnessTimer
         })
 
     Timer {
@@ -82,5 +83,12 @@ Item {
         interval: root.displayDuration
         repeat: false
         onTriggered: root.hide("numlock")
+    }
+
+    Timer {
+        id: brightnessTimer
+        interval: root.displayDuration
+        repeat: false
+        onTriggered: root.hide("brightness")
     }
 }
