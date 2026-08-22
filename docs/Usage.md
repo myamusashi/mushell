@@ -27,11 +27,11 @@ vastctl
 └── completion bash / fish / zsh / nushell
 ```
 
-`set` commands accept absolute percentages (`50`, `50%`) and relative adjustments (`+10%`, `-10%`) that change the current value instead of replacing it. Prefix negative values with `--` so they are not parsed as flags:
+`set` commands accept absolute percentages (`50`, `50%`) and relative adjustments (`+10%`, `-10%`) that change the current value instead of replacing it:
 
 ```sh
 vastctl volume system set +10%
-vastctl brightness set -- -5%
+vastctl brightness set -5%
 ```
 
 ### Daemon auto-start

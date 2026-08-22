@@ -21,24 +21,19 @@ var brightnessGetCmd = &cobra.Command{
 	},
 }
 
-var brightnessSetCmd = &cobra.Command{
-	Use:   "set [+|-]<percent>[%]",
-	Short: "Set brightness for all displays, or adjust it relatively",
-	Long:  "Set brightness for all displays to an absolute value (e.g. 50%), or adjust all displays relatively with +10% / -10%. Prefix negative values with -- (e.g. -- -5%).",
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		pct, err := parsePercent(args[0])
-		if err != nil {
-			return err
-		}
+var brightnessSetCmd = percentSetCmd(
+	"set [+|-]<percent>[%]",
+	"Set brightness for all displays, or adjust it relatively",
+	"Set brightness for all displays to an absolute value (e.g. 50%), or adjust all displays relatively with +10% / -10%.",
+	func(cmd *cobra.Command, pct percentArg) error {
 		if pct.relative {
-			_, err = ipc.Call("brightness", "change", strconv.Itoa(pct.value))
+			_, err := ipc.Call("brightness", "change", strconv.Itoa(pct.value))
 			return err
 		}
-		_, err = ipc.Call("brightness", "set", strconv.Itoa(pct.value))
+		_, err := ipc.Call("brightness", "set", strconv.Itoa(pct.value))
 		return err
 	},
-}
+)
 
 func init() {
 	rootCmd.AddCommand(brightnessCmd)

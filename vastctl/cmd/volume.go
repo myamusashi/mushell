@@ -25,22 +25,17 @@ var volumeSystemGetCmd = &cobra.Command{
 	},
 }
 
-var volumeSystemSetCmd = &cobra.Command{
-	Use:   "set [+|-]<percent>[%]",
-	Short: "Set system volume (0-100), or adjust it relatively",
-	Long:  "Set system volume to an absolute value (e.g. 50%), or adjust it relatively with +10% / -10%. Prefix negative values with -- (e.g. -- -5%).",
-	Args:  cobra.ExactArgs(1),
-	RunE: func(cmd *cobra.Command, args []string) error {
-		pct, err := parsePercent(args[0])
-		if err != nil {
-			return err
-		}
+var volumeSystemSetCmd = percentSetCmd(
+	"set [+|-]<percent>[%]",
+	"Set system volume (0-100), or adjust it relatively",
+	"Set system volume to an absolute value (e.g. 50%), or adjust it relatively with +10% / -10%.",
+	func(cmd *cobra.Command, pct percentArg) error {
 		if pct.relative {
 			return ipcCallVoid("volume", "systemChange", strconv.Itoa(pct.value))
 		}
 		return ipcCallVoid("volume", "systemSet", strconv.Itoa(pct.value))
 	},
-}
+)
 
 var volumeSystemMuteCmd = &cobra.Command{
 	Use:   "mute",
