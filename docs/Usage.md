@@ -50,6 +50,17 @@ vastctl completion zsh    | sudo tee /usr/share/zsh/site-functions/_vastctl
 vastctl completion nushell | sudo tee /usr/share/nushell/completions/vastctl.nu
 ```
 
+### Development
+
+Quickshell routes `ipc call` to the instance launched from the same config path, so vastctl targets whatever `VAST_SHELL_DIRECTORY` points at (falling back to the installed `shell` wrapper). To control a shell running from this repository:
+
+```sh
+quickshell -p "$PWD/Qml" &   # run the dev instance
+VAST_SHELL_DIRECTORY="$PWD" vastctl idle status
+```
+
+The repo's `.envrc` exports `VAST_SHELL_DIRECTORY="$PWD"`, so with direnv enabled every vastctl invocation inside the repo automatically targets the dev instance.
+
 ## Hyprland Global Shortcuts
 
 Dispatch a panel or action directly from Hyprland:

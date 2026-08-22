@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -50,20 +51,31 @@ func ShellRunning() bool {
 }
 
 // ShellBinArgs returns the binary and arguments to launch the shell.
+// An explicit VAST_SHELL_DIRECTORY takes precedence over the installed
+// "shell" wrapper so IPC targets the instance launched from that exact
+// config path (quickshell routes IPC per config path).
 func ShellBinArgs() (string, []string) {
-	if _, err := exec.LookPath("shell"); err == nil {
-		return "shell", nil
-	}
 	if dir := shellDirectory(); dir != "" {
 		return "quickshell", []string{"-p", dir + "/Qml"}
+	}
+	if _, err := exec.LookPath("shell"); err == nil {
+		return "shell", nil
 	}
 	return "quickshell", nil
 }
 
 // shellDirectory returns the VAST_SHELL_DIRECTORY value with any session
-// variables expanded, or "" if the variable is unset.
+// variables expanded and made absolute, or "" if unset.
 func shellDirectory() string {
-	return ExpandEnv(os.Getenv("VAST_SHELL_DIRECTORY"))
+	dir := ExpandEnv(os.Getenv("VAST_SHELL_DIRECTORY"))
+	if dir == "" {
+		return ""
+	}
+	abs, err := filepath.Abs(dir)
+	if err != nil {
+		return dir
+	}
+	return abs
 }
 
 // ExpandEnv expands session variable references in s. The supported forms
