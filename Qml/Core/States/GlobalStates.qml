@@ -32,7 +32,7 @@ Singleton {
     property alias isCalendarOpen: panel.isCalendarOpen
     property alias isScreenCapturePanelOpen: panel.isScreenCapturePanelOpen // qmllint disable
     property alias isLauncherOpen: panel.isLauncherOpen
-    property alias isSessionOpen: panel.isSessionOpen
+    property alias isSessionOpen: panel.isSessionOpen // qmllint disable
     property alias isMediaPlayerOpen: panel.isMediaPlayerOpen
     property alias isNotificationCenterOpen: panel.isNotificationCenterOpen
     property alias isQuickSettingsOpen: panel.isQuickSettingsOpen

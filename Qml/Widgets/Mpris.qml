@@ -5,11 +5,10 @@ import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Services.Mpris
 
+import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-
-import "../Components/Base"
 
 StyledRect {
     readonly property int index: 0
@@ -31,6 +30,7 @@ StyledRect {
 
     IpcHandler {
         target: "mpris"
+
         function togglePlaying(): void {
             Players.active?.togglePlaying();
         }
