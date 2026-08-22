@@ -11,9 +11,8 @@ Item {
     id: root
 
     anchors {
-        bottom: parent.bottom
+        verticalCenter: parent.verticalCenter
         horizontalCenter: parent.horizontalCenter
-        bottomMargin: Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize : 0
     }
 
     implicitWidth: parent.width * 0.15
@@ -49,19 +48,10 @@ Item {
         }
     }
 
-    CornerPair {
-        location1: Qt.BottomRightCorner
-        location2: Qt.BottomLeftCorner
-        extensionSide: Qt.Horizontal
-        active: GlobalStates.isOSDVisible("numlock") || GlobalStates.isOSDVisible("capslock")
-    }
-
     StyledRect {
         anchors.fill: parent
-        radius: 0
+        radius: Appearance.rounding.large
         clip: true
-        topLeftRadius: Appearance.rounding.large
-        topRightRadius: topLeftRadius
         color: GlobalStates.drawerColors
 
         Loader {
