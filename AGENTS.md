@@ -10,6 +10,7 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 - Minimize function bodies in headers.
 - Naming: `CMyClass`, `SMyStruct`, `IMyInterface`, member vars `mVariable`.
 - Headers: relative includes (`"../a/b.hpp"`), not `"src/a/b.hpp"` — except protocol headers.
+- Qt header include: always include the source file ("qcontainerfwd.h", "qstring.h", "qmap.h", etc) and don't use the class file
 
 ## C++ code practices
 
@@ -27,7 +28,7 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 ## QML style
 
 - Format with `.qmlformat.ini`; lint with `Assets/shell/qmllint_qs.sh` against `.qmllint.ini`.
-- Imports: `qs.<path_from_qml_root>` unless the target is in the same directory.
+- Imports: `qs.<path_from_Qml_directory_root>` unless the target is in the same directory.
 - IDs: `camelCase`, descriptive (`root`, `rect`, `mouseArea` OK as defaults).
 - Local properties: `camelCase`, descriptive, no abbreviations/underscores; comment above if there are many.
 - Order: `id` → `property` declarations → signal handlers → children. Don't interleave.
@@ -42,11 +43,12 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 Some components aren't in Qt/QML docs or `.qmltypes` — check quickshell.org instead:
 
 1. Get the type's import (e.g. `Quickshell.Wayland`) and name (e.g. `ScreencopyView`).
-2. URL: `https://quickshell.org/docs/v0.3.0/types/<import path>/<TypeName>`
+2. URL: `https://quickshell.org/docs/v0.3.1/types/<import path>/<TypeName>`
    (root `Quickshell` module types live at `Quickshell/<TypeName>`, not under a submodule).
 3. Fetch before writing/reviewing code using the type — don't guess properties/signals/enums from the name.
-4. Unsure of the module? Check `https://quickshell.org/docs/v0.3.0/types/` first.
+4. Unsure of the module? Check `https://quickshell.org/docs/v0.3.1/types/` first.
 5. 404? Type may have moved/renamed — check the listing page or `https://quickshell.org/changelog`.
+6. If you get `StatusCode: non 2xx status code (404 GET ...)` ALWAYS SCRAPE THE QUICKSHELL DOCS TYPES UNTIL YOU FIND WHAT YOU LOOKING FOR. Read number 4 again.
 
 Modules in use: Quickshell (core), .Bluetooth, .DBusMenu, .Hyprland, .I3, .Io, .Networking, .Services.Greetd, .Services.Mpris, .Services.Notifications, .Services.Pam, .Services.Pipewire, .Services.Polkit, .Services.SystemTray, .Services.UPower, .Wayland, .Widgets.
 
