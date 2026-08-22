@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"strconv"
+
 	"github.com/spf13/cobra"
 )
 
@@ -24,14 +26,19 @@ var volumeSystemGetCmd = &cobra.Command{
 }
 
 var volumeSystemSetCmd = &cobra.Command{
-	Use:   "set <percent>",
-	Short: "Set system volume (0-100)",
+	Use:   "set [+|-]<percent>[%]",
+	Short: "Set system volume (0-100), or adjust it relatively",
+	Long:  "Set system volume to an absolute value (e.g. 50%), or adjust it relatively with +10% / -10%. Prefix negative values with -- (e.g. -- -5%).",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if _, err := validatePercent(args[0]); err != nil {
+		pct, err := parsePercent(args[0])
+		if err != nil {
 			return err
 		}
-		return ipcCallVoid("volume", "systemSet", args[0])
+		if pct.relative {
+			return ipcCallVoid("volume", "systemChange", strconv.Itoa(pct.value))
+		}
+		return ipcCallVoid("volume", "systemSet", strconv.Itoa(pct.value))
 	},
 }
 
@@ -73,14 +80,18 @@ var volumeAppListCmd = &cobra.Command{
 }
 
 var volumeAppSetCmd = &cobra.Command{
-	Use:   "set <node-id> <percent>",
-	Short: "Set volume for an app by PipeWire node ID",
+	Use:   "set <node-id> [+|-]<percent>[%]",
+	Short: "Set volume for an app by PipeWire node ID, or adjust it relatively",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if _, err := validatePercent(args[1]); err != nil {
+		pct, err := parsePercent(args[1])
+		if err != nil {
 			return err
 		}
-		return ipcCallVoid("volume", "appSet", args[0], args[1])
+		if pct.relative {
+			return ipcCallVoid("volume", "appChange", args[0], strconv.Itoa(pct.value))
+		}
+		return ipcCallVoid("volume", "appSet", args[0], strconv.Itoa(pct.value))
 	},
 }
 

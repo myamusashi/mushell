@@ -65,7 +65,9 @@ func ShellBinArgs() (string, []string) {
 }
 
 // shellDirectory returns the VAST_SHELL_DIRECTORY value with any session
-// variables expanded and made absolute, or "" if unset.
+// variables expanded and canonicalized, or "" if unset. Symlinks are
+// resolved because quickshell matches IPC instances by literal config
+// path.
 func shellDirectory() string {
 	dir := ExpandEnv(os.Getenv("VAST_SHELL_DIRECTORY"))
 	if dir == "" {
@@ -74,6 +76,9 @@ func shellDirectory() string {
 	abs, err := filepath.Abs(dir)
 	if err != nil {
 		return dir
+	}
+	if resolved, err := filepath.EvalSymlinks(abs); err == nil {
+		return resolved
 	}
 	return abs
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/myamusashi/vast-shell/vastctl/internal/ipc"
 	"github.com/myamusashi/vast-shell/vastctl/internal/pretty"
@@ -27,12 +28,37 @@ func ipcCallVoid(target, method string, args ...string) error {
 	return err
 }
 
-func validatePercent(s string) (int, error) {
-	v, err := strconv.Atoi(s)
-	if err != nil || v < 0 || v > 100 {
-		return 0, fmt.Errorf("invalid percent: %s (must be 0-100)", s)
+type percentArg struct {
+	value    int
+	relative bool
+}
+
+func parsePercent(s string) (percentArg, error) {
+	invalid := fmt.Errorf("invalid percent: %s", s)
+	body := strings.TrimSuffix(s, "%")
+	if body == "" {
+		return percentArg{}, invalid
 	}
-	return v, nil
+	sign := 0
+	switch body[0] {
+	case '+':
+		sign = 1
+		body = body[1:]
+	case '-':
+		sign = -1
+		body = body[1:]
+	}
+	if body == "" {
+		return percentArg{}, invalid
+	}
+	v, err := strconv.Atoi(body)
+	if err != nil || v < 0 || v > 100 {
+		return percentArg{}, fmt.Errorf("invalid percent: %s (must be 0-100)", s)
+	}
+	if sign == 0 {
+		return percentArg{value: v}, nil
+	}
+	return percentArg{value: sign * v, relative: true}, nil
 }
 
 func actionOrDefault(args []string, defaultAction string) string {

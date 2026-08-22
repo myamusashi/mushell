@@ -113,5 +113,11 @@ Singleton {
         function set(percent: int): void {
             BrightnessManager.setBrightnessAll(percent);
         }
+        function change(delta: int): void {
+            const targets = {};
+            for (const d of BrightnessManager.displays())
+                targets[d.id] = Math.max(0, Math.min(100, d.brightness + delta));
+            BrightnessManager.setBrightnessGroup(targets);
+        }
     }
 }

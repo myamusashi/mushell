@@ -74,6 +74,9 @@ Item {
         function systemSet(percent: int): void {
             Pipewire.defaultAudioSink.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
         }
+        function systemChange(delta: int): void {
+            Pipewire.defaultAudioSink.audio.volume = Math.max(0.0, Math.min(1.0, Pipewire.defaultAudioSink.audio.volume + delta / 100));
+        }
         function systemMute(): void {
             Pipewire.defaultAudioSink.audio.muted = true;
         }
@@ -101,6 +104,11 @@ Item {
             const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
             if (s)
                 s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
+        }
+        function appChange(id: int, delta: int): void {
+            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
+            if (s)
+                s.audio.volume = Math.max(0.0, Math.min(1.0, s.audio.volume + delta / 100));
         }
         function appMute(id: int): void {
             const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
@@ -267,6 +275,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: root.sliderHeight
                         orientation: Qt.Vertical
+                        popupValueFormat: v => Math.round(v * 100)
                         value: Pipewire.defaultAudioSink.audio.volume
                         onMoved: Pipewire.defaultAudioSink.audio.volume = value
                         onValueChanged: {
@@ -383,6 +392,7 @@ Item {
             implicitWidth: root.itemSize
             implicitHeight: root.sliderHeight
             orientation: Qt.Vertical
+            popupValueFormat: v => Math.round(v * 100)
             value: mixer.node.audio.volume
             onMoved: mixer.node.audio.volume = value
             onValueChanged: {
