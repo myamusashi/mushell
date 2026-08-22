@@ -9,11 +9,11 @@
 ```
 vastctl
 ├── wallpaper get / set
-├── brightness get / set
+├── brightness get / set [+|-]<%>
 ├── audio profile list / set
 │       device list / set
-├── volume system get / set / mute / unmute / toggle-mute
-│       app list / set <id> / mute <id> / unmute <id> / toggle-mute <id>
+├── volume system get / set [+|-]<%> / mute / unmute / toggle-mute
+│       app list / set <id> [+|-]<%> / mute <id> / unmute <id> / toggle-mute <id>
 ├── capture screen / region / window [action]
 ├── record start / stop / toggle / status
 ├── mpris toggle-playing / next / previous / stop / list
@@ -25,6 +25,13 @@ vastctl
 ├── daemon start / stop / restart / status [-v]
 ├── log [-n lines] [--no-follow]
 └── completion bash / fish / zsh / nushell
+```
+
+`set` commands accept absolute percentages (`50`, `50%`) and relative adjustments (`+10%`, `-10%`) that change the current value instead of replacing it. Prefix negative values with `--` so they are not parsed as flags:
+
+```sh
+vastctl volume system set +10%
+vastctl brightness set -- -5%
 ```
 
 ### Daemon auto-start
