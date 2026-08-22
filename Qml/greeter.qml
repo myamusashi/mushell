@@ -143,30 +143,31 @@ ShellRoot {
                         if (status === Image.Error)
                             source = Paths.projectRoot + "/Assets/images/wallpaper.png";
                     }
-                    source: root.cfgUseVideo ? "" : root.cfgStatic
+                    source: root.cfgStatic
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                     cache: true
+                    visible: !root.cfgUseVideo
+                }
 
-                    MediaPlayer {
-                        id: splashVideoPlayer
+                MediaPlayer {
+                    id: splashVideoPlayer
 
-                        source: root.cfgUseVideo ? "file://" + root.cfgVideo : ""
-                        loops: MediaPlayer.Infinite
-                        videoOutput: splashVideoOutput
-                        onMediaStatusChanged: {
-                            if (root.cfgUseVideo && mediaStatus === MediaPlayer.LoadedMedia)
-                                play();
-                        }
+                    source: "file://" + root.cfgVideo
+                    loops: MediaPlayer.Infinite
+                    videoOutput: splashVideoOutput
+                    onMediaStatusChanged: {
+                        if (root.cfgUseVideo && mediaStatus === MediaPlayer.LoadedMedia)
+                            play();
                     }
+                }
 
-                    VideoOutput {
-                        id: splashVideoOutput
+                VideoOutput {
+                    id: splashVideoOutput
 
-                        anchors.fill: parent
-                        fillMode: VideoOutput.PreserveAspectCrop
-                        visible: root.cfgUseVideo
-                    }
+                    anchors.fill: parent
+                    fillMode: VideoOutput.PreserveAspectCrop
+                    visible: root.cfgUseVideo
                 }
 
                 ColumnLayout {
