@@ -24,7 +24,7 @@ Item {
     property real cellWidth: (width - Appearance.margin.normal * 2) / 7
 
     implicitWidth: parent.width * 0.2
-    implicitHeight: isCalendarShow ? 350 : 0
+    implicitHeight: isCalendarShow ? 330 : 0
     visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
 
     Behavior on implicitHeight {
