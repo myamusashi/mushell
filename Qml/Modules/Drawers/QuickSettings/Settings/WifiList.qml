@@ -160,6 +160,8 @@ WrapperRectangle {
                                 return [...deviceDelegate.modelData.networks.values].sort((a, b) => {
                                     if (a.connected !== b.connected)
                                         return b.connected - a.connected;
+                                    if (a.known !== b.known)
+                                        return b.known - a.known;
                                     return b.signalStrength - a.signalStrength;
                                 });
                             }
@@ -258,13 +260,13 @@ WrapperRectangle {
                                         icon: {
                                             const p = Math.round((networkDelegate.modelData?.signalStrength ?? 0) * 100);
                                             if (p >= 80)
-                                                return "network_wifi";
+                                                return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_locked" : "network_wifi";
                                             if (p >= 50)
-                                                return "network_wifi_3_bar";
+                                                return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_3_bar_locked" : "network_wifi_3_bar";
                                             if (p >= 30)
-                                                return "network_wifi_2_bar";
+                                                return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_2_bar_locked" : "network_wifi_2_bar";
                                             if (p >= 15)
-                                                return "network_wifi_1_bar";
+                                                return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_1_bar_locked" : "network_wifi_1_bar";
                                             return "signal_wifi_0_bar";
                                         }
                                         color: networkDelegate.modelData.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurface
@@ -301,13 +303,6 @@ WrapperRectangle {
                                     icon: "delete"
                                     iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
                                     onClicked: networkDelegate.modelData?.forget()
-                                }
-
-                                Icon {
-                                    visible: networkDelegate.modelData && !networkDelegate.modelData.known
-                                    icon: "lock"
-                                    color: networkDelegate.modelData.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
-                                    font.pixelSize: Appearance.fonts.size.normal
                                 }
                             }
                         }
