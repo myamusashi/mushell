@@ -1,5 +1,7 @@
 #include "ClipboardEntry.hpp"
 #include "ClipboardModel.hpp"
+#include "../FuzzyCore.hpp"
+#include "../FuzzyMatcher.hpp"
 
 #include <qabstractitemmodel.h>
 #include <iterator>
@@ -7,6 +9,8 @@
 #include <qcontainerfwd.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
+#include <qnamespace.h>
+#include <qregularexpression.h>
 #include <qset.h>
 
 #include <algorithm>
@@ -19,6 +23,10 @@
 #include <qtypes.h>
 
 namespace vast {
+
+    namespace {
+        constexpr double K_CLIPBOARD_THRESHOLD_PER_CHAR = 0.35;
+    }
 
     ClipboardModel::ClipboardModel(QObject* parent) : QAbstractListModel{parent} {}
 
@@ -262,15 +270,57 @@ namespace vast {
         if (!mFiltering)
             return;
 
-        const QString lower = mFilterQuery.toLower();
+        static const QRegularExpression kWhiteSpace(R"(\s+)");
+
+        const QString                   normQuery  = FuzzyMatcher::normalizeText(mFilterQuery).trimmed();
+        const QStringList               queryWords = normQuery.split(kWhiteSpace, Qt::SkipEmptyParts);
+
+        qsizetype                       queryChars = 0;
+        for (const QString& word : queryWords)
+            queryChars += word.length();
+
+        if (queryChars == 0) {
+            mFiltered.reserve(static_cast<size_t>(mEntries.size()));
+            for (int i = 0; i < mEntries.size(); ++i)
+                mFiltered.push_back(i);
+            return;
+        }
+
+        const double threshold = K_CLIPBOARD_THRESHOLD_PER_CHAR * static_cast<double>(queryChars);
+
+        auto         scoreField = [&](const QString& raw) { return FuzzyMatcher::multiWordScore(queryWords, FuzzyMatcher::normalizeText(raw)); };
+
+        struct Hit {
+            int    index;
+            double score;
+            bool   pinned;
+        };
+        QList<Hit> hits;
+        hits.reserve(mEntries.size());
 
         for (int i = 0; i < mEntries.size(); ++i) {
             const auto& e = mEntries[i];
-            const bool  matches =
-                e.content.toLower().contains(lower) || e.sourceApp.toLower().contains(lower) || e.mimeType.toLower().contains(lower) || e.fileName.toLower().contains(lower);
-            if (matches)
-                mFiltered.push_back(i);
+
+            // Long pastes: only the leading KMatchMaxLen chars are searchable
+            // (fzy cannot align beyond that anyway).
+            double best = scoreField(e.content.left(fzy::K_MATCH_MAX_LEN));
+            best        = std::max(best, scoreField(e.sourceApp));
+            best        = std::max(best, scoreField(e.fileName));
+            best        = std::max(best, scoreField(e.mimeType));
+
+            if (best >= threshold)
+                hits.append({.index = i, .score = best, .pinned = e.pinned});
         }
+
+        std::ranges::stable_sort(hits, [](const Hit& a, const Hit& b) {
+            if (a.pinned != b.pinned)
+                return b.pinned;
+            return a.score > b.score;
+        });
+
+        mFiltered.reserve(static_cast<size_t>(hits.size()));
+        for (const Hit& h : hits)
+            mFiltered.push_back(h.index);
     }
 
     qint64 ClipboardModel::idAtRow(int row) const {

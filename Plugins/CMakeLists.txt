@@ -10,7 +10,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-find_package(Qt6 6.3 REQUIRED COMPONENTS Core Gui Qml Quick Network Sql)
+find_package(Qt6 6.3 REQUIRED COMPONENTS Core Gui Qml Quick Network Sql Concurrent)
 qt_policy(SET QTP0001 NEW)
 find_package(PkgConfig REQUIRED)
 
@@ -47,4 +47,5 @@ message(STATUS "QML install dir: ${CMAKE_INSTALL_PREFIX}/${INSTALL_QMLDIR}")
 include(cmake/qml-module.cmake)
 
 add_subdirectory(third_party/mcu)
+add_subdirectory(third_party/fzy-wrapper)
 add_subdirectory(Vast)

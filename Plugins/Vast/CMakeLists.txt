@@ -5,10 +5,13 @@
 vast_module(vast-core
     URI Vast
     SOURCES
+        FuzzyCore.hpp
+        FuzzyCore.cpp
         FuzzyMatcher.hpp
         FuzzyMatcher.cpp
     LIBRARIES
         Qt::Gui
+        fzy_core
 )
 
 add_subdirectory(Audio)

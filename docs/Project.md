@@ -109,7 +109,7 @@ vast-shell/
 │       ├── ImageCache/         # Vast.ImageCache  — ImageCache
 │       ├── Keylock/            # Vast.Keylock     — KeylockState
 │       ├── Lyrics/             # Vast.Lyrics      — LyricsProvider
-│       ├── Search/             # Vast.Search      — SearchEngine, SearchResult
+│       ├── Search/             # Vast.Search      — SearchEngine, DirectoryWalker, LaunchHistoryStore
 │       └── Translation/        # Vast.Translation — TranslationManager
 │
 ├── Assets/

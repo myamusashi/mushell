@@ -24,6 +24,7 @@ Singleton {
     property alias screenRecorder: adapter.screenRecorder
     property alias audio: adapter.audio
     property alias idle: adapter.idle
+    property alias search: adapter.search
 
     onLanguageChanged: TranslationManager.loadTranslation(root.language.language, Paths.translateFilePath)
 
@@ -61,6 +62,7 @@ Singleton {
             property ScreenRecorderConfig screenRecorder: ScreenRecorderConfig {}
             property AudioConfig audio: AudioConfig {}
             property IdleConfig idle: IdleConfig {}
+            property SearchConfig search: SearchConfig {}
         }
     }
 }

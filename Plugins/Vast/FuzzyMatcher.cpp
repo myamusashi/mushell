@@ -1,4 +1,5 @@
 #include "FuzzyMatcher.hpp"
+#include "FuzzyCore.hpp"
 
 #include <qhash.h>
 #include <array>
@@ -16,6 +17,10 @@
 #include <vector>
 
 namespace vast {
+
+    namespace {
+        constexpr double K_DECISIVE_PER_CHAR = 1.0;
+    }
 
     // char normalisation table
     const QHash<QChar, QChar>& FuzzyMatcher::charLookup() {
@@ -65,29 +70,6 @@ namespace vast {
         return out;
     }
 
-    // returns [{start, length}, …] covering every match of query inside text
-    QVariantList FuzzyMatcher::highlightRanges(const QString& text, const QString& query) {
-        QVariantList ranges;
-        if (query.trimmed().isEmpty())
-            return ranges;
-
-        const QString normQuery = normalizeText(query).trimmed();
-        if (normQuery.isEmpty())
-            return ranges;
-
-        const QString normText = normalizeText(text);
-
-        qsizetype     pos = 0;
-        while ((pos = normText.indexOf(normQuery, pos)) != -1) {
-            QVariantMap range;
-            range["start"]  = pos;
-            range["length"] = normQuery.length();
-            ranges.append(range);
-            pos += normQuery.length();
-        }
-        return ranges;
-    }
-
     QString FuzzyMatcher::highlightedHtml(const QString& text, const QString& query, const QString& color) {
         if (query.trimmed().isEmpty())
             return escapeHtml(text);
@@ -97,59 +79,41 @@ namespace vast {
             return escapeHtml(text);
 
         const QString normText = normalizeText(text);
+        if (normText.length() > fzy::K_MATCH_MAX_LEN)
+            return escapeHtml(text);
 
-        QString       result;
-        qsizetype     last = 0;
-        qsizetype     idx  = normText.indexOf(normQuery);
+        // Single combined gate + DP + backtrace pass over one encoding pair.
+        const fzy::MatchResult result = fzy::matchPositions(normQuery, normText);
+        if (!result.matched)
+            return escapeHtml(text);
 
-        while (idx != -1) {
-            if (idx > last)
-                result += escapeHtml(text.mid(last, idx - last));
+        QString   out;
+        qsizetype last = 0;
 
-            result += QStringLiteral("<span style=\"color:%1;font-weight:600;\">").arg(color);
-            result += escapeHtml(text.mid(idx, normQuery.length()));
-            result += QStringLiteral("</span>");
+        for (size_t i = 0; i < result.positions.size();) {
+            const int runStart = result.positions[i];
+            int       runEnd   = runStart;
+            ++i;
+            while (i < result.positions.size() && result.positions[i] == runEnd + 1) {
+                runEnd = result.positions[i];
+                ++i;
+            }
 
-            last = idx + normQuery.length();
-            idx  = normText.indexOf(normQuery, last);
+            const qsizetype start = runStart;
+            if (start > last)
+                out += escapeHtml(text.mid(last, start - last));
+
+            out += QStringLiteral("<span style=\"color:%1;font-weight:600;\">").arg(color);
+            out += escapeHtml(text.mid(start, runEnd - start + 1));
+            out += QStringLiteral("</span>");
+
+            last = runEnd + 1;
         }
 
         if (last < text.length())
-            result += escapeHtml(text.mid(last));
+            out += escapeHtml(text.mid(last));
 
-        return result;
-    }
-
-    bool FuzzyMatcher::isSubsequence(const QString& q, const QString& t) {
-        int qi = 0;
-        for (int i = 0; i < t.length() && qi < q.length(); ++i)
-            if (t[i] == q[qi])
-                ++qi;
-        return qi == q.length();
-    }
-
-    double FuzzyMatcher::subsequenceScore(const QString& q, const QString& t) {
-        if (q.isEmpty())
-            return 1.0;
-
-        int    qi          = 0;
-        int    consecutive = 0;
-        double bonus       = 0.0;
-
-        for (int i = 0; i < t.length() && qi < q.length(); ++i) {
-            if (t[i] == q[qi]) {
-                ++consecutive;
-                bonus += consecutive * (i == 0 || t[i - 1] == ' ' ? 2.0 : 1.0);
-                ++qi;
-            } else {
-                consecutive = 0;
-            }
-        }
-        if (qi < q.length())
-            return 0.0;
-
-        const auto maxBonus = static_cast<double>(q.length() * (q.length() + 1));
-        return std::min(bonus / maxBonus, 1.0);
+        return out;
     }
 
     [[nodiscard]] qsizetype FuzzyMatcher::levenshteinDistance(const QString& a, const QString& b) {
@@ -205,117 +169,66 @@ namespace vast {
         return std::pow(ratio, 1.5);
     }
 
-    double FuzzyMatcher::prefixScore(const QString& q, const QString& t, const QStringList& tWords) {
-        if (t.startsWith(q))
-            return (q.length() == t.length()) ? 1.0 : 0.95;
-
-        if (std::ranges::any_of(tWords, [&](const QString& w) { return w.startsWith(q); }))
-            return 0.85;
-
-        return 0.0;
+    std::vector<FuzzyMatcher::EncodedWord> FuzzyMatcher::encodeWords(const QStringList& normalizedWords) {
+        std::vector<EncodedWord> out;
+        out.reserve(static_cast<size_t>(normalizedWords.size()));
+        for (const QString& word : normalizedWords)
+            out.push_back({.text = word, .utf8 = word.toUtf8(), .charCount = word.length()});
+        return out;
     }
 
-    double FuzzyMatcher::wordBoundaryScore(const QString& q, const QStringList& tWords) {
-        const auto qlen = static_cast<double>(q.length());
-        double     best = 0.0;
+    FuzzyMatcher::CachedText FuzzyMatcher::cacheText(const QString& normalizedText) {
+        return {.normalized = normalizedText, .utf8 = normalizedText.toUtf8()};
+    }
 
-        for (const QString& word : tWords)
-            if (word.contains(q))
-                best = std::max(best, qlen / static_cast<double>(word.length()));
+    double FuzzyMatcher::multiWordScoreUtf8(const std::vector<EncodedWord>& words, const CachedText& field) {
+        if (words.empty())
+            return 0.0;
+
+        double total = 0.0;
+        for (const EncodedWord& word : words) {
+            // One gate + DP pass over pre-encoded buffers; the edit-distance
+            // fallback only runs when the subsequence path fails.
+            const fzy::ScoreOutcome outcome = fzy::scoredMatchUtf8(word.utf8, word.charCount, field.utf8);
+            if (outcome.matched)
+                total += outcome.score;
+            else
+                total += distanceScore(word.text, field.normalized) * K_TYPO_FALLBACK_WEIGHT;
+        }
+
+        return total / static_cast<double>(words.size());
+    }
+
+    double FuzzyMatcher::multiFieldScoreUtf8(const std::vector<EncodedWord>& words, qsizetype queryChars, const CachedText& primaryField, const CachedText* secondaryField,
+                                             const CachedText* tertiaryField, double secondaryWeight, double tertiaryWeight) {
+        const double primaryScore = multiWordScoreUtf8(words, primaryField);
+
+        double       best = primaryScore;
+        if (primaryScore >= static_cast<double>(queryChars) * K_DECISIVE_PER_CHAR)
+            return best;
+
+        if (secondaryField)
+            best = std::max(best, multiWordScoreUtf8(words, *secondaryField) * secondaryWeight);
+
+        if (tertiaryField)
+            best = std::max(best, multiWordScoreUtf8(words, *tertiaryField) * tertiaryWeight);
 
         return best;
     }
 
-    double FuzzyMatcher::acronymScore(const QString& q, const QStringList& tWords) {
-        if (tWords.size() < 2 || q.isEmpty())
-            return 0.0;
-
-        QString acronym;
-        for (const QString& w : tWords)
-            if (!w.isEmpty())
-                acronym += w[0];
-
-        if (acronym == q)
-            return 1.0;
-        if (acronym.startsWith(q))
-            return 0.9;
-        if (acronym.contains(q))
-            return 0.75;
-        if (isSubsequence(q, acronym))
-            return 0.6;
-        return 0.0;
-    }
-
-    double FuzzyMatcher::getScore(const QString& q, const QString& t, const QStringList& tWords) {
-        if (t == q)
-            return 1.0;
-        if (t.contains(q))
-            return 0.95;
-
-        // Acronym path ("vsc" → "Visual Studio Code")
-        const double acro = acronymScore(q, tWords);
-        if (acro > 0.0)
-            return acro * K_ACRONYM_WEIGHT + prefixScore(q, t, tWords) * K_PREFIX_WEIGHT + wordBoundaryScore(q, tWords) * K_WORD_BOUNDARY_WEIGHT;
-
-        const double lenRatio = static_cast<double>(std::min(q.length(), t.length())) / static_cast<double>(std::max(q.length(), t.length()));
-        if (lenRatio < 0.3 && !isSubsequence(q, t))
-            return 0.0;
-
-        return distanceScore(q, t) * K_DISTANCE_WEIGHT + prefixScore(q, t, tWords) * K_PREFIX_WEIGHT + subsequenceScore(q, t) * K_CONSECUTIVE_WEIGHT +
-            wordBoundaryScore(q, tWords) * K_WORD_BOUNDARY_WEIGHT;
-    }
-
-    double FuzzyMatcher::getMultiWordScore(const QStringList& qWords, const QString& t, const QStringList& tWords) {
-        if (qWords.size() == 1)
-            return getScore(qWords[0], t, tWords);
-
-        double    total   = 0.0;
-        qsizetype matched = 0;
-
-        for (const QString& qw : qWords) {
-            const double s = getScore(qw, t, tWords);
-            if (s > 0.0) {
-                total += s;
-                ++matched;
-            }
-        }
-        // all query words must contribute
-        if (matched < qWords.size())
-            return 0.0;
-
-        return total / static_cast<double>(qWords.size());
+    double FuzzyMatcher::multiWordScore(const QStringList& queryWords, const QString& normalizedText) {
+        return multiWordScoreUtf8(encodeWords(queryWords), cacheText(normalizedText));
     }
 
     double FuzzyMatcher::multiFieldScore(const QStringList& queryWords, const QString& normQuery, const QString& primaryField, const QString& secondaryField,
                                          const QString& tertiaryField, double secondaryWeight, double tertiaryWeight) {
-        static const QRegularExpression kWhitespace(R"(\s+)");
+        const std::vector<EncodedWord> words     = encodeWords(queryWords);
+        const CachedText               primary   = cacheText(primaryField);
+        const CachedText               secondary = cacheText(secondaryField);
+        const CachedText               tertiary  = cacheText(tertiaryField);
 
-        const QStringList               primaryWords = primaryField.split(kWhitespace, Qt::SkipEmptyParts);
-
-        double                          primaryScore = 0.0;
-        if (primaryField == normQuery)
-            primaryScore = 1.0;
-        else if (primaryField.contains(normQuery))
-            primaryScore = 0.95;
-        else
-            primaryScore = getMultiWordScore(queryWords, primaryField, primaryWords);
-
-        if (primaryScore >= 0.9)
-            return primaryScore;
-
-        double secondaryScore = 0.0;
-        if (!secondaryField.isEmpty()) {
-            const QStringList words = secondaryField.split(kWhitespace, Qt::SkipEmptyParts);
-            secondaryScore          = getMultiWordScore(queryWords, secondaryField, words) * secondaryWeight;
-        }
-
-        double tertiaryScore = 0.0;
-        if (!tertiaryField.isEmpty()) {
-            const QStringList words = tertiaryField.split(kWhitespace, Qt::SkipEmptyParts);
-            tertiaryScore           = getMultiWordScore(queryWords, tertiaryField, words) * tertiaryWeight;
-        }
-
-        return std::max({primaryScore, secondaryScore, tertiaryScore});
+        return multiFieldScoreUtf8(words, normQuery.length(), primary, secondaryField.isEmpty() ? nullptr : &secondary, tertiaryField.isEmpty() ? nullptr : &tertiary,
+                                   secondaryWeight, tertiaryWeight);
     }
 
     double FuzzyMatcher::fuzzyScore(const QString& query, const QString& text) {
@@ -328,16 +241,9 @@ namespace vast {
         if (normQuery.isEmpty())
             return 0.0;
 
-        const QString normText = normalizeText(text);
-        if (normText == normQuery)
-            return 1.0;
-        if (normText.contains(normQuery))
-            return 0.95;
-
-        const QStringList tWords     = normText.split(kWhitespace, Qt::SkipEmptyParts);
         const QStringList queryWords = normQuery.split(kWhitespace, Qt::SkipEmptyParts);
 
-        return getMultiWordScore(queryWords, normText, tWords);
+        return multiWordScore(queryWords, normalizeText(text));
     }
 
 }

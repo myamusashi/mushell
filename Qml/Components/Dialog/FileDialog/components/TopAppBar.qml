@@ -25,6 +25,7 @@ Rectangle {
     signal refreshClicked
     signal pathEntered(string path)
     signal showHiddenToggled
+    signal searchToggled
 
     property alias pathField: input
 
@@ -72,6 +73,11 @@ Rectangle {
                     icon: "refresh",
                     spinOnClick: root.isLoading,
                     clicked: () => root.refreshClicked()
+                },
+                {
+                    icon: "search",
+                    enabled: true,
+                    clicked: () => root.searchToggled()
                 },
             ]
             delegate: IconButton {

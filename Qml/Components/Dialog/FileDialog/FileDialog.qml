@@ -5,8 +5,10 @@ import QtQuick.Layouts
 import QtCore
 import Qt.labs.folderlistmodel
 import Quickshell
+import Vast.Search
 
 import qs.Core.Configs
+import qs.Core.Utils
 import qs.Components.Base
 import qs.Services
 
@@ -23,13 +25,17 @@ LazyLoader {
     property int historyIndex: -1
     property string currentFolder: "file:///home"
 
+    property bool searchVisible: false
+    property var searchedEntries: []
+    property string walkedCacheKey: ""
+
     signal fileSelected(string path)
 
     function openFileDialog() {
-        if (root.active)
-            root.item.destroy();
+        if (active)
+            item.destroy();
         else
-            root.activeAsync = true;
+            activeAsync = true;
     }
 
     activeAsync: false
@@ -43,6 +49,10 @@ LazyLoader {
         color: Colours.m3Colors.m3Surface
         onClosed: root.activeAsync = false
 
+        readonly property bool searchMode: root.searchVisible && searchField.text.length > 0
+
+        onSearchModeChanged: fileListView.clearSelection()
+
         TabNavigator {
             id: tabNav
 
@@ -50,7 +60,7 @@ LazyLoader {
             defaultItem: topAppBar.pathField
 
             Component.onCompleted: {
-                Qt.callLater(() => tabNav.firstFocus());
+                Qt.callLater(() => firstFocus());
             }
         }
 
@@ -62,6 +72,8 @@ LazyLoader {
         function navigateTo(path: string): url {
             const url = path.startsWith("file://") ? path : "file://" + path;
 
+            clearSearch();
+
             // Truncate forward history
             if (root.historyIndex < root.history.length - 1)
                 root.history = root.history.slice(0, root.historyIndex + 1);
@@ -70,6 +82,43 @@ LazyLoader {
             root.historyIndex = root.history.length - 1;
             root.currentFolder = url;
             fileListView.clearSelection();
+        }
+
+        function toggleSearch() {
+            root.searchVisible = !root.searchVisible;
+            if (root.searchVisible)
+                searchField.forceActiveFocus();
+            else
+                clearSearch();
+        }
+
+        function clearSearch() {
+            searchField.text = "";
+            SearchEngine.clearFileResults();
+        }
+
+        function runFileSearch() {
+            const query = searchField.text;
+            if (!root.searchVisible || query.length === 0) {
+                SearchEngine.clearFileResults();
+                return;
+            }
+
+            const configuredRoots = Configs.search.fileDirs;
+            const roots = configuredRoots && configuredRoots.length > 0 ? configuredRoots : [root.currentFolder.toString().replace("file://", "")];
+            const cacheKey = [roots.join("|"), fileListView.folderHidden, root.nameFilters.join("|")].join("~");
+
+            walker.roots = roots;
+            walker.maxDepth = Configs.search.maxDepth;
+            walker.showHidden = fileListView.folderHidden;
+            walker.nameFilters = root.nameFilters;
+
+            if (!walker.walking && (cacheKey !== root.walkedCacheKey || root.searchedEntries.length === 0)) {
+                root.walkedCacheKey = cacheKey;
+                walker.requestWalk();
+            }
+
+            SearchEngine.searchFilesAsync(root.searchedEntries, query);
         }
 
         function goBack() {
@@ -125,6 +174,28 @@ LazyLoader {
             }
         }
 
+        DirectoryWalker {
+            id: walker
+        }
+
+        Timer {
+            id: searchDebounce
+
+            interval: 200
+            repeat: false
+            onTriggered: window.runFileSearch()
+        }
+
+        Connections {
+            target: walker
+
+            function onWalkFinished(entries) {
+                root.searchedEntries = entries;
+                if (root.searchVisible && searchField.text.length > 0)
+                    window.runFileSearch();
+            }
+        }
+
         ColumnLayout {
             id: mainLayout
 
@@ -149,8 +220,55 @@ LazyLoader {
                 onRefreshClicked: {
                     isLoading = true;
                     window.refresh();
+                    root.walkedCacheKey = "";
+                    if (searchField.text.length > 0)
+                        window.runFileSearch();
                 }
                 onPathEntered: path => window.navigateTo(path)
+                onSearchToggled: window.toggleSearch()
+            }
+
+            Rectangle {
+                id: searchBar
+
+                Layout.fillWidth: true
+                implicitHeight: root.searchVisible ? 52 : 0
+                visible: root.searchVisible
+                clip: true
+                color: Colours.m3Colors.m3SurfaceContainer
+
+                Behavior on implicitHeight {
+                    NAnim {}
+                }
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: Appearance.margin.normal
+                    anchors.rightMargin: Appearance.margin.normal
+
+                    Icon {
+                        icon: "search"
+                        font.pixelSize: Appearance.fonts.size.medium
+                        color: Colours.m3Colors.m3OnSurfaceVariant
+                    }
+
+                    StyledTextInput {
+                        id: searchField
+
+                        Layout.fillWidth: true
+                        placeHolderText: qsTr("Search files…")
+                        toggleButtonVisible: false
+                        autoFocus: false
+
+                        onTextChanged: searchDebounce.restart()
+                        onKeyPressed: event => {
+                            if (event.key === Qt.Key_Escape) {
+                                event.accepted = true;
+                                window.toggleSearch();
+                            }
+                        }
+                    }
+                }
             }
 
             RowLayout {
@@ -171,7 +289,7 @@ LazyLoader {
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: folderModel
+                    model: window.searchMode ? SearchEngine.fileResults : folderModel
                     folderHidden: root.showHidden
                     selectFolder: root.selectFolder
                     onFolderDoubleClicked: path => window.navigateTo(path)

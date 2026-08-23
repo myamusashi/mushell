@@ -18,6 +18,13 @@
         rev = "f05459ea2170f3be610f89a4ddeee8843c2deb61";
         hash = "sha256-EQozefgSHR9SM7So2oRgsu1tSPeeZkwjS7HxJYKgWjo=";
     };
+
+    fzy = fetchFromGitHub {
+        owner = "jhawthorn";
+        repo = "fzy";
+        rev = "v1.1";
+        hash = "sha256-ZGAt8rW21WFGuf/nE44ZrL68L/RmTYCBzuXWhidqJB8=";
+    };
 in
     stdenv.mkDerivation {
         pname = "vast-plugin";
@@ -25,8 +32,9 @@ in
         src = ../../Plugins;
 
         postPatch = ''
-            mkdir -p third_party/material-color-utilities
+            mkdir -p third_party/{material-color-utilities,fzy}
             cp -r --no-preserve=mode ${material-color-utilities}/. third_party/material-color-utilities/
+            cp -r --no-preserve=mode ${fzy}/. third_party/fzy/
         '';
 
         nativeBuildInputs = [
@@ -71,7 +79,7 @@ in
         '';
 
         meta = with lib; {
-            description = "Vast QML modules for Quickshell (Vast.Audio, Vast.Clipboard, ...)";
+            description = "Vast QML modules for Quickshell";
             license = licenses.gpl3Plus;
             platforms = platforms.linux;
         };
