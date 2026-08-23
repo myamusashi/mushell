@@ -11,6 +11,8 @@
     iw,
     quickshell,
     wl-screenrec-fork,
+    another-ripple,
+    m3Shapes,
     util-linux,
     wl-clipboard,
     ffmpeg,
@@ -28,11 +30,11 @@
 }: let
     app2unit = callPackage ./packages/app2unit.nix {};
     material-symbols = callPackage ./packages/material-symbols.nix {};
-    m3shapes = callPackage ./plugins/m3Shapes.nix {};
-    another-ripple = callPackage ./plugins/AnotherRipple.nix {};
     vastPlugin = callPackage ./plugins/vastPlugin.nix {};
     vastctl = callPackage ./packages/vastctl.nix {};
     remove-bg = callPackage ./packages/remove-bg.nix {};
+    m3Shapes-pkgs = m3Shapes.packages.${stdenv.hostPlatform.system}.default;
+    another-ripple-pkg = another-ripple.packages.${stdenv.hostPlatform.system}.default;
 
     runtimeDeps = [
         findutils
@@ -162,7 +164,7 @@
                 --prefix QML2_IMPORT_PATH : "$out/lib/qt-${qt6.qtbase.version}/qml" \
                 --prefix QML2_IMPORT_PATH : "${qt6.qt5compat}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${qt6.qtgraphs}/${qt6.qtbase.qtQmlPrefix}" \
-                --prefix QML2_IMPORT_PATH : "${another-ripple}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${another-ripple-pkg}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${vastPlugin}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix PATH : ${lib.makeBinPath (runtimeDeps ++ [app2unit])} \
                 --suffix PATH : /run/current-system/sw/bin \
@@ -178,7 +180,7 @@
                 --prefix QML2_IMPORT_PATH : "${qt6.qt5compat}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${qt6.qtgraphs}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${kdePackages.qtmultimedia}/${qt6.qtbase.qtQmlPrefix}" \
-                --prefix QML2_IMPORT_PATH : "${another-ripple}/${qt6.qtbase.qtQmlPrefix}" \
+                --prefix QML2_IMPORT_PATH : "${another-ripple-pkg}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix QML2_IMPORT_PATH : "${vastPlugin}/${qt6.qtbase.qtQmlPrefix}" \
                 --prefix PATH : ${lib.makeBinPath runtimeDeps} \
                 --suffix PATH : /run/current-system/sw/bin \
@@ -187,11 +189,11 @@
             cp -r ${material-symbols}/share/fonts/truetype/* $out/share/fonts/truetype/
 
             mkdir -p $out/${qt6.qtbase.qtQmlPrefix}
-            if [ -d "${m3shapes}/${qt6.qtbase.qtQmlPrefix}" ]; then
-              cp -r ${m3shapes}/${qt6.qtbase.qtQmlPrefix}/* $out/${qt6.qtbase.qtQmlPrefix}
+            if [ -d "${m3Shapes-pkgs}/${qt6.qtbase.qtQmlPrefix}" ]; then
+              cp -r ${m3Shapes-pkgs}/${qt6.qtbase.qtQmlPrefix}/* $out/${qt6.qtbase.qtQmlPrefix}
             fi
-            if [ -d "${another-ripple}/${qt6.qtbase.qtQmlPrefix}" ]; then
-              cp -r ${another-ripple}/${qt6.qtbase.qtQmlPrefix}/* $out/${qt6.qtbase.qtQmlPrefix}
+            if [ -d "${another-ripple-pkg}/${qt6.qtbase.qtQmlPrefix}" ]; then
+              cp -r ${another-ripple-pkg}/${qt6.qtbase.qtQmlPrefix}/* $out/${qt6.qtbase.qtQmlPrefix}
             fi
             if [ -d "${vastPlugin}/${qt6.qtbase.qtQmlPrefix}" ]; then
               cp -r ${vastPlugin}/${qt6.qtbase.qtQmlPrefix}/* $out/${qt6.qtbase.qtQmlPrefix}
