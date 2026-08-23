@@ -32,6 +32,7 @@ target_link_libraries(wayland-ext-data-control PUBLIC PkgConfig::WAYLAND_CLIENT)
 
 vast_module(vast-clipboard
     URI Vast.Clipboard
+    PCH_SET large
     SOURCES
         ClipboardEntry.hpp
         ClipboardContentClassifier.hpp

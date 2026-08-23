@@ -26,6 +26,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wunused-lambda-capture)
 endif()
 
+# pipewire's pkg-config target defines _REENTRANT for Vast.Audio only; a
+# per-target define difference invalidates PCH reuse (-Winvalid-pch), so
+# match it project-wide (same workaround quickshell applies).
+add_compile_definitions(_REENTRANT)
+
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
 
 if(NOT DEFINED INSTALL_QMLDIR)
@@ -44,6 +49,7 @@ if(NOT DEFINED INSTALL_QMLDIR)
 endif()
 message(STATUS "QML install dir: ${CMAKE_INSTALL_PREFIX}/${INSTALL_QMLDIR}")
 
+include(cmake/pch.cmake)
 include(cmake/qml-module.cmake)
 
 add_subdirectory(third_party/mcu)

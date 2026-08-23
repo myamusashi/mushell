@@ -1,13 +1,13 @@
 {
     lib,
-    stdenv,
+    clangStdenv,
     cmake,
     ninja,
     patchelf,
     fetchFromGitHub,
     qt6,
 }:
-stdenv.mkDerivation {
+clangStdenv.mkDerivation {
     pname = "m3shapes";
     version = "unstable-2025-01-13";
 

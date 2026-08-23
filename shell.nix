@@ -1,17 +1,18 @@
 {pkgs}:
-pkgs.mkShell {
+(pkgs.mkShell.override {stdenv = pkgs.clangStdenv;}) {
     nativeBuildInputs = with pkgs; [
         qt6.wrapQtAppsHook
         cmake
+        ninja
     ];
 
     buildInputs = with pkgs; [
         qt6.qtbase
         qt6.qtdeclarative
         qt6.qtmultimedia
+        qt6.qtgraphs
         qt6.qt5compat
         qt6.qttranslations
-        python314Packages.materialyoucolor
         ddcutil
         pipewire.dev
         wayland
@@ -28,10 +29,9 @@ pkgs.mkShell {
         qt6.qttools
         qt6.qtshadertools
         python314Packages.rembg
-        gcc
-        gdb
-        cmake
+        clang
         clang-tools
+        gdb
     ];
 
     shellHook = ''
@@ -63,6 +63,6 @@ pkgs.mkShell {
             compile_if_missing "Assets/shaders/$shader.frag.qsb" "Assets/shaders/$shader.frag"
         done
 
-        echo "mushell environment"
+        echo "mushell environment (clang toolchain)"
     '';
 }

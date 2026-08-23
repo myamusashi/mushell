@@ -1,12 +1,12 @@
 {
     lib,
-    stdenv,
+    clangStdenv,
     cmake,
     ninja,
     fetchFromGitHub,
     qt6,
 }:
-stdenv.mkDerivation {
+clangStdenv.mkDerivation {
     pname = "AnotherRipple";
     version = "unstable-2026-02-26";
 

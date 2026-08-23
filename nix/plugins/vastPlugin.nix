@@ -1,6 +1,6 @@
 {
     lib,
-    stdenv,
+    clangStdenv,
     cmake,
     qt6,
     patchelf,
@@ -26,7 +26,7 @@
         hash = "sha256-ZGAt8rW21WFGuf/nE44ZrL68L/RmTYCBzuXWhidqJB8=";
     };
 in
-    stdenv.mkDerivation {
+    clangStdenv.mkDerivation {
         pname = "vast-plugin";
         version = "1.0";
         src = ../../Plugins;

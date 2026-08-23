@@ -52,7 +52,7 @@ install_system_packages() {
 	#   in Plugins/Vast/Clipboard/protocols, so wayland-protocols is not
 	#   required).
 	local -r pkg_list=(
-		base-devel git cmake ninja extra-cmake-modules patchelf pkgconf
+		base-devel git cmake ninja clang extra-cmake-modules patchelf pkgconf
 		qt6-base qt6-declarative qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
 		rust pipewire ddcutil i2c-tools go wayland
 		python python-pillow
@@ -192,7 +192,7 @@ build_vast_plugin() {
 	local -r build="$BUILD_DIR/Vast-build"
 	local -r install_base="$BUILD_DIR/Vast-install"
 
-	cmake -S "$src" -B "$build" -G Ninja \
+	CC=clang CXX=clang++ cmake -S "$src" -B "$build" -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX="$install_base"
 	ninja -C "$build"
@@ -255,8 +255,8 @@ build_m3shapes() {
 		git -C "$src" checkout "$M3SHAPES_REV"
 	}
 
-	cmake -S "$src" -B "$src/build" -G Ninja \
-		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+	CC=clang CXX=clang++ cmake -S "$src" -B "$src/build" -G Ninja \
+		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_PREFIX="$BUILD_DIR/m3shapes-install"
 	ninja -C "$src/build"
 	ninja -C "$src/build" install
@@ -431,7 +431,7 @@ build_another_ripple() {
 	local -r cmake_src="$src/AnotherRipple"
 	[[ -d $cmake_src ]] || die "AnotherRipple subdirectory not found in repo: $cmake_src"
 
-	cmake -S "$cmake_src" -B "$src/build" -G Ninja \
+	CC=clang CXX=clang++ cmake -S "$cmake_src" -B "$src/build" -G Ninja \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
 		-DCMAKE_INSTALL_PREFIX="$BUILD_DIR/anotherripple-install" \
@@ -608,7 +608,7 @@ build_vastctl() {
 
 cleanup_build_deps() {
 	local -r build_deps=(
-		base-devel cmake ninja extra-cmake-modules patchelf pkgconf
+		base-devel cmake ninja clang extra-cmake-modules patchelf pkgconf
 		qt6-shadertools qt6-tools rust git
 	)
 

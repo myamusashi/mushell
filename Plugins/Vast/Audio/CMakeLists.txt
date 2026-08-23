@@ -1,7 +1,16 @@
 pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
 
+# PkgConfig::PIPEWIRE adds -fno-strict-aliasing/-fno-strict-overflow to this
+# target only, which would invalidate reuse of the shared pchsets. Build a
+# dedicated set with the same link deps so its PCH carries identical flags.
+vast_add_pchset(audio
+    DEPENDENCIES ${VAST_PCHSET_DEPS} PkgConfig::PIPEWIRE
+    HEADERS ${VAST_LARGE_PCH_SET}
+)
+
 vast_module(vast-audio
     URI Vast.Audio
+    PCH_SET audio
     SOURCES
         AudioProfilesModel.hpp
         AudioProfilesModel.cpp

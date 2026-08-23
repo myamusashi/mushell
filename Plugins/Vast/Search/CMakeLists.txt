@@ -1,5 +1,6 @@
 vast_module(vast-search
     URI Vast.Search
+    PCH_SET large
     SOURCES
         DirectoryWalker.hpp
         DirectoryWalker.cpp

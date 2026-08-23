@@ -3,6 +3,7 @@ Assets/go/formatting
 Assets/go/keystate-bin
 Assets/shaders/**/*.qsb
 build/
+build-clang/
 .qtcreator
 result/
 result

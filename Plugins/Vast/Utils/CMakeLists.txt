@@ -1,5 +1,6 @@
 vast_module(vast-utils
     URI Vast.Utils
+    PCH_SET large
     SOURCES
         ColorMaterial.hpp
         ColorMaterial.cpp

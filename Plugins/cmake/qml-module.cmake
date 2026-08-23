@@ -2,7 +2,7 @@ function(vast_module arg_TARGET)
     cmake_parse_arguments(
         PARSE_ARGV 1 arg
         ""
-        "URI"
+        "URI;PCH_SET"
         "SOURCES;QML_FILES;QML_SINGLETONS;DEPENDENCIES;IMPORTS;OPTIONAL_IMPORTS;DEFAULT_IMPORTS;LIBRARIES"
     )
 
@@ -28,8 +28,6 @@ function(vast_module arg_TARGET)
     )
     message(STATUS "Created QML module: ${module_uri}")
 
-    # Install backing targets to <ns>/lib so different modules can find and
-    # link each other; plugin targets stay in their own module directories.
     string(REPLACE "/" ";" uri_parts "${module_target_path}")
     list(GET uri_parts 0 top_level)
     set(backing_lib_dir "${INSTALL_QMLDIR}/${top_level}/lib")
@@ -48,8 +46,16 @@ function(vast_module arg_TARGET)
     install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
     install(FILES "${module_typeinfo}" DESTINATION "${module_dir}")
 
-    # Resolve intra-module angle-bracket includes (<ClipboardModel.hpp>, ...)
     target_include_directories(${arg_TARGET} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+    # Reuse the shared pchset for the backing library; its generated QML
+    # plugin gets the minimal Core-only set (see pch.cmake).
+    if(arg_PCH_SET)
+        vast_pch(${arg_TARGET} SET ${arg_PCH_SET})
+    else()
+        vast_pch(${arg_TARGET})
+    endif()
+    vast_pch("${module_plugin_target}" SET plugin)
 
     target_link_libraries(${arg_TARGET} PRIVATE
         Qt::Core
@@ -59,11 +65,7 @@ function(vast_module arg_TARGET)
         ${arg_LIBRARIES}
     )
 
-    # Add the backing lib dir to the plugin rpath so it can find its backing target
     file(RELATIVE_PATH plugin_to_lib "/${module_target_path}" "/${top_level}/lib")
     set_property(TARGET "${module_plugin_target}" APPEND PROPERTY INSTALL_RPATH "$ORIGIN/${plugin_to_lib}")
-
-    # Backing targets all land in <ns>/lib and may link each other (e.g.
-    # Vast.Clipboard -> Vast core), so resolve siblings from their own dir.
     set_property(TARGET ${arg_TARGET} APPEND PROPERTY INSTALL_RPATH "$ORIGIN")
 endfunction()
