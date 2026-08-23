@@ -132,19 +132,25 @@ ClippingWrapperRectangle {
     Item {
         anchors.fill: parent
 
-        Image {
-            id: trackArt
-
+        Item {
             anchors.fill: parent
-            source: Players.active.trackArtUrl
-            fillMode: Image.PreserveAspectCrop
-            cache: false
-            asynchronous: true
-            visible: !!Players.active?.trackArtUrl
-            layer.enabled: true
-            layer.effect: FastBlur {
-                source: trackArt
-                radius: Configs.generals.coverBlurRadius
+
+            Rectangle {
+                anchors.fill: parent
+                color: Colours.m3Colors.m3Background
+                opacity: 0.5
+                z: 2
+            }
+
+            Image {
+                id: trackArt
+
+                anchors.fill: parent
+                source: Players.active.trackArtUrl
+                fillMode: Image.PreserveAspectCrop
+                cache: false
+                asynchronous: true
+                visible: !!Players.active?.trackArtUrl
             }
         }
 
