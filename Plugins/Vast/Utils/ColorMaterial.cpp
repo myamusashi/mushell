@@ -1,14 +1,16 @@
 #include "ColorMaterial.hpp"
 
 #include <qcolor.h>
-#include <qnumeric.h>
 #include <qthreadpool.h>
 #include <qstring.h>
 #include <qurl.h>
 #include <qvariant.h>
 #include <qcontainerfwd.h>
 #include <qnamespace.h>
+#include <qlatin1stringview.h>
 #include <qobject.h>
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
 
 #include "PaletteBuilder.hpp"
@@ -174,20 +176,22 @@ void ColorMaterial::rebuild() {
 void ColorMaterial::applyResult(const QVariantMap& colors, const QColor& sourceColor, const QString& error) {
     const bool ready = !colors.isEmpty() && error.isEmpty();
 
-    if (mColors != colors) {
-        mColors = colors;
+    const bool colorsDirty      = mColors != colors;
+    const bool sourceColorDirty = mSourceColor != sourceColor;
+    const bool readyDirty       = mReady != ready;
+    const bool errorDirty       = mError != error;
+
+    mColors      = colors;
+    mSourceColor = sourceColor;
+    mReady       = ready;
+    mError       = error;
+
+    if (colorsDirty)
         colorsChanged();
-    }
-    if (mSourceColor != sourceColor) {
-        mSourceColor = sourceColor;
+    if (sourceColorDirty)
         sourceColorChanged();
-    }
-    if (mReady != ready) {
-        mReady = ready;
+    if (readyDirty)
         readyChanged();
-    }
-    if (mError != error) {
-        mError = error;
+    if (errorDirty)
         errorChanged();
-    }
 }

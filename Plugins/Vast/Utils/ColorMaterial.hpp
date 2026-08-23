@@ -2,7 +2,6 @@
 
 #include <qcolor.h>
 #include <cstdint>
-#include <qcolor.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
 #include <qtimer.h>

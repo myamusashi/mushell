@@ -1,7 +1,3 @@
-# The Vast namespace core module. Shared utilities that are used by multiple
-# modules live here (e.g. FuzzyMatcher, used by both Vast.Search and
-# Vast.Clipboard).
-
 vast_module(vast-core
     URI Vast
     SOURCES
