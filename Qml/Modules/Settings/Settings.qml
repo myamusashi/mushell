@@ -6,9 +6,9 @@ import Quickshell
 
 import qs.Components.Base.NavigationRail
 import qs.Core.Configs
-import qs.Services
 import qs.Core.States
 import qs.Core.Utils
+import qs.Services
 
 import "./Components"
 import "./Pages"
@@ -63,21 +63,17 @@ LazyLoader {
                                         label: qsTr("General")
                                     },
                                     {
-                                        icon: "palette",
-                                        label: qsTr("Appearance")
+                                        icon: "language",
+                                        label: qsTr("Language")
                                     }
                                 ]
                             },
                             {
-                                label: qsTr("Shell"),
+                                label: qsTr("Appearance"),
                                 items: [
                                     {
-                                        icon: "lock_person",
-                                        label: qsTr("Greeter")
-                                    },
-                                    {
-                                        icon: "table_rows",
-                                        label: qsTr("Top Bar")
+                                        icon: "palette",
+                                        label: qsTr("Appearance")
                                     },
                                     {
                                         icon: "wall_art",
@@ -86,8 +82,12 @@ LazyLoader {
                                 ]
                             },
                             {
-                                label: qsTr("Integrations"),
+                                label: qsTr("Modules"),
                                 items: [
+                                    {
+                                        icon: "table_rows",
+                                        label: qsTr("Top Bar")
+                                    },
                                     {
                                         icon: "genres",
                                         label: qsTr("Media Player")
@@ -97,9 +97,22 @@ LazyLoader {
                                         label: qsTr("Weather")
                                     },
                                     {
-                                        icon: "language",
-                                        label: qsTr("Language")
+                                        icon: "notifications",
+                                        label: qsTr("Notification")
                                     },
+                                    {
+                                        icon: "assignment",
+                                        label: qsTr("Clipboard")
+                                    },
+                                    {
+                                        icon: "screen_record",
+                                        label: qsTr("Screen Recorder")
+                                    }
+                                ]
+                            },
+                            {
+                                label: qsTr("Connectivity"),
+                                items: [
                                     {
                                         icon: "wifi",
                                         label: qsTr("Network & Internet")
@@ -111,19 +124,11 @@ LazyLoader {
                                 ]
                             },
                             {
-                                label: qsTr("System"),
+                                label: qsTr("Session"),
                                 items: [
                                     {
-                                        icon: "assignment",
-                                        label: qsTr("Clipboard")
-                                    },
-                                    {
-                                        icon: "notifications",
-                                        label: qsTr("Notification")
-                                    },
-                                    {
-                                        icon: "screen_record",
-                                        label: qsTr("Screen Recorder")
+                                        icon: "lock_person",
+                                        label: qsTr("Greeter")
                                     },
                                     {
                                         icon: "hourglass",
@@ -215,7 +220,7 @@ LazyLoader {
 
                                 onActivated: (page, card) => {
                                     settingsLoader.currentPage = page;
-                                    Qt.callLater(() => pagesColumn.revealCard(page, card));
+                                    Qt.callLater(() => pagesColumn.revealCard(card));
                                 }
                             }
                         }
@@ -232,28 +237,28 @@ LazyLoader {
                             active: settingsLoader.currentPage === 1
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: AppearancePage {}
+                            sourceComponent: LanguagePage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 2
                             active: settingsLoader.currentPage === 2
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: GreeterPage {}
+                            sourceComponent: AppearancePage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 3
                             active: settingsLoader.currentPage === 3
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: BarPage {}
+                            sourceComponent: WallpaperPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 4
                             active: settingsLoader.currentPage === 4
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: WallpaperPage {}
+                            sourceComponent: BarPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 5
@@ -274,28 +279,28 @@ LazyLoader {
                             active: settingsLoader.currentPage === 7
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: LanguagePage {}
+                            sourceComponent: NotificationPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 8
                             active: settingsLoader.currentPage === 8
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: InternetPage {}
+                            sourceComponent: ClipboardPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 9
                             active: settingsLoader.currentPage === 9
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: ClipboardPage {}
+                            sourceComponent: ScreenRecorderPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 10
                             active: settingsLoader.currentPage === 10
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: NotificationPage {}
+                            sourceComponent: InternetPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 11
@@ -309,7 +314,7 @@ LazyLoader {
                             active: settingsLoader.currentPage === 12
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: ScreenRecorderPage {}
+                            sourceComponent: GreeterPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 13

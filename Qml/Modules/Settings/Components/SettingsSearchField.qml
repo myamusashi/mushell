@@ -40,75 +40,75 @@ Item {
         },
         {
             page: 1,
+            pageLabel: "Language",
+            card: "Locale Preference",
+            terms: ["Current Language"]
+        },
+        {
+            page: 2,
             pageLabel: "Appearance",
             card: "Color System",
             terms: ["Dark Mode", "Static Colors Path", "Material Colors", "Material Scheme"]
         },
         {
-            page: 1,
+            page: 2,
             pageLabel: "Appearance",
             card: "Typography System",
             terms: ["Sans Serif Font", "Monospace Font", "Material Icon Font", "Font Size Scale"]
         },
         {
-            page: 1,
+            page: 2,
             pageLabel: "Appearance",
             card: "Shapes & Layout",
             terms: ["Corner Roundness", "Element Spacing", "Padding", "Margin"]
         },
         {
-            page: 1,
+            page: 2,
             pageLabel: "Appearance",
             card: "Motion & Animation",
             terms: ["Animation Durations Scale"]
         },
         {
-            page: 2,
-            pageLabel: "Greeter",
-            card: "Greeter Wallpaper",
-            terms: ["Wallpaper Type", "Upload Wallpaper", "Preview"]
-        },
-        {
             page: 3,
-            pageLabel: "Top Bar",
-            card: "Layout & Behavior",
-            terms: ["Always Open Bar", "Compact Navigation Bar", "Bar Height"]
-        },
-        {
-            page: 3,
-            pageLabel: "Top Bar",
-            card: "Workspace Display",
-            terms: ["Workspace Indicator Style", "Number of Visible Workspaces"]
-        },
-        {
-            page: 4,
             pageLabel: "Wallpaper",
             card: "Depth Wallpaper",
             terms: ["Enable Depth Wallpaper", "Auto-process On Wallpaper Change"]
         },
         {
-            page: 4,
+            page: 3,
             pageLabel: "Wallpaper",
             card: "Pick Wallpaper File",
             terms: ["Select A Wallpaper Image File"]
         },
         {
-            page: 4,
+            page: 3,
             pageLabel: "Wallpaper",
             card: "Wallpaper Picker",
             terms: []
         },
         {
-            page: 4,
+            page: 3,
             pageLabel: "Wallpaper",
             card: "Image Sourcing",
             terms: ["Enable Wallpaper", "Live Preview", "Directory Path", "Loaded Wallpaper Count"]
         },
         {
-            page: 4,
+            page: 3,
             pageLabel: "Wallpaper",
             card: "Transitions & Performance",
             terms: ["Transition Animation Mode", "Low Performance Priority", "Transition Duration"]
+        },
+        {
+            page: 4,
+            pageLabel: "Top Bar",
+            card: "Layout & Behavior",
+            terms: ["Always Open Bar", "Compact Navigation Bar", "Bar Height"]
+        },
+        {
+            page: 4,
+            pageLabel: "Top Bar",
+            card: "Workspace Display",
+            terms: ["Workspace Indicator Style", "Number of Visible Workspaces"]
         },
         {
             page: 5,
@@ -136,39 +136,39 @@ Item {
         },
         {
             page: 7,
-            pageLabel: "Language",
-            card: "Locale Preference",
-            terms: ["Current Language"]
+            pageLabel: "Notification",
+            card: "Notification Limits",
+            terms: ["Maximum Notifications", "Maximum Notification Age"]
         },
         {
             page: 8,
-            pageLabel: "Network & Internet",
-            card: "Hotspot",
-            terms: ["Hotspot Sharing", "User Hotspot", "Hotspot Password", "Hotspot Interface", "Bandwidth"]
-        },
-        {
-            page: 8,
-            pageLabel: "Network & Internet",
-            card: "Wi-Fi",
-            terms: ["Enable Wi-Fi"]
-        },
-        {
-            page: 9,
             pageLabel: "Clipboard",
             card: "General Settings",
             terms: ["Enable Clipboard", "Image Previews", "Vim Keybinds", "Keep Clipboard Open After Copy"]
         },
         {
-            page: 9,
+            page: 8,
             pageLabel: "Clipboard",
             card: "Preview Dimensions",
             terms: ["Preview Width", "Preview Height"]
         },
         {
+            page: 9,
+            pageLabel: "Screen Recorder",
+            card: "Recording",
+            terms: ["Frame Rate", "Bitrate", "Video Codec", "Audio Codec", "Power Mode", "Show Cursor", "Replay Buffer"]
+        },
+        {
             page: 10,
-            pageLabel: "Notification",
-            card: "Notification Limits",
-            terms: ["Maximum Notifications", "Maximum Notification Age"]
+            pageLabel: "Network & Internet",
+            card: "Hotspot",
+            terms: ["Hotspot Sharing", "User Hotspot", "Hotspot Password", "Hotspot Interface", "Bandwidth"]
+        },
+        {
+            page: 10,
+            pageLabel: "Network & Internet",
+            card: "Wi-Fi",
+            terms: ["Enable Wi-Fi"]
         },
         {
             page: 11,
@@ -196,9 +196,9 @@ Item {
         },
         {
             page: 12,
-            pageLabel: "Screen Recorder",
-            card: "Recording",
-            terms: ["Frame Rate", "Bitrate", "Video Codec", "Audio Codec", "Power Mode", "Show Cursor", "Replay Buffer"]
+            pageLabel: "Greeter",
+            card: "Greeter Wallpaper",
+            terms: ["Wallpaper Type", "Upload Wallpaper", "Preview"]
         },
         {
             page: 13,
