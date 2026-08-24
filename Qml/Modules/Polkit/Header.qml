@@ -10,22 +10,20 @@ import qs.Services
 
 RowLayout {
     implicitWidth: parent.width
+
     StyledRect {
         Layout.alignment: Qt.AlignHCenter
-        Layout.preferredWidth: 64
-        Layout.preferredHeight: 64
-        Layout.topMargin: 8
+        Layout.preferredWidth: 48
+        Layout.preferredHeight: 48
         radius: Appearance.rounding.full
         color: Qt.alpha(Colours.m3Colors.m3Primary, 0.12)
 
         IconImage {
-            id: appIcon
-
             anchors.centerIn: parent
-            width: 40
-            height: 40
+            width: 28
+            height: 28
             asynchronous: true
-            source: Quickshell.iconPath(PolAgent.agent?.flow?.iconName) || "" // qmllint disable
+            source: PolAgent.agent?.flow?.iconName ? Quickshell.iconPath(PolAgent.agent.flow.iconName) : "" // qmllint disable
         }
     }
 
@@ -35,21 +33,19 @@ RowLayout {
 
         StyledText {
             Layout.fillWidth: true
-            Layout.topMargin: 8
             text: qsTr("Authentication Is Required")
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Appearance.fonts.size.extraLarge
+            font.pixelSize: Appearance.fonts.size.larger
             font.weight: Font.Bold
             color: Colours.m3Colors.m3OnSurface
         }
 
         StyledText {
             Layout.fillWidth: true
-            Layout.topMargin: 8
             text: PolAgent.agent?.flow?.message || qsTr("<no message>") // qmllint disable
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Appearance.fonts.size.large
+            font.pixelSize: Appearance.fonts.size.normal
             font.weight: Font.Normal
             color: Colours.m3Colors.m3OnSurface
         }

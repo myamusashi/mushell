@@ -7,7 +7,6 @@ StyledTextInput {
     id: passwordInput
 
     Layout.fillWidth: true
-    Layout.preferredHeight: 56
-    passwordMode: true
+    Layout.preferredHeight: 44
     placeHolderText: qsTr("Enter password")
 }

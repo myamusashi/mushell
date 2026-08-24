@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 import qs.Components.Dialog
+import qs.Core.Configs
 import qs.Services
 
 DialogBox {
@@ -10,6 +11,13 @@ DialogBox {
 
     needKeyboardFocus: true
     activeAsync: PolAgent.agent?.isActive
+
+    // Compact card proportions for the auth prompt.
+    cardPaddingWidth: 36
+    cardPaddingHeight: 24
+    contentMinWidth: 280
+    contentSpacing: Appearance.spacing.normal
+
     header: Header {}
     body: Body {
         id: bodyPolkit
@@ -18,16 +26,18 @@ DialogBox {
             target: root
 
             function onActiveChanged() {
-                bodyPolkit.passwordInput.focus = true;
+                if (!root.active)
+                    return;
+
                 bodyPolkit.passwordInput.forceActiveFocus();
             }
 
             function onAccepted() {
-                PolAgent.agent?.flow?.submit(bodyPolkit.passwordInput.text); // qmllint disable
+                bodyPolkit.submit();
             }
 
             function onRejected() {
-                PolAgent.agent?.flow?.cancelAuthenticationRequest(); // qmllint disable
+                bodyPolkit.cancel();
             }
         }
     }

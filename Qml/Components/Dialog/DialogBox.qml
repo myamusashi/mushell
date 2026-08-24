@@ -7,6 +7,7 @@ import Quickshell.Wayland
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
+import qs.Components.Button
 
 import "../Base"
 
@@ -17,6 +18,11 @@ LazyLoader {
     required property Component body
 
     property bool needKeyboardFocus: true
+
+    property int cardPaddingWidth: 60
+    property int cardPaddingHeight: 40
+    property int contentMinWidth: 300
+    property int contentSpacing: Appearance.spacing.large
 
     signal accepted
     signal rejected
@@ -52,8 +58,8 @@ LazyLoader {
 
         StyledRect {
             anchors.centerIn: parent
-            implicitWidth: column.width + 60
-            implicitHeight: column.height + 40
+            implicitWidth: column.width + root.cardPaddingWidth
+            implicitHeight: column.height + root.cardPaddingHeight
 
             radius: Appearance.rounding.large
             color: Colours.overlayColor(Colours.m3Colors.m3SurfaceTint, Colours.m3Colors.m3SurfaceContainerHigh, Configs.generals.alpha)
@@ -64,9 +70,9 @@ LazyLoader {
                 id: column
 
                 anchors.centerIn: parent
-                width: Math.max(300, loaderHeader.item ? loaderHeader.implicitWidth : 0, loaderBody.item ? loaderBody.implicitWidth : 0, rowButtons.implicitWidth)
+                width: Math.max(root.contentMinWidth, loaderHeader.item ? loaderHeader.implicitWidth : 0, loaderBody.item ? loaderBody.implicitWidth : 0, rowButtons.implicitWidth)
                 anchors.margins: 20
-                spacing: Appearance.spacing.large
+                spacing: root.contentSpacing
 
                 Keys.onTabPressed: tabNav.next()
                 Keys.onBacktabPressed: tabNav.previous()
@@ -107,7 +113,7 @@ LazyLoader {
                     anchors.right: parent.right
                     spacing: Appearance.spacing.normal
 
-                    StyledButton {
+                    ExtendedFloatingButton {
                         implicitWidth: 80
                         implicitHeight: 40
                         bgRadius: Appearance.rounding.normal
@@ -119,7 +125,7 @@ LazyLoader {
                         onClicked: root.rejected()
                     }
 
-                    StyledButton {
+                    ExtendedFloatingButton {
                         implicitWidth: 80
                         implicitHeight: 40
                         icon.name: "check"
