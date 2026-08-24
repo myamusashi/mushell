@@ -154,6 +154,11 @@ Item {
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnPrimaryContainer
                         elide: Text.ElideRight
+                        opacity: root.expanded ? 1 : 0
+
+                        Behavior on opacity {
+                            NAnim {}
+                        }
                     }
                 }
             }

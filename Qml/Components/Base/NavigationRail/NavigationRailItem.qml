@@ -30,11 +30,10 @@ WrapperItem {
     readonly property real iconCellX: Appearance.margin.normal
 
     implicitWidth: compactPillWidth
-    implicitHeight: expanded ? Math.max(root.expandedItemHeight, labelText.implicitHeight) : root.compactPillHeight + root.compactLabelGap + labelText.implicitHeight
+    implicitHeight: root.compactPillHeight + (Math.max(root.expandedItemHeight, labelText.implicitHeight) - root.compactPillHeight) * labelText.progress
 
     leftMargin: root.expanded ? Appearance.margin.normal : Math.max(0, (root.width - root.compactPillWidth) / 2)
     rightMargin: leftMargin
-    bottomMargin: root.expanded ? 0 : root.height - root.compactPillHeight
 
     MArea {
         id: area
@@ -135,6 +134,7 @@ WrapperItem {
                 CAnim {}
             }
 
+            opacity: progress
             x: compactX + (expandedX - compactX) * progress
             y: compactY + (expandedY - compactY) * progress
             width: root.compactPillWidth + (root.expandedLabelWidth - root.compactPillWidth) * progress
