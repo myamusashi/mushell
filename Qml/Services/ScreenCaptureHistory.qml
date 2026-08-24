@@ -3,15 +3,12 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-
-// why the fuck qmllint think this shit is not used
 import qs.Core.Utils // qmllint disable
 import qs.Services
 
 Singleton {
     id: root
 
-    // TODO: this should be use FolderListModel, but i can't figure it out
     property string videosPath: ""
     property string screenshotPath: ""
     property list<var> screenshotFiles
@@ -28,6 +25,16 @@ Singleton {
         }
     }
 
+    function newestFiles(jsonText) {
+        const data = jsonText.trim();
+        if (!data)
+            return [];
+
+        const files = parseFileList(data);
+        files.sort((a, b) => b.created - a.created);
+        return files.slice(0, 10);
+    }
+
     function reloadFiles(): void {
         getScreenshotFilesMetadata.started();
         getScreenrecordFilesMetadata.started();
@@ -37,13 +44,9 @@ Singleton {
         id: getScreenshotFilesMetadata
 
         running: true
-        command: ["sh", "-c", `find "${root.screenshotPath || Paths.home + '/Pictures/screenshot'}" -maxdepth 1 -type f \\( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \\) -printf '{"path":"%p","name":"%f","size":%s,"created":%C@}\\n' | sort -t: -k2 -rn | head -10`]
+        command: ["sh", "-c", `find "${root.screenshotPath || Paths.home + '/Pictures/screenshot'}" -maxdepth 1 -type f \\( -iname "*.png" -o -iname "*.jpg" -o -iname "*.jpeg" \\) -printf '{"path":"%p","name":"%f","size":%s,"created":%C@}\\n'`]
         stdout: StdioCollector {
-            onStreamFinished: {
-                const data = text.trim();
-                if (data)
-                    root.screenshotFiles = root.parseFileList(data);
-            }
+            onStreamFinished: root.screenshotFiles = root.newestFiles(text)
         }
     }
 
@@ -51,13 +54,9 @@ Singleton {
         id: getScreenrecordFilesMetadata
 
         running: true
-        command: ["sh", "-c", `find "${root.videosPath || Paths.videos + "/Shell"}" -maxdepth 1 -type f \\( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.webm" -o -iname "*.avi" \\) -printf '{"path":"%p","name":"%f","size":%s,"created":%C@}\\n' | sort -t: -k2 -rn | head -10`]
+        command: ["sh", "-c", `find "${root.videosPath || Paths.videos + "/Shell"}" -maxdepth 1 -type f \\( -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.webm" -o -iname "*.avi" \\) -printf '{"path":"%p","name":"%f","size":%s,"created":%C@}\\n'`]
         stdout: StdioCollector {
-            onStreamFinished: {
-                const data = text.trim();
-                if (data)
-                    root.screenrecordFiles = root.parseFileList(data);
-            }
+            onStreamFinished: root.screenrecordFiles = root.newestFiles(text)
         }
     }
 }
