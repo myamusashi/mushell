@@ -4,6 +4,8 @@ import Qt.labs.folderlistmodel
 import QtQuick
 import Quickshell
 
+import Vast.Search
+
 import qs.Core.Utils
 
 Singleton {
@@ -13,15 +15,23 @@ Singleton {
     property string searchQuery: ""
     property string debouncedSearchQuery: ""
     property var wallpaperList: []
-    property var filteredWallpaperList: {
+    readonly property var filteredWallpaperList: {
         if (debouncedSearchQuery === "")
             return wallpaperList;
 
-        const query = debouncedSearchQuery.toLowerCase();
-        return wallpaperList.filter(path => {
-            const fileName = path.split('/').pop().toLowerCase();
-            return fileName.includes(query);
-        });
+        const query = debouncedSearchQuery.trim();
+        if (query === "")
+            return wallpaperList;
+
+        // fzy scores grow with needle length, so the floor is per query character
+        const minScore = query.length * SearchEngine.fileThreshold;
+        const scored = [];
+        for (const path of wallpaperList) {
+            const result = SearchEngine.score(query, path.split('/').pop());
+            if (result >= minScore)
+                scored.push([result, path]);
+        }
+        return scored.sort((a, b) => b[0] - a[0]).map(entry => entry[1]);
     }
 
     FolderListModel {

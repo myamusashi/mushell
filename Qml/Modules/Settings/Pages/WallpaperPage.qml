@@ -169,6 +169,14 @@ SettingsPageBase {
                 onCheckedChanged: Configs.wallpaper.enabledWallpaper = checked
             }
         }
+        SettingRow {
+            label: qsTr("Wallpaper Live Preview:")
+
+            StyledSwitch {
+                checked: Configs.wallpaper.livePreview
+                onCheckedChanged: Configs.wallpaper.livePreview = checked
+            }
+        }
 
         SettingRow {
             label: qsTr("Wallpaper Directory Path:")

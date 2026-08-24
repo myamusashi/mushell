@@ -26,7 +26,11 @@ Item {
     property int wallpaperType: 0
     property string pendingVideoPath: ""
     property string thumbnailJobPath: ""
-    readonly property var visibleWallpapers: WallpaperFileModels.filteredWallpaperList.filter(path => wallpaperType === 1 ? /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) : !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path))
+    property var thumbnailAvailability: ({})
+    property var thumbnailCheckQueue: []
+    property var checkBatch: []
+    readonly property string thumbnailCheckScript: "while [ $# -ge 2 ]; do [ -s \"$1\" ] && printf '%s\\n' \"$2\"; shift 2; done"
+    readonly property var visibleWallpapers: WallpaperFileModels.filteredWallpaperList.filter(path => wallpaperType === 1 ? isVideo(path) : !isVideo(path))
 
     function setWallpaper(path, colorSource) {
         Quickshell.execDetached({
@@ -45,11 +49,72 @@ Item {
     function setVideoWallpaper(path) {
         pendingVideoPath = path;
         thumbnailJobPath = path;
-        thumbnailExtractor.running = true;
+    }
+
+    function isVideo(path) {
+        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path);
     }
 
     function thumbnailPathFor(path) {
-        return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(path)}.png` : path;
+        return isVideo(path) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(path)}.png` : path;
+    }
+
+    function markThumbnail(path, exists) {
+        const previous = thumbnailAvailability[path];
+        if (path === "" || previous === exists)
+            return;
+        const updated = Object.assign({}, thumbnailAvailability);
+        updated[path] = exists;
+        thumbnailAvailability = updated;
+        if (path !== Paths.currentWallpaper)
+            return;
+        if (!exists) {
+            if (previous === undefined)
+                ensureThumbnail(path);
+            return;
+        }
+        if (path === Paths.currentWallpaper && pendingVideoPath === "")
+            updateWallpaperColors(path);
+    }
+
+    function ensureThumbnail(path) {
+        if (path === "" || thumbnailAvailability[path] === true || thumbnailJobPath === path)
+            return;
+        thumbnailJobPath = path;
+    }
+
+    function requestThumbnailChecks() {
+        for (const path of WallpaperFileModels.filteredWallpaperList) {
+            if (!isVideo(path) || thumbnailAvailability[path] !== undefined || thumbnailCheckQueue.includes(path))
+                continue;
+            thumbnailCheckQueue.push(path);
+        }
+        drainThumbnailChecks();
+    }
+
+    function drainThumbnailChecks() {
+        if (thumbnailChecker.running || thumbnailCheckQueue.length === 0)
+            return;
+        checkBatch = thumbnailCheckQueue.splice(0, thumbnailCheckQueue.length);
+        const args = ["sh", "-c", thumbnailCheckScript, "sh"];
+        for (const path of checkBatch)
+            args.push(thumbnailPathFor(path), path);
+        thumbnailChecker.command = args;
+        thumbnailChecker.running = true;
+    }
+    Component.onCompleted: requestThumbnailChecks()
+
+    onIsWallpaperSwitcherOpenChanged: {
+        if (!isWallpaperSwitcherOpen)
+            GlobalStates.previewWallpaper = ""; // closing without confirm reverts the live preview
+    }
+
+    Connections {
+        target: WallpaperFileModels
+
+        function onFilteredWallpaperListChanged() {
+            root.requestThumbnailChecks();
+        }
     }
 
     Connections {
@@ -79,11 +144,9 @@ Item {
                     const videoPath = root.pendingVideoPath;
                     root.pendingVideoPath = "";
                     root.setWallpaper(videoPath, root.thumbnailPathFor(videoPath));
-                }
-                return;
+                } else if (status === Image.Error)
+                    root.pendingVideoPath = ""; // failed extraction must not leak into later colour loads
             }
-            if (status !== Image.Ready)
-                return;
         }
     }
 
@@ -95,14 +158,37 @@ Item {
     }
 
     Process {
+        id: thumbnailChecker
+
+        stdout: SplitParser {
+            onRead: data => root.markThumbnail(data, true)
+        }
+
+        onExited: { // qmllint disable signal-handler-parameters
+            for (const path of root.checkBatch) {
+                if (root.thumbnailAvailability[path] === undefined)
+                    root.markThumbnail(path, false);
+            }
+            root.checkBatch = [];
+            root.drainThumbnailChecks();
+        }
+    }
+
+    Process {
         id: thumbnailExtractor
 
         command: ["sh", "-c", `test -s ${JSON.stringify(root.thumbnailPathFor(root.thumbnailJobPath))} || ffmpeg -y -loglevel error -i ${JSON.stringify(root.thumbnailJobPath)} -frames:v 1 ${JSON.stringify(root.thumbnailPathFor(root.thumbnailJobPath))}`]
         running: root.thumbnailJobPath !== ""
         onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
+            const job = root.thumbnailJobPath;
             root.thumbnailJobPath = "";
-            if (root.pendingVideoPath !== "")
+            root.markThumbnail(job, exitCode === 0);
+            if (root.pendingVideoPath === "")
+                return;
+            if (exitCode === 0)
                 colorSourceImage.source = "file://" + root.thumbnailPathFor(root.pendingVideoPath);
+            else
+                root.pendingVideoPath = "";
         }
     }
 
@@ -127,9 +213,9 @@ Item {
         target: "img"
 
         function set(path: string): void {
-            if (!/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path))
+            if (!root.isVideo(path))
                 ImageCache.preload(path, Qt.size(Screen.width, Screen.height));
-            root.setWallpaper(path, /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(path) ? "" : path);
+            root.setWallpaper(path, root.isVideo(path) ? "" : path);
         }
         function get(): string {
             return Paths.currentWallpaper;
@@ -271,6 +357,12 @@ Item {
                         clip: true
                         cacheItemCount: Configs.wallpaper.visibleWallpaper + 2
 
+                        // Scrolling previews the centred candidate everywhere, but nothing persists until confirm
+                        onCurrentIndexChanged: {
+                            if (Configs.wallpaper.livePreview && count > 0)
+                                GlobalStates.previewWallpaper = root.visibleWallpapers[currentIndex] ?? "";
+                        }
+
                         Component.onCompleted: {
                             Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
                         }
@@ -299,10 +391,13 @@ Item {
                             required property int index
 
                             readonly property bool isCurrent: PathView.isCurrentItem
-                            property bool thumbnailAvailable: false
 
                             onIsCurrentChanged: {
-                                if (isCurrent && !/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
+                                if (!delegateItem.isCurrent)
+                                    return;
+                                if (root.isVideo(delegateItem.modelData))
+                                    root.ensureThumbnail(delegateItem.modelData);
+                                else
                                     ImageCache.preload(delegateItem.modelData, Qt.size(Screen.width, Screen.height));
                             }
 
@@ -361,7 +456,7 @@ Item {
 
                                 Image {
                                     anchors.fill: parent
-                                    source: /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData) ? "" : "file://" + delegateItem.modelData
+                                    source: root.isVideo(delegateItem.modelData) ? "" : "file://" + delegateItem.modelData
                                     sourceSize: Qt.size(200, 200)
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
@@ -378,34 +473,10 @@ Item {
                                     id: videoThumbnailCache
 
                                     anchors.fill: parent
-                                    source: delegateItem.thumbnailAvailable ? "file://" + root.thumbnailPathFor(delegateItem.modelData) : ""
+                                    source: root.thumbnailAvailability[delegateItem.modelData] ? "file://" + root.thumbnailPathFor(delegateItem.modelData) : ""
                                     fillMode: Image.PreserveAspectCrop
                                     asynchronous: true
                                     visible: status === Image.Ready
-                                }
-
-                                Process {
-                                    id: thumbnailCheck
-
-                                    command: ["test", "-s", root.thumbnailPathFor(delegateItem.modelData)]
-                                    running: delegateItem.isCurrent && /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData)
-                                    onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
-                                        delegateItem.thumbnailAvailable = exitCode === 0;
-                                        if (exitCode === 0)
-                                            return;
-                                        if (delegateItem.isCurrent && root.thumbnailJobPath === "") {
-                                            root.thumbnailJobPath = delegateItem.modelData;
-                                            thumbnailExtractor.running = true;
-                                        }
-                                        thumbnailRetry.restart();
-                                    }
-                                }
-
-                                Timer {
-                                    id: thumbnailRetry
-
-                                    interval: 5000
-                                    onTriggered: thumbnailCheck.running = true
                                 }
 
                                 Rectangle {
@@ -453,7 +524,7 @@ Item {
                                         if (!delegateItem.isCurrent) {
                                             wallpaperPath.currentIndex = delegateItem.index;
                                         } else {
-                                            if (/\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(delegateItem.modelData))
+                                            if (root.isVideo(delegateItem.modelData))
                                                 root.setVideoWallpaper(delegateItem.modelData);
                                             else
                                                 root.setWallpaper(delegateItem.modelData, delegateItem.modelData);

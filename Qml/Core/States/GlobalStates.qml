@@ -49,6 +49,8 @@ Singleton {
     property bool isScreenshotSelectionOpen: false
     property bool isWifiScannerOpen: true
 
+    property string previewWallpaper: ""
+
     property string scriptPath: `${Paths.projectRoot}/Assets/shell/screen-capture.sh`
 
     OSDManager {

@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Core.Configs
+import qs.Core.States
 import qs.Core.Utils
 import Vast.Utils
 
@@ -20,7 +21,7 @@ Singleton {
     readonly property M3TemplateColors m3Colors: Configs.colors.useMaterialColor ? materialColors : Configs.colors.useStaticColors ? staticColors : m3GeneratedColors
 
     readonly property string wallpaperSource: {
-        const wp = Paths.currentWallpaper;
+        const wp = GlobalStates.previewWallpaper !== "" ? GlobalStates.previewWallpaper : Paths.currentWallpaper;
         if (!wp)
             return "";
         return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(wp) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(wp)}.png` : wp;

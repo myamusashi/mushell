@@ -236,10 +236,9 @@ WlSessionLockSurface {
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
-        visible: !currentWallpaperIsVideo && Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" && !DepthWallpaperController.generating
         opacity: 0
         scale: 1.0
-        transformOrigin: Item.Center
+        visible: !currentWallpaperIsVideo && Configs.wallpaper.depthWallpaperEnabled && Configs.wallpaper.depthFgPath !== "" && !DepthWallpaperController.generating && GlobalStates.previewWallpaper === ""
         z: 2
     }
 

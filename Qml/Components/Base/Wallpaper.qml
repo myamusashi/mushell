@@ -25,6 +25,8 @@ import qs.Services
 Item {
     id: root
 
+    readonly property string effectiveSource: GlobalStates.previewWallpaper !== "" ? GlobalStates.previewWallpaper : Paths.currentWallpaper
+
     readonly property var _shaderNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll", "hexTile"]
     readonly property var _typeMap: ({
             "fade": 0,
@@ -181,7 +183,7 @@ Item {
         const name = _shaderNames[_typeResolved] ?? "fade";
         fx.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
         if (_isVideoWallpaper) {
-            videoThumbnailA.source = videoThumbnail(Paths.currentWallpaper);
+            videoThumbnailA.source = videoThumbnail(root.effectiveSource);
             videoThumbnailB.source = videoThumbnail(url);
             fx.source1 = videoThumbnailA;
             fx.source2 = videoThumbnailB;
@@ -215,7 +217,7 @@ Item {
 
         _sourceVideo = _isVideoWallpaper;
         if (_sourceVideo) {
-            videoThumbnailA.source = videoThumbnail(Paths.currentWallpaper);
+            videoThumbnailA.source = videoThumbnail(root.effectiveSource);
             fx.source1 = videoThumbnailA;
             fx.source2 = _inactive();
         } else if (_slot === 0) {
@@ -355,12 +357,12 @@ Item {
         fx.resolution = Qt.vector2d(w, h);
         fx.invResolution = Qt.vector2d(1.0 / w, 1.0 / h);
 
-        if (root.isVideo(Paths.currentWallpaper)) {
-            videoPlayerA.source = Qt.resolvedUrl(Paths.currentWallpaper);
+        if (root.isVideo(root.effectiveSource)) {
+            videoPlayerA.source = Qt.resolvedUrl(root.effectiveSource);
             playVideo(videoPlayerA);
             _isVideoWallpaper = true;
         } else {
-            imgA.source = Paths.currentWallpaper;
+            imgA.source = root.effectiveSource;
         }
     }
 
@@ -488,11 +490,5 @@ Item {
         onStopped: root._commitTransition()
     }
 
-    Connections {
-        target: Paths
-
-        function onCurrentWallpaperChanged() {
-            root.load((Paths.currentWallpaper));
-        }
-    }
+    onEffectiveSourceChanged: root.load(root.effectiveSource)
 }
