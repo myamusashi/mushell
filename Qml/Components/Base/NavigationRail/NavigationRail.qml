@@ -40,8 +40,9 @@ Item {
 
     Behavior on animatedRailWidth {
         SpringAnimation {
-            spring: 2
-            damping: 0.2
+            spring: 3
+            damping: 0.3
+            mass: 1
         }
     }
 
