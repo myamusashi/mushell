@@ -65,10 +65,6 @@ Item {
         return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(url.toString());
     }
 
-    function videoThumbnail(url) {
-        return `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(url.toString().replace(/^file:\/\//, ""))}.png`;
-    }
-
     function updateVideoPlayback() {
         if (_pauseVideo) {
             videoPlayerA.pause();
@@ -132,8 +128,7 @@ Item {
             return;
         }
 
-        const wasVideo = _isVideoWallpaper;
-        if (wasVideo) {
+        if (_isVideoWallpaper && url === "") {
             videoPlayerA.stop();
             videoPlayerA.source = "";
             videoPlayerB.stop();
@@ -144,12 +139,9 @@ Item {
             _toVideo = null;
             _busy = false;
             anim.stop();
-        }
-        if (wasVideo && url !== "") {
-            _active().source = url;
-            _active().visible = true;
             return;
         }
+
         if (url === "" || url === _active().source)
             return;
         if (_busy) {
@@ -182,16 +174,12 @@ Item {
 
         const name = _shaderNames[_typeResolved] ?? "fade";
         fx.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
-        if (_isVideoWallpaper) {
-            videoThumbnailA.source = videoThumbnail(root.effectiveSource);
-            videoThumbnailB.source = videoThumbnail(url);
-            fx.source1 = videoThumbnailA;
-            fx.source2 = videoThumbnailB;
-        } else {
-            fx.source1 = _active();
-            videoThumbnailB.source = videoThumbnail(url);
-            fx.source2 = videoThumbnailB;
-        }
+
+        fx.source1 = _isVideoWallpaper ? _activeVideoOutput() : _active();
+        fx.source2 = _inactiveVideoOutput();
+        videoOutputA.layer.enabled = true;
+        videoOutputB.layer.enabled = true;
+
         _targetVideo = true;
         _busy = true;
         _transitionStarted = false;
@@ -204,8 +192,17 @@ Item {
 
     function _startTransition(url) {
         _typeResolved = _resolveType();
+        _sourceVideo = _isVideoWallpaper;
 
         if (Configs.wallpaper.transition === "none" || _typeResolved === -1) {
+            if (_sourceVideo) {
+                videoPlayerA.stop();
+                videoPlayerA.source = "";
+                videoPlayerB.stop();
+                videoPlayerB.source = "";
+                _isVideoWallpaper = false;
+                _sourceVideo = false;
+            }
             _inactive().source = url;
             _slot = 1 - _slot;
             _inactive().source = "";
@@ -215,11 +212,10 @@ Item {
         const name = _shaderNames[_typeResolved] ?? "fade";
         fx.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
 
-        _sourceVideo = _isVideoWallpaper;
         if (_sourceVideo) {
-            videoThumbnailA.source = videoThumbnail(root.effectiveSource);
-            fx.source1 = videoThumbnailA;
+            fx.source1 = _activeVideoOutput();
             fx.source2 = _inactive();
+            _activeVideoOutput().layer.enabled = true;
         } else if (_slot === 0) {
             fx.source1 = imgA;
             fx.source2 = imgB;
@@ -247,10 +243,7 @@ Item {
         if (!_busy || img !== _toImg)
             return;
         if (img.status === Image.Ready) {
-            if (_sourceVideo)
-                _maybeBeginImageTransition();
-            else
-                _beginAnim();
+            _beginAnim();
         } else if (img.status === Image.Error) {
             console.warn("[Wallpaper] Failed to load:", img.source);
             img.source = "";
@@ -271,11 +264,15 @@ Item {
     }
 
     function _commitTransition() {
+        if (!_busy)
+            return;
         if (_targetVideo) {
             const oldPlayer = _videoSlot === 0 ? videoPlayerA : videoPlayerB;
             oldPlayer.stop();
             oldPlayer.source = "";
             _videoSlot = 1 - _videoSlot;
+            videoOutputA.layer.enabled = false;
+            videoOutputB.layer.enabled = false;
             _isVideoWallpaper = true;
             _busy = false;
             fx.progress = 0.0;
@@ -291,6 +288,8 @@ Item {
             videoPlayerB.source = "";
             _isVideoWallpaper = false;
             _sourceVideo = false;
+            videoOutputA.layer.enabled = false;
+            videoOutputB.layer.enabled = false;
         }
 
         const newSlot = 1 - _slot;
@@ -309,19 +308,9 @@ Item {
     }
 
     function _maybeBeginVideoTransition() {
-        if (_toVideo === null || _toVideo.mediaStatus !== MediaPlayer.LoadedMedia && _toVideo.mediaStatus !== MediaPlayer.BufferedMedia)
+        if (_toVideo === null)
             return;
-        if (videoThumbnailB.source !== "" && videoThumbnailB.status !== Image.Ready)
-            return;
-        if (_isVideoWallpaper && videoThumbnailA.status !== Image.Ready)
-            return;
-        _beginAnim();
-    }
-
-    function _maybeBeginImageTransition() {
-        if (!_sourceVideo || _toImg === null || _toImg.status !== Image.Ready)
-            return;
-        if (videoThumbnailA.status !== Image.Ready)
+        if (_toVideo.mediaStatus !== MediaPlayer.LoadedMedia && _toVideo.mediaStatus !== MediaPlayer.BufferedMedia)
             return;
         _beginAnim();
     }
@@ -336,6 +325,18 @@ Item {
             else
                 _startTransition(url);
         }
+    }
+
+    function _onVideoError(player) {
+        if (!_busy || _transitionStarted || _toVideo !== player)
+            return;
+        player.stop();
+        player.source = "";
+        _toVideo = null;
+        _targetVideo = false;
+        _busy = false;
+        videoOutputA.layer.enabled = false;
+        videoOutputB.layer.enabled = false;
     }
 
     // Resolution helper (call whenever viewport resizes and shader is idle)
@@ -371,7 +372,10 @@ Item {
 
         loops: MediaPlayer.Infinite
         videoOutput: videoOutputA
-        onErrorOccurred: (error, errorString) => console.warn("[Wallpaper] Video error:", errorString)
+        onErrorOccurred: (error, errorString) => {
+            console.warn("[Wallpaper] Video error:", errorString);
+            root._onVideoError(videoPlayerA);
+        }
     }
 
     Connections {
@@ -396,7 +400,10 @@ Item {
 
         loops: MediaPlayer.Infinite
         videoOutput: videoOutputB
-        onErrorOccurred: (error, errorString) => console.warn("[Wallpaper] Video error:", errorString)
+        onErrorOccurred: (error, errorString) => {
+            console.warn("[Wallpaper] Video error:", errorString);
+            root._onVideoError(videoPlayerB);
+        }
     }
 
     Connections {
@@ -414,22 +421,6 @@ Item {
         z: 1
         fillMode: VideoOutput.PreserveAspectCrop
         visible: videoPlayerB.source !== ""
-    }
-
-    Image {
-        id: videoThumbnailA
-
-        asynchronous: true
-        visible: false
-        onStatusChanged: root._maybeBeginImageTransition()
-    }
-
-    Image {
-        id: videoThumbnailB
-
-        asynchronous: true
-        visible: false
-        onStatusChanged: root._maybeBeginVideoTransition()
     }
 
     Image {
