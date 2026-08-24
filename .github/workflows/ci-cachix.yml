@@ -27,4 +27,4 @@ jobs:
 
     - name: Build steps
       run: |
-        nix build .
+        nix build . --log-format bar-with-logs

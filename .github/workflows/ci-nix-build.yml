@@ -21,4 +21,4 @@ jobs:
         nix_path: nixpkgs=channel:nixos-unstable
 
     - name: Build Flake
-      run: nix build .
+      run: nix build . --log-format bar-with-logs
