@@ -8,6 +8,7 @@ import Quickshell.Widgets
 import Vast.ImageCache
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
@@ -301,7 +302,7 @@ Item {
                         Repeater {
                             model: [qsTr("Static"), qsTr("Video")]
 
-                            delegate: StyledButton {
+                            delegate: ExtendedFloatingButton {
                                 id: tabButton
 
                                 required property int index

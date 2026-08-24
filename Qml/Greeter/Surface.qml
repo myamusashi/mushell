@@ -10,6 +10,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
@@ -276,24 +277,22 @@ WlSessionLockSurface {
 
             spacing: Appearance.spacing.small
 
-            StyledButton {
+            FloatingButton {
+                size: "small"
                 icon.name: "restart_alt"
                 icon.color: root.dynColors.onSurface
                 color: Qt.alpha(root.dynColors.surfaceContainerHighest, 0.8)
-                leftPad: 12
-                rightPad: 12
 
                 onClicked: Quickshell.execDetached({
                     command: ["systemctl", "reboot"]
                 })
             }
 
-            StyledButton {
+            FloatingButton {
+                size: "small"
                 icon.name: "power_settings_new"
                 icon.color: root.dynColors.onSurface
                 color: Qt.alpha(root.dynColors.surfaceContainerHighest, 0.8)
-                leftPad: 12
-                rightPad: 12
 
                 onClicked: Quickshell.execDetached({
                     command: ["systemctl", "poweroff"]

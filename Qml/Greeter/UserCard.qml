@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Menu
 import qs.Core.Configs
 import qs.Core.Utils
@@ -131,7 +132,7 @@ Item {
             }
         }
 
-        StyledButton {
+        ExtendedFloatingButton {
             id: loginButton
 
             Layout.fillWidth: true

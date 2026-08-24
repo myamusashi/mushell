@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 
 import "../Components"
 
@@ -203,13 +204,13 @@ SettingsPageBase {
                             Layout.fillWidth: true
                             spacing: Appearance.spacing.normal
 
-                            StyledButton {
+                            ExtendedFloatingButton {
                                 text: qsTr("Apply")
                                 Layout.preferredHeight: 32
                                 onClicked: root.flushToConfig()
                             }
 
-                            StyledButton {
+                            ExtendedFloatingButton {
                                 text: qsTr("Remove")
                                 Layout.preferredHeight: 32
                                 onClicked: root.removeTimeout(rootDelegate.index)
@@ -221,7 +222,7 @@ SettingsPageBase {
         }
     }
 
-    StyledButton {
+    ExtendedFloatingButton {
         text: qsTr("Add Timeout")
         Layout.fillWidth: true
         Layout.preferredHeight: 40

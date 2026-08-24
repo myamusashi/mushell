@@ -14,6 +14,7 @@ import qs.Core.Utils
 import qs.Core.States
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 import qs.Widgets
 
 RowLayout {
@@ -227,7 +228,7 @@ RowLayout {
                         }
                     }
 
-                    StyledButton {
+                    FloatingButton {
                         implicitWidth: 18
                         implicitHeight: 18
                         bgRadius: Appearance.rounding.normal
@@ -450,7 +451,7 @@ RowLayout {
                         }
                     }
 
-                    StyledButton {
+                    FloatingButton {
                         implicitWidth: 24
                         implicitHeight: 24
                         bgRadius: Appearance.rounding.normal

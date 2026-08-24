@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
@@ -12,6 +11,7 @@ import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
 import qs.Components.Base
+import qs.Components.Button
 import qs.Services
 import Vast.ImageCache
 import Vast.Lyrics
@@ -115,7 +115,7 @@ StyledRect {
     }
 
     function refreshTrackArt() {
-        const url = Players.active?.trackArtUrl ?? "";
+        const url = String(Players.active?.trackArtUrl ?? "");
         mediaPlayerRect.cachedArtPath = "";
         if (url.startsWith("http"))
             artDownloader.download(url);
@@ -163,14 +163,14 @@ StyledRect {
                 Icon {
                     anchors.fill: parent
                     icon: "music_note"
-                    color: dynOnSurface
+                    color: mediaPlayerRect.dynOnSurface
                     font.pixelSize: Appearance.fonts.size.large
                 }
 
                 Image {
                     anchors.fill: parent
                     visible: Players.active?.trackArtUrl !== "" && Players.active?.trackArtUrl !== undefined
-                    source: Players.active?.trackArtUrl ?? ""
+                    source: Players.active ? Players.active.trackArtUrl : ""
                     fillMode: Image.PreserveAspectCrop
                     asynchronous: true
                 }
@@ -182,7 +182,7 @@ StyledRect {
 
                 StyledText {
                     text: Players.active?.trackTitle ?? ""
-                    color: dynOnSurface
+                    color: mediaPlayerRect.dynOnSurface
                     font.pixelSize: Appearance.fonts.size.small
                     font.weight: Font.DemiBold
                     elide: Text.ElideRight
@@ -191,8 +191,8 @@ StyledRect {
 
                 StyledText {
                     text: Players.active?.trackArtist ?? ""
-                    color: dynOnSurfaceVariant
-                    font.pixelSize: Appearance.fonts.size.xSmall
+                    color: mediaPlayerRect.dynOnSurfaceVariant
+                    font.pixelSize: Appearance.fonts.size.small
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
@@ -200,7 +200,7 @@ StyledRect {
 
             Icon {
                 icon: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
-                color: dynOnSurface
+                color: mediaPlayerRect.dynOnSurface
                 font.pixelSize: Appearance.fonts.size.large
 
                 MArea {
@@ -212,7 +212,7 @@ StyledRect {
 
             Icon {
                 icon: "skip_next"
-                color: dynOnSurface
+                color: mediaPlayerRect.dynOnSurface
                 font.pixelSize: Appearance.fonts.size.large
 
                 MArea {
@@ -287,7 +287,7 @@ StyledRect {
         Image {
             id: popupCoverArt
             anchors.fill: parent
-            source: Players.active?.trackArtUrl ?? ""
+            source: Players.active ? Players.active.trackArtUrl : ""
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             cache: true
@@ -324,7 +324,7 @@ StyledRect {
 
                     Image {
                         anchors.fill: parent
-                        source: Players.active?.trackArtUrl ?? ""
+                        source: Players.active ? Players.active.trackArtUrl : ""
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
                         cache: true
@@ -389,6 +389,8 @@ StyledRect {
                     }
 
                     delegate: Item {
+                        id: lyricDelegate
+
                         required property var modelData
                         required property int index
 
@@ -415,11 +417,11 @@ StyledRect {
                         StyledText {
                             id: lineText
                             width: lyricsListView.width
-                            text: modelData.text
+                            text: lyricDelegate.modelData.text
                             font.pixelSize: Appearance.fonts.size.normal
                             horizontalAlignment: Text.AlignHCenter
                             elide: Text.ElideNone
-                            color: isActiveLine ? mediaPlayerRect.dynPrimary : mediaPlayerRect.dynOnSurfaceVariant
+                            color: lyricDelegate.isActiveLine ? mediaPlayerRect.dynPrimary : mediaPlayerRect.dynOnSurfaceVariant
                             wrapMode: Text.Wrap
                         }
                     }
@@ -430,7 +432,7 @@ StyledRect {
                 Layout.alignment: Qt.AlignCenter
                 spacing: Appearance.spacing.small
 
-                StyledButton {
+                FloatingButton {
                     implicitWidth: 24
                     implicitHeight: 24
                     bgRadius: Appearance.rounding.normal
@@ -481,7 +483,7 @@ StyledRect {
                     }
                 }
 
-                StyledButton {
+                FloatingButton {
                     implicitWidth: 24
                     implicitHeight: 24
                     bgRadius: Appearance.rounding.normal

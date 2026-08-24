@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Dialog.FileDialog
 import qs.Core.Configs
 import qs.Core.Utils
@@ -26,7 +27,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Wallpaper type:")
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: Configs.greeterConfig.useVideoWallpaper ? qsTr("Video") : qsTr("Static")
                 color: Colours.m3Colors.m3SecondaryContainer
                 textColor: Colours.m3Colors.m3OnSecondaryContainer
@@ -37,7 +38,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Upload wallpaper:")
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: qsTr("Upload static")
                 icon.name: "image"
                 onClicked: {
@@ -46,7 +47,7 @@ SettingsPageBase {
                 }
             }
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: qsTr("Upload video")
                 icon.name: "video_file"
                 onClicked: {

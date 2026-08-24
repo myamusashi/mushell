@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Quickshell.Networking
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Services
 
@@ -138,7 +139,7 @@ WrapperRectangle {
                 Layout.fillWidth: true
                 Layout.topMargin: Appearance.spacing.small * 0.5
 
-                StyledButton {
+                ExtendedFloatingButton {
                     Layout.fillWidth: true
                     visible: !root.isConnected
                     text: qsTr("Connect")
@@ -147,7 +148,7 @@ WrapperRectangle {
                     onClicked: root.wiredNetwork?.connect()
                 }
 
-                StyledButton {
+                ExtendedFloatingButton {
                     Layout.fillWidth: true
                     visible: root.isConnected
                     text: qsTr("Disconnect")

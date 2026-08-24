@@ -7,6 +7,7 @@ import Quickshell
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Menu
 import qs.Components.Dialog.FileDialog
 
@@ -26,7 +27,7 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Select a wallpaper image file:")
 
-            StyledButton {
+            ExtendedFloatingButton {
                 icon.name: "image"
                 text: qsTr("Browse\u2026")
                 onClicked: pickWallpaperDialog.openFileDialog()

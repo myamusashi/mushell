@@ -5,6 +5,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Feedback
 
 import "../Components"
@@ -46,7 +47,7 @@ Item {
                 }
             }
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: qsTr("Re-generate")
                 icon.name: "refresh"
                 implicitHeight: 36

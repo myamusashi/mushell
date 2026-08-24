@@ -6,6 +6,7 @@ import Quickshell.Widgets
 
 import qs.Core.Configs
 import qs.Services
+import qs.Components.Button
 
 import "../../../Base"
 
@@ -147,13 +148,13 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: qsTr("Cancel")
                 color: "transparent"
                 onClicked: root.cancelClicked()
             }
 
-            StyledButton {
+            ExtendedFloatingButton {
                 text: root.selectFolder ? qsTr("Select") : qsTr("Open")
                 enabled: root.selectFolder ? true : root.hasSelection
                 onClicked: root.openClicked()
