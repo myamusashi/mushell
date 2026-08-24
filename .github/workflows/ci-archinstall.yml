@@ -16,6 +16,14 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+          submodules: recursive
+
+    - name: initiliaze git repository
+      run: |
+        git init
+        git config user.email "git@example.com"
+        git config user.name "git"
 
     - name: Prepare environment
       run: |

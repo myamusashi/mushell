@@ -57,6 +57,23 @@ install_system_packages() {
 	fi
 }
 
+update_submodules() {
+	local -r fzy_marker="$PROJECT_ROOT/Plugins/third_party/fzy/src/match.c"
+	local -r mcu_marker="$PROJECT_ROOT/Plugins/third_party/material-color-utilities/cpp"
+
+	[[ -f $fzy_marker && -d $mcu_marker ]] && {
+		log "Git submodules already initialized"
+		return 0
+	}
+
+	git -C "$PROJECT_ROOT" rev-parse --git-dir &>/dev/null ||
+		die "Submodules missing and $PROJECT_ROOT is not a git repository — cannot fetch them"
+
+	log "Initializing git submodules..."
+	git -C "$PROJECT_ROOT" submodule update --init --recursive ||
+		die "Failed to initialize git submodules"
+}
+
 setup_aur_helper() {
 	command -v yay &>/dev/null && return 0
 
@@ -573,6 +590,7 @@ main() {
 	mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$FONT_DIR/truetype" "$QML_DIR" "$BUILD_DIR"
 
 	install_system_packages
+	update_submodules
 	setup_aur_helper
 	install_aur_packages
 	setup_i2c
