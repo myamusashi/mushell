@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Runs qmllint with Quickshell import paths from .qmlls.ini
-# Requires Quickshell to be running (qs -p Qml/) to have the buildDir VFS
 
 set -e
 

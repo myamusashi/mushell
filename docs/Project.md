@@ -37,9 +37,10 @@ vast-shell/
 │   ├── shell.qml
 │   ├── Components/
 │   │   ├── Base/              # CAnim, Circular, Corner, CornerPair, Elevation,
-│   │   │                      # FocusCage, NAnim, SettingRow, StyledButton,
-│   │   │                      # StyledRect, StyledSlide, StyledSwitch,
-│   │   │                      # StyledText, StyledTextInput, Wallpaper, Wavy
+│   │   │                      # FocusCage, NAnim, SettingRow, StyledRect,
+│   │   │                      # StyledSlide, StyledSwitch, StyledText,
+│   │   │                      # StyledTextInput, Wallpaper, Wavy
+│   │   ├── Button/            # ExtendedFloatingButton, FloatingButton
 │   │   ├── Menu/              # ContextMenu, DropdownField, DropdownMenu,
 │   │   │                      # MenuDivider, MenuItem, MenuSurface
 │   │   ├── Dialog/
