@@ -362,6 +362,7 @@ StyledRect {
         property bool menuOpen: false
         property real glideX: 0
         property real glideY: 0
+        property real shadowPadding: 12
 
         signal entryHovered(var entry, var entryItem)
         signal entryClicked(var entry)
@@ -369,7 +370,7 @@ StyledRect {
         signal exited
 
         implicitWidth: trayMenu.menuWidth
-        implicitHeight: trayMenu.maxHeight + 60
+        implicitHeight: Math.min(trayMenu.contentHeight, trayMenu.maxHeight) + shadowPadding
         color: "transparent"
         mask: Region {
             item: menuHost
@@ -377,7 +378,7 @@ StyledRect {
 
         anchor {
             window: popup.anchorWindow
-            edges: {
+            edges: { // qmllint disable missing-type
                 if (popup.level === 0)
                     return Edges.Bottom | Edges.Left;
                 if (popup.level === 1)
@@ -385,8 +386,8 @@ StyledRect {
                 if (popup.level === 2)
                     return Edges.Bottom | Edges.Left;
             }
-            gravity: Edges.Bottom | Edges.Right
-            adjustment: {
+            gravity: Edges.Bottom | Edges.Right // qmllint disable missing-type
+            adjustment: { // qmllint disable missing-type
                 if (popup.level === 0)
                     return PopupAdjustment.Flip | PopupAdjustment.Slide | PopupAdjustment.ResizeY;
                 if (popup.level === 1)
