@@ -23,6 +23,13 @@ Item {
 
     signal activated(int index)
 
+    function sectionBaseIndex(sectionIndex) {
+        let sum = 0;
+        for (let i = 0; i < sectionIndex; i++)
+            sum += root.model[i]?.items?.length ?? 0;
+        return sum;
+    }
+
     readonly property real compactWidth: 80
     readonly property real expandedWidth: 220
 
@@ -51,29 +58,6 @@ Item {
         anchors.topMargin: Appearance.margin.normal
         anchors.bottomMargin: Appearance.margin.normal
         spacing: Appearance.spacing.small
-
-        Item {
-            height: 40
-            width: railColumn.width - Appearance.margin.normal * 2
-            anchors.left: parent.left
-            anchors.leftMargin: Appearance.margin.normal
-
-            MArea {
-                anchors.fill: parent
-                anchors.rightMargin: parent.width - 40
-                layerRadius: Appearance.rounding.full
-                onClicked: root.expanded = !root.expanded
-
-                Icon {
-                    anchors.left: parent.left
-                    anchors.leftMargin: (parent.width - width) / 2
-                    anchors.verticalCenter: parent.verticalCenter
-                    icon: root.expanded ? "menu_open" : "menu"
-                    font.pixelSize: Appearance.fonts.size.larger
-                    color: Colours.m3Colors.m3OnSurfaceVariant
-                }
-            }
-        }
 
         Item {
             visible: fabItem.visible
@@ -198,24 +182,72 @@ Item {
                 Repeater {
                     model: root.model
 
-                    delegate: NavigationRailItem {
+                    delegate: Column {
+                        id: sectionColumn
+
                         required property int index
                         required property var modelData
 
-                        x: (destinationsColumn.width - width) / 2
-                        width: destinationsColumn.width - (root.expanded ? Appearance.margin.normal : Appearance.margin.smaller) * 2
-                        height: implicitHeight
+                        readonly property int baseIndex: root.sectionBaseIndex(index)
+                        readonly property int topGap: index === 0 ? Appearance.spacing.small : Appearance.spacing.large
 
-                        icon: modelData.icon ?? ""
-                        label: modelData.label ?? ""
-                        badgeText: modelData.badgeText ?? ""
-                        badgeDot: modelData.badgeDot ?? false
-                        selected: index === root.currentIndex
-                        expanded: root.expanded
+                        width: destinationsColumn.width
+                        spacing: 0
 
-                        onTriggered: {
-                            root.currentIndex = index;
-                            root.activated(index);
+                        Item {
+                            id: sectionHeader
+
+                            width: parent.width
+                            height: root.expanded ? sectionColumn.topGap + headerLabel.implicitHeight + Appearance.spacing.small : 0
+
+                            Behavior on height {
+                                NAnim {}
+                            }
+
+                            StyledText {
+                                id: headerLabel
+
+                                anchors.left: parent.left
+                                anchors.leftMargin: Appearance.margin.normal
+                                anchors.right: parent.right
+                                anchors.rightMargin: Appearance.margin.normal
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: sectionColumn.modelData.label ?? ""
+                                font.pixelSize: Appearance.fonts.size.large
+                                font.weight: Font.Medium
+                                color: Colours.m3Colors.m3OnSurfaceVariant
+                                elide: Text.ElideRight
+                                opacity: root.expanded ? 1 : 0
+
+                                Behavior on opacity {
+                                    NAnim {}
+                                }
+                            }
+                        }
+
+                        Repeater {
+                            model: sectionColumn.modelData.items ?? []
+
+                            delegate: NavigationRailItem {
+                                required property int index
+                                required property var modelData
+
+                                x: (destinationsColumn.width - width) / 2
+                                width: destinationsColumn.width - (root.expanded ? Appearance.margin.normal : Appearance.margin.smaller) * 2
+                                height: implicitHeight
+
+                                icon: modelData.icon ?? ""
+                                label: modelData.label ?? ""
+                                badgeText: modelData.badgeText ?? ""
+                                badgeDot: modelData.badgeDot ?? false
+                                selected: sectionColumn.baseIndex + index === root.currentIndex
+                                expanded: root.expanded
+
+                                onTriggered: {
+                                    root.currentIndex = sectionColumn.baseIndex + index;
+                                    root.activated(sectionColumn.baseIndex + index);
+                                }
+                            }
                         }
                     }
                 }
