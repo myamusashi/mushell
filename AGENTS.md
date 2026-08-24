@@ -27,7 +27,7 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 
 ## QML style
 
-- Format with `.qmlformat.ini`; lint with `Assets/shell/qmllint_qs.sh` against `.qmllint.ini`.
+- ALWAYS format with `.qmlformat.ini`; AND ALWAYS run LINTING with `Assets/shell/qmllint_qs.sh` EVERYTIME YOU FINISHED THE CODE.
 - Imports: `qs.<path_from_Qml_directory_root>` unless the target is in the same directory.
 - IDs: `camelCase`, descriptive (`root`, `rect`, `mouseArea` OK as defaults).
 - Local properties: `camelCase`, descriptive, no abbreviations/underscores; comment above if there are many.
