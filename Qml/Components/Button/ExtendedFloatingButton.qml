@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
+import qs.Components.Base
 
 Item {
     id: root
