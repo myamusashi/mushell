@@ -105,7 +105,7 @@ WlSessionLockSurface {
         opacity: 0
         transformOrigin: Item.Center
         property real blurRadius: 0
-        layer.enabled: true
+        layer.enabled: wallpaper.blurRadius > 0
         layer.effect: FastBlur {
             source: wallpaper
             radius: wallpaper.blurRadius
@@ -276,14 +276,6 @@ WlSessionLockSurface {
                 target: wallpaper
                 property: "opacity"
                 to: 1
-                duration: Appearance.animations.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
-            }
-
-            NAnim {
-                target: wallpaper
-                property: "blurRadius"
-                to: 10
                 duration: Appearance.animations.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
             }
@@ -561,7 +553,7 @@ WlSessionLockSurface {
             NAnim {
                 target: wallpaper
                 property: "blurRadius"
-                to: 10
+                to: 0
                 duration: Appearance.animations.durations.small
                 easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
             }
