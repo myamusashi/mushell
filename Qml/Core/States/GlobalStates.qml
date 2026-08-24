@@ -43,6 +43,7 @@ Singleton {
     property bool isBarOpen: Configs.bar.alwaysOpenBar
 
     property bool isDynamicIslandActive: false
+    property var pendingShareFiles: []
 
     property bool isLockscreenOpen: false
     property bool isSelectionOpen: false
@@ -81,12 +82,20 @@ Singleton {
         osd.resume(name);
     }
 
-    function setDynamicIslandActive(value): void {
+    function setDynamicIslandActive(value, silent): void {
         if (root.isDynamicIslandActive === value)
             return;
         root.isDynamicIslandActive = value;
-        if (value)
-            ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
+        if (!value || silent)
+            return;
+        ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
+    }
+
+    function shareFilesViaKdeConnect(files): void {
+        if (!files || files.length === 0)
+            return;
+        root.pendingShareFiles = files;
+        root.setDynamicIslandActive(true, true);
     }
 
     function setPanel(name, value): void {
