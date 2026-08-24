@@ -44,6 +44,15 @@ Scope {
     readonly property bool isTransferring: currentState === DynamicIsland.State.Transferring
     readonly property bool isCompleted: currentState === DynamicIsland.State.Completed
 
+    function acceptDroppedFiles(files) {
+        if (!files || files.length === 0)
+            return;
+        if (currentState !== DynamicIsland.State.Idle && currentState !== DynamicIsland.State.FilesDropped)
+            return;
+        droppedFiles = droppedFiles.concat(files);
+        currentState = DynamicIsland.State.FilesDropped;
+    }
+
     function startTransfer() {
         currentState = DynamicIsland.State.Transferring;
         for (var i = 0; i < droppedFiles.length; i++)
@@ -136,6 +145,13 @@ Scope {
 
     Connections {
         target: GlobalStates
+
+        function onPendingShareFilesChanged() {
+            if (GlobalStates.pendingShareFiles.length === 0)
+                return;
+            root.acceptDroppedFiles(GlobalStates.pendingShareFiles);
+            GlobalStates.pendingShareFiles = [];
+        }
         function onIsDynamicIslandActiveChanged() {
             if (GlobalStates.isDynamicIslandActive)
                 return;

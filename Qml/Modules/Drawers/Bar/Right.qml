@@ -15,6 +15,7 @@ RowLayout {
         implicitHeight: parent.height
     }
     Wid.Tray {}
+    Wid.KdeConnect {}
     Wid.Battery {
         widthBattery: 36
         heightBattery: 18
