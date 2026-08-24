@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 import qs.Components.Dialog.FileDialog
@@ -19,7 +18,19 @@ Item {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
+    CardRevealer {
+        id: cardRevealer
+
+        container: contentColumn
+        target: pageFlickable
+    }
+
+    function revealCard(cardTitle: string): bool {
+        return cardRevealer.reveal(cardTitle);
+    }
+
     Flickable {
+        id: pageFlickable
         anchors.fill: parent
         contentWidth: parent.width
         contentHeight: contentColumn.implicitHeight + (Appearance.margin.large * 2)

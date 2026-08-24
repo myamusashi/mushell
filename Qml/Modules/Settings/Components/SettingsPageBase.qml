@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs.Services
 import qs.Core.Configs
 import qs.Components.Base
+import "../Components"
 
 Item {
     id: root
@@ -15,6 +16,17 @@ Item {
 
     default property alias content: contentLayout.data
     property string pageTitle
+
+    CardRevealer {
+        id: cardRevealer
+
+        container: contentLayout
+        target: pageFlickable
+    }
+
+    function revealCard(cardTitle: string): bool {
+        return cardRevealer.reveal(cardTitle);
+    }
 
     ColumnLayout {
         anchors {
@@ -32,6 +44,7 @@ Item {
         }
 
         Flickable {
+            id: pageFlickable
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true

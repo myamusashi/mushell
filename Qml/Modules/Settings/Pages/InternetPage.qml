@@ -8,6 +8,7 @@ import Quickshell.Networking
 
 import qs.Components.Feedback
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Dialog
 import qs.Components.Menu
 import qs.Core.Configs
@@ -47,6 +48,17 @@ Item {
         return "signal_wifi_0_bar";
     }
 
+    CardRevealer {
+        id: cardRevealer
+
+        container: contentColumn
+        target: pageFlickable
+    }
+
+    function revealCard(cardTitle: string): bool {
+        return cardRevealer.reveal(cardTitle);
+    }
+
     ColumnLayout {
         anchors {
             fill: parent
@@ -63,6 +75,7 @@ Item {
         }
 
         Flickable {
+            id: pageFlickable
             Layout.fillWidth: true
             Layout.fillHeight: true
             contentHeight: contentColumn.implicitHeight
@@ -160,7 +173,7 @@ Item {
                         }
                     }
 
-                    StyledButton {
+                    ExtendedFloatingButton {
                         Layout.alignment: Qt.AlignRight
                         text: qsTr("Apply && Restart")
                         textColor: Colours.m3Colors.m3OnPrimary

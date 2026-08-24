@@ -24,6 +24,17 @@ Rectangle {
         radius: root.radius
     }
 
+    Rectangle {
+        id: flashBorder
+
+        anchors.fill: parent
+        radius: root.radius
+        color: "transparent"
+        border.color: Colours.m3Colors.m3Primary
+        border.width: 2
+        opacity: 0
+    }
+
     ColumnLayout {
         id: layout
 
@@ -49,6 +60,32 @@ Rectangle {
 
             Layout.fillWidth: true
             spacing: Appearance.spacing.normal
+        }
+    }
+
+    function flash() {
+        flashSeq.restart();
+    }
+
+    SequentialAnimation {
+        id: flashSeq
+
+        NumberAnimation {
+            target: flashBorder
+            property: "opacity"
+            to: 1
+            duration: 150
+        }
+
+        PauseAnimation {
+            duration: 900
+        }
+
+        NumberAnimation {
+            target: flashBorder
+            property: "opacity"
+            to: 0
+            duration: 450
         }
     }
 }
