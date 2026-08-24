@@ -214,7 +214,7 @@ Item {
                     ctx.clearRect(0, 0, bounds.width, bounds.height);
                     for (let i = 0; i < screens.length; i++) {
                         const s = screens[i].screen;
-                        ctx.drawImage(screens[i].path, s.x, s.y, s.width, s.height);
+                        ctx.drawImage(screens[i].path, s.x - bounds.x, s.y - bounds.y, s.width, s.height);
                     }
                     grabTimer.restart();
                 }
@@ -358,13 +358,16 @@ Item {
 
             readonly property real ox: modelData.x
             readonly property real oy: modelData.y
+            readonly property var frozenBounds: Utils.totalBounds(Quickshell.screens)
 
             Image {
                 source: root.frozenImageUrl
-                x: -ox
-                y: -oy
-                width: Utils.totalBounds(Quickshell.screens).width
-                height: Utils.totalBounds(Quickshell.screens).height
+                // Composite starts at the virtual desktop's min corner; offset by
+                // it so screens left of / above the primary stay aligned
+                x: frozenBounds.x - ox
+                y: frozenBounds.y - oy
+                width: frozenBounds.width
+                height: frozenBounds.height
                 cache: false
                 fillMode: Image.Pad
             }
@@ -451,9 +454,11 @@ Item {
                         return;
                     }
 
+                    // Crop coords are relative to the composite's min corner
+                    const b = Utils.totalBounds(Quickshell.screens);
                     const s = root.regionScale;
-                    const gx = Math.round(vx * s);
-                    const gy = Math.round(vy * s);
+                    const gx = Math.round((vx - b.x) * s);
+                    const gy = Math.round((vy - b.y) * s);
                     const gw = Math.round(vw * s);
                     const gh = Math.round(vh * s);
 
@@ -484,6 +489,8 @@ Item {
         activeAsync: root.windowPickerOpen
 
         component: PanelWindow {
+            id: pickerWin
+
             visible: true
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
@@ -525,20 +532,39 @@ Item {
             property real pickerOriginX: 0
             property real pickerOriginY: 0
 
-            function recalcPickerOrigin() {
-                var minX = 0, minY = 0;
-                var list = Hypr.toplevels;
-                for (var i = 0; i < list.length; i++) {
+            // Scrolling layouts place clients at negative or far-positive global
+            // coords; the active-workspace union bounds are fitted into the
+            // viewport so every window stays visible and clickable.
+            property real pickerScale: 1
+
+            function recalcPickerTransform() {
+                let minX = Infinity, minY = Infinity;
+                let maxX = -Infinity, maxY = -Infinity;
+                const list = Hypr.toplevels;
+                for (let i = 0; i < list.length; i++) {
                     if (list[i].workspace?.id !== Hypr.activeWsId)
                         continue;
-                    var at = list[i].lastIpcObject?.at;
-                    if (at) {
-                        if (at[0] < minX)
-                            minX = at[0];
-                        if (at[1] < minY)
-                            minY = at[1];
-                    }
+                    const ipc = list[i].lastIpcObject;
+                    const at = ipc?.at;
+                    const size = ipc?.size;
+                    if (!at || !size || size[0] <= 0 || size[1] <= 0)
+                        continue;
+                    minX = Math.min(minX, at[0]);
+                    minY = Math.min(minY, at[1]);
+                    maxX = Math.max(maxX, at[0] + size[0]);
+                    maxY = Math.max(maxY, at[1] + size[1]);
                 }
+                if (minX === Infinity) {
+                    pickerOriginX = 0;
+                    pickerOriginY = 0;
+                    pickerScale = 1;
+                    return;
+                }
+                const margin = Appearance.margin.normal * 2;
+                const spanW = Math.max(1, maxX - minX);
+                const spanH = Math.max(1, maxY - minY);
+                // Never upscale — ordinary layouts keep 1:1 geometry
+                pickerScale = Math.min(1, Math.max(1, pickerWin.width - margin * 2) / spanW, Math.max(1, pickerWin.height - margin * 2) / spanH);
                 pickerOriginX = minX;
                 pickerOriginY = minY;
             }
@@ -550,7 +576,7 @@ Item {
                 repeat: false
                 onTriggered: {
                     Hyprland.refreshToplevels();
-                    recalcPickerOrigin();
+                    pickerRecalcTimer.restart();
                 }
             }
 
@@ -563,8 +589,26 @@ Item {
                 }
             }
 
-            Component.onCompleted: pickerRefreshTimer.start()
+            // refreshToplevels() lands over IPC — recalc once fresh geometry arrived
+            Timer {
+                id: pickerRecalcTimer
 
+                interval: 150
+                repeat: false
+                onTriggered: recalcPickerTransform()
+            }
+
+            Connections {
+                target: Hypr
+
+                function onToplevelsChanged() {
+                    pickerRecalcTimer.restart();
+                }
+            }
+            Component.onCompleted: {
+                recalcPickerTransform();
+                pickerRefreshTimer.start();
+            }
             Repeater {
                 id: pickerRepeater
 
@@ -577,10 +621,10 @@ Item {
 
                     readonly property var ipc: modelData.lastIpcObject
 
-                    x: (ipc?.at?.[0] ?? 0) - pickerOriginX
-                    y: (ipc?.at?.[1] ?? 0) - pickerOriginY
-                    width: (ipc?.size?.[0] ?? 0)
-                    height: (ipc?.size?.[1] ?? 0)
+                    x: ((ipc?.at?.[0] ?? 0) - pickerOriginX) * pickerScale
+                    y: ((ipc?.at?.[1] ?? 0) - pickerOriginY) * pickerScale
+                    width: (ipc?.size?.[0] ?? 0) * pickerScale
+                    height: (ipc?.size?.[1] ?? 0) * pickerScale
                     visible: width > 0 && height > 0 && modelData.workspace?.id === Hypr.activeWsId
                     z: modelData.focusHistoryID
                     color: pickerMouse.containsMouse ? Qt.lighter(Colours.m3Colors.m3Primary, 1.4) : Colours.m3Colors.m3Primary

@@ -31,15 +31,22 @@ function intersectRect(a, b) {
 }
 
 function totalBounds(screens) {
-    var maxX = 0, maxY = 0;
+    var minX = Infinity, minY = Infinity;
+    var maxX = -Infinity, maxY = -Infinity;
     for (var i = 0; i < screens.length; i++) {
         var s = screens[i];
+        if (s.x < minX) minX = s.x;
+        if (s.y < minY) minY = s.y;
         var right = s.x + s.width;
         var bottom = s.y + s.height;
         if (right > maxX) maxX = right;
         if (bottom > maxY) maxY = bottom;
     }
-    return { width: maxX, height: maxY };
+    if (minX === Infinity)
+        return { x: 0, y: 0, width: 0, height: 0 };
+    // Origin of the virtual desktop bounding box — screens left of / above the
+    // primary output produce negative coordinates that callers must normalize by.
+    return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
 }
 
 function buildWlScreenrecArgs(cfg, geometry, output, toplevelFilter) {
