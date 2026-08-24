@@ -12,28 +12,18 @@ die() {
 	exit 1
 }
 
-INSTALL_DIR=""
-BIN_DIR=""
-FONT_DIR=""
-QML_DIR=""
-BUILD_DIR=""
-PROJECT_ROOT=""
-M3SHAPES_REV=""
-ANOTHER_RIPPLE_REV=""
+PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)" || die "Failed to determine project root"
+readonly PROJECT_ROOT
 
-init_globals() {
-	INSTALL_DIR="/usr/local/share/quickshell"
-	BIN_DIR="/usr/local/bin"
-	FONT_DIR="/usr/local/share/fonts"
-	QML_DIR="/usr/lib/qt6/qml"
-	BUILD_DIR="/tmp/quickshell-build"
-	PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)" || die "Failed to determine project root"
-	M3SHAPES_REV="1c8e6751febf230d7f94bf8015eaeb643bb4521e"
-	ANOTHER_RIPPLE_REV="main"
-	WL_SCREENREC_REV="0d23ae192bb6b6e365cb9c79bd711a6637c0e853"
+readonly INSTALL_DIR="/usr/local/share/quickshell"
+readonly BIN_DIR="/usr/local/bin"
+readonly FONT_DIR="/usr/local/share/fonts"
+readonly QML_DIR="/usr/lib/qt6/qml"
+readonly BUILD_DIR="/tmp/quickshell-build"
 
-	readonly INSTALL_DIR BIN_DIR FONT_DIR QML_DIR BUILD_DIR PROJECT_ROOT M3SHAPES_REV ANOTHER_RIPPLE_REV WL_SCREENREC_REV
-}
+readonly M3SHAPES_REV="6875533e1b459cd096e2250f54ceaad5290afc49"
+readonly ANOTHER_RIPPLE_REV="5037fd56226577c3f3d1da7db64bf5e72a476998"
+readonly WL_SCREENREC_REV="23500cce9ed2aba6c9cbb40187bcda2f99d4f835"
 
 check_root() {
 	[[ $EUID -eq 0 ]] || die "System-wide installation requires root. Run with sudo."
@@ -45,19 +35,13 @@ check_distro() {
 
 install_system_packages() {
 	local -a missing=()
-	# ddcutil added — required for external monitor brightness via DDC/CI
-	# i2c-tools added — provides i2cdetect for debugging
-	# wayland added — libwayland-client + wayland-scanner for the clipboard
-	#   manager's native ext_data_control_v1 binding (protocol XML is vendored
-	#   in Plugins/Vast/Clipboard/protocols, so wayland-protocols is not
-	#   required).
 	local -r pkg_list=(
 		base-devel git cmake ninja clang extra-cmake-modules patchelf pkgconf
-		qt6-base qt6-declarative qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
-		rust pipewire ddcutil i2c-tools go wayland
-		python python-pillow
+		qt6-base qt6-declarative qt6-wayland qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
+		rust pipewire ddcutil i2c-tools go wayland wayland-protocols
 		findutils grep sed gawk util-linux libnotify wireplumber
 		iw polkit wl-clipboard ffmpeg foot hyprland xdg-desktop-portal
+		spirv-tools vulkan-headers cli11 cpptrace jemalloc libdrm mesa libxcb glib2
 	)
 
 	log "Checking system dependencies..."
@@ -96,8 +80,7 @@ install_aur_packages() {
 	local -r aur_user="${SUDO_USER:-}"
 	local -a missing=()
 	local -r pkg_list=(
-		google-breakpad python-materialyoucolor ttf-weather-icons
-		app2unit ttf-material-symbols-variable-git quickshell-git
+		ttf-weather-icons app2unit ttf-material-symbols-variable-git
 	)
 
 	log "Checking AUR packages..."
@@ -112,13 +95,40 @@ install_aur_packages() {
 	[[ -n $aur_user ]] || die "AUR builds require a non-root user. Run with sudo."
 
 	sudo -u "$aur_user" yay -S --needed --noconfirm "${missing[@]}"
-
-	log "Installing wl-screenrec from fork..."
-	build_wl_screenrec
 }
 
-# ensures the current user is in the i2c and video groups,
-# and that i2c-dev is loaded now + persisted across reboots.
+build_quickshell() {
+	pacman -Qi quickshell &>/dev/null && {
+		log "quickshell already installed"
+		return 0
+	}
+	command -v makepkg &>/dev/null || die "makepkg not found — install pacman/base-devel"
+
+	local -r aur_user="${SUDO_USER:-}"
+	[[ -n $aur_user ]] || die "Building quickshell requires a non-root user. Run with sudo."
+
+	local -r pkgdir="$PROJECT_ROOT/packaging/arch/quickshell"
+	[[ -f $pkgdir/PKGBUILD ]] || die "PKGBUILD not found: $pkgdir/PKGBUILD"
+
+	log "Building quickshell from PKGBUILD..."
+	local -r build="$BUILD_DIR/quickshell"
+	rm -rf "$build"
+	mkdir -p "$build"
+	cp "$pkgdir"/PKGBUILD "$build/"
+	chown -R "$aur_user:$aur_user" "$build"
+
+	pushd "$build" >/dev/null
+	sudo -u "$aur_user" makepkg -f --noconfirm || die "Failed to build quickshell"
+	popd >/dev/null
+
+	local -a pkg_file
+	pkg_file=("$build"/quickshell-*.pkg.tar.zst)
+	[[ -f ${pkg_file[0]} ]] || die "quickshell package not found after build"
+
+	log "Installing quickshell package..."
+	pacman -U --noconfirm "${pkg_file[0]}" || die "Failed to install quickshell"
+}
+
 setup_i2c() {
 	local -r target_user="${SUDO_USER:-}"
 
@@ -155,11 +165,13 @@ EOF
 		id -nG "$target_user" | grep -qw "video" || groups_to_add+=("video")
 
 		if ((${#groups_to_add[@]})); then
-			log "Adding $target_user to groups: ${groups_to_add[*]}"
-			usermod -aG "$(
+			local joined
+			joined=$(
 				IFS=,
 				echo "${groups_to_add[*]}"
-			)" "$target_user"
+			)
+			log "Adding $target_user to groups: ${groups_to_add[*]}"
+			usermod -aG "$joined" "$target_user" || warn "Failed to add $target_user to groups: $joined"
 			warn "Group changes take effect on next login — DDC/CI may fail until then"
 		else
 			log "User $target_user already in i2c and video groups"
@@ -169,10 +181,47 @@ EOF
 	fi
 
 	if compgen -G "/dev/i2c-*" >/dev/null 2>&1; then
-		log "DDC/CI devices found: $(ls /dev/i2c-* | tr '\n' ' ')"
+		log "DDC/CI devices found: $(compgen -G "/dev/i2c-*" | tr '\n' ' ')"
 	else
 		warn "No /dev/i2c-* devices found — external monitor brightness control unavailable"
 	fi
+}
+
+clone_or_checkout() {
+	local -r repo_url=$1 dest=$2 rev=$3
+
+	[[ -d $dest ]] || git clone "$repo_url" "$dest"
+
+	git -C "$dest" checkout "$rev" 2>/dev/null || {
+		git -C "$dest" fetch
+		git -C "$dest" checkout "$rev"
+	}
+}
+
+copy_qml_module() {
+	local -r install_base=$1 dest=$2
+	shift 2
+	local -ra candidates=("$@")
+
+	mkdir -p "$dest"
+	local found=0
+	for rel in "${candidates[@]}"; do
+		local dir="$install_base/$rel"
+		if [[ -d $dir ]]; then
+			cp -r "$dir/"* "$dest/"
+			found=1
+		fi
+	done
+	((found)) || return 1
+}
+
+qt_module_libdirs() {
+	local joined="" lib
+	for mod in "$@"; do
+		lib=$(pkg-config --variable=libdir "$mod") || die "pkg-config: $mod not found"
+		joined="${joined:+$joined:}$lib"
+	done
+	echo "$joined"
 }
 
 build_vast_plugin() {
@@ -198,42 +247,21 @@ build_vast_plugin() {
 	ninja -C "$build"
 	ninja -C "$build" install
 
-	mkdir -p "$QML_DIR/Vast"
-	local found=0
-	for dir in \
-		"$install_base/usr/lib/qt6/qml/Vast" \
-		"$install_base/usr/lib/qt-6/qml/Vast" \
-		"$install_base/lib/qt6/qml/Vast" \
-		"$install_base/lib/qt-6/qml/Vast" \
-		"$install_base/Vast"; do
-		if [[ -d $dir ]]; then
-			cp -r "$dir/"* "$QML_DIR/Vast/"
-			found=1
-			break
-		fi
-	done
-	((found)) || die "Vast install tree not found under $install_base"
+	copy_qml_module "$install_base" "$QML_DIR/Vast" \
+		usr/lib/qt6/qml/Vast usr/lib/qt-6/qml/Vast lib/qt6/qml/Vast lib/qt-6/qml/Vast Vast ||
+		die "Vast install tree not found under $install_base"
 
-	# The Vast namespace is split into per-domain QML modules
-	# (Vast.Audio, Vast.Clipboard, ...). Backing targets live in
-	# Vast/lib, plugins in Vast/<Module>/. Patch an rpath on every
-	# shared object so they can find each other and the Qt deps.
 	local qt_libs pw_lib ddc_lib wl_lib
-	qt_libs=""
-	for mod in Qt6Core Qt6Gui Qt6Qml Qt6Quick Qt6Sql Qt6Network; do
-		local lib
-		lib=$(pkg-config --variable=libdir "$mod" 2>/dev/null || true)
-		[[ -n $lib && -z $qt_libs ]] && qt_libs="$lib"
-		[[ -n $lib ]] && qt_libs="$qt_libs:$lib"
-	done
-	pw_lib=$(pkg-config --variable=libdir libpipewire-0.3)
-	ddc_lib=$(pkg-config --variable=libdir ddcutil)
-	wl_lib=$(pkg-config --variable=libdir wayland-client)
-	local deps="$qt_libs:$pw_lib:$ddc_lib:$wl_lib"
+	qt_libs=$(qt_module_libdirs Qt6Core Qt6Gui Qt6Qml Qt6Quick Qt6Sql Qt6Network)
+	pw_lib=$(pkg-config --variable=libdir libpipewire-0.3) || die "libpipewire-0.3 not found via pkg-config"
+	ddc_lib=$(pkg-config --variable=libdir ddcutil) || die "ddcutil not found via pkg-config"
+	wl_lib=$(pkg-config --variable=libdir wayland-client) || die "wayland-client not found via pkg-config"
+	local -r deps="$qt_libs:$pw_lib:$ddc_lib:$wl_lib"
 
 	local so_file
 	while IFS= read -r -d '' so_file; do
-		patchelf --set-rpath "$(dirname "$so_file"):$QML_DIR/Vast/lib:$deps" "$so_file" 2>/dev/null || true
+		patchelf --set-rpath "$(dirname "$so_file"):$QML_DIR/Vast/lib:$deps" "$so_file" ||
+			warn "patchelf failed on $so_file"
 	done < <(find "$QML_DIR/Vast" -name '*.so' -print0)
 
 	[[ -f $core_so ]] || warn "Vast plugin .so not found after install — check build output"
@@ -248,168 +276,92 @@ build_m3shapes() {
 
 	log "Building m3shapes..."
 	local -r src="$BUILD_DIR/m3shapes"
+	local -r install_base="$BUILD_DIR/m3shapes-install"
 
-	[[ -d $src ]] || git clone https://github.com/myamusashi/m3shapes.git "$src"
-	git -C "$src" checkout "$M3SHAPES_REV" 2>/dev/null || {
-		git -C "$src" fetch
-		git -C "$src" checkout "$M3SHAPES_REV"
-	}
+	clone_or_checkout "https://github.com/soramanew/m3shapes.git" "$src" "$M3SHAPES_REV"
 
 	CC=clang CXX=clang++ cmake -S "$src" -B "$src/build" -G Ninja \
 		-DCMAKE_BUILD_TYPE=Release \
-		-DCMAKE_INSTALL_PREFIX="$BUILD_DIR/m3shapes-install"
+		-DCMAKE_INSTALL_PREFIX="$install_base"
 	ninja -C "$src/build"
 	ninja -C "$src/build" install
 
-	mkdir -p "$QML_DIR/M3Shapes"
-	local install_base="$BUILD_DIR/m3shapes-install"
-	[[ -d $install_base/M3Shapes ]] && cp -r "$install_base/M3Shapes/"* "$QML_DIR/M3Shapes/"
-	[[ -d $install_base/usr/lib/qt6/qml/M3Shapes ]] && cp -r "$install_base/usr/lib/qt6/qml/M3Shapes/"* "$QML_DIR/M3Shapes/"
+	copy_qml_module "$install_base" "$QML_DIR/M3Shapes" \
+		M3Shapes usr/lib/qt6/qml/M3Shapes ||
+		warn "m3shapes install tree not found under $install_base"
 
 	if [[ -f $plugin ]]; then
 		local qt_core_lib
-		qt_core_lib=$(pkg-config --variable=libdir Qt6Core)
-		patchelf --set-rpath "$QML_DIR/M3Shapes:$qt_core_lib" "$plugin" 2>/dev/null || true
+		qt_core_lib=$(qt_module_libdirs Qt6Core)
+		patchelf --set-rpath "$QML_DIR/M3Shapes:$qt_core_lib" "$plugin" || warn "patchelf failed on $plugin"
+	fi
+}
+
+find_qsb() {
+	local qsb
+	qsb=$(command -v qsb 2>/dev/null || command -v qsb6 2>/dev/null || true)
+	[[ -n $qsb ]] || qsb=$(find /usr/lib/qt6 /usr/lib/qt /opt/qt6 -name "qsb" -type f 2>/dev/null | head -1 || true)
+	echo "$qsb"
+}
+
+compile_shader_stage() {
+	local -r qsb=$1 src=$2 out=$3
+	local -ra qsb_flags=(--glsl "450,330,300 es" --hlsl 50 --msl 12)
+
+	[[ -f $src ]] || {
+		warn "  Missing: $(basename "$src") — skipping"
+		return 1
+	}
+	if [[ -f $out && $src -ot $out ]]; then
+		log "  Up to date: $(basename "$out")"
+		return 0
+	fi
+
+	if "$qsb" "${qsb_flags[@]}" -o "$out" "$src"; then
+		log "  → $(basename "$out")"
+		return 0
+	else
+		warn "  FAILED: $(basename "$out")"
+		return 1
 	fi
 }
 
 compile_shaders() {
 	local -r shader_dir="$PROJECT_ROOT/Assets/shaders"
 	local -r transition_dir="$shader_dir/transitions"
-	local -r vert_src="$shader_dir/ImageTransition.vert"
-	local -r vert_out="$shader_dir/ImageTransition.vert.qsb"
 
 	local qsb
-	qsb=$(command -v qsb 2>/dev/null || command -v qsb6 2>/dev/null || true)
-	[[ -n $qsb ]] || qsb=$(find /usr/lib/qt6 /usr/lib/qt /opt/qt6 -name "qsb" -type f 2>/dev/null | head -1 || true)
+	qsb=$(find_qsb)
 	[[ -n $qsb ]] || {
-		warn "qsb not found — skipping shader compilation \(qt6-shadertools required\)"
+		warn "qsb not found — skipping shader compilation (qt6-shadertools required)"
 		return 0
 	}
 
-	local -r qsb_flags=(--glsl "450,330,300 es" --hlsl 50 --msl 12)
+	log "Compiling vertex shader..."
+	compile_shader_stage "$qsb" "$shader_dir/ImageTransition.vert" "$shader_dir/ImageTransition.vert.qsb" || true
 
-	local -ra transitions=(
-		fade wipeDown hexTile circleExpand dissolve splitHorizontal
-		slideUp pixelate diagonalWipe boxExpand roll
-	)
-
-	if [[ ! -f $vert_src ]]; then
-		warn "Vertex shader not found: $vert_src"
-	elif [[ ! -f $vert_out || $vert_src -nt $vert_out ]]; then
-		log "Compiling vertex shader..."
-		"$qsb" "${qsb_flags[@]}" -o "$vert_out" "$vert_src" ||
-			die "Failed to compile vertex shader: $vert_src"
-		log "  → $(basename "$vert_out")"
+	if [[ -d $transition_dir ]]; then
+		log "Compiling transition shaders..."
+		local -ra transitions=(
+			fade wipeDown hexTile circleExpand dissolve splitHorizontal
+			slideUp pixelate diagonalWipe boxExpand roll
+		)
+		local failed=0
+		for name in "${transitions[@]}"; do
+			compile_shader_stage "$qsb" "$transition_dir/${name}.frag" "$transition_dir/${name}.frag.qsb" ||
+				failed=$((failed + 1))
+		done
+		((failed == 0)) || warn "$failed transition shader(s) failed to compile"
 	else
-		log "Vertex shader up to date"
-	fi
-
-	[[ -d $transition_dir ]] || {
 		warn "Transitions directory not found: $transition_dir — skipping"
-		return 0
-	}
+	fi
 
-	log "Compiling transition shaders..."
-	local failed=0
-	for name in "${transitions[@]}"; do
-		local src="$transition_dir/${name}.frag"
-		local out="$transition_dir/${name}.frag.qsb"
-
-		[[ -f $src ]] || {
-			warn "  Missing: ${name}.frag — skipping"
-			continue
-		}
-		[[ -f $out && $src -ot $out ]] && {
-			log "  Up to date: ${name}.frag.qsb"
-			continue
-		}
-
-		if "$qsb" "${qsb_flags[@]}" -o "$out" "$src"; then
-			log "  → ${name}.frag.qsb"
-		else
-			warn "  FAILED: ${name}.frag.qsb"
-			((failed++)) || true
-		fi
+	log "Compiling border progress, wavy, and wave form shaders..."
+	local -ra shader_pairs=(borderProgress wavy waveForm)
+	for name in "${shader_pairs[@]}"; do
+		compile_shader_stage "$qsb" "$shader_dir/${name}.vert" "$shader_dir/${name}.vert.qsb" || true
+		compile_shader_stage "$qsb" "$shader_dir/${name}.frag" "$shader_dir/${name}.frag.qsb" || true
 	done
-
-	((failed == 0)) || warn "$failed shader failed to compile"
-
-	log "Compiling border progress shaders..."
-	local -r border_vert_src="$shader_dir/borderProgress.vert"
-	local -r border_vert_out="$shader_dir/borderProgress.vert.qsb"
-	local -r border_frag_src="$shader_dir/borderProgress.frag"
-	local -r border_frag_out="$shader_dir/borderProgress.frag.qsb"
-
-	if [[ -f $border_vert_src ]]; then
-		if [[ ! -f $border_vert_out || $border_vert_src -nt $border_vert_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$border_vert_out" "$border_vert_src" &&
-				log "  → borderProgress.vert.qsb" ||
-				warn "  FAILED: borderProgress.vert.qsb"
-		else
-			log "  Up to date: borderProgress.vert.qsb"
-		fi
-	fi
-
-	if [[ -f $border_frag_src ]]; then
-		if [[ ! -f $border_frag_out || $border_frag_src -nt $border_frag_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$border_frag_out" "$border_frag_src" &&
-				log "  → borderProgress.frag.qsb" ||
-				warn "  FAILED: borderProgress.frag.qsb"
-		else
-			log "  Up to date: borderProgress.frag.qsb"
-		fi
-	fi
-
-	log "Compiling wavy and wave form..."
-	local -r wavy_vert_src="$shader_dir/wavy.vert"
-	local -r wavy_vert_out="$shader_dir/wavy.vert.qsb"
-	local -r wavy_frag_src="$shader_dir/wavy.frag"
-	local -r wavy_frag_out="$shader_dir/wavy.frag.qsb"
-	local -r waveForm_vert_src="$shader_dir/waveForm.vert"
-	local -r waveForm_vert_out="$shader_dir/waveForm.vert.qsb"
-	local -r waveForm_frag_src="$shader_dir/waveForm.frag"
-	local -r waveForm_frag_out="$shader_dir/waveForm.frag.qsb"
-
-	if [[ -f $wavy_vert_src ]]; then
-		if [[ ! -f $wavy_vert_out || $wavy_vert_src -nt $wavy_vert_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$wavy_vert_out" "$wavy_vert_src" &&
-				log "  → wavy.vert.qsb" ||
-				warn "  FAILED: wavy.vert.qsb"
-		else
-			log "  Up to date: wavy.vert.qsb"
-		fi
-	fi
-
-	if [[ -f $wavy_frag_src ]]; then
-		if [[ ! -f $wavy_frag_out || $wavy_frag_src -nt $wavy_frag_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$wavy_frag_out" "$wavy_frag_src" &&
-				log "  → wavy.frag.qsb" ||
-				warn "  FAILED: wavy.frag.qsb"
-		else
-			log "  Up to date: wavy.frag.qsb"
-		fi
-	fi
-
-	if [[ -f $waveForm_vert_src ]]; then
-		if [[ ! -f $waveForm_vert_out || $waveForm_vert_src -nt $waveForm_vert_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$waveForm_vert_out" "$waveForm_vert_src" &&
-				log "  → waveForm.vert.qsb" ||
-				warn "  FAILED: waveForm.vert.qsb"
-		else
-			log "  Up to date: waveForm.vert.qsb"
-		fi
-	fi
-
-	if [[ -f $waveForm_frag_src ]]; then
-		if [[ ! -f $waveForm_frag_out || $waveForm_frag_src -nt $waveForm_frag_out ]]; then
-			"$qsb" "${qsb_flags[@]}" -o "$waveForm_frag_out" "$waveForm_frag_src" &&
-				log "  → waveForm.frag.qsb" ||
-				warn "  FAILED: waveForm.frag.qsb"
-		else
-			log "  Up to date: waveForm.frag.qsb"
-		fi
-	fi
 }
 
 build_another_ripple() {
@@ -421,12 +373,9 @@ build_another_ripple() {
 
 	log "Building AnotherRipple..."
 	local -r src="$BUILD_DIR/Another-Ripple"
+	local -r install_base="$BUILD_DIR/anotherripple-install"
 
-	[[ -d $src ]] || git clone https://github.com/myamusashi/Another-Ripple.git "$src"
-	git -C "$src" checkout "$ANOTHER_RIPPLE_REV" 2>/dev/null || {
-		git -C "$src" fetch
-		git -C "$src" checkout "$ANOTHER_RIPPLE_REV"
-	}
+	clone_or_checkout "https://github.com/myamusashi/Another-Ripple.git" "$src" "$ANOTHER_RIPPLE_REV"
 
 	local -r cmake_src="$src/AnotherRipple"
 	[[ -d $cmake_src ]] || die "AnotherRipple subdirectory not found in repo: $cmake_src"
@@ -434,30 +383,22 @@ build_another_ripple() {
 	CC=clang CXX=clang++ cmake -S "$cmake_src" -B "$src/build" -G Ninja \
 		-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-		-DCMAKE_INSTALL_PREFIX="$BUILD_DIR/anotherripple-install" \
+		-DCMAKE_INSTALL_PREFIX="$install_base" \
 		-DINSTALL_QMLDIR="usr/lib/qt6/qml"
 	ninja -C "$src/build"
 	ninja -C "$src/build" install
 
-	mkdir -p "$QML_DIR/AnotherRipple"
-	local install_base="$BUILD_DIR/anotherripple-install"
-	for dir in \
-		"$install_base/usr/lib/qt6/qml/AnotherRipple" \
-		"$install_base/usr/lib/qt-6/qml/AnotherRipple" \
-		"$install_base/lib/qt6/qml/AnotherRipple" \
-		"$install_base/lib/qt-6/qml/AnotherRipple" \
-		"$install_base/AnotherRipple"; do
-		[[ -d $dir ]] && cp -r "$dir/"* "$QML_DIR/AnotherRipple/"
-	done
+	copy_qml_module "$install_base" "$QML_DIR/AnotherRipple" \
+		usr/lib/qt6/qml/AnotherRipple usr/lib/qt-6/qml/AnotherRipple \
+		lib/qt6/qml/AnotherRipple lib/qt-6/qml/AnotherRipple AnotherRipple ||
+		warn "AnotherRipple install tree not found under $install_base"
 
-	local qt_core_lib qt_qml_lib
-	qt_core_lib=$(pkg-config --variable=libdir Qt6Core)
-	qt_qml_lib=$(pkg-config --variable=libdir Qt6Qml)
-
+	local qt_libs
+	qt_libs=$(qt_module_libdirs Qt6Core Qt6Qml)
 	for lib in \
 		"$QML_DIR/AnotherRipple/libAnotherRipple.so" \
 		"$QML_DIR/AnotherRipple/libAnotherRippleplugin.so"; do
-		[[ -f $lib ]] && patchelf --set-rpath "$QML_DIR/AnotherRipple:$qt_core_lib:$qt_qml_lib" "$lib" 2>/dev/null || true
+		[[ -f $lib ]] && { patchelf --set-rpath "$QML_DIR/AnotherRipple:$qt_libs" "$lib" || warn "patchelf failed on $lib"; }
 	done
 
 	[[ -f $plugin ]] || warn "AnotherRipple plugin not found after installation"
@@ -495,8 +436,11 @@ install_quickshell_config() {
 	chmod -R 755 "$INSTALL_DIR"
 	chown -R root:root "$INSTALL_DIR"
 
-	if [[ -f $INSTALL_DIR/Qml/shell.qml ]]; then
-		sed -i 's/ShellRoot {/ShellRoot { settings.watchFiles: false/' "$INSTALL_DIR/Qml/shell.qml"
+	local -r shell_qml="$INSTALL_DIR/Qml/shell.qml"
+	if [[ -f $shell_qml ]]; then
+		sed -i 's/ShellRoot {/ShellRoot { settings.watchFiles: false/' "$shell_qml"
+		grep -q 'settings.watchFiles: false' "$shell_qml" ||
+			warn "Failed to patch $shell_qml — ShellRoot pattern not found"
 	fi
 
 	log "Setting global VAST_SHELL_DIRECTORY..."
@@ -508,7 +452,8 @@ EOF
 
 setup_user_config() {
 	local -r target_user="${SUDO_USER:-$USER}"
-	local -r user_home=$(getent passwd "$target_user" | cut -d: -f6)
+	local user_home
+	user_home=$(getent passwd "$target_user" | cut -d: -f6)
 
 	[[ -n $user_home ]] || {
 		warn "Could not determine home directory for $target_user — skipping user config setup"
@@ -519,13 +464,8 @@ setup_user_config() {
 
 	log "Setting up user configuration for $target_user..."
 
-	# Create directory
 	mkdir -p "$vast_config_dir"
-
-	# Copy vast-shell data
 	cp -r "$PROJECT_ROOT/Data/"* "$vast_config_dir/"
-
-	# Fix ownership
 	chown -R "$target_user:$target_user" "$vast_config_dir"
 }
 
@@ -583,25 +523,24 @@ build_vastctl() {
 	log "Building vastctl..."
 	pushd "$PROJECT_ROOT/vastctl" >/dev/null
 	go mod tidy
-	go build -ldflags="-s -w" -o "$binary" . || {
+	if ! go build -ldflags="-s -w" -o "$binary" .; then
 		warn "vastctl build failed"
 		popd >/dev/null
 		return 0
-	}
+	fi
 	popd >/dev/null
 
-	# shell completions
-	mkdir -p /usr/share/bash-completion/completions
-	"$binary" completion bash > /usr/share/bash-completion/completions/vastctl
-
-	mkdir -p /usr/share/fish/vendor_completions.d
-	"$binary" completion fish > /usr/share/fish/vendor_completions.d/vastctl.fish
-
-	mkdir -p /usr/share/zsh/site-functions
-	"$binary" completion zsh > /usr/share/zsh/site-functions/_vastctl
-
-	mkdir -p /usr/share/nushell/completions
-	"$binary" completion nushell > /usr/share/nushell/completions/vastctl.nu
+	local -r completions=(
+		"bash:/usr/share/bash-completion/completions/vastctl"
+		"fish:/usr/share/fish/vendor_completions.d/vastctl.fish"
+		"zsh:/usr/share/zsh/site-functions/_vastctl"
+		"nushell:/usr/share/nushell/completions/vastctl.nu"
+	)
+	for entry in "${completions[@]}"; do
+		local shell_name=${entry%%:*} out_path=${entry#*:}
+		mkdir -p "$(dirname "$out_path")"
+		"$binary" completion "$shell_name" >"$out_path" || warn "Failed to generate $shell_name completion"
+	done
 
 	log "vastctl installed to $BIN_DIR"
 }
@@ -610,6 +549,7 @@ cleanup_build_deps() {
 	local -r build_deps=(
 		base-devel cmake ninja clang extra-cmake-modules patchelf pkgconf
 		qt6-shadertools qt6-tools rust git
+		spirv-tools vulkan-headers cli11
 	)
 
 	local -a to_remove=()
@@ -624,9 +564,10 @@ cleanup_build_deps() {
 }
 
 main() {
-	init_globals
 	check_root
 	check_distro
+
+	trap 'rm -rf "$BUILD_DIR"' EXIT
 
 	log "Creating directories..."
 	mkdir -p "$INSTALL_DIR" "$BIN_DIR" "$FONT_DIR/truetype" "$QML_DIR" "$BUILD_DIR"
@@ -635,18 +576,21 @@ main() {
 	setup_aur_helper
 	install_aur_packages
 	setup_i2c
+
+	build_quickshell
 	build_vast_plugin
 	build_m3shapes
 	build_another_ripple
+	build_wl_screenrec
 	build_vastctl
 	compile_shaders
 	compile_translations
+
 	cleanup_build_deps
+
 	install_quickshell_config
 	setup_user_config
 	create_wrapper
-	
-	rm -rf "$BUILD_DIR"
 
 	log "System-wide installation complete!"
 	log "Run 'shell' to start quickshell."

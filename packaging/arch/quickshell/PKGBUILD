@@ -1,0 +1,59 @@
+# Maintainer: myamusashi
+# Contributor: Entailz <entail-wraps0r at icloud dot com>
+# Mirrors the nix derivation (nixpkgs quickshell 0.3.1):
+#   cmakeFlags: DISTRIBUTOR, INSTALL_QML_PREFIX, GIT_REVISION
+#   RelWithDebInfo build type
+
+pkgname=quickshell
+pkgver=0.3.1
+pkgrel=1
+pkgdesc='Flexible QtQuick based desktop shell toolkit'
+arch=(x86_64 aarch64)
+url='https://quickshell.org'
+license=('LGPL-3.0-only')
+depends=(
+  'qt6-base'
+  'qt6-declarative'
+  'qt6-wayland'
+  'qt6-svg'
+  'cli11'
+  'cpptrace'
+  'jemalloc'
+  'wayland'
+  'wayland-protocols'
+  'libdrm'
+  'mesa' # libgbm / egl
+  'libxcb'
+  'pam'
+  'pipewire'
+  'glib2'
+  'polkit'
+)
+makedepends=(
+  'cmake'
+  'ninja'
+  'pkgconf'
+  'qt6-shadertools'
+  'spirv-tools'
+  'vulkan-headers'
+)
+source=("$pkgname-$pkgver.tar.gz::https://git.outfoxxed.me/quickshell/quickshell/archive/v$pkgver.tar.gz")
+sha256sums=('d60592622f1aa1cbb853d4814f605dfde827bc692befbfecffaccf4c90e352d8')
+
+build() {
+  cmake -B build -S "$pkgname" -G Ninja \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DDISTRIBUTOR="archInstall" \
+    -DINSTALL_QML_PREFIX=lib/qt6/qml \
+    -DGIT_REVISION="tag-v$pkgver"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$pkgname/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
