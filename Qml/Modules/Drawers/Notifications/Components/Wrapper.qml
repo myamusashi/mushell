@@ -167,6 +167,17 @@ Item {
             }
         }
 
+        Connections {
+            target: contentLayout
+
+            function onReplyFocusedChanged() {
+                if (contentLayout.replyFocused)
+                    root.pauseTimer();
+                else if (!notifHover.hovered && !delegateMouseNotif.pressed && !delegateMouseNotif.drag.active)
+                    root.resumeTimer();
+            }
+        }
+
         H.MArea {
             id: delegateMouseNotif
 

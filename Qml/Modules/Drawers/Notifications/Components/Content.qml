@@ -13,6 +13,17 @@ Column {
 
     required property var modelData
     property bool isShowMoreBody: false
+    readonly property bool replyFocused: replyField.isFocused
+
+    function sendReply() {
+        const text = replyField.text.trim();
+
+        if (text === "")
+            return;
+
+        root.modelData.sendInlineReply(text);
+        replyField.text = "";
+    }
 
     spacing: Appearance.spacing.small
 
@@ -131,6 +142,62 @@ Column {
                     font.weight: Font.Medium
                     color: Colours.m3Colors.m3OnBackground
                     elide: Text.ElideRight
+                }
+            }
+        }
+    }
+
+    RowLayout {
+        width: parent.width
+        spacing: Appearance.spacing.normal
+        visible: root.modelData.hasInlineReply
+
+        StyledTextInput {
+            id: replyField
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: 40
+            toggleButtonVisible: false
+            autoFocus: false
+            placeHolderText: root.modelData.inlineReplyPlaceholder !== "" ? root.modelData.inlineReplyPlaceholder : qsTr("Reply…")
+            onAccepted: root.sendReply()
+            onKeyPressed: event => {
+                if (event.key === Qt.Key_Escape) {
+                    event.accepted = true;
+                    root.forceActiveFocus();
+                }
+            }
+        }
+
+        StyledRect {
+            id: sendButton
+
+            Layout.preferredWidth: 40
+            Layout.preferredHeight: 40
+            radius: Appearance.rounding.full
+            color: Colours.m3Colors.m3SurfaceContainerHigh
+
+            Icon {
+                anchors.centerIn: parent
+                icon: "send"
+                font.pixelSize: Appearance.fonts.size.extraLarge
+                color: Colours.m3Colors.m3OnBackground
+                opacity: replyField.hasText ? 1 : 0.4
+
+                Behavior on opacity {
+                    NAnim {
+                        duration: Appearance.animations.durations.small
+                    }
+                }
+            }
+
+            MArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (replyField.hasText)
+                        root.sendReply();
                 }
             }
         }
