@@ -30,8 +30,9 @@ WlSessionLockSurface {
     property string configVideoPath: ""
     readonly property string assetWallpaper: Paths.projectRoot + "/Assets/images/wallpaper.png"
     property string greeterThumbnailJob: ""
+    readonly property string thumbnailDir: `${Paths.cacheDir}/vast-shell`
     function greeterThumbnailPath() {
-        return `${Paths.cacheDir}/vast-shell/greeter-wallpaper-${Qt.md5(root.greeterThumbnailJob)}.png`;
+        return `${root.thumbnailDir}/greeter-wallpaper-${Qt.md5(root.greeterThumbnailJob)}.png`;
     }
     property url effectiveWallpaper: useVideoWallpaper ? "file://" + wallpaperPath : wallpaperPath
     property bool effectiveIsVideo: useVideoWallpaper
@@ -173,7 +174,6 @@ WlSessionLockSurface {
                     root.effectiveIsVideo = true;
                     play();
                     root.greeterThumbnailJob = root.wallpaperPath;
-                    greeterThumbnailExtractor.running = true;
                 } else if (mediaStatus === MediaPlayer.InvalidMedia) {
                     root.effectiveWallpaper = root.assetWallpaper;
                     root.effectiveIsVideo = false;
@@ -185,11 +185,16 @@ WlSessionLockSurface {
         Process {
             id: greeterThumbnailExtractor
 
-            command: ["sh", "-c", `test -s ${JSON.stringify(root.greeterThumbnailPath())} || ffmpeg -y -loglevel error -i ${JSON.stringify(root.greeterThumbnailJob)} -frames:v 1 ${JSON.stringify(root.greeterThumbnailPath())}`]
+            command: ["sh", "-c", `mkdir -p ${JSON.stringify(root.thumbnailDir)} && { test -s ${JSON.stringify(root.greeterThumbnailPath())} || ffmpeg -y -loglevel error -i ${JSON.stringify(root.greeterThumbnailJob)} -frames:v 1 ${JSON.stringify(root.greeterThumbnailPath())}; }`]
             running: root.greeterThumbnailJob !== ""
             onExited: function (exitCode, exitStatus) { // qmllint disable signal-handler-parameters
+                const thumbnailPath = root.greeterThumbnailPath();
+                const jobPath = root.greeterThumbnailJob;
                 root.greeterThumbnailJob = "";
-                root.colorSource = "file://" + root.greeterThumbnailPath();
+                if (exitCode === 0)
+                    root.colorSource = "file://" + thumbnailPath;
+                else
+                    console.warn("[Greeter] thumbnail extraction failed:", exitCode, jobPath);
             }
         }
 
