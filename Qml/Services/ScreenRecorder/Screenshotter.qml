@@ -30,14 +30,27 @@ Item {
     property var captureDoneCallback: null
     property bool isMultiCapturing: false
 
-    signal notify(string summary, string body, string urgency, string icon, string app)
+    signal notify(string summary, string body, string urgency, string icon, string app, var actions)
+
+    function notifySaved(path): void {
+        root.notify("Screenshot Saved", path, "normal", path, "Screenshot", [
+            {
+                "id": "open",
+                "label": qsTr("Open Image")
+            },
+            {
+                "id": "folder",
+                "label": qsTr("Show in Folder")
+            }
+        ]);
+    }
 
     ScreenshotSaver {
         id: saver
 
         screenshotDir: root.screenshotDir
 
-        onSaved: path => root.notify("Screenshot Saved", path, "normal", path, "Screenshot")
+        onSaved: path => root.notifySaved(path)
         onFailed: reason => root.notify("Screenshot Failed", reason, "critical", "dialog-error", "Screenshot")
     }
 
@@ -50,7 +63,7 @@ Item {
         onExited: (code, status) => {
             // qmllint enable
             if (code === 0 && destPath) {
-                root.notify("Screenshot Saved", destPath, "normal", destPath, "Screenshot");
+                root.notifySaved(destPath);
                 saver.copyFile(destPath);
             }
             destPath = "";
@@ -313,7 +326,7 @@ Item {
                         const path = Utils.screenshotPath(root.screenshotDir);
                         if (result.saveToFile(path)) {
                             saver.copyFile(path);
-                            root.notify("Screenshot Saved", path, "normal", path, "Screenshot");
+                            root.notifySaved(path);
                         } else {
                             root.notify("Screenshot Failed", "Failed to save cropped image.", "critical", "dialog-error", "Screenshot");
                         }
