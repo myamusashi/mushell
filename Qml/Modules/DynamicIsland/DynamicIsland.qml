@@ -188,7 +188,7 @@ Scope {
     LazyLoader {
         activeAsync: GlobalStates.isDynamicIslandActive || root.closing
         component: PanelWindow {
-            id: win
+            id: targetWindow
 
             anchors {
                 top: true
@@ -230,7 +230,7 @@ Scope {
             Connections {
                 target: root
                 function onCurrentStateChanged() {
-                    Qt.callLater(win.updateContentSize);
+                    Qt.callLater(targetWindow.updateContentSize);
                 }
             }
 
@@ -348,7 +348,7 @@ Scope {
                             }
                         }
 
-                        onCurrentIndexChanged: Qt.callLater(win.updateContentSize)
+                        onCurrentIndexChanged: Qt.callLater(targetWindow.updateContentSize)
 
                         Item {
                             implicitWidth: root.dotSize
@@ -367,11 +367,11 @@ Scope {
                             active: root.isDragging
                             onImplicitWidthChanged: {
                                 if (root.isDragging)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isDragging)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                         FilesDroppedContent {
@@ -379,11 +379,11 @@ Scope {
                             active: root.isFilesDropped
                             onImplicitWidthChanged: {
                                 if (root.isFilesDropped)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isFilesDropped)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                         DeviceListContent {
@@ -391,11 +391,11 @@ Scope {
                             active: root.isSelectingDevice
                             onImplicitWidthChanged: {
                                 if (root.isSelectingDevice)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isSelectingDevice)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                         ConfirmDeviceContent {
@@ -403,11 +403,11 @@ Scope {
                             active: root.isConfirmDevice
                             onImplicitWidthChanged: {
                                 if (root.isConfirmDevice)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isConfirmDevice)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                         ProgressContent {
@@ -415,11 +415,11 @@ Scope {
                             active: root.isTransferring
                             onImplicitWidthChanged: {
                                 if (root.isTransferring)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isTransferring)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                         DoneContent {
@@ -427,11 +427,11 @@ Scope {
                             active: root.isCompleted
                             onImplicitWidthChanged: {
                                 if (root.isCompleted)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                             onImplicitHeightChanged: {
                                 if (root.isCompleted)
-                                    Qt.callLater(win.updateContentSize);
+                                    Qt.callLater(targetWindow.updateContentSize);
                             }
                         }
                     }

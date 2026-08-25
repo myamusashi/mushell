@@ -12,7 +12,7 @@ Item {
 
     property alias contentLayout: contentLayout
     property alias iconLayout: iconLayout
-    property alias mArea: delegateMouseNotif
+    property alias mouseArea: delegateMouseNotif
 
     required property var notif
 
@@ -34,8 +34,8 @@ Item {
             timerRemaining = Math.max(0, timerRemaining - (Date.now() - timerStartTime));
             timer.stop();
         }
-        if (borderAnim.anim.running)
-            borderAnim.anim.pause();
+        if (borderAnimation.animation.running)
+            borderAnimation.animation.pause();
     }
 
     function resumeTimer() {
@@ -44,8 +44,8 @@ Item {
             timerStartTime = Date.now();
             timer.start();
         }
-        if (borderAnim.anim.paused)
-            borderAnim.anim.resume();
+        if (borderAnimation.animation.paused)
+            borderAnimation.animation.resume();
     }
 
     function resetTimer() {
@@ -53,7 +53,7 @@ Item {
         timer.interval = timerDuration;
         timerStartTime = Date.now();
         timer.restart();
-        borderAnim.anim.restart();
+        borderAnimation.animation.restart();
     }
 
     Timer {
@@ -78,7 +78,7 @@ Item {
     ListView.onPooled: {
         slideInAnim.stop();
         slideOutAnim.stop();
-        borderAnim.anim.stop();
+        borderAnimation.animation.stop();
     }
 
     ListView.onReused: {
@@ -96,7 +96,7 @@ Item {
         to: 0
         duration: Appearance.animations.durations.emphasized
         easing.bezierCurve: Appearance.animations.curves.emphasized
-        onFinished: borderAnim.anim.start()
+        onFinished: borderAnimation.animation.start()
     }
 
     NAnim {
@@ -250,7 +250,7 @@ Item {
     }
 
     BorderProgress {
-        id: borderAnim
+        id: borderAnimation
 
         anchors.fill: wrapperRect
         source: wrapperRect
@@ -258,6 +258,6 @@ Item {
         radius: wrapperRect.radius
         borderWidth: 2.0
         borderColor: root.notif.urgency === NotificationUrgency.Critical ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Primary
-        animDuration: root.timerDuration
+        animationDuration: root.timerDuration
     }
 }

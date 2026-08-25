@@ -16,8 +16,8 @@ PopupWidget {
             implicitWidth: parent.width
             implicitHeight: 200
 
-            value1: DesktopEntries.applications.values.filter(e => !e.runInTerminal).length
-            value2: DesktopEntries.applications.values.filter(e => e.runInTerminal).length
+            graphicalAppCount: DesktopEntries.applications.values.filter(app => !app.runInTerminal).length
+            terminalAppCount: DesktopEntries.applications.values.filter(app => app.runInTerminal).length
         }
 
         RowLayout {
@@ -54,10 +54,10 @@ PopupWidget {
     }
 
     component PieChart: GraphsView {
-        id: pie
+        id: pieChart
 
-        required property int value1
-        required property int value2
+        required property int graphicalAppCount
+        required property int terminalAppCount
 
         theme: GraphsTheme {
             colorScheme: GraphsTheme.ColorScheme.Dark
@@ -70,8 +70,8 @@ PopupWidget {
             holeSize: 0.5
 
             PieSlice {
-                label: pie.value1
-                value: pie.value1
+                label: pieChart.graphicalAppCount
+                value: pieChart.graphicalAppCount
                 color: Colours.m3Colors.m3Green
                 borderColor: "transparent"
                 labelVisible: true
@@ -82,8 +82,8 @@ PopupWidget {
             }
 
             PieSlice {
-                label: pie.value2
-                value: pie.value2
+                label: pieChart.terminalAppCount
+                value: pieChart.terminalAppCount
                 color: Qt.alpha(Colours.m3Colors.m3Green, 0.5)
                 borderColor: "transparent"
                 labelVisible: true

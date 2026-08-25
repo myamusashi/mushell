@@ -14,8 +14,8 @@ Switch {
     property string onIcon: "check"
     property string offIcon: "close"
 
-    property string _currentIcon: offIcon
-    property color _currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
+    property string currentIcon: offIcon
+    property color currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
 
     // qmllint disable
     states: [
@@ -36,8 +36,8 @@ Switch {
             }
             PropertyChanges {
                 target: root
-                _currentIcon: offIcon
-                _currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
+                currentIcon: offIcon
+                currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
             }
         },
         State {
@@ -57,8 +57,8 @@ Switch {
             }
             PropertyChanges {
                 target: root
-                _currentIcon: onIcon
-                _currentIconColor: Colours.m3Colors.m3OnPrimaryContainer
+                currentIcon: onIcon
+                currentIconColor: Colours.m3Colors.m3OnPrimaryContainer
             }
         },
         State {
@@ -78,8 +78,8 @@ Switch {
             }
             PropertyChanges {
                 target: root
-                _currentIcon: offIcon
-                _currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
+                currentIcon: offIcon
+                currentIconColor: Colours.m3Colors.m3SurfaceContainerHighest
             }
         },
         State {
@@ -99,8 +99,8 @@ Switch {
             }
             PropertyChanges {
                 target: root
-                _currentIcon: onIcon
-                _currentIconColor: Colours.m3Colors.m3OnPrimaryContainer
+                currentIcon: onIcon
+                currentIconColor: Colours.m3Colors.m3OnPrimaryContainer
             }
         }
     ]
@@ -139,8 +139,8 @@ Switch {
                 anchors.centerIn: parent
                 asynchronous: true
                 sourceComponent: Icon {
-                    icon: root._currentIcon
-                    color: root._currentIconColor
+                    icon: root.currentIcon
+                    color: root.currentIconColor
                     font.pixelSize: Appearance.fonts.size.medium
                 }
             }

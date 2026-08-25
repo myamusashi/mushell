@@ -14,22 +14,22 @@ Singleton {
 
     property alias dnd: persistentProps.dnd
 
-    readonly property list<Notif> notClosed: list.filter(n => !n.closed)
-    readonly property list<Notif> popups: list.filter(n => n.popup)
+    readonly property list<Notif> notClosed: notifications.filter(notif => !notif.closed)
+    readonly property list<Notif> popups: notifications.filter(notif => notif.popup)
 
-    property list<Notif> list: []
+    property list<Notif> notifications: []
     property bool loaded: false
     property int maxNotifications: 100
     property int maxNotificationAge: 604800000
 
     function clearAll() {
-        for (const notif of root.list.slice())
+        for (const notif of root.notifications.slice())
             notif.close();
     }
 
     function forceCleanup() {
         const now = Date.now();
-        for (const notif of root.list.slice()) {
+        for (const notif of root.notifications.slice()) {
             if (now - notif.time.getTime() > root.maxNotificationAge * 2) {
                 notif.locks.clear();
                 notif.close();
@@ -39,8 +39,8 @@ Singleton {
 
     function cleanupOldNotifications() {
         const now = Date.now();
-        const oldNotifications = root.list.filter(n => {
-            const age = now - n.time.getTime();
+        const oldNotifications = root.notifications.filter(notif => {
+            const age = now - notif.time.getTime();
             return age > root.maxNotificationAge;
         });
 
@@ -68,7 +68,7 @@ Singleton {
         }
     }
 
-    onListChanged: {
+    onNotificationsChanged: {
         if (loaded)
             saveTimer.restart();
     }
@@ -78,29 +78,29 @@ Singleton {
 
         interval: 2000
         onTriggered: {
-            storage.setText(JSON.stringify(root.notClosed.map(n => {
-                let persistentImage = n.image ?? "";
+            storage.setText(JSON.stringify(root.notClosed.map(notif => {
+                let persistentImage = notif.image ?? "";
 
                 if (persistentImage.startsWith("image://")) {
-                    const key = "notif-" + n.id;
+                    const key = "notif-" + notif.id;
                     const cached = ImageCache.cachedPath(key);
                     persistentImage = cached || "";
                 }
 
                 return {
-                    time: n.time.getTime(),
-                    id: n.id,
-                    summary: n.summary,
-                    body: n.body,
-                    appIcon: n.appIcon,
-                    appName: n.appName,
+                    time: notif.time.getTime(),
+                    id: notif.id,
+                    summary: notif.summary,
+                    body: notif.body,
+                    appIcon: notif.appIcon,
+                    appName: notif.appName,
                     image: persistentImage,
-                    desktopEntry: n.desktopEntry,
-                    expireTimeout: n.expireTimeout,
-                    urgency: n.urgency,
-                    resident: n.resident,
-                    hasActionIcons: n.hasActionIcons,
-                    actions: n.actions
+                    desktopEntry: notif.desktopEntry,
+                    expireTimeout: notif.expireTimeout,
+                    urgency: notif.urgency,
+                    resident: notif.resident,
+                    hasActionIcons: notif.hasActionIcons,
+                    actions: notif.actions
                 };
             }), null, 2));
         }
@@ -155,7 +155,7 @@ Singleton {
             });
 
             if (comp)
-                root.list = [comp, ...root.list];
+                root.notifications = [comp, ...root.notifications];
         }
     }
 
@@ -213,7 +213,7 @@ Singleton {
                     });
 
                     if (notif) {
-                        root.list.push(notif);
+                        root.notifications.push(notif);
                         loadedCount++;
                     }
 
@@ -221,7 +221,7 @@ Singleton {
                         break;
                 }
 
-                root.list.sort((a, b) => b.time - a.time);
+                root.notifications.sort((a, b) => b.time - a.time);
                 console.log(`Loaded ${loadedCount} notification(s) from cache`);
                 ToastService.show(qsTr("Loaded %1 notification(s) from cache").arg(loadedCount), qsTr("Notifications"), "dialog-information", 3000);
                 root.loaded = true;
@@ -243,7 +243,7 @@ Singleton {
     component Notif: QtObject {
         id: notif
 
-        readonly property Connections conn: Connections {
+        readonly property Connections connection: Connections {
             target: notif.notification
 
             function onClosed() {
@@ -311,29 +311,29 @@ Singleton {
             }
 
             function onActionsChanged() {
-                notif.actions = notif.notification.actions.map(a => ({
-                            identifier: a.identifier,
-                            text: a.text,
-                            invoke: () => a.invoke()
+                notif.actions = notif.notification.actions.map(action => ({
+                            identifier: action.identifier,
+                            text: action.text,
+                            invoke: () => action.invoke()
                         }));
             }
         }
 
         readonly property string timeStr: {
             const diff = Time.date.getTime() - time.getTime();
-            const m = Math.floor(diff / 60000);
+            const minutes = Math.floor(diff / 60000);
 
-            if (m < 1)
+            if (minutes < 1)
                 return qsTr("now");
 
-            const h = Math.floor(m / 60);
-            const d = Math.floor(h / 24);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
 
-            if (d > 0)
-                return `${d}d`;
-            if (h > 0)
-                return `${h}h`;
-            return `${m}m`;
+            if (days > 0)
+                return `${days}d`;
+            if (hours > 0)
+                return `${hours}h`;
+            return `${minutes}m`;
         }
         property bool popup: false
         property bool closed: false
@@ -370,23 +370,23 @@ Singleton {
 
         function close() {
             closed = true;
-            if (locks.size === 0 && root.list.includes(this)) {
-                root.list = root.list.filter(n => n !== this);
+            if (locks.size === 0 && root.notifications.includes(this)) {
+                root.notifications = root.notifications.filter(notif => notif !== this);
                 ImageCache.evictKey("notif-" + id);
                 if (notification)
                     notification.dismiss();
-                conn.target = null;
+                connection.target = null;
                 destroy();
             }
         }
 
         function closeQuiet() {
             closed = true;
-            if (locks.size === 0 && root.list.includes(this)) {
-                root.list = root.list.filter(n => n !== this);
+            if (locks.size === 0 && root.notifications.includes(this)) {
+                root.notifications = root.notifications.filter(notif => notif !== this);
                 if (notification)
                     notification.dismiss();
-                conn.target = null;
+                connection.target = null;
                 destroy();
             }
         }
@@ -431,16 +431,16 @@ Singleton {
             hasActionIcons = notification.hasActionIcons;
             hasInlineReply = notification.hasInlineReply;
             inlineReplyPlaceholder = notification.inlineReplyPlaceholder;
-            actions = notification.actions.map(a => ({
-                        identifier: a.identifier,
-                        text: a.text,
-                        invoke: () => a.invoke()
+            actions = notification.actions.map(action => ({
+                        identifier: action.identifier,
+                        text: action.text,
+                        invoke: () => action.invoke()
                     }));
         }
 
         Component.onDestruction: {
-            if (conn.target)
-                conn.target = null;
+            if (connection.target)
+                connection.target = null;
         }
     }
 
@@ -452,7 +452,7 @@ Singleton {
 
     Component.onDestruction: {
         cleanupTimer.stop();
-        for (const notif of root.list.slice()) {
+        for (const notif of root.notifications.slice()) {
             try {
                 notif.closeQuiet();
             } catch (e) {

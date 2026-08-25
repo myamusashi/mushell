@@ -435,7 +435,7 @@ StyledRect {
                 FloatingButton {
                     implicitWidth: 24
                     implicitHeight: 24
-                    bgRadius: Appearance.rounding.normal
+                    backgroundRadius: Appearance.rounding.normal
                     icon.name: Players.active?.shuffle ? "shuffle_on" : "shuffle"
                     icon.color: Players.active?.shuffle ? mediaPlayerRect.dynPrimary : mediaPlayerRect.dynOutline
                     color: "transparent"
@@ -486,7 +486,7 @@ StyledRect {
                 FloatingButton {
                     implicitWidth: 24
                     implicitHeight: 24
-                    bgRadius: Appearance.rounding.normal
+                    backgroundRadius: Appearance.rounding.normal
                     icon.name: Players.active?.loopState === MprisLoopState.Playlist ? "repeat_on" : Players.active?.loopState === MprisLoopState.Track ? "repeat_one_on" : "repeat"
                     icon.color: Players.active?.loopState !== MprisLoopState.None ? mediaPlayerRect.dynPrimary : mediaPlayerRect.dynOutline
                     color: "transparent"

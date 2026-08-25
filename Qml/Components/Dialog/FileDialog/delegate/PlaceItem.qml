@@ -48,26 +48,26 @@ StyledRect {
 
         Icon {
             id: iconItem
-            property color c0From
-            property color c0To
-            property bool c0Active: false
-            property real c0Blend: 1.0
+            property color iconColorFrom
+            property color iconColorTo
+            property bool iconColorBlending: false
+            property real iconColorBlendProgress: 1.0
 
-            onC0BlendChanged: {
-                if (!c0Active)
+            onIconColorBlendProgressChanged: {
+                if (!iconColorBlending)
                     return;
-                if (c0Blend >= 1) {
-                    color = c0To;
-                    c0Active = false;
-                } else if (c0Blend > 0) {
-                    color = Colours.blendColors(c0From, c0To, c0Blend);
+                if (iconColorBlendProgress >= 1) {
+                    color = iconColorTo;
+                    iconColorBlending = false;
+                } else if (iconColorBlendProgress > 0) {
+                    color = Colours.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c0Anim
+                id: iconColorAnim
                 target: iconItem
-                property: "c0Blend"
+                property: "iconColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -75,12 +75,12 @@ StyledRect {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             onTargetChanged: {
-                c0Anim.stop();
-                c0From = iconItem.color;
-                c0To = target;
-                c0Active = true;
-                c0Blend = 0.0;
-                c0Anim.start();
+                iconColorAnim.stop();
+                iconColorFrom = iconItem.color;
+                iconColorTo = target;
+                iconColorBlending = true;
+                iconColorBlendProgress = 0.0;
+                iconColorAnim.start();
             }
 
             icon: root.icon
@@ -89,26 +89,26 @@ StyledRect {
 
         StyledText {
             id: label
-            property color c1From
-            property color c1To
-            property bool c1Active: false
-            property real c1Blend: 1.0
+            property color labelColorFrom
+            property color labelColorTo
+            property bool labelColorBlending: false
+            property real labelColorBlendProgress: 1.0
 
-            onC1BlendChanged: {
-                if (!c1Active)
+            onLabelColorBlendProgressChanged: {
+                if (!labelColorBlending)
                     return;
-                if (c1Blend >= 1) {
-                    color = c1To;
-                    c1Active = false;
-                } else if (c1Blend > 0) {
-                    color = Colours.blendColors(c1From, c1To, c1Blend);
+                if (labelColorBlendProgress >= 1) {
+                    color = labelColorTo;
+                    labelColorBlending = false;
+                } else if (labelColorBlendProgress > 0) {
+                    color = Colours.blendColors(labelColorFrom, labelColorTo, labelColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c1Anim
+                id: labelColorAnim
                 target: label
-                property: "c1Blend"
+                property: "labelColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -116,12 +116,12 @@ StyledRect {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             onTargetChanged: {
-                c1Anim.stop();
-                c1From = label.color;
-                c1To = target;
-                c1Active = true;
-                c1Blend = 0.0;
-                c1Anim.start();
+                labelColorAnim.stop();
+                labelColorFrom = label.color;
+                labelColorTo = target;
+                labelColorBlending = true;
+                labelColorBlendProgress = 0.0;
+                labelColorAnim.start();
             }
 
             text: root.label

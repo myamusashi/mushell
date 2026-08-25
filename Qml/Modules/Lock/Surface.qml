@@ -27,26 +27,26 @@ WlSessionLockSurface {
     color: "transparent"
     property bool zoomedIn: false
 
-    property color cFrom
-    property color cTo
-    property bool cActive: false
-    property real cBlend: 1.0
+    property color colorFrom
+    property color colorTo
+    property bool colorBlending: false
+    property real colorBlendProgress: 1.0
 
-    onCBlendChanged: {
-        if (!cActive)
+    onColorBlendProgressChanged: {
+        if (!colorBlending)
             return;
-        if (cBlend >= 1) {
-            bottomItem.lockIcon.color = cTo;
-            cActive = false;
-        } else if (cBlend > 0) {
-            bottomItem.lockIcon.color = Colours.blendColors(cFrom, cTo, cBlend);
+        if (colorBlendProgress >= 1) {
+            bottomItem.lockIcon.color = colorTo;
+            colorBlending = false;
+        } else if (colorBlendProgress > 0) {
+            bottomItem.lockIcon.color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
         }
     }
 
     NAnim {
-        id: cAnim
+        id: colorBlendAnim
         target: root
-        property: "cBlend"
+        property: "colorBlendProgress"
         from: 0.0
         to: 1.0
         duration: Appearance.animations.durations.small
@@ -358,12 +358,12 @@ WlSessionLockSurface {
         }
         ScriptAction {
             script: {
-                cAnim.stop();
-                cFrom = bottomItem.lockIcon.color;
-                cTo = Colours.m3Colors.m3Green;
-                cActive = true;
-                cBlend = 0.0;
-                cAnim.start();
+                colorBlendAnim.stop();
+                colorFrom = bottomItem.lockIcon.color;
+                colorTo = Colours.m3Colors.m3Green;
+                colorBlending = true;
+                colorBlendProgress = 0.0;
+                colorBlendAnim.start();
                 bottomItem.iconName = "lock_open_right";
             }
         }

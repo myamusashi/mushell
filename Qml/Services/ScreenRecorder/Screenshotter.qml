@@ -87,7 +87,7 @@ Item {
         }
 
         component: PanelWindow {
-            id: captureWin
+            id: captureWindow
 
             visible: true
             color: "transparent"
@@ -102,9 +102,9 @@ Item {
             property int grabRetries: 0
 
             function doGrab() {
-                if (scv.width <= 0 || scv.height <= 0) {
-                    if (captureWin.grabRetries < 20) {
-                        captureWin.grabRetries++;
+                if (screencopyView.width <= 0 || screencopyView.height <= 0) {
+                    if (captureWindow.grabRetries < 20) {
+                        captureWindow.grabRetries++;
                         grabRetryTimer.restart();
                     } else {
                         console.log("grabToImage: giving up after retries, closing overlays");
@@ -123,7 +123,7 @@ Item {
                 }
 
                 if (root.isMultiCapturing) {
-                    scv.grabToImage(result => {
+                    screencopyView.grabToImage(result => {
                         const screen = captureLoader.targetScreen;
                         const path = Utils.tempCapturePath();
                         if (result && result.saveToFile(path)) {
@@ -137,7 +137,7 @@ Item {
                         captureLoader.active = false;
                     });
                 } else if (root.pendingAction === "region") {
-                    scv.grabToImage(result => {
+                    screencopyView.grabToImage(result => {
                         const path = Utils.tempCapturePath();
                         if (!result) {
                             root.notify("Screenshot Failed", "grabToImage returned null.", "critical", "dialog-error", "Screenshot");
@@ -154,8 +154,8 @@ Item {
                         }
                     });
                 } else {
-                    console.log("windowCapture: grabbing, source:", captureLoader.targetToplevel ? "toplevel" : "screen", "targetSize:", captureLoader.targetWidth, "x", captureLoader.targetHeight, "scvSize:", scv.width, "x", scv.height);
-                    scv.grabToImage(result => {
+                    console.log("windowCapture: grabbing, source:", captureLoader.targetToplevel ? "toplevel" : "screen", "targetSize:", captureLoader.targetWidth, "x", captureLoader.targetHeight, "viewSize:", screencopyView.width, "x", screencopyView.height);
+                    screencopyView.grabToImage(result => {
                         console.log("windowCapture: grabToImage done, result:", !!result, "pendingAction:", root.pendingAction);
                         saver.saveResult(result, root.pendingAction);
                         captureLoader.active = false;
@@ -168,11 +168,11 @@ Item {
 
                 interval: 50
                 repeat: false
-                onTriggered: captureWin.doGrab()
+                onTriggered: captureWindow.doGrab()
             }
 
             ScreencopyView {
-                id: scv
+                id: screencopyView
 
                 anchors.fill: parent
                 captureSource: captureLoader.targetToplevel ?? captureLoader.targetScreen
@@ -180,10 +180,10 @@ Item {
                 paintCursor: false
 
                 onHasContentChanged: {
-                    if (!hasContent || captureWin.done)
+                    if (!hasContent || captureWindow.done)
                         return;
-                    captureWin.done = true;
-                    captureWin.doGrab();
+                    captureWindow.done = true;
+                    captureWindow.doGrab();
                 }
             }
         }
@@ -223,7 +223,7 @@ Item {
                     if (compositeCanvas.width <= 0 || compositeCanvas.height <= 0)
                         return;
                     const screens = root.allScreenPaths;
-                    const bounds = Utils.totalBounds(screens.map(e => e.screen));
+                    const bounds = Utils.totalBounds(screens.map(entry => entry.screen));
                     ctx.clearRect(0, 0, bounds.width, bounds.height);
                     for (let i = 0; i < screens.length; i++) {
                         const s = screens[i].screen;
@@ -241,7 +241,7 @@ Item {
                     compositeLoader.active = false;
                     return;
                 }
-                const bounds = Utils.totalBounds(screens.map(e => e.screen));
+                const bounds = Utils.totalBounds(screens.map(entry => entry.screen));
                 compositeCanvas.width = bounds.width;
                 compositeCanvas.height = bounds.height;
                 compositeCanvas.imagesToLoad = screens.length;
@@ -285,9 +285,9 @@ Item {
     }
 
     // Shared selection state in virtual desktop logical pixels
-    property point selStart: Qt.point(0, 0)
-    property point selEnd: Qt.point(0, 0)
-    property bool selDragging: false
+    property point selectionStart: Qt.point(0, 0)
+    property point selectionEnd: Qt.point(0, 0)
+    property bool selectionDragging: false
 
     // Hidden crop engine — loaded when selection finishes
     LazyLoader {
@@ -346,7 +346,7 @@ Item {
 
     // Multi-window selection overlay — one PanelWindow per screen
     Instantiator {
-        id: selOverlay
+        id: selectionOverlay
 
         model: Quickshell.screens
         active: root.selectionOpen
@@ -369,16 +369,16 @@ Item {
                 bottom: true
             }
 
-            readonly property real ox: modelData.x
-            readonly property real oy: modelData.y
+            readonly property real offsetX: modelData.x
+            readonly property real offsetY: modelData.y
             readonly property var frozenBounds: Utils.totalBounds(Quickshell.screens)
 
             Image {
                 source: root.frozenImageUrl
                 // Composite starts at the virtual desktop's min corner; offset by
                 // it so screens left of / above the primary stay aligned
-                x: frozenBounds.x - ox
-                y: frozenBounds.y - oy
+                x: frozenBounds.x - offsetX
+                y: frozenBounds.y - offsetY
                 width: frozenBounds.width
                 height: frozenBounds.height
                 cache: false
@@ -391,11 +391,11 @@ Item {
             }
 
             Rectangle {
-                visible: root.selDragging
-                x: Math.min(root.selStart.x, root.selEnd.x) - ox
-                y: Math.min(root.selStart.y, root.selEnd.y) - oy
-                width: Math.abs(root.selEnd.x - root.selStart.x)
-                height: Math.abs(root.selEnd.y - root.selStart.y)
+                visible: root.selectionDragging
+                x: Math.min(root.selectionStart.x, root.selectionEnd.x) - offsetX
+                y: Math.min(root.selectionStart.y, root.selectionEnd.y) - offsetY
+                width: Math.abs(root.selectionEnd.x - root.selectionStart.x)
+                height: Math.abs(root.selectionEnd.y - root.selectionStart.y)
                 color: "transparent"
                 border.color: Colours.m3Colors.m3OnSurface
                 border.width: 2
@@ -426,7 +426,7 @@ Item {
                 repeat: false
                 running: root.selectionOpen
                 onTriggered: {
-                    console.log("selOverlay watchdog: force-closing frozen overlay");
+                    console.log("selectionOverlay watchdog: force-closing frozen overlay");
                     root.selectionOpen = false;
                     root.frozenImageUrl = "";
                 }
@@ -443,40 +443,40 @@ Item {
                         root.frozenImageUrl = "";
                         return;
                     }
-                    root.selStart = Qt.point(e.x + ox, e.y + oy);
-                    root.selEnd = root.selStart;
-                    root.selDragging = true;
+                    root.selectionStart = Qt.point(e.x + offsetX, e.y + offsetY);
+                    root.selectionEnd = root.selectionStart;
+                    root.selectionDragging = true;
                 }
                 onPositionChanged: e => {
-                    if (root.selDragging)
-                        root.selEnd = Qt.point(e.x + ox, e.y + oy);
+                    if (root.selectionDragging)
+                        root.selectionEnd = Qt.point(e.x + offsetX, e.y + offsetY);
                 }
                 onReleased: e => {
-                    if (!root.selDragging)
+                    if (!root.selectionDragging)
                         return;
-                    root.selDragging = false;
+                    root.selectionDragging = false;
 
-                    const vx = Math.min(root.selStart.x, root.selEnd.x);
-                    const vy = Math.min(root.selStart.y, root.selEnd.y);
-                    const vw = Math.abs(root.selEnd.x - root.selStart.x);
-                    const vh = Math.abs(root.selEnd.y - root.selStart.y);
+                    const selectionMinX = Math.min(root.selectionStart.x, root.selectionEnd.x);
+                    const selectionMinY = Math.min(root.selectionStart.y, root.selectionEnd.y);
+                    const selectionWidth = Math.abs(root.selectionEnd.x - root.selectionStart.x);
+                    const selectionHeight = Math.abs(root.selectionEnd.y - root.selectionStart.y);
 
-                    if (vw < 5 || vh < 5) {
+                    if (selectionWidth < 5 || selectionHeight < 5) {
                         root.selectionOpen = false;
                         root.frozenImageUrl = "";
                         return;
                     }
 
                     // Crop coords are relative to the composite's min corner
-                    const b = Utils.totalBounds(Quickshell.screens);
-                    const s = root.regionScale;
-                    const gx = Math.round((vx - b.x) * s);
-                    const gy = Math.round((vy - b.y) * s);
-                    const gw = Math.round(vw * s);
-                    const gh = Math.round(vh * s);
+                    const bounds = Utils.totalBounds(Quickshell.screens);
+                    const scale = root.regionScale;
+                    const cropX = Math.round((selectionMinX - bounds.x) * scale);
+                    const cropY = Math.round((selectionMinY - bounds.y) * scale);
+                    const cropWidth = Math.round(selectionWidth * scale);
+                    const cropHeight = Math.round(selectionHeight * scale);
 
                     cropEngine.active = true;
-                    cropEngine.item.doCrop(root.frozenImageUrl, gx, gy, gw, gh);
+                    cropEngine.item.doCrop(root.frozenImageUrl, cropX, cropY, cropWidth, cropHeight);
                 }
             }
         }
@@ -502,7 +502,7 @@ Item {
         activeAsync: root.windowPickerOpen
 
         component: PanelWindow {
-            id: pickerWin
+            id: pickerWindow
 
             visible: true
             exclusionMode: ExclusionMode.Ignore
@@ -553,11 +553,11 @@ Item {
             function recalcPickerTransform() {
                 let minX = Infinity, minY = Infinity;
                 let maxX = -Infinity, maxY = -Infinity;
-                const list = Hypr.toplevels;
-                for (let i = 0; i < list.length; i++) {
-                    if (list[i].workspace?.id !== Hypr.activeWsId)
+                const toplevels = Hypr.toplevels;
+                for (let i = 0; i < toplevels.length; i++) {
+                    if (toplevels[i].workspace?.id !== Hypr.activeWsId)
                         continue;
-                    const ipc = list[i].lastIpcObject;
+                    const ipc = toplevels[i].lastIpcObject;
                     const at = ipc?.at;
                     const size = ipc?.size;
                     if (!at || !size || size[0] <= 0 || size[1] <= 0)
@@ -574,10 +574,10 @@ Item {
                     return;
                 }
                 const margin = Appearance.margin.normal * 2;
-                const spanW = Math.max(1, maxX - minX);
-                const spanH = Math.max(1, maxY - minY);
+                const spanWidth = Math.max(1, maxX - minX);
+                const spanHeight = Math.max(1, maxY - minY);
                 // Never upscale — ordinary layouts keep 1:1 geometry
-                pickerScale = Math.min(1, Math.max(1, pickerWin.width - margin * 2) / spanW, Math.max(1, pickerWin.height - margin * 2) / spanH);
+                pickerScale = Math.min(1, Math.max(1, pickerWindow.width - margin * 2) / spanWidth, Math.max(1, pickerWindow.height - margin * 2) / spanHeight);
                 pickerOriginX = minX;
                 pickerOriginY = minY;
             }
@@ -596,8 +596,8 @@ Item {
             Connections {
                 target: Hyprland
                 function onRawEvent(event) {
-                    const n = event.name;
-                    if (["movewindow", "openwindow", "closewindow", "changefloatingmode"].includes(n))
+                    const eventName = event.name;
+                    if (["movewindow", "openwindow", "closewindow", "changefloatingmode"].includes(eventName))
                         pickerRefreshTimer.restart();
                 }
             }
@@ -704,9 +704,9 @@ Item {
                             }
                             const ipc = modelData.lastIpcObject;
                             const size = ipc?.size ?? [0, 0];
-                            const ws = Hypr.focusedWorkspace;
-                            const mon = ws?.monitor;
-                            const screen = mon ? (Quickshell.screens.find(s => s.name === mon.name) ?? Quickshell.screens[0]) : Quickshell.screens[0];
+                            const workspace = Hypr.focusedWorkspace;
+                            const monitor = workspace?.monitor;
+                            const screen = monitor ? (Quickshell.screens.find(s => s.name === monitor.name) ?? Quickshell.screens[0]) : Quickshell.screens[0];
                             root.pendingAction = root.pendingWindowAction;
                             captureLoader.targetScreen = screen;
                             captureLoader.targetToplevel = modelData.wayland;

@@ -231,7 +231,7 @@ RowLayout {
                     FloatingButton {
                         implicitWidth: 18
                         implicitHeight: 18
-                        bgRadius: Appearance.rounding.normal
+                        backgroundRadius: Appearance.rounding.normal
                         icon.name: Players.active?.loopState === MprisLoopState.Playlist ? "repeat_on" : Players.active?.loopState === MprisLoopState.Track ? "repeat_one_on" : "repeat"
                         icon.color: Players.active?.loopSupported || (Players.active?.loopState === MprisLoopState.Playlist || Players.active?.loopState === MprisLoopState.Track) ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
                         color: "transparent"
@@ -454,7 +454,7 @@ RowLayout {
                     FloatingButton {
                         implicitWidth: 24
                         implicitHeight: 24
-                        bgRadius: Appearance.rounding.normal
+                        backgroundRadius: Appearance.rounding.normal
                         icon.name: Players.active?.loopState === MprisLoopState.Playlist ? "repeat_on" : Players.active?.loopState === MprisLoopState.Track ? "repeat_one_on" : "repeat"
                         icon.color: Players.active?.loopSupported || (Players.active?.loopState === MprisLoopState.Playlist || Players.active?.loopState === MprisLoopState.Track) ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
                         color: "transparent"
@@ -587,7 +587,7 @@ RowLayout {
                     }
 
                     delegate: ItemDelegate {
-                        id: itemDel
+                        id: playerDelegate
 
                         required property MprisPlayer modelData
                         required property int index
@@ -603,28 +603,28 @@ RowLayout {
 
                         background: StyledRect {
                             id: itemBg
-                            property color target: (playerComboBox.currentIndex === itemDel.index || itemDel.highlighted) ? Qt.alpha(Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary, 0.18) : "transparent"
-                            property color cFrom
-                            property color cTo
-                            property bool cActive: false
-                            property real cBlend: 1.0
-                            onCBlendChanged: {
-                                if (!cActive)
+                            property color target: (playerComboBox.currentIndex === playerDelegate.index || playerDelegate.highlighted) ? Qt.alpha(Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary, 0.18) : "transparent"
+                            property color colorFrom
+                            property color colorTo
+                            property bool colorBlending: false
+                            property real colorBlendProgress: 1.0
+                            onColorBlendProgressChanged: {
+                                if (!colorBlending)
                                     return;
-                                if (cBlend >= 1) {
-                                    color = cTo;
-                                    cActive = false;
-                                } else if (cBlend > 0) {
-                                    color = Colours.blendColors(cFrom, cTo, cBlend);
+                                if (colorBlendProgress >= 1) {
+                                    color = colorTo;
+                                    colorBlending = false;
+                                } else if (colorBlendProgress > 0) {
+                                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                                 }
                             }
                             onTargetChanged: {
-                                cAnim.stop();
-                                cFrom = color;
-                                cTo = target;
-                                cActive = true;
-                                cBlend = 0.0;
-                                cAnim.start();
+                                colorBlendAnim.stop();
+                                colorFrom = color;
+                                colorTo = target;
+                                colorBlending = true;
+                                colorBlendProgress = 0.0;
+                                colorBlendAnim.start();
                             }
 
                             anchors {
@@ -636,9 +636,9 @@ RowLayout {
                             height: parent.height
 
                             NAnim {
-                                id: cAnim
+                                id: colorBlendAnim
                                 target: itemBg
-                                property: "cBlend"
+                                property: "colorBlendProgress"
                                 from: 0.0
                                 to: 1.0
                                 duration: Appearance.animations.durations.small
@@ -664,18 +664,17 @@ RowLayout {
 
                             IconImage {
                                 anchors.verticalCenter: parent.verticalCenter
-                                source: IconUtils.iconForId(itemDel.modelData.desktopEntry)
+                                source: IconUtils.iconForId(playerDelegate.modelData.desktopEntry)
                                 asynchronous: true
                                 implicitWidth: 20
                                 implicitHeight: 20
                             }
 
                             StyledText {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: root.cleanDesktopEntry(itemDel.modelData.desktopEntry) ?? ""
+                                text: root.cleanDesktopEntry(playerDelegate.modelData.desktopEntry) ?? ""
                                 color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
                                 font.pixelSize: Appearance.fonts.size.normal
-                                font.weight: playerComboBox.currentIndex === itemDel.index ? Font.Medium : Font.Normal
+                                font.weight: playerComboBox.currentIndex === playerDelegate.index ? Font.Medium : Font.Normal
                                 elide: Text.ElideRight
                             }
                         }

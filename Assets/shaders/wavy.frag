@@ -6,35 +6,35 @@ layout(location = 0) out vec4 fragColor;
 layout(std140, binding = 0) uniform buf {
     mat4  qt_Matrix;
     float qt_Opacity;
-    float w;
-    float cy;
-    float activeW;
+    float effectWidth;
+    float centerY;
+    float activeEnd;
     vec4  activeColor;
     vec4  inactiveColor;
-    float inactSt;
-    float freq;
-    float amp;
-    float phase;
-    float strokeHalf;
+    float inactiveStart;
+    float waveFrequency;
+    float waveAmplitude;
+    float wavePhase;
+    float strokeHalfWidth;
 };
 
 void main() {
     const float PI2    = 6.283185307;
     const float fringe = 1.0;
 
-    float px = qt_TexCoord0.x * w;
-    float py = qt_TexCoord0.y * (cy * 2.0);
+    float px = qt_TexCoord0.x * effectWidth;
+    float py = qt_TexCoord0.y * (centerY * 2.0);
 
-    float waveY = cy + amp * sin((px / w) * PI2 * freq + phase);
+    float waveY = centerY + waveAmplitude * sin((px / effectWidth) * PI2 * waveFrequency + wavePhase);
     float dWave = abs(py - waveY);
-    float waveA = smoothstep(strokeHalf + fringe,
-                             max(strokeHalf - fringe, 0.0), dWave);
-    waveA *= step(0.0, px) * step(px, activeW);
+    float waveA = smoothstep(strokeHalfWidth + fringe,
+                             max(strokeHalfWidth - fringe, 0.0), dWave);
+    waveA *= step(0.0, px) * step(px, activeEnd);
 
-    float dFlat = abs(py - cy);
-    float flatA = smoothstep(strokeHalf + fringe,
-                             max(strokeHalf - fringe, 0.0), dFlat);
-    flatA *= step(inactSt, px) * step(px, w);
+    float dFlat = abs(py - centerY);
+    float flatA = smoothstep(strokeHalfWidth + fringe,
+                             max(strokeHalfWidth - fringe, 0.0), dFlat);
+    flatA *= step(inactiveStart, px) * step(px, effectWidth);
 
     float aA = activeColor.a   * waveA * qt_Opacity;
     float iA = inactiveColor.a * flatA * qt_Opacity;

@@ -26,7 +26,7 @@ Item {
     readonly property int itemSize: 40
     readonly property int itemSpacing: Appearance.spacing.large
 
-    property bool openPerappVolume: false
+    property bool openPerAppVolume: false
 
     implicitWidth: GlobalStates.isOSDVisible("volume") ? wrapper.implicitWidth : 0
     implicitHeight: 280
@@ -87,43 +87,43 @@ Item {
             Pipewire.defaultAudioSink.audio.muted = !Pipewire.defaultAudioSink.audio.muted;
         }
         function appList(): string {
-            const streams = Pipewire.nodes.values.filter(n => n.isStream);
-            const r = [];
-            for (const s of streams)
-                r.push({
-                    id: s.id,
-                    name: s.name,
-                    appName: s.properties["application.name"] ?? s.description ?? s.name,
-                    mediaName: s.properties["media.name"] ?? "",
-                    volume: s.audio.volume,
-                    muted: s.audio.muted
+            const streams = Pipewire.nodes.values.filter(node => node.isStream);
+            const streamSummaries = [];
+            for (const stream of streams)
+                streamSummaries.push({
+                    id: stream.id,
+                    name: stream.name,
+                    appName: stream.properties["application.name"] ?? stream.description ?? stream.name,
+                    mediaName: stream.properties["media.name"] ?? "",
+                    volume: stream.audio.volume,
+                    muted: stream.audio.muted
                 });
-            return JSON.stringify(r);
+            return JSON.stringify(streamSummaries);
         }
         function appSet(id: int, percent: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
+            const stream = Pipewire.nodes.values.filter(node => node.isStream).find(node => node.id === id);
+            if (stream)
+                stream.audio.volume = Math.max(0.0, Math.min(1.0, percent / 100));
         }
         function appChange(id: int, delta: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.volume = Math.max(0.0, Math.min(1.0, s.audio.volume + delta / 100));
+            const stream = Pipewire.nodes.values.filter(node => node.isStream).find(node => node.id === id);
+            if (stream)
+                stream.audio.volume = Math.max(0.0, Math.min(1.0, stream.audio.volume + delta / 100));
         }
         function appMute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = true;
+            const stream = Pipewire.nodes.values.filter(node => node.isStream).find(node => node.id === id);
+            if (stream)
+                stream.audio.muted = true;
         }
         function appUnmute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = false;
+            const stream = Pipewire.nodes.values.filter(node => node.isStream).find(node => node.id === id);
+            if (stream)
+                stream.audio.muted = false;
         }
         function appToggleMute(id: int): void {
-            const s = Pipewire.nodes.values.filter(n => n.isStream).find(n => n.id === id);
-            if (s)
-                s.audio.muted = !s.audio.muted;
+            const stream = Pipewire.nodes.values.filter(node => node.isStream).find(node => node.id === id);
+            if (stream)
+                stream.audio.muted = !stream.audio.muted;
         }
     }
 
@@ -131,7 +131,7 @@ Item {
         id: wrapper
 
         anchors.fill: parent
-        implicitWidth: 60 + (root.openPerappVolume && loader.item ? loader.item.perappWidth + root.itemSpacing : 0) // qmllint disable
+        implicitWidth: 60 + (root.openPerAppVolume && loader.item ? loader.item.perAppWidth + root.itemSpacing : 0) // qmllint disable
         color: GlobalStates.drawerColors
         clip: true
         radius: 0
@@ -145,16 +145,16 @@ Item {
             asynchronous: true
             onActiveChanged: {
                 if (!active)
-                    root.openPerappVolume = false;
+                    root.openPerAppVolume = false;
             }
 
             sourceComponent: Item {
                 anchors.fill: parent
 
-                readonly property real perappWidth: repeater.count * root.itemSize + Math.max(0, repeater.count - 1) * root.itemSpacing
+                readonly property real perAppWidth: repeater.count * root.itemSize + Math.max(0, repeater.count - 1) * root.itemSpacing
 
                 Row {
-                    id: perappContainer
+                    id: perAppContainer
 
                     anchors {
                         left: parent.left
@@ -162,7 +162,7 @@ Item {
                         verticalCenter: parent.verticalCenter
                     }
 
-                    width: root.openPerappVolume ? parent.perappWidth : 0
+                    width: root.openPerAppVolume ? parent.perAppWidth : 0
                     height: mainVolumeColumn.height
                     spacing: root.itemSpacing
                     clip: true
@@ -182,8 +182,8 @@ Item {
                             required property PwLinkGroup modelData
 
                             width: root.itemSize
-                            height: perappContainer.height
-                            node: modelData.source
+                            height: perAppContainer.height
+                            audioNode: modelData.source
                         }
                     }
                 }
@@ -257,8 +257,8 @@ Item {
                         MArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: mevent => {
-                                if (mevent.button === Qt.LeftButton)
+                            onClicked: mouseEvent => {
+                                if (mouseEvent.button === Qt.LeftButton)
                                     Audio.toggleMute(Pipewire.defaultAudioSink);
                             }
                         }
@@ -275,7 +275,7 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: root.sliderHeight
                         orientation: Qt.Vertical
-                        popupValueFormat: v => Math.round(v * 100)
+                        popupValueFormat: volumeValue => Math.round(volumeValue * 100)
                         value: Pipewire.defaultAudioSink.audio.volume
                         onMoved: Pipewire.defaultAudioSink.audio.volume = value
                         onValueChanged: {
@@ -310,7 +310,7 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onEntered: GlobalStates.pauseOSD("volume")
                             onExited: GlobalStates.resumeOSD("volume")
-                            onClicked: root.openPerappVolume = !root.openPerappVolume
+                            onClicked: root.openPerAppVolume = !root.openPerAppVolume
                         }
                     }
                 }
@@ -321,13 +321,13 @@ Item {
     component Mixer: Column {
         id: mixer
 
-        required property PwNode node
+        required property PwNode audioNode
         property bool showVolume: false
 
         spacing: Appearance.spacing.normal
 
         PwObjectTracker {
-            objects: [mixer.node]
+            objects: [mixer.audioNode]
         }
 
         Item {
@@ -342,7 +342,7 @@ Item {
                 implicitHeight: 30
                 opacity: mixer.showVolume ? 0 : 1
                 scale: mixer.showVolume ? 0.5 : 1
-                source: IconUtils.guessIconPath(mixer.node)
+                source: IconUtils.guessIconPath(mixer.audioNode)
 
                 Behavior on opacity {
                     NAnim {
@@ -360,7 +360,7 @@ Item {
 
             StyledText {
                 anchors.centerIn: appIcon
-                text: (mixer.node.audio.volume * 100).toFixed(0)
+                text: (mixer.audioNode.audio.volume * 100).toFixed(0)
                 color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.size.large
                 font.weight: Font.DemiBold
@@ -392,9 +392,9 @@ Item {
             implicitWidth: root.itemSize
             implicitHeight: root.sliderHeight
             orientation: Qt.Vertical
-            popupValueFormat: v => Math.round(v * 100)
-            value: mixer.node.audio.volume
-            onMoved: mixer.node.audio.volume = value
+            popupValueFormat: volumeValue => Math.round(volumeValue * 100)
+            value: mixer.audioNode.audio.volume
+            onMoved: mixer.audioNode.audio.volume = value
             onValueChanged: {
                 mixer.showVolume = true;
                 if (!pressed)
@@ -454,10 +454,10 @@ Item {
         function barHeight(index: int): real {
             if (!isActive)
                 return baseBarHeight;
-            const cfg = barConfigs[index];
-            const phase = (progress + cfg.phaseOffset) % 1.0;
+            const barConfig = barConfigs[index];
+            const phase = (progress + barConfig.phaseOffset) % 1.0;
             const sinValue = Math.max(0, Math.sin(phase * Math.PI * 2));
-            return cfg.minHeight + (cfg.maxHeight - cfg.minHeight) * sinValue;
+            return barConfig.minHeight + (barConfig.maxHeight - barConfig.minHeight) * sinValue;
         }
 
         Repeater {

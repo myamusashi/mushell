@@ -181,16 +181,16 @@ MaterialShape {
             startY: sunShape.height
 
             PathLine {
-                x: geo.hillStartX
-                y: geo.hillStartY
+                x: geometry.hillStartX
+                y: geometry.hillStartY
             }
             PathCubic {
-                control1X: geo.hillCp1X
-                control1Y: geo.hillCp1Y
-                control2X: geo.hillCp2X
-                control2Y: geo.hillCp2Y
-                x: geo.hillEndX
-                y: geo.hillEndY
+                control1X: geometry.hillControlPoint1X
+                control1Y: geometry.hillControlPoint1Y
+                control2X: geometry.hillControlPoint2X
+                control2Y: geometry.hillControlPoint2Y
+                x: geometry.hillEndX
+                y: geometry.hillEndY
             }
             PathLine {
                 x: sunShape.width
@@ -209,8 +209,8 @@ MaterialShape {
             fillColor: sunShape.sunColor
 
             PathAngleArc {
-                centerX: geo.sunX
-                centerY: geo.sunY
+                centerX: geometry.sunX
+                centerY: geometry.sunY
                 radiusX: sunShape.sunSize / 2
                 radiusY: sunShape.sunSize / 2
                 startAngle: 0
@@ -219,27 +219,27 @@ MaterialShape {
         }
 
         QtObject {
-            id: geo
+            id: geometry
 
             // foking binding loop
-            readonly property real w: sunShape.parent.width
-            readonly property real h: sunShape.parent.height
+            readonly property real widthPx: sunShape.parent.width
+            readonly property real heightPx: sunShape.parent.height
 
-            property real hillHeight: h * 0.6
-            property real hillBaseY: h - hillHeight
+            property real hillHeight: heightPx * 0.6
+            property real hillBaseY: heightPx - hillHeight
             property real hillStartX: 0
             property real hillStartY: hillBaseY + hillHeight * 0.3
-            property real hillCp1X: w * 0.3
-            property real hillCp1Y: hillBaseY - hillHeight * 0.1
-            property real hillCp2X: w * 0.7
-            property real hillCp2Y: hillBaseY - hillHeight * 0.1
-            property real hillEndX: w
+            property real hillControlPoint1X: widthPx * 0.3
+            property real hillControlPoint1Y: hillBaseY - hillHeight * 0.1
+            property real hillControlPoint2X: widthPx * 0.7
+            property real hillControlPoint2Y: hillBaseY - hillHeight * 0.1
+            property real hillEndX: widthPx
             property real hillEndY: hillBaseY + hillHeight * 0.3
 
-            property real t: canvas.sunriseProgress
-            property real oneMinusT: 1 - t
-            property real sunX: Math.pow(oneMinusT, 3) * hillStartX + 3 * Math.pow(oneMinusT, 2) * t * hillCp1X + 3 * oneMinusT * Math.pow(t, 2) * hillCp2X + Math.pow(t, 3) * hillEndX
-            property real sunY: Math.pow(oneMinusT, 3) * hillStartY + 3 * Math.pow(oneMinusT, 2) * t * hillCp1Y + 3 * oneMinusT * Math.pow(t, 2) * hillCp2Y + Math.pow(t, 3) * hillEndY
+            property real progress: canvas.sunriseProgress
+            property real oneMinusProgress: 1 - progress
+            property real sunX: Math.pow(oneMinusProgress, 3) * hillStartX + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1X + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2X + Math.pow(progress, 3) * hillEndX
+            property real sunY: Math.pow(oneMinusProgress, 3) * hillStartY + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1Y + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2Y + Math.pow(progress, 3) * hillEndY
         }
     }
 }

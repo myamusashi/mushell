@@ -8,7 +8,7 @@ import qs.Components.Base
 Row {
     id: root
 
-    property alias mouseArea: mArea
+    property alias mouseArea: mouseArea
     property alias icon: iconItem.icon
     property alias title: titleItem.text
 
@@ -46,7 +46,7 @@ Row {
         color: Colours.m3Colors.m3Red
 
         MArea {
-            id: mArea
+            id: mouseArea
 
             anchors.fill: parent
             layerColor: "transparent"

@@ -36,11 +36,11 @@ Singleton {
     property bool includeAudio: false
     property bool showCursor: true
 
-    property var _thumbnailQueue: []
-    property var _currentThumbnailJob: null
-    property bool _thumbnailBusy: false
+    property var thumbnailQueue: []
+    property var currentThumbnailJob: null
+    property bool thumbnailJobBusy: false
 
-    property var _cache: []
+    property var deviceCache: []
     property var defaultSink: sinks()[0] ?? null
     property var defaultSource: sources()[0] ?? null
 
@@ -54,37 +54,37 @@ Singleton {
     onAudioDeviceChanged: {}
     onAudioDeviceDescriptionChanged: {}
     onVideoCodecChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.videoCodec = root.videoCodec;
     }
     onAudioCodecChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.audioCodec = root.audioCodec;
     }
     onDriDeviceChanged: {}
     onEncodeResolutionChanged: {}
     onLowPowerChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.lowPower = root.lowPower;
     }
     onBitrateChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.bitrate = root.bitrate;
     }
     onMaxFpsChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.maxFps = root.maxFps;
     }
     onHistoryModeChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.historyMode = root.historyMode;
     }
     onIncludeAudioChanged: {}
     onShowCursorChanged: {
-        if (!_loadingFromConfig)
+        if (!loadingFromConfig)
             Configs.screenRecorder.showCursor = root.showCursor;
     }
-    property bool _loadingFromConfig: false
+    property bool loadingFromConfig: false
     onIsRecordingChanged: {
         if (root.isRecording) {
             root.recordingElapsedSeconds = 0;
@@ -249,7 +249,7 @@ Singleton {
                 const fileName = ffprobeProcess.videoPath.split("/").pop();
                 const dot = fileName.lastIndexOf(".");
                 if (dot <= 0) {
-                    root._finishThumbnailJob(ffprobeProcess.videoPath, "", ffprobeProcess.callback);
+                    root.finishThumbnailJob(ffprobeProcess.videoPath, "", ffprobeProcess.callback);
                     return;
                 }
 
@@ -278,7 +278,7 @@ Singleton {
         // qmllint disable
         onExited: (exitCode, exitStatus) => {
             // qmllint enable
-            root._finishThumbnailJob(ffmpegProcess.videoPath, exitCode === 0 ? ffmpegProcess.thumb : "", ffmpegProcess.callback);
+            root.finishThumbnailJob(ffmpegProcess.videoPath, exitCode === 0 ? ffmpegProcess.thumb : "", ffmpegProcess.callback);
         }
     }
 
@@ -314,7 +314,7 @@ Singleton {
         root.checkActiveRecording();
         root.isRecordingChanged();
         root.currentOutputFileChanged();
-        root._loadingFromConfig = true;
+        root.loadingFromConfig = true;
         root.maxFps = Configs.screenRecorder.maxFps;
         root.bitrate = Configs.screenRecorder.bitrate;
         root.videoCodec = Configs.screenRecorder.videoCodec;
@@ -322,7 +322,7 @@ Singleton {
         root.lowPower = Configs.screenRecorder.lowPower;
         root.showCursor = Configs.screenRecorder.showCursor;
         root.historyMode = Configs.screenRecorder.historyMode;
-        root._loadingFromConfig = false;
+        root.loadingFromConfig = false;
     }
 
     function rebuild() {
@@ -330,32 +330,32 @@ Singleton {
         const arr = [];
         for (let i = 0; i < m.count(); i++)
             arr.push(m.get(i));
-        _cache = arr;
+        deviceCache = arr;
         devicesChanged();
     }
 
     function all() {
-        return _cache;
+        return deviceCache;
     }
 
     function sinks() {
-        return _cache.filter(d => d.mediaClass === "sink" && !d.isMonitor);
+        return deviceCache.filter(d => d.mediaClass === "sink" && !d.isMonitor);
     }
     function sources() {
-        return _cache.filter(d => d.mediaClass === "source" && !d.isMonitor);
+        return deviceCache.filter(d => d.mediaClass === "source" && !d.isMonitor);
     }
     function monitors() {
-        return _cache.filter(d => d.isMonitor);
+        return deviceCache.filter(d => d.isMonitor);
     }
     function inputs() {
-        return _cache.filter(d => d.mediaClass === "source");
+        return deviceCache.filter(d => d.mediaClass === "source");
     }
 
     function byName(name) {
-        return _cache.find(d => d.name === name) ?? null;
+        return deviceCache.find(d => d.name === name) ?? null;
     }
     function byId(id) {
-        return _cache.find(d => d.id === id) ?? null;
+        return deviceCache.find(d => d.id === id) ?? null;
     }
 
     function checkActiveRecording() {
@@ -467,39 +467,39 @@ Singleton {
     }
 
     function generate(videoPath, outputDir, callback) {
-        const active = root._currentThumbnailJob;
+        const active = root.currentThumbnailJob;
         if (active && active.videoPath === videoPath && active.outputDir === outputDir)
             return;
-        for (const job of root._thumbnailQueue)
+        for (const job of root.thumbnailQueue)
             if (job.videoPath === videoPath && job.outputDir === outputDir)
                 return;
-        root._thumbnailQueue.push({
+        root.thumbnailQueue.push({
             videoPath: videoPath,
             outputDir: outputDir,
             callback: callback
         });
-        root._startNextThumbnailJob();
+        root.startNextThumbnailJob();
     }
 
-    function _startNextThumbnailJob() {
-        if (root._thumbnailBusy || root._thumbnailQueue.length === 0)
+    function startNextThumbnailJob() {
+        if (root.thumbnailJobBusy || root.thumbnailQueue.length === 0)
             return;
-        const job = root._thumbnailQueue.shift();
-        root._currentThumbnailJob = job;
-        root._thumbnailBusy = true;
+        const job = root.thumbnailQueue.shift();
+        root.currentThumbnailJob = job;
+        root.thumbnailJobBusy = true;
         ffprobeProcess.videoPath = job.videoPath;
         ffprobeProcess.outputDir = job.outputDir;
         ffprobeProcess.callback = job.callback;
         ffprobeProcess.running = true;
     }
 
-    function _finishThumbnailJob(videoPath, thumbnailPath, callback) {
+    function finishThumbnailJob(videoPath, thumbnailPath, callback) {
         root.thumbnailReady(videoPath, thumbnailPath);
         if (callback)
             callback(videoPath, thumbnailPath);
-        root._currentThumbnailJob = null;
-        root._thumbnailBusy = false;
-        root._startNextThumbnailJob();
+        root.currentThumbnailJob = null;
+        root.thumbnailJobBusy = false;
+        root.startNextThumbnailJob();
     }
 
     function screenshotWindow(action) {

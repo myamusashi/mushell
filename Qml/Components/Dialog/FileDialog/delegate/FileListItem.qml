@@ -39,39 +39,29 @@ Rectangle {
 
     implicitHeight: 48
     clip: true
-    property color c0From
-    property color c0To
-    property bool c0Active: false
-    property real c0Blend: 1.0
+    property color rowColorFrom
+    property color rowColorTo
+    property bool rowColorBlending: false
+    property real rowColorBlendProgress: 1.0
 
-    onC0BlendChanged: {
-        if (!c0Active)
+    onRowColorBlendProgressChanged: {
+        if (!rowColorBlending)
             return;
-        if (c0Blend >= 1) {
-            color = c0To;
-            c0Active = false;
-        } else if (c0Blend > 0) {
-            color = Colours.blendColors(c0From, c0To, c0Blend);
+        if (rowColorBlendProgress >= 1) {
+            color = rowColorTo;
+            rowColorBlending = false;
+        } else if (rowColorBlendProgress > 0) {
+            color = Colours.blendColors(rowColorFrom, rowColorTo, rowColorBlendProgress);
         }
     }
 
     NAnim {
-        id: c0Anim
+        id: rowColorAnim
         target: root
-        property: "c0Blend"
+        property: "rowColorBlendProgress"
         from: 0.0
         to: 1.0
         duration: Appearance.animations.durations.small
-    }
-
-    property color target: root.isSelected ? Qt.alpha(Colours.m3Colors.m3Primary, 0.3) : "transparent"
-    onTargetChanged: {
-        c0Anim.stop();
-        c0From = root.color;
-        c0To = target;
-        c0Active = true;
-        c0Blend = 0.0;
-        c0Anim.start();
     }
 
     function getFileExtension(name, folder) {
@@ -89,6 +79,16 @@ Rectangle {
         if (bytes < 1073741824)
             return (bytes / 1048576).toFixed(1) + " " + qsTr("MiB");
         return (bytes / 1073741824).toFixed(1) + " " + qsTr("GiB");
+    }
+
+    property color target: root.isSelected ? Qt.alpha(Colours.m3Colors.m3Primary, 0.3) : "transparent"
+    onTargetChanged: {
+        rowColorAnim.stop();
+        rowColorFrom = root.color;
+        rowColorTo = target;
+        rowColorBlending = true;
+        rowColorBlendProgress = 0.0;
+        rowColorAnim.start();
     }
 
     Rectangle {
@@ -127,26 +127,26 @@ Rectangle {
 
         Icon {
             id: iconItem
-            property color c1From
-            property color c1To
-            property bool c1Active: false
-            property real c1Blend: 1.0
+            property color iconColorFrom
+            property color iconColorTo
+            property bool iconColorBlending: false
+            property real iconColorBlendProgress: 1.0
 
-            onC1BlendChanged: {
-                if (!c1Active)
+            onIconColorBlendProgressChanged: {
+                if (!iconColorBlending)
                     return;
-                if (c1Blend >= 1) {
-                    color = c1To;
-                    c1Active = false;
-                } else if (c1Blend > 0) {
-                    color = Colours.blendColors(c1From, c1To, c1Blend);
+                if (iconColorBlendProgress >= 1) {
+                    color = iconColorTo;
+                    iconColorBlending = false;
+                } else if (iconColorBlendProgress > 0) {
+                    color = Colours.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c1Anim
+                id: iconColorAnim
                 target: iconItem
-                property: "c1Blend"
+                property: "iconColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -154,12 +154,12 @@ Rectangle {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnPrimaryContainer : (root.isFolder ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant)
             onTargetChanged: {
-                c1Anim.stop();
-                c1From = iconItem.color;
-                c1To = target;
-                c1Active = true;
-                c1Blend = 0.0;
-                c1Anim.start();
+                iconColorAnim.stop();
+                iconColorFrom = iconItem.color;
+                iconColorTo = target;
+                iconColorBlending = true;
+                iconColorBlendProgress = 0.0;
+                iconColorAnim.start();
             }
 
             icon: root.isFolder ? "folder" : "description"
@@ -169,26 +169,26 @@ Rectangle {
 
         StyledText {
             id: fileName
-            property color c2From
-            property color c2To
-            property bool c2Active: false
-            property real c2Blend: 1.0
+            property color nameColorFrom
+            property color nameColorTo
+            property bool nameColorBlending: false
+            property real nameColorBlendProgress: 1.0
 
-            onC2BlendChanged: {
-                if (!c2Active)
+            onNameColorBlendProgressChanged: {
+                if (!nameColorBlending)
                     return;
-                if (c2Blend >= 1) {
-                    color = c2To;
-                    c2Active = false;
-                } else if (c2Blend > 0) {
-                    color = Colours.blendColors(c2From, c2To, c2Blend);
+                if (nameColorBlendProgress >= 1) {
+                    color = nameColorTo;
+                    nameColorBlending = false;
+                } else if (nameColorBlendProgress > 0) {
+                    color = Colours.blendColors(nameColorFrom, nameColorTo, nameColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c2Anim
+                id: nameColorAnim
                 target: fileName
-                property: "c2Blend"
+                property: "nameColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -196,12 +196,12 @@ Rectangle {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnPrimaryContainer : root.fileName.startsWith(".") ? Colours.m3Colors.m3OnSurfaceVariant : Colours.m3Colors.m3OnSurface
             onTargetChanged: {
-                c2Anim.stop();
-                c2From = fileName.color;
-                c2To = target;
-                c2Active = true;
-                c2Blend = 0.0;
-                c2Anim.start();
+                nameColorAnim.stop();
+                nameColorFrom = fileName.color;
+                nameColorTo = target;
+                nameColorBlending = true;
+                nameColorBlendProgress = 0.0;
+                nameColorAnim.start();
             }
 
             Layout.fillWidth: true
@@ -213,26 +213,26 @@ Rectangle {
 
         StyledText {
             id: sizeText
-            property color c3From
-            property color c3To
-            property bool c3Active: false
-            property real c3Blend: 1.0
+            property color sizeColorFrom
+            property color sizeColorTo
+            property bool sizeColorBlending: false
+            property real sizeColorBlendProgress: 1.0
 
-            onC3BlendChanged: {
-                if (!c3Active)
+            onSizeColorBlendProgressChanged: {
+                if (!sizeColorBlending)
                     return;
-                if (c3Blend >= 1) {
-                    color = c3To;
-                    c3Active = false;
-                } else if (c3Blend > 0) {
-                    color = Colours.blendColors(c3From, c3To, c3Blend);
+                if (sizeColorBlendProgress >= 1) {
+                    color = sizeColorTo;
+                    sizeColorBlending = false;
+                } else if (sizeColorBlendProgress > 0) {
+                    color = Colours.blendColors(sizeColorFrom, sizeColorTo, sizeColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c3Anim
+                id: sizeColorAnim
                 target: sizeText
-                property: "c3Blend"
+                property: "sizeColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -240,12 +240,12 @@ Rectangle {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             onTargetChanged: {
-                c3Anim.stop();
-                c3From = sizeText.color;
-                c3To = target;
-                c3Active = true;
-                c3Blend = 0.0;
-                c3Anim.start();
+                sizeColorAnim.stop();
+                sizeColorFrom = sizeText.color;
+                sizeColorTo = target;
+                sizeColorBlending = true;
+                sizeColorBlendProgress = 0.0;
+                sizeColorAnim.start();
             }
 
             text: root.isFolder ? "" : root.formatSize(root.fileSize)
@@ -255,27 +255,27 @@ Rectangle {
         }
 
         StyledText {
-            id: extText
-            property color c4From
-            property color c4To
-            property bool c4Active: false
-            property real c4Blend: 1.0
+            id: extensionText
+            property color extensionColorFrom
+            property color extensionColorTo
+            property bool extensionColorBlending: false
+            property real extensionColorBlendProgress: 1.0
 
-            onC4BlendChanged: {
-                if (!c4Active)
+            onExtensionColorBlendProgressChanged: {
+                if (!extensionColorBlending)
                     return;
-                if (c4Blend >= 1) {
-                    color = c4To;
-                    c4Active = false;
-                } else if (c4Blend > 0) {
-                    color = Colours.blendColors(c4From, c4To, c4Blend);
+                if (extensionColorBlendProgress >= 1) {
+                    color = extensionColorTo;
+                    extensionColorBlending = false;
+                } else if (extensionColorBlendProgress > 0) {
+                    color = Colours.blendColors(extensionColorFrom, extensionColorTo, extensionColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c4Anim
-                target: extText
-                property: "c4Blend"
+                id: extensionColorAnim
+                target: extensionText
+                property: "extensionColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -283,12 +283,12 @@ Rectangle {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             onTargetChanged: {
-                c4Anim.stop();
-                c4From = extText.color;
-                c4To = target;
-                c4Active = true;
-                c4Blend = 0.0;
-                c4Anim.start();
+                extensionColorAnim.stop();
+                extensionColorFrom = extensionText.color;
+                extensionColorTo = target;
+                extensionColorBlending = true;
+                extensionColorBlendProgress = 0.0;
+                extensionColorAnim.start();
             }
 
             text: root.getFileExtension(root.fileName, root.isFolder)
@@ -300,26 +300,26 @@ Rectangle {
 
         StyledText {
             id: dateText
-            property color c5From
-            property color c5To
-            property bool c5Active: false
-            property real c5Blend: 1.0
+            property color dateColorFrom
+            property color dateColorTo
+            property bool dateColorBlending: false
+            property real dateColorBlendProgress: 1.0
 
-            onC5BlendChanged: {
-                if (!c5Active)
+            onDateColorBlendProgressChanged: {
+                if (!dateColorBlending)
                     return;
-                if (c5Blend >= 1) {
-                    color = c5To;
-                    c5Active = false;
-                } else if (c5Blend > 0) {
-                    color = Colours.blendColors(c5From, c5To, c5Blend);
+                if (dateColorBlendProgress >= 1) {
+                    color = dateColorTo;
+                    dateColorBlending = false;
+                } else if (dateColorBlendProgress > 0) {
+                    color = Colours.blendColors(dateColorFrom, dateColorTo, dateColorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c5Anim
+                id: dateColorAnim
                 target: dateText
-                property: "c5Blend"
+                property: "dateColorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -327,12 +327,12 @@ Rectangle {
 
             property color target: root.isSelected ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurfaceVariant
             onTargetChanged: {
-                c5Anim.stop();
-                c5From = dateText.color;
-                c5To = target;
-                c5Active = true;
-                c5Blend = 0.0;
-                c5Anim.start();
+                dateColorAnim.stop();
+                dateColorFrom = dateText.color;
+                dateColorTo = target;
+                dateColorBlending = true;
+                dateColorBlendProgress = 0.0;
+                dateColorAnim.start();
             }
 
             text: Qt.formatDateTime(root.fileModified, "yyyy-MM-dd hh:mm")

@@ -8,7 +8,7 @@ import qs.Core.Configs
 import qs.Services
 
 Elevation {
-    id: elev
+    id: elevation
 
     anchors.fill: parent
     color: "transparent"
@@ -17,51 +17,51 @@ Elevation {
     z: -1
     level: 3
 
-    property color c0From
-    property color c0To
-    property bool c0Active: false
-    property real c0Blend: 1.0
+    property color flashInFrom
+    property color flashInTo
+    property bool flashInActive: false
+    property real flashInBlend: 1.0
 
-    onC0BlendChanged: {
-        if (!c0Active)
+    onFlashInBlendChanged: {
+        if (!flashInActive)
             return;
-        if (c0Blend >= 1) {
-            color = c0To;
-            c0Active = false;
-        } else if (c0Blend > 0) {
-            color = Colours.blendColors(c0From, c0To, c0Blend);
+        if (flashInBlend >= 1) {
+            color = flashInTo;
+            flashInActive = false;
+        } else if (flashInBlend > 0) {
+            color = Colours.blendColors(flashInFrom, flashInTo, flashInBlend);
         }
     }
 
     NAnim {
-        id: c0Anim
-        target: elev
-        property: "c0Blend"
+        id: flashInAnim
+        target: elevation
+        property: "flashInBlend"
         from: 0.0
         to: 1.0
         duration: Appearance.animations.durations.large * 0.8
     }
 
-    property color c1From
-    property color c1To
-    property bool c1Active: false
-    property real c1Blend: 1.0
+    property color flashOutFrom
+    property color flashOutTo
+    property bool flashOutActive: false
+    property real flashOutBlend: 1.0
 
-    onC1BlendChanged: {
-        if (!c1Active)
+    onFlashOutBlendChanged: {
+        if (!flashOutActive)
             return;
-        if (c1Blend >= 1) {
-            color = c1To;
-            c1Active = false;
-        } else if (c1Blend > 0) {
-            color = Colours.blendColors(c1From, c1To, c1Blend);
+        if (flashOutBlend >= 1) {
+            color = flashOutTo;
+            flashOutActive = false;
+        } else if (flashOutBlend > 0) {
+            color = Colours.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
         }
     }
 
     NAnim {
-        id: c1Anim
-        target: elev
-        property: "c1Blend"
+        id: flashOutAnim
+        target: elevation
+        property: "flashOutBlend"
         from: 0.0
         to: 1.0
         duration: Appearance.animations.durations.large
@@ -73,22 +73,22 @@ Elevation {
         ParallelAnimation {
             ScriptAction {
                 script: {
-                    c0Anim.stop();
-                    c0From = elev.color;
-                    c0To = Colours.m3Colors.m3Green;
-                    c0Active = true;
-                    c0Blend = 0.0;
-                    c0Anim.start();
+                    flashInAnim.stop();
+                    flashInFrom = elevation.color;
+                    flashInTo = Colours.m3Colors.m3Green;
+                    flashInActive = true;
+                    flashInBlend = 0.0;
+                    flashInAnim.start();
                 }
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "blur"
                 to: Configs.generals.chargingGlowSpread
                 duration: Appearance.animations.durations.large * 0.8
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "spread"
                 to: Configs.generals.chargingGlowSpread
                 duration: Appearance.animations.durations.large * 0.8
@@ -102,22 +102,22 @@ Elevation {
         ParallelAnimation {
             ScriptAction {
                 script: {
-                    c1Anim.stop();
-                    c1From = elev.color;
-                    c1To = "transparent";
-                    c1Active = true;
-                    c1Blend = 0.0;
-                    c1Anim.start();
+                    flashOutAnim.stop();
+                    flashOutFrom = elevation.color;
+                    flashOutTo = "transparent";
+                    flashOutActive = true;
+                    flashOutBlend = 0.0;
+                    flashOutAnim.start();
                 }
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "blur"
                 to: 0
                 duration: Appearance.animations.durations.large
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "spread"
                 to: 0
                 duration: Appearance.animations.durations.large
@@ -131,22 +131,22 @@ Elevation {
         ParallelAnimation {
             ScriptAction {
                 script: {
-                    c0Anim.stop();
-                    c0From = elev.color;
-                    c0To = Colours.m3Colors.m3Red;
-                    c0Active = true;
-                    c0Blend = 0.0;
-                    c0Anim.start();
+                    flashInAnim.stop();
+                    flashInFrom = elevation.color;
+                    flashInTo = Colours.m3Colors.m3Red;
+                    flashInActive = true;
+                    flashInBlend = 0.0;
+                    flashInAnim.start();
                 }
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "blur"
                 to: 20
                 duration: Appearance.animations.durations.large * 0.8
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "spread"
                 to: 20
                 duration: Appearance.animations.durations.large * 0.8
@@ -160,22 +160,22 @@ Elevation {
         ParallelAnimation {
             ScriptAction {
                 script: {
-                    c1Anim.stop();
-                    c1From = elev.color;
-                    c1To = "transparent";
-                    c1Active = true;
-                    c1Blend = 0.0;
-                    c1Anim.start();
+                    flashOutAnim.stop();
+                    flashOutFrom = elevation.color;
+                    flashOutTo = "transparent";
+                    flashOutActive = true;
+                    flashOutBlend = 0.0;
+                    flashOutAnim.start();
                 }
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "blur"
                 to: 0
                 duration: Appearance.animations.durations.large
             }
             NAnim {
-                target: elev
+                target: elevation
                 property: "spread"
                 to: 0
                 duration: Appearance.animations.durations.large

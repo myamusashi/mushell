@@ -14,14 +14,14 @@ ColumnLayout {
     id: root
 
     property alias slider: volumeSlider
-    required property PwNode node
+    required property PwNode audioNode
     property bool useCustomProperties: false
     property Component customProperty
 
     PwObjectTracker {
         id: objectTracker
 
-        objects: [root.node]
+        objects: [root.audioNode]
     }
 
     Loader {
@@ -49,21 +49,21 @@ ColumnLayout {
                 type: Icon.Material
                 anchors.centerIn: parent
                 visible: icon !== ""
-                icon: Audio.getIcon(root.node)
+                icon: Audio.getIcon(root.audioNode)
                 color: Colours.m3Colors.m3OnSurface
                 font.pixelSize: Appearance.fonts.size.large * 1.5
             }
 
             MArea {
-                id: mArea
+                id: mouseArea
 
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
-                onClicked: mevent => {
-                    if (mevent.button === Qt.LeftButton)
-                        Audio.toggleMute(root.node);
+                onClicked: mouseEvent => {
+                    if (mouseEvent.button === Qt.LeftButton)
+                        Audio.toggleMute(root.audioNode);
                 }
-                onWheel: mevent => Audio.wheelAction(mevent, root.node)
+                onWheel: mouseEvent => Audio.wheelAction(mouseEvent, root.audioNode)
             }
         }
 
@@ -72,9 +72,9 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: 44
-            popupValueFormat: v => Math.round(v * 100)
-            value: root.node.audio.volume
-            onMoved: root.node.audio.volume = value
+            popupValueFormat: volumeValue => Math.round(volumeValue * 100)
+            value: root.audioNode.audio.volume
+            onMoved: root.audioNode.audio.volume = value
         }
     }
 }

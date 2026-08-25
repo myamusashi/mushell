@@ -93,26 +93,26 @@ Control {
                     id: yearDelegate
 
                     required property int index
-                    readonly property int yr: root.startYear + index
+                    readonly property int year: root.startYear + index
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     radius: Appearance.rounding.small
 
-                    color: yr === root.currentYear ? Colours.m3Colors.m3PrimaryContainer : "transparent"
+                    color: year === root.currentYear ? Colours.m3Colors.m3PrimaryContainer : "transparent"
 
                     MArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.yearPicked(yearDelegate.yr)
+                        onClicked: root.yearPicked(yearDelegate.year)
                     }
 
                     StyledText {
                         anchors.centerIn: parent
-                        text: yearDelegate.yr
+                        text: yearDelegate.year
                         font.pixelSize: Appearance.fonts.size.medium
-                        color: yearDelegate.yr === root.currentYear ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurface
-                        font.weight: yearDelegate.yr === root.currentYear ? 700 : 400
+                        color: yearDelegate.year === root.currentYear ? Colours.m3Colors.m3OnPrimaryContainer : Colours.m3Colors.m3OnSurface
+                        font.weight: yearDelegate.year === root.currentYear ? 700 : 400
                     }
                 }
             }

@@ -88,26 +88,26 @@ Item {
                         id: flowText
 
                         required property var modelData
-                        property color c0From
-                        property color c0To
-                        property bool c0Active: false
-                        property real c0Blend: 1.0
+                        property color flashInFrom
+                        property color flashInTo
+                        property bool flashInActive: false
+                        property real flashInBlend: 1.0
 
-                        onC0BlendChanged: {
-                            if (!c0Active)
+                        onFlashInBlendChanged: {
+                            if (!flashInActive)
                                 return;
-                            if (c0Blend >= 1) {
-                                color = c0To;
-                                c0Active = false;
-                            } else if (c0Blend > 0) {
-                                color = Colours.blendColors(c0From, c0To, c0Blend);
+                            if (flashInBlend >= 1) {
+                                color = flashInTo;
+                                flashInActive = false;
+                            } else if (flashInBlend > 0) {
+                                color = Colours.blendColors(flashInFrom, flashInTo, flashInBlend);
                             }
                         }
 
                         NAnim {
-                            id: c0Anim
+                            id: flashInAnim
                             target: flowText
-                            property: "c0Blend"
+                            property: "flashInBlend"
                             from: 0.0
                             to: 1.0
                             duration: Math.max(150, LyricsProvider.currentWordDuration)
@@ -129,12 +129,12 @@ Item {
                         styleColor: Qt.alpha(Colours.m3Colors.m3Scrim, 0.5)
 
                         onLyricTargetChanged: {
-                            c0Anim.stop();
-                            c0From = flowText.color;
-                            c0To = lyricTarget;
-                            c0Active = true;
-                            c0Blend = 0.0;
-                            c0Anim.start();
+                            flashInAnim.stop();
+                            flashInFrom = flowText.color;
+                            flashInTo = lyricTarget;
+                            flashInActive = true;
+                            flashInBlend = 0.0;
+                            flashInAnim.start();
                         }
                     }
                 }
@@ -142,26 +142,26 @@ Item {
 
             StyledText {
                 id: translationText
-                property color c1From
-                property color c1To
-                property bool c1Active: false
-                property real c1Blend: 1.0
+                property color flashOutFrom
+                property color flashOutTo
+                property bool flashOutActive: false
+                property real flashOutBlend: 1.0
 
-                onC1BlendChanged: {
-                    if (!c1Active)
+                onFlashOutBlendChanged: {
+                    if (!flashOutActive)
                         return;
-                    if (c1Blend >= 1) {
-                        color = c1To;
-                        c1Active = false;
-                    } else if (c1Blend > 0) {
-                        color = Colours.blendColors(c1From, c1To, c1Blend);
+                    if (flashOutBlend >= 1) {
+                        color = flashOutTo;
+                        flashOutActive = false;
+                    } else if (flashOutBlend > 0) {
+                        color = Colours.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
                     }
                 }
 
                 NAnim {
-                    id: c1Anim
+                    id: flashOutAnim
                     target: translationText
-                    property: "c1Blend"
+                    property: "flashOutBlend"
                     from: 0.0
                     to: 1.0
                     duration: Math.max(150, LyricsProvider.currentWordDuration)
@@ -180,18 +180,18 @@ Item {
                     kerning: true
                     preferShaping: true
                 }
-                property color transTarget: lineDelegate.isActiveLine ? root.activeColor : root.inactiveColor
+                property color translationTarget: lineDelegate.isActiveLine ? root.activeColor : root.inactiveColor
                 style: Text.Raised
                 styleColor: Qt.alpha(Colours.m3Colors.m3Scrim, 0.5)
                 opacity: 0.7
 
-                onTransTargetChanged: {
-                    c1Anim.stop();
-                    c1From = translationText.color;
-                    c1To = transTarget;
-                    c1Active = true;
-                    c1Blend = 0.0;
-                    c1Anim.start();
+                onTranslationTargetChanged: {
+                    flashOutAnim.stop();
+                    flashOutFrom = translationText.color;
+                    flashOutTo = translationTarget;
+                    flashOutActive = true;
+                    flashOutBlend = 0.0;
+                    flashOutAnim.start();
                 }
             }
         }

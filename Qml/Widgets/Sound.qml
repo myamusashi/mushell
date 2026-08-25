@@ -14,7 +14,7 @@ import "../Components/Base"
 StyledRect {
     id: root
 
-    readonly property PwNode node: Pipewire.defaultAudioSink
+    readonly property PwNode audioNode: Pipewire.defaultAudioSink
 
     implicitWidth: container.width
     implicitHeight: parent.height
@@ -33,14 +33,14 @@ StyledRect {
         Icon {
             type: Icon.Material
             color: Colours.m3Colors.m3OnBackground
-            icon: Audio.getIcon(root.node)
+            icon: Audio.getIcon(root.audioNode)
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.size.large * 1.5
         }
 
         StyledText {
             color: Colours.m3Colors.m3OnBackground
-            text: (root.node.audio.volume * 100).toFixed(0) + "%"
+            text: (root.audioNode.audio.volume * 100).toFixed(0) + "%"
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: Appearance.fonts.size.medium
         }
@@ -49,11 +49,11 @@ StyledRect {
     MArea {
         anchors.fill: parent
         acceptedButtons: Qt.MiddleButton | Qt.LeftButton
-        onWheel: mevent => Audio.wheelAction(mevent, root.node)
-        onClicked: mevent => {
-            if (mevent.button === Qt.MiddleButton)
-                Audio.toggleMute(root.node);
-            else if (mevent.button === Qt.LeftButton)
+        onWheel: mouseEvent => Audio.wheelAction(mouseEvent, root.audioNode)
+        onClicked: mouseEvent => {
+            if (mouseEvent.button === Qt.MiddleButton)
+                Audio.toggleMute(root.audioNode);
+            else if (mouseEvent.button === Qt.LeftButton)
                 GlobalStates.toggleOSD("volume");
         }
     }

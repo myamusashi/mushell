@@ -12,9 +12,9 @@ import qs.Components.Base
 Item {
     id: root
 
-    readonly property color bgColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
 
-    property alias bgRadius: background.radius
+    property alias backgroundRadius: background.radius
     property string text: ""
     property int textSize: Appearance.fonts.size.normal
 
@@ -26,14 +26,14 @@ Item {
     property color rippleColor: Colours.m3Colors.m3OnPrimary
     property IconComponent icon: IconComponent {}
 
-    readonly property bool kbFocused: root.activeFocus
+    readonly property bool keyboardFocused: root.activeFocus
 
     property bool keyboardFocusable: true
 
-    property int leftPad: icon.name !== "" ? 16 : 24
-    property int rightPad: 24
-    property int topPad: 10
-    property int bottomPad: 10
+    property int paddingLeft: icon.name !== "" ? 16 : 24
+    property int paddingRight: 24
+    property int paddingTop: 10
+    property int paddingBottom: 10
     property int spacing: 8
 
     signal clicked
@@ -52,7 +52,7 @@ Item {
         }
     }
 
-    implicitWidth: contentRow.implicitWidth + leftPad + rightPad
+    implicitWidth: contentRow.implicitWidth + paddingLeft + paddingRight
     implicitHeight: 40
 
     // qmllint disable
@@ -75,7 +75,7 @@ Item {
         },
         State {
             name: "focused"
-            when: root.enabled && root.kbFocused
+            when: root.enabled && root.keyboardFocused
             PropertyChanges {
                 target: focusRing
                 opacity: 1
@@ -83,7 +83,7 @@ Item {
         },
         State {
             name: "normal"
-            when: root.enabled && !root.hovered && !root.pressed && !root.kbFocused
+            when: root.enabled && !root.hovered && !root.pressed && !root.keyboardFocused
         }
     ]
     // qmllint enable
@@ -104,7 +104,7 @@ Item {
 
         anchors.fill: parent
         radius: Appearance.rounding.normal
-        color: root.outlined ? "transparent" : root.bgColor
+        color: root.outlined ? "transparent" : root.backgroundColor
         border.width: root.outlined ? 1 : 0
         border.color: root.outlined ? Qt.alpha(Colours.m3Colors.m3OnSurface, root.enabled ? 1.0 : 0.38) : "transparent"
         transformOrigin: Item.Center
@@ -157,26 +157,26 @@ Item {
 
         Icon {
             id: iconItem
-            property color c0From
-            property color c0To
-            property bool c0Active: false
-            property real c0Blend: 1.0
+            property color colorFrom
+            property color colorTo
+            property bool colorBlending: false
+            property real colorBlendProgress: 1.0
 
-            onC0BlendChanged: {
-                if (!c0Active)
+            onColorBlendProgressChanged: {
+                if (!colorBlending)
                     return;
-                if (c0Blend >= 1) {
-                    color = c0To;
-                    c0Active = false;
-                } else if (c0Blend > 0) {
-                    color = Colours.blendColors(c0From, c0To, c0Blend);
+                if (colorBlendProgress >= 1) {
+                    color = colorTo;
+                    colorBlending = false;
+                } else if (colorBlendProgress > 0) {
+                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c0Anim
+                id: iconColorBlendAnim
                 target: iconItem
-                property: "c0Blend"
+                property: "colorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -188,12 +188,12 @@ Item {
             property color iconTarget: root.icon.color
 
             onIconTargetChanged: {
-                c0Anim.stop();
-                c0From = iconItem.color;
-                c0To = iconTarget;
-                c0Active = true;
-                c0Blend = 0.0;
-                c0Anim.start();
+                iconColorBlendAnim.stop();
+                colorFrom = iconItem.color;
+                colorTo = iconTarget;
+                colorBlending = true;
+                colorBlendProgress = 0.0;
+                iconColorBlendAnim.start();
             }
         }
 
@@ -204,26 +204,26 @@ Item {
             asynchronous: false
             sourceComponent: StyledText {
                 id: styledTextItem
-                property color c1From
-                property color c1To
-                property bool c1Active: false
-                property real c1Blend: 1.0
+                property color colorFrom
+                property color colorTo
+                property bool colorBlending: false
+                property real colorBlendProgress: 1.0
 
-                onC1BlendChanged: {
-                    if (!c1Active)
+                onColorBlendProgressChanged: {
+                    if (!colorBlending)
                         return;
-                    if (c1Blend >= 1) {
-                        color = c1To;
-                        c1Active = false;
-                    } else if (c1Blend > 0) {
-                        color = Colours.blendColors(c1From, c1To, c1Blend);
+                    if (colorBlendProgress >= 1) {
+                        color = colorTo;
+                        colorBlending = false;
+                    } else if (colorBlendProgress > 0) {
+                        color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                     }
                 }
 
                 NAnim {
-                    id: c1Anim
+                    id: textColorBlendAnim
                     target: styledTextItem
-                    property: "c1Blend"
+                    property: "colorBlendProgress"
                     from: 0.0
                     to: 1.0
                     duration: Appearance.animations.durations.small
@@ -236,12 +236,12 @@ Item {
                 property color textTarget: root.textColor
 
                 onTextTargetChanged: {
-                    c1Anim.stop();
-                    c1From = styledTextItem.color;
-                    c1To = textTarget;
-                    c1Active = true;
-                    c1Blend = 0.0;
-                    c1Anim.start();
+                    textColorBlendAnim.stop();
+                    colorFrom = styledTextItem.color;
+                    colorTo = textTarget;
+                    colorBlending = true;
+                    colorBlendProgress = 0.0;
+                    textColorBlendAnim.start();
                 }
             }
         }

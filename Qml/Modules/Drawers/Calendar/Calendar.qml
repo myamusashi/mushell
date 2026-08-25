@@ -201,22 +201,22 @@ Item {
                 }
 
                 CustomDayOfWeekRow {
-                    id: dowRow
+                    id: dayOfWeekRow
                     Layout.fillWidth: true
                     Layout.preferredHeight: 28
 
                     delegate: Item {
-                        id: dow
+                        id: dayOfWeekItem
 
                         required property var modelData
-                        width: dowRow.cellWidth
-                        height: dowRow.height
+                        width: dayOfWeekRow.cellWidth
+                        height: dayOfWeekRow.height
 
                         StyledText {
                             anchors.centerIn: parent
-                            text: dow.modelData.shortName
+                            text: dayOfWeekItem.modelData.shortName
                             color: {
-                                if (dow.modelData.shortName === "Sun" || dow.modelData.shortName === "Sat")
+                                if (dayOfWeekItem.modelData.shortName === "Sun" || dayOfWeekItem.modelData.shortName === "Sat")
                                     return Colours.m3Colors.m3Error;
                                 return Colours.m3Colors.m3OnSurface;
                             }
@@ -242,15 +242,15 @@ Item {
                         year: root.currentYear
 
                         delegate: Item {
-                            id: item
+                            id: dayCell
 
                             required property var modelData
                             required property int index
 
-                            readonly property int gridCol: index % 7
+                            readonly property int gridColumn: index % 7
                             readonly property int gridRow: Math.floor(index / 7)
 
-                            x: gridCol * monthGrid.cellWidth
+                            x: gridColumn * monthGrid.cellWidth
                             y: gridRow * monthGrid.cellHeight
                             width: monthGrid.cellWidth
                             height: monthGrid.cellHeight
@@ -277,17 +277,16 @@ Item {
                             readonly property bool isCurrentMonth: modelData.month === root.currentMonth
                             readonly property int dayFontWeight: isToday ? 1000 : (isCurrentMonth ? 600 : 100)
 
-                            readonly property bool isPopoverOpen: monthGrid.openPopoverDate !== null && new Date(monthGrid.openPopoverDate).toDateString() === item.cellDate.toDateString()
+                            readonly property bool isPopoverOpen: monthGrid.openPopoverDate !== null && new Date(monthGrid.openPopoverDate).toDateString() === dayCell.cellDate.toDateString()
 
                             StyledRect {
-                                id: bg
-
+                                id: background
                                 anchors.fill: parent
                                 radius: Appearance.rounding.small
                                 color: {
-                                    if (item.isPopoverOpen)
+                                    if (dayCell.isPopoverOpen)
                                         return Colours.m3Colors.m3SurfaceContainerHigh;
-                                    if (mouseArea.containsMouse && item.isCurrentMonth)
+                                    if (mouseArea.containsMouse && dayCell.isCurrentMonth)
                                         return Colours.m3Colors.m3SurfaceVariant;
                                     return "transparent";
                                 }
@@ -297,11 +296,11 @@ Item {
 
                                     anchors.fill: parent
                                     hoverEnabled: true
-                                    visible: item.isCurrentMonth
+                                    visible: dayCell.isCurrentMonth
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
-                                        if (item.showHoliday && item.holidayLabel !== "") {
-                                            monthGrid.openPopoverDate = item.isPopoverOpen ? null : item.cellDate;
+                                        if (dayCell.showHoliday && dayCell.holidayLabel !== "") {
+                                            monthGrid.openPopoverDate = dayCell.isPopoverOpen ? null : dayCell.cellDate;
                                         } else {
                                             monthGrid.closePopover();
                                         }
@@ -315,10 +314,10 @@ Item {
                                 radius: Appearance.rounding.small - 1
                                 color: "transparent"
                                 border {
-                                    color: item.isToday ? Colours.m3Colors.m3Primary : "transparent"
-                                    width: item.isToday ? 1.5 : 0
+                                    color: dayCell.isToday ? Colours.m3Colors.m3Primary : "transparent"
+                                    width: dayCell.isToday ? 1.5 : 0
                                 }
-                                visible: item.isToday && !mouseArea.containsMouse
+                                visible: dayCell.isToday && !mouseArea.containsMouse
                             }
 
                             Column {
@@ -328,25 +327,25 @@ Item {
 
                                 StyledText {
                                     anchors.horizontalCenter: parent.horizontalCenter
-                                    text: Qt.formatDate(item.cellDate, "d")
+                                    text: Qt.formatDate(dayCell.cellDate, "d")
                                     color: {
-                                        if (item.isToday)
+                                        if (dayCell.isToday)
                                             return Colours.m3Colors.m3Primary;
-                                        const baseColor = (item.dayOfWeek === 0 || item.dayOfWeek === 6) ? Colours.m3Colors.m3Error : Colours.m3Colors.m3OnSurface;
-                                        return item.isCurrentMonth ? baseColor : Qt.alpha(baseColor, 0.2);
+                                        const baseColor = (dayCell.dayOfWeek === 0 || dayCell.dayOfWeek === 6) ? Colours.m3Colors.m3Error : Colours.m3Colors.m3OnSurface;
+                                        return dayCell.isCurrentMonth ? baseColor : Qt.alpha(baseColor, 0.2);
                                     }
                                     font.pixelSize: Appearance.fonts.size.small * 1.3
-                                    font.weight: item.dayFontWeight
+                                    font.weight: dayCell.dayFontWeight
                                     horizontalAlignment: Text.AlignHCenter
                                 }
 
                                 RowLayout {
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     spacing: 3
-                                    visible: item.showHoliday
+                                    visible: dayCell.showHoliday
 
                                     Repeater {
-                                        model: Math.min(item.holidayEntries.length, 3)
+                                        model: Math.min(dayCell.holidayEntries.length, 3)
 
                                         StyledRect {
                                             required property int index
@@ -355,8 +354,8 @@ Item {
                                             implicitHeight: 5
                                             radius: 2.5
                                             color: {
-                                                const h = item.holidayEntries[index];
-                                                if (h && h.type === "leave")
+                                                const entry = dayCell.holidayEntries[index];
+                                                if (entry && entry.type === "leave")
                                                     return Colours.m3Colors.m3Secondary;
                                                 return Colours.m3Colors.m3Tertiary;
                                             }
@@ -364,7 +363,7 @@ Item {
                                     }
 
                                     StyledText {
-                                        text: item.holidayEntries.length > 3 ? "+" + (item.holidayEntries.length - 3) : ""
+                                        text: dayCell.holidayEntries.length > 3 ? "+" + (dayCell.holidayEntries.length - 3) : ""
                                         font.pixelSize: Appearance.fonts.size.small * 0.65
                                         color: Colours.m3Colors.m3OnSurfaceVariant
                                         visible: text !== ""
@@ -437,12 +436,12 @@ Item {
                     radius: Appearance.rounding.medium // qmllint disable
                 }
 
-                onMonthPicked: function (m) {
-                    root.currentMonth = m;
+                onMonthPicked: function (month) {
+                    root.currentMonth = month;
                     root.showYearMonthPicker = false;
                 }
-                onYearPicked: function (y) {
-                    root.currentYear = y;
+                onYearPicked: function (year) {
+                    root.currentYear = year;
                     root.showYearMonthPicker = false;
                 }
             }

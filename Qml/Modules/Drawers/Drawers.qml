@@ -191,7 +191,7 @@ Variants {
         }
 
         App {
-            id: app
+            id: appDrawer
         }
 
         Bar {
@@ -203,7 +203,7 @@ Variants {
         }
 
         Calendar {
-            id: cal
+            id: calendar
             anchors.topMargin: topBar.height
         }
 

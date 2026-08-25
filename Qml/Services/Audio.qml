@@ -30,27 +30,27 @@ Singleton {
     readonly property bool audioConnected: AudioProfilesWatcher.connected
 
     property bool restartPending: false
-    property bool _wasConnected: false
-    property bool _restoring: false
+    property bool wasAudioConnected: false
+    property bool restoringAudioState: false
 
     Component.onCompleted: {
-        if (audioConnected && !_restoring) {
-            _wasConnected = true;
+        if (audioConnected && !restoringAudioState) {
+            wasAudioConnected = true;
             restoreTimer.start();
         }
     }
 
     onAudioConnectedChanged: {
-        if (audioConnected && !_wasConnected && !_restoring) {
-            _wasConnected = true;
+        if (audioConnected && !wasAudioConnected && !restoringAudioState) {
+            wasAudioConnected = true;
             restoreTimer.start();
         }
         if (!audioConnected) {
-            _wasConnected = false;
-            if (_restoring) {
+            wasAudioConnected = false;
+            if (restoringAudioState) {
                 restoreTimer.stop();
                 profileRestoreDelay.stop();
-                _restoring = false;
+                restoringAudioState = false;
             }
         }
     }
@@ -68,14 +68,14 @@ Singleton {
         repeat: false
         onTriggered: {
             root.restoreProfiles();
-            root._restoring = false;
+            root.restoringAudioState = false;
         }
     }
 
     function restoreAudioState() {
-        if (_restoring)
+        if (restoringAudioState)
             return;
-        _restoring = true;
+        restoringAudioState = true;
         const savedSink = Configs.audio.defaultSinkName;
         if (savedSink) {
             const sink = root.listSink.find(s => s.name === savedSink);

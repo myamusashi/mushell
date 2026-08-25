@@ -55,26 +55,26 @@ WrapperRectangle {
         Icon {
             id: lockIcon
 
-            property color c0From
-            property color c0To
-            property bool c0Active: false
-            property real c0Blend: 1.0
+            property color colorFrom
+            property color colorTo
+            property bool colorBlending: false
+            property real colorBlendProgress: 1.0
 
-            onC0BlendChanged: {
-                if (!c0Active)
+            onColorBlendProgressChanged: {
+                if (!colorBlending)
                     return;
-                if (c0Blend >= 1) {
-                    color = c0To;
-                    c0Active = false;
-                } else if (c0Blend > 0) {
-                    color = Colours.blendColors(c0From, c0To, c0Blend);
+                if (colorBlendProgress >= 1) {
+                    color = colorTo;
+                    colorBlending = false;
+                } else if (colorBlendProgress > 0) {
+                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 
             NAnim {
-                id: c0Anim
+                id: colorBlendAnim
                 target: lockIcon
-                property: "c0Blend"
+                property: "colorBlendProgress"
                 from: 0.0
                 to: 1.0
                 duration: Appearance.animations.durations.small
@@ -142,12 +142,12 @@ WrapperRectangle {
                 }
                 ScriptAction {
                     script: {
-                        c0Anim.stop();
-                        lockIcon.c0From = lockIcon.color;
-                        lockIcon.c0To = Colours.m3Colors.m3Red;
-                        lockIcon.c0Active = true;
-                        lockIcon.c0Blend = 0.0;
-                        c0Anim.start();
+                        colorBlendAnim.stop();
+                        lockIcon.colorFrom = lockIcon.color;
+                        lockIcon.colorTo = Colours.m3Colors.m3Red;
+                        lockIcon.colorBlending = true;
+                        lockIcon.colorBlendProgress = 0.0;
+                        colorBlendAnim.start();
                     }
                 }
             }

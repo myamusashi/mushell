@@ -47,20 +47,20 @@ StyledRect {
             return Players.active?.isPlaying;
         }
         function list(): string {
-            const r = [];
-            const list = Players.players;
-            for (let i = 0; i < list.length; i++) {
-                const p = list[i];
-                r.push({
-                    identity: p.identity,
-                    trackTitle: p.trackTitle,
-                    trackArtist: p.trackArtist,
-                    playbackStatus: p.playbackStatus,
-                    volume: p.volume,
-                    status: p.isPlaying
+            const playerSummaries = [];
+            const players = Players.players;
+            for (let i = 0; i < players.length; i++) {
+                const player = players[i];
+                playerSummaries.push({
+                    identity: player.identity,
+                    trackTitle: player.trackTitle,
+                    trackArtist: player.trackArtist,
+                    playbackStatus: player.playbackStatus,
+                    volume: player.volume,
+                    status: player.isPlaying
                 });
             }
-            return JSON.stringify(r);
+            return JSON.stringify(playerSummaries);
         }
     }
 

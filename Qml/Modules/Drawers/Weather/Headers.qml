@@ -145,7 +145,7 @@ ColumnLayout {
                 spacing: Appearance.spacing.small
 
                 StyledText {
-                    text: Weather.temp + "°"
+                    text: Weather.temperature + "°"
                     color: Colours.m3Colors.m3Primary
                     font.pixelSize: Appearance.fonts.size.extraLarge * 1.5
                     font.weight: Font.DemiBold
@@ -170,11 +170,11 @@ ColumnLayout {
                 Repeater {
                     model: [
                         {
-                            text: Weather.tempMax + "°",
+                            text: Weather.temperatureMax + "°",
                             icon: "arrow_upward"
                         },
                         {
-                            text: Weather.tempMin + "°",
+                            text: Weather.temperatureMin + "°",
                             icon: "arrow_downward"
                         }
                     ]

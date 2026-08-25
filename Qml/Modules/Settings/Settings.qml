@@ -139,7 +139,7 @@ LazyLoader {
                         ]
                         currentIndex: settingsLoader.currentPage
                         expanded: true
-                        fabIcon: ""
+                        actionButtonIcon: ""
                         backgroundColor: "transparent"
 
                         onActivated: function (index) {

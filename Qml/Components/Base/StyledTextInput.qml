@@ -128,7 +128,7 @@ Item {
     }
 
     Rectangle {
-        id: bg
+        id: background
 
         anchors.fill: parent
         radius: height / 2
@@ -287,7 +287,7 @@ Item {
     }
 
     MArea {
-        layerRadius: bg.radius
+        layerRadius: background.radius
         z: 0
         propagateComposedEvents: true
         onClicked: passwordInput.forceActiveFocus()

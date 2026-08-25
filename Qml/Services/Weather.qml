@@ -22,9 +22,9 @@ Singleton {
     readonly property bool isRefreshing: isLoading && loaded
 
     readonly property var weatherIcons: ({
-            "0": WeatherIcon.day_sunny,
-            "1": WeatherIcon.day_cloudy,
-            "2": WeatherIcon.day_cloudy,
+            "0": WeatherIcon.daySunny,
+            "1": WeatherIcon.dayCloudy,
+            "2": WeatherIcon.dayCloudy,
             "3": WeatherIcon.cloud,
             "45": WeatherIcon.fog,
             "48": WeatherIcon.fog,
@@ -36,15 +36,15 @@ Singleton {
             "61": WeatherIcon.rain,
             "63": WeatherIcon.rain,
             "65": WeatherIcon.rain,
-            "66": WeatherIcon.rain_mix,
-            "67": WeatherIcon.rain_mix,
+            "66": WeatherIcon.rainMix,
+            "67": WeatherIcon.rainMix,
             "71": WeatherIcon.snow,
             "73": WeatherIcon.snow,
             "75": WeatherIcon.snow,
             "77": WeatherIcon.snow,
             "80": WeatherIcon.showers,
             "81": WeatherIcon.showers,
-            "82": WeatherIcon.storm_showers,
+            "82": WeatherIcon.stormShowers,
             "85": WeatherIcon.snow,
             "86": WeatherIcon.snow,
             "95": WeatherIcon.thunderstorm,
@@ -53,9 +53,9 @@ Singleton {
         })
 
     readonly property var weatherIconsNight: ({
-            "0": WeatherIcon.night_clear,
-            "1": WeatherIcon.night_cloudy,
-            "2": WeatherIcon.night_cloudy
+            "0": WeatherIcon.nightClear,
+            "1": WeatherIcon.nightCloudy,
+            "2": WeatherIcon.nightCloudy
         })
 
     readonly property var weatherSchema: [
@@ -96,15 +96,15 @@ Singleton {
             def: true
         },
         {
-            key: "temp",
+            key: "temperature",
             def: 0
         },
         {
-            key: "tempMin",
+            key: "temperatureMin",
             def: 0
         },
         {
-            key: "tempMax",
+            key: "temperatureMax",
             def: 0
         },
         {
@@ -288,9 +288,9 @@ Singleton {
     property string weatherIcon: "air"
     property int weatherCode: 0
     property bool isDay: true
-    property int temp: 0
-    property int tempMin: 0
-    property int tempMax: 0
+    property int temperature: 0
+    property int temperatureMin: 0
+    property int temperatureMax: 0
     property int feelsLike: 0
     property int humidity: 0
     property real dewPoint: 0.0
@@ -483,15 +483,15 @@ Singleton {
             return "";
         const parts = [];
 
-        if (humidity > 80 && temp > 25)
+        if (humidity > 80 && temperature > 25)
             parts.push(qsTr("A muggy and warm day — take care in the sun."));
-        else if (humidity > 80 && temp <= 25)
+        else if (humidity > 80 && temperature <= 25)
             parts.push(qsTr("A humid day with sticky conditions."));
-        else if (temp > 30)
+        else if (temperature > 30)
             parts.push(qsTr("A hot day ahead — stay hydrated and seek shade."));
-        else if (temp < 10)
+        else if (temperature < 10)
             parts.push(qsTr("A cold day — dress warmly before heading out."));
-        else if (temp >= 20 && temp <= 28 && humidity < 60)
+        else if (temperature >= 20 && temperature <= 28 && humidity < 60)
             parts.push(qsTr("A pleasant day with comfortable conditions."));
         else
             parts.push(qsTr("Today's weather looks moderate."));
@@ -541,15 +541,15 @@ Singleton {
                 text: qsTr("Breezy day with winds around %1 km/h.").arg(windSpeed)
             });
 
-        if (tempMax > 0 && tempMin !== tempMax && Math.abs(tempMax - tempMin) > 8)
+        if (temperatureMax > 0 && temperatureMin !== temperatureMax && Math.abs(temperatureMax - temperatureMin) > 8)
             priorityItems.push({
                 priority: 5,
-                text: qsTr("Large temperature swing today: %1° to %2° — dress in layers.").arg(tempMin).arg(tempMax)
+                text: qsTr("Large temperature swing today: %1° to %2° — dress in layers.").arg(temperatureMin).arg(temperatureMax)
             });
-        else if (tempMax > 0 && tempMin !== tempMax)
+        else if (temperatureMax > 0 && temperatureMin !== temperatureMax)
             priorityItems.push({
                 priority: 3,
-                text: qsTr("Temperature ranging from %1° to %2° today.").arg(tempMin).arg(tempMax)
+                text: qsTr("Temperature ranging from %1° to %2° today.").arg(temperatureMin).arg(temperatureMax)
             });
 
         if (humidity > 85)
@@ -562,7 +562,7 @@ Singleton {
                 priority: 7,
                 text: qsTr("Poor visibility at %1 km — drive carefully.").arg(visibility.toFixed(1))
             });
-        if (temp >= 18 && temp <= 26 && humidity < 65 && uvIndex < 5 && precipitation === 0)
+        if (temperature >= 18 && temperature <= 26 && humidity < 65 && uvIndex < 5 && precipitation === 0)
             priorityItems.push({
                 priority: 4,
                 text: qsTr("Perfect weather for outdoor activities.")
@@ -571,7 +571,7 @@ Singleton {
         priorityItems.sort((a, b) => b.priority - a.priority);
         priorityItems.slice(0, 3).forEach(i => parts.push(i.text));
         if (parts.length < 2)
-            parts.push(qsTr("Current temperature is %1° with feels like %2°.").arg(temp).arg(feelsLike));
+            parts.push(qsTr("Current temperature is %1° with feels like %2°.").arg(temperature).arg(feelsLike));
 
         const isFinal = parts.slice(0, 4);
         return isFinal.length === 0 ? "" : isFinal[0] + "\n\n• " + isFinal.slice(1).join("\n\n• ");
@@ -775,10 +775,10 @@ Singleton {
             var statusText = getWeatherStatus(cur.weather_code || 0);
             var isDayTime = cur.is_day === 1;
 
-            temp = Math.round(cur.temperature_2m || 0);
+            temperature = Math.round(cur.temperature_2m || 0);
             feelsLike = Math.round(cur.apparent_temperature || 0);
-            tempMin = Math.round(daily.temperature_2m_min?.[0] || 0);
-            tempMax = Math.round(daily.temperature_2m_max?.[0] || 0);
+            temperatureMin = Math.round(daily.temperature_2m_min?.[0] || 0);
+            temperatureMax = Math.round(daily.temperature_2m_max?.[0] || 0);
             weatherCode = cur.weather_code || 0;
             weatherCondition = statusText;
             weatherDescription = statusText;

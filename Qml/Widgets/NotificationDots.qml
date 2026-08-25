@@ -39,7 +39,7 @@ Item {
         }
     }
     MArea {
-        id: mArea
+        id: mouseArea
 
         anchors.fill: parent
         layerColor: "transparent"

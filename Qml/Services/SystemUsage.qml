@@ -389,7 +389,7 @@ Singleton {
             onStreamFinished: {
                 const lines = text.trim().split("\n");
                 const deviceMap = new Map();
-                const fsList = [];
+                const filesystems = [];
                 let sysUsed = 0;
                 let appsUsed = 0;
                 let totalFree = 0;
@@ -404,7 +404,7 @@ Singleton {
                         continue;
 
                     const dev = parts[0];
-                    const fsType = parts[1];
+                    const filesystemType = parts[1];
                     const usedKB = parseInt(parts[3], 10) || 0;
                     const freeKB = parseInt(parts[4], 10) || 0;
                     const mountpoint = parts[6];
@@ -414,9 +414,9 @@ Singleton {
                     if (dev.startsWith("/dev/")) {
                         if (!deviceMap.has(dev) || totalKB > deviceMap.get(dev)) {
                             deviceMap.set(dev, totalKB);
-                            fsList.push({
+                            filesystems.push({
                                 name: dev,
-                                type: fsType,
+                                type: filesystemType,
                                 mountpoint: mountpoint,
                                 usedKB: usedKB,
                                 freeKB: freeKB,
@@ -434,7 +434,7 @@ Singleton {
                     }
                 }
 
-                root.filesystemNames = fsList;
+                root.filesystemNames = filesystems;
                 root.storageAppsData = appsUsed;
                 root.storageSystem = sysUsed;
                 root.storageFree = totalFree;

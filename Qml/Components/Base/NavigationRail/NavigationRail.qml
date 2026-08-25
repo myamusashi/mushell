@@ -15,9 +15,9 @@ Item {
     property int currentIndex: 0
     property bool expanded: false
 
-    property string fabIcon: ""
-    property string fabLabel: ""
-    signal fabTriggered
+    property string actionButtonIcon: ""
+    property string actionButtonLabel: ""
+    signal actionButtonTriggered
 
     property color backgroundColor: Colours.m3Colors.m3SurfaceContainerLow
 
@@ -61,15 +61,15 @@ Item {
         spacing: Appearance.spacing.small
 
         Item {
-            visible: fabItem.visible
+            visible: actionButtonItem.visible
             width: 1
             height: Appearance.spacing.large - Appearance.spacing.small * 2
         }
 
         WrapperItem {
-            id: fabItem
+            id: actionButtonItem
 
-            visible: root.fabIcon !== ""
+            visible: root.actionButtonIcon !== ""
             implicitHeight: 56
             anchors.left: parent.left
             anchors.leftMargin: Appearance.margin.normal
@@ -81,7 +81,7 @@ Item {
 
                     // qmllint disable Quick.property-changes-parsed
                     PropertyChanges {
-                        target: fabItem
+                        target: actionButtonItem
                         implicitWidth: 56
                     }
                 },
@@ -90,7 +90,7 @@ Item {
                     when: root.expanded
 
                     PropertyChanges {
-                        target: fabItem
+                        target: actionButtonItem
                         implicitWidth: railColumn.width - Appearance.margin.normal * 2
                     }
                 }
@@ -110,7 +110,7 @@ Item {
             MArea {
                 layerRadius: Appearance.rounding.large
                 layerRect.opacity: 0.0
-                onClicked: root.fabTriggered()
+                onClicked: root.actionButtonTriggered()
 
                 StyledRect {
                     anchors.fill: parent
@@ -118,23 +118,23 @@ Item {
                     color: Colours.m3Colors.m3PrimaryContainer
 
                     Icon {
-                        id: fabLeadingIcon
+                        id: actionButtonLeadingIcon
 
                         anchors.left: parent.left
                         anchors.leftMargin: Appearance.margin.normal
                         anchors.verticalCenter: parent.verticalCenter
-                        icon: root.fabIcon
+                        icon: root.actionButtonIcon
                         font.pixelSize: Appearance.fonts.size.larger
                         color: Colours.m3Colors.m3OnPrimaryContainer
                     }
 
                     StyledText {
-                        anchors.left: fabLeadingIcon.right
+                        anchors.left: actionButtonLeadingIcon.right
                         anchors.leftMargin: Appearance.spacing.normal
                         anchors.right: parent.right
                         anchors.rightMargin: Appearance.margin.normal
                         anchors.verticalCenter: parent.verticalCenter
-                        text: root.fabLabel
+                        text: root.actionButtonLabel
                         font.pixelSize: Appearance.fonts.size.normal
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnPrimaryContainer

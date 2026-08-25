@@ -174,20 +174,20 @@ Pages {
         // Hill geometry
         property real hillHeight: height * 0.6
         property real hillBaseY: height - hillHeight
-        property real startX: 0
-        property real startY: hillBaseY + hillHeight * 0.3
-        property real cp1X: width * 0.3
-        property real cp1Y: hillBaseY - hillHeight * 0.1
-        property real cp2X: width * 0.7
-        property real cp2Y: hillBaseY - hillHeight * 0.1
-        property real endX: width
-        property real endY: hillBaseY + hillHeight * 0.3
+        property real hillStartX: 0
+        property real hillStartY: hillBaseY + hillHeight * 0.3
+        property real hillControlPoint1X: width * 0.3
+        property real hillControlPoint1Y: hillBaseY - hillHeight * 0.1
+        property real hillControlPoint2X: width * 0.7
+        property real hillControlPoint2Y: hillBaseY - hillHeight * 0.1
+        property real hillEndX: width
+        property real hillEndY: hillBaseY + hillHeight * 0.3
 
-        // Sun position — cubic bezier evaluated at t = root.sunriseProgress
-        property real t: root.sunriseProgress
-        property real oneMinusT: 1 - t
-        property real sunX: Math.pow(oneMinusT, 3) * startX + 3 * Math.pow(oneMinusT, 2) * t * cp1X + 3 * oneMinusT * Math.pow(t, 2) * cp2X + Math.pow(t, 3) * endX
-        property real sunY: Math.pow(oneMinusT, 3) * startY + 3 * Math.pow(oneMinusT, 2) * t * cp1Y + 3 * oneMinusT * Math.pow(t, 2) * cp2Y + Math.pow(t, 3) * endY
+        // Sun position — cubic bezier evaluated at progress = root.sunriseProgress
+        property real progress: root.sunriseProgress
+        property real oneMinusProgress: 1 - progress
+        property real sunX: Math.pow(oneMinusProgress, 3) * hillStartX + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1X + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2X + Math.pow(progress, 3) * hillEndX
+        property real sunY: Math.pow(oneMinusProgress, 3) * hillStartY + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1Y + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2Y + Math.pow(progress, 3) * hillEndY
 
         // Hill
         ShapePath {
@@ -198,16 +198,16 @@ Pages {
             startY: sunShape.height
 
             PathLine {
-                x: sunShape.startX
-                y: sunShape.startY
+                x: sunShape.hillStartX
+                y: sunShape.hillStartY
             }
             PathCubic {
-                control1X: sunShape.cp1X
-                control1Y: sunShape.cp1Y
-                control2X: sunShape.cp2X
-                control2Y: sunShape.cp2Y
-                x: sunShape.endX
-                y: sunShape.endY
+                control1X: sunShape.hillControlPoint1X
+                control1Y: sunShape.hillControlPoint1Y
+                control2X: sunShape.hillControlPoint2X
+                control2Y: sunShape.hillControlPoint2Y
+                x: sunShape.hillEndX
+                y: sunShape.hillEndY
             }
             PathLine {
                 x: sunShape.width

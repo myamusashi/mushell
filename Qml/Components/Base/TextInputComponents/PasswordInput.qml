@@ -113,40 +113,40 @@ Item {
             shape: MaterialShape.Circle
             animationDuration: 350
             property color shapeTarget: root.unlockInProgress ? Colours.m3Colors.m3OnSurfaceVariant : root.isUnlocked ? Colours.m3Colors.m3Green : Colours.m3Colors.m3Primary
-            property color cFrom
-            property color cTo
-            property bool cActive: false
-            property real cBlend: 1.0
-            onCBlendChanged: {
-                if (!cActive)
+            property color colorFrom
+            property color colorTo
+            property bool colorBlending: false
+            property real colorBlendProgress: 1.0
+            onColorBlendProgressChanged: {
+                if (!colorBlending)
                     return;
-                if (cBlend >= 1) {
-                    color = cTo;
-                    cActive = false;
-                } else if (cBlend > 0) {
-                    color = Colours.blendColors(cFrom, cTo, cBlend);
+                if (colorBlendProgress >= 1) {
+                    color = colorTo;
+                    colorBlending = false;
+                } else if (colorBlendProgress > 0) {
+                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 
             onShapeTargetChanged: {
-                cAnim.stop();
-                cFrom = color;
-                cTo = shapeTarget;
-                cActive = true;
-                cBlend = 0.0;
-                cAnim.start();
+                colorBlendAnim.stop();
+                colorFrom = color;
+                colorTo = shapeTarget;
+                colorBlending = true;
+                colorBlendProgress = 0.0;
+                colorBlendAnim.start();
             }
 
             Component.onCompleted: {
                 shape = root.shapeList[index % root.shapeList.length];
 
-                cAnim.stop();
+                colorBlendAnim.stop();
                 color = "white";
-                cFrom = "white";
-                cTo = shapeTarget;
-                cActive = true;
-                cBlend = 0.0;
-                cAnim.start();
+                colorFrom = "white";
+                colorTo = shapeTarget;
+                colorBlending = true;
+                colorBlendProgress = 0.0;
+                colorBlendAnim.start();
             }
 
             Connections {
@@ -158,9 +158,9 @@ Item {
             }
 
             NAnim {
-                id: cAnim
+                id: colorBlendAnim
                 target: shapeDelegate
-                property: "cBlend"
+                property: "colorBlendProgress"
                 from: 0.0
                 to: 1.0
             }

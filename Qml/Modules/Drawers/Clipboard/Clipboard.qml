@@ -21,7 +21,7 @@ WrapperRectangle {
 
     signal closeRequested
 
-    implicitWidth: d.listWidth + (Configs.clipboard.enablePreview ? (d.previewWidth + Appearance.spacing.small * 2) : 0)
+    implicitWidth: uiState.listWidth + (Configs.clipboard.enablePreview ? (uiState.previewWidth + Appearance.spacing.small * 2) : 0)
     implicitHeight: GlobalStates.isClipboardOpen ? Configs.clipboard.height : 0
     radius: Appearance.rounding.normal
     color: Colours.m3Colors.m3SurfaceContainerLow
@@ -65,7 +65,7 @@ WrapperRectangle {
     }
 
     QtObject {
-        id: d
+        id: uiState
 
         readonly property int listWidth: Configs.clipboard.width
         readonly property int previewWidth: 400
@@ -80,7 +80,7 @@ WrapperRectangle {
 
         function onIsClipboardOpenChanged() {
             if (!GlobalStates.isClipboardOpen)
-                d.visualActive = false;
+                uiState.visualActive = false;
         }
     }
 
@@ -157,36 +157,36 @@ WrapperRectangle {
                         Icon {
                             id: searchIcon
                             property color target: searchField.isFocused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
-                            property color cFrom
-                            property color cTo
-                            property bool cActive: false
-                            property real cBlend: 1.0
-                            onCBlendChanged: {
-                                if (!cActive)
+                            property color colorFrom
+                            property color colorTo
+                            property bool colorBlending: false
+                            property real colorBlendProgress: 1.0
+                            onColorBlendProgressChanged: {
+                                if (!colorBlending)
                                     return;
-                                if (cBlend >= 1) {
-                                    color = cTo;
-                                    cActive = false;
-                                } else if (cBlend > 0) {
-                                    color = Colours.blendColors(cFrom, cTo, cBlend);
+                                if (colorBlendProgress >= 1) {
+                                    color = colorTo;
+                                    colorBlending = false;
+                                } else if (colorBlendProgress > 0) {
+                                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                                 }
                             }
                             onTargetChanged: {
-                                cAnim.stop();
-                                cFrom = color;
-                                cTo = target;
-                                cActive = true;
-                                cBlend = 0.0;
-                                cAnim.start();
+                                colorBlendAnim.stop();
+                                colorFrom = color;
+                                colorTo = target;
+                                colorBlending = true;
+                                colorBlendProgress = 0.0;
+                                colorBlendAnim.start();
                             }
 
                             icon: "search"
                             font.pixelSize: Appearance.fonts.size.larger
 
                             NAnim {
-                                id: cAnim
+                                id: colorBlendAnim
                                 target: searchIcon
-                                property: "cBlend"
+                                property: "colorBlendProgress"
                                 from: 0.0
                                 to: 1.0
                             }
@@ -251,16 +251,16 @@ WrapperRectangle {
                                         return;
                                     }
 
-                                    if (event.key === Qt.Key_Escape && d.visualActive) {
-                                        d.visualActive = false;
+                                    if (event.key === Qt.Key_Escape && uiState.visualActive) {
+                                        uiState.visualActive = false;
                                         event.accepted = true;
                                         return;
                                     }
 
                                     if (event.key === Qt.Key_V) {
-                                        d.visualActive = !d.visualActive;
-                                        if (d.visualActive)
-                                            d.visualAnchor = entryList.currentIndex;
+                                        uiState.visualActive = !uiState.visualActive;
+                                        if (uiState.visualActive)
+                                            uiState.visualAnchor = entryList.currentIndex;
                                         event.accepted = true;
                                         return;
                                     }
@@ -289,7 +289,7 @@ WrapperRectangle {
                                         return;
                                     }
 
-                                    if (d.visualActive && event.key === Qt.Key_Y) {
+                                    if (uiState.visualActive && event.key === Qt.Key_Y) {
                                         const ids = entryList.visualSelectedIds();
                                         const copied = ids.length > 0 && ClipboardManager.copySelection(ids);
                                         if (copied) {
@@ -298,19 +298,19 @@ WrapperRectangle {
                                             if (!Configs.clipboard.keepOpenAfterCopy)
                                                 GlobalStates.isClipboardOpen = false;
                                         }
-                                        d.visualActive = false;
+                                        uiState.visualActive = false;
                                         event.accepted = true;
                                         return;
                                     }
 
-                                    if (d.visualActive && event.key === Qt.Key_D) {
+                                    if (uiState.visualActive && event.key === Qt.Key_D) {
                                         const ids = entryList.visualSelectedIds();
                                         const removed = ClipboardManager.removeMany(ids);
                                         if (removed > 0) {
                                             const n = removed === 1 ? qsTr("entry") : qsTr("entries");
                                             ToastService.show(qsTr("Deleted %1 %2").arg(removed).arg(n), qsTr("Clipboard"), "edit-delete");
                                         }
-                                        d.visualActive = false;
+                                        uiState.visualActive = false;
                                         entryList.currentIndex = Math.min(entryList.currentIndex, entryList.count - 1);
                                         event.accepted = true;
                                         return;
@@ -394,7 +394,7 @@ WrapperRectangle {
                                 }
 
                                 if (event.key === Qt.Key_Tab) {
-                                    d.previewFocused = true;
+                                    uiState.previewFocused = true;
                                     event.accepted = true;
                                 }
                             }
@@ -404,7 +404,7 @@ WrapperRectangle {
                             text: (entryList.currentPage + 1) + " / " + entryList.totalPages
                             font.pixelSize: Appearance.fonts.size.small
                             color: Colours.m3Colors.m3OnSurfaceVariant
-                            visible: entryList.totalPages > 0 && searchField.text.length === 0 && !d.visualActive
+                            visible: entryList.totalPages > 0 && searchField.text.length === 0 && !uiState.visualActive
                         }
 
                         StyledText {
@@ -412,7 +412,7 @@ WrapperRectangle {
                             font.pixelSize: Appearance.fonts.size.small
                             font.bold: true
                             color: Colours.m3Colors.m3Primary
-                            visible: d.visualActive
+                            visible: uiState.visualActive
                         }
                     }
                 }
@@ -423,7 +423,7 @@ WrapperRectangle {
                     spacing: Appearance.spacing.small
 
                     Item {
-                        Layout.preferredWidth: d.listWidth
+                        Layout.preferredWidth: uiState.listWidth
                         Layout.fillHeight: true
 
                         Flickable {
@@ -459,8 +459,8 @@ WrapperRectangle {
                                 width: verticalFlick.width
                                 height: Math.max(1, Configs.clipboard.listEntries) * (64 + Appearance.spacing.small)
 
-                                readonly property int visualStart: d.visualActive ? Math.min(d.visualAnchor, currentIndex) : -1
-                                readonly property int visualEnd: d.visualActive ? Math.max(d.visualAnchor, currentIndex) : -1
+                                readonly property int visualStart: uiState.visualActive ? Math.min(uiState.visualAnchor, currentIndex) : -1
+                                readonly property int visualEnd: uiState.visualActive ? Math.max(uiState.visualAnchor, currentIndex) : -1
 
                                 readonly property int visualSelectableCount: {
                                     let n = 0;
@@ -474,8 +474,8 @@ WrapperRectangle {
 
                                 function visualSelectedIds(): var {
                                     const ids = [];
-                                    const start = Math.min(d.visualAnchor, currentIndex);
-                                    const end = Math.max(d.visualAnchor, currentIndex);
+                                    const start = Math.min(uiState.visualAnchor, currentIndex);
+                                    const end = Math.max(uiState.visualAnchor, currentIndex);
                                     for (let i = start; i <= end; ++i)
                                         ids.push(ClipboardManager.model.idAtRow(i));
                                     return ids;
@@ -534,7 +534,7 @@ WrapperRectangle {
                                 ScrollBar.vertical: ScrollBar {
                                     policy: ScrollBar.AlwaysOff
                                 }
-                                ScrollBar.horizontal: hbar
+                                ScrollBar.horizontal: horizontalScrollBar
 
                                 highlightMoveDuration: 200
                                 highlightFollowsCurrentItem: true
@@ -608,7 +608,7 @@ WrapperRectangle {
                                     sourceApp: modelData.sourceApp
                                     fileName: modelData.fileName
                                     isSelected: GridView.isCurrentItem
-                                    inVisual: d.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
+                                    inVisual: uiState.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
 
                                     width: GridView.view.cellWidth
                                     height: 64
@@ -631,7 +631,7 @@ WrapperRectangle {
                         Row {
                             id: pageIndicatorRow
 
-                            anchors.bottom: hbar.top
+                            anchors.bottom: horizontalScrollBar.top
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottomMargin: Appearance.margin.small
                             spacing: 6
@@ -658,7 +658,7 @@ WrapperRectangle {
                         }
 
                         ScrollBar {
-                            id: hbar
+                            id: horizontalScrollBar
 
                             anchors.bottom: parent.bottom
                             anchors.left: parent.left
@@ -687,7 +687,7 @@ WrapperRectangle {
                             }
 
                             ClipboardPreview {
-                                Layout.preferredWidth: d.previewWidth
+                                Layout.preferredWidth: uiState.previewWidth
                                 Layout.fillHeight: true
                                 entryId: clipboardLayout.currentId
 

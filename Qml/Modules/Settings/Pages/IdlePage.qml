@@ -22,9 +22,9 @@ SettingsPageBase {
         timeoutsModel.clear();
         for (const e of Configs.idle.timeouts)
             timeoutsModel.append({
-                _timeout: e.timeoutMonitor ?? 60,
-                _onTimeout: e["on-timeout"] ?? "",
-                _onResume: e["on-resume"] ?? ""
+                timeoutSeconds: e.timeoutMonitor ?? 60,
+                timeoutCommand: e["on-timeout"] ?? "",
+                resumeCommand: e["on-resume"] ?? ""
             });
     }
 
@@ -33,9 +33,9 @@ SettingsPageBase {
         for (let i = 0; i < timeoutsModel.count; i++) {
             const e = timeoutsModel.get(i);
             arr.push({
-                timeoutMonitor: e._timeout,
-                "on-timeout": e._onTimeout,
-                "on-resume": e._onResume
+                timeoutMonitor: e.timeoutSeconds,
+                "on-timeout": e.timeoutCommand,
+                "on-resume": e.resumeCommand
             });
         }
         Configs.idle.timeouts = arr;
@@ -45,9 +45,9 @@ SettingsPageBase {
 
     function addTimeout() {
         timeoutsModel.append({
-            _timeout: 60,
-            _onTimeout: "notify-send 'Idle' 'Timeout reached'",
-            _onResume: ""
+            timeoutSeconds: 60,
+            timeoutCommand: "notify-send 'Idle' 'Timeout reached'",
+            resumeCommand: ""
         });
         flushToConfig();
     }
@@ -117,7 +117,7 @@ SettingsPageBase {
                                 id: timeoutField
 
                                 Layout.preferredWidth: 80
-                                text: rootDelegate.modelData._timeout
+                                text: rootDelegate.modelData.timeoutSeconds
                                 color: Colours.m3Colors.m3OnSurface
                                 font.pixelSize: Appearance.fonts.size.normal
                                 font.bold: true
@@ -135,7 +135,7 @@ SettingsPageBase {
                                     if (isNaN(val) || val < 1)
                                         val = 5;
                                     text = val;
-                                    root.timeoutsModel.setProperty(rootDelegate.index, "_timeout", val);
+                                    root.timeoutsModel.setProperty(rootDelegate.index, "timeoutSeconds", val);
                                 }
                             }
                         }
@@ -154,7 +154,7 @@ SettingsPageBase {
                                 id: onTimeoutField
 
                                 Layout.fillWidth: true
-                                text: rootDelegate.modelData._onTimeout
+                                text: rootDelegate.modelData.timeoutCommand
                                 color: Colours.m3Colors.m3OnSurface
                                 font.pixelSize: Appearance.fonts.size.normal
                                 padding: Appearance.margin.normal
@@ -166,7 +166,7 @@ SettingsPageBase {
                                     opacity: 0.4
                                 }
 
-                                onEditingFinished: root.timeoutsModel.setProperty(rootDelegate.index, "_onTimeout", text)
+                                onEditingFinished: root.timeoutsModel.setProperty(rootDelegate.index, "timeoutCommand", text)
                             }
                         }
 
@@ -184,7 +184,7 @@ SettingsPageBase {
                                 id: onResumeField
 
                                 Layout.fillWidth: true
-                                text: rootDelegate.modelData._onResume
+                                text: rootDelegate.modelData.resumeCommand
                                 color: Colours.m3Colors.m3OnSurface
                                 font.pixelSize: Appearance.fonts.size.normal
                                 padding: Appearance.margin.normal
@@ -196,7 +196,7 @@ SettingsPageBase {
                                     opacity: 0.4
                                 }
 
-                                onEditingFinished: root.timeoutsModel.setProperty(rootDelegate.index, "_onResume", text)
+                                onEditingFinished: root.timeoutsModel.setProperty(rootDelegate.index, "resumeCommand", text)
                             }
                         }
 

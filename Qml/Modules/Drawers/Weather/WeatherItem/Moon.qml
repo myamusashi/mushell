@@ -173,27 +173,27 @@ MaterialShape {
             fillColor: moonShape.hillColor
 
             startX: 0
-            startY: moonGeo.h
+            startY: moonGeo.heightPx
 
             PathLine {
                 x: moonGeo.hillStartX
                 y: moonGeo.hillStartY
             }
             PathCubic {
-                control1X: moonGeo.hillCp1X
-                control1Y: moonGeo.hillCp1Y
-                control2X: moonGeo.hillCp2X
-                control2Y: moonGeo.hillCp2Y
+                control1X: moonGeo.hillControlPoint1X
+                control1Y: moonGeo.hillControlPoint1Y
+                control2X: moonGeo.hillControlPoint2X
+                control2Y: moonGeo.hillControlPoint2Y
                 x: moonGeo.hillEndX
                 y: moonGeo.hillEndY
             }
             PathLine {
-                x: moonGeo.w
-                y: moonGeo.h
+                x: moonGeo.widthPx
+                y: moonGeo.heightPx
             }
             PathLine {
                 x: 0
-                y: moonGeo.h
+                y: moonGeo.heightPx
             }
         }
 
@@ -216,24 +216,24 @@ MaterialShape {
         QtObject {
             id: moonGeo
 
-            readonly property real w: moonShape.parent.width
-            readonly property real h: moonShape.parent.height
+            readonly property real widthPx: moonShape.parent.width
+            readonly property real heightPx: moonShape.parent.height
 
-            property real hillHeight: h * 0.6
-            property real hillBaseY: h - hillHeight
+            property real hillHeight: heightPx * 0.6
+            property real hillBaseY: heightPx - hillHeight
             property real hillStartX: 0
             property real hillStartY: hillBaseY + hillHeight * 0.3
-            property real hillCp1X: w * 0.3
-            property real hillCp1Y: hillBaseY - hillHeight * 0.1
-            property real hillCp2X: w * 0.7
-            property real hillCp2Y: hillBaseY - hillHeight * 0.1
-            property real hillEndX: w
+            property real hillControlPoint1X: widthPx * 0.3
+            property real hillControlPoint1Y: hillBaseY - hillHeight * 0.1
+            property real hillControlPoint2X: widthPx * 0.7
+            property real hillControlPoint2Y: hillBaseY - hillHeight * 0.1
+            property real hillEndX: widthPx
             property real hillEndY: hillBaseY + hillHeight * 0.3
 
-            property real t: canvas.moonriseProgress
-            property real oneMinusT: 1 - t
-            property real moonX: Math.pow(oneMinusT, 3) * hillStartX + 3 * Math.pow(oneMinusT, 2) * t * hillCp1X + 3 * oneMinusT * Math.pow(t, 2) * hillCp2X + Math.pow(t, 3) * hillEndX
-            property real moonY: Math.pow(oneMinusT, 3) * hillStartY + 3 * Math.pow(oneMinusT, 2) * t * hillCp1Y + 3 * oneMinusT * Math.pow(t, 2) * hillCp2Y + Math.pow(t, 3) * hillEndY
+            property real progress: canvas.moonriseProgress
+            property real oneMinusProgress: 1 - progress
+            property real moonX: Math.pow(oneMinusProgress, 3) * hillStartX + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1X + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2X + Math.pow(progress, 3) * hillEndX
+            property real moonY: Math.pow(oneMinusProgress, 3) * hillStartY + 3 * Math.pow(oneMinusProgress, 2) * progress * hillControlPoint1Y + 3 * oneMinusProgress * Math.pow(progress, 2) * hillControlPoint2Y + Math.pow(progress, 3) * hillEndY
         }
     }
 }

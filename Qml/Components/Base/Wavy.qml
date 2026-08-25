@@ -55,7 +55,7 @@ Slider {
     onEnableWaveChanged: waveTransition = enableWave ? 1.0 : 0.0
 
     // FrameAnimation adds a fixed delta every frame regardless of the current
-    // phase value, so pause/resume has zero effect on perceived speed.
+    // wavePhase value, so pause/resume has zero effect on perceived speed.
     // fmod keeps the value in [0, 2π] without ever accumulating float error
     FrameAnimation {
         id: wavyPhaseDriver
@@ -93,14 +93,14 @@ Slider {
 
                 property color activeColor: slider.activeColor
                 property color inactiveColor: slider.inactiveColor
-                property real w: width
-                property real cy: height * 0.5
-                property real activeW: Math.max(0, width * slider.visualPosition - slider.separatorWidth * 0.5)
-                property real inactSt: Math.min(width, width * slider.visualPosition + slider.separatorWidth * 0.5)
-                property real freq: slider.waveFrequency
-                property real amp: slider.waveAmplitude * slider.waveTransition
-                property real phase: slider.waveAnimPhase
-                property real strokeHalf: 0.75
+                property real effectWidth: width
+                property real centerY: height * 0.5
+                property real activeEnd: Math.max(0, width * slider.visualPosition - slider.separatorWidth * 0.5)
+                property real inactiveStart: Math.min(width, width * slider.visualPosition + slider.separatorWidth * 0.5)
+                property real waveFrequency: slider.waveFrequency
+                property real waveAmplitude: slider.waveAmplitude * slider.waveTransition
+                property real wavePhase: slider.waveAnimPhase
+                property real strokeHalfWidth: 0.75
 
                 vertexShader: Paths.projectRoot + "/Assets/shaders/wavy.vert.qsb"
                 fragmentShader: Paths.projectRoot + "/Assets/shaders/wavy.frag.qsb"
@@ -122,20 +122,20 @@ Slider {
 
             property color activeColor: slider.activeColor
             property color inactiveColor: slider.inactiveColor
-            property real w: width
-            property real bl: height * 0.5
-            property real amp: height * slider.waveMaxAmpRatio
-            property real aEnd: Math.max(0, width * slider.visualPosition - slider.separatorWidth * 0.5)
-            property real iSt: Math.min(width, width * slider.visualPosition + slider.separatorWidth * 0.5)
-            property real pos: slider.visualPosition
-            property real phase: slider.wavePhaseBeach
-            property real freq: slider.waveFreqBeach
-            property real pow_: slider.wavePow
-            property real floor_: slider.waveFloor
-            property real ramp: slider.effectiveWaveRamp
-            property real rampIn: slider.waveRampIn
-            property real tr: slider.waveTransition
-            property real strokeHalf: 0.9
+            property real effectWidth: width
+            property real baselineY: height * 0.5
+            property real waveAmplitude: height * slider.waveMaxAmpRatio
+            property real activeEnd: Math.max(0, width * slider.visualPosition - slider.separatorWidth * 0.5)
+            property real inactiveStart: Math.min(width, width * slider.visualPosition + slider.separatorWidth * 0.5)
+            property real playPosition: slider.visualPosition
+            property real wavePhase: slider.wavePhaseBeach
+            property real waveFrequency: slider.waveFreqBeach
+            property real shapeExponent: slider.wavePow
+            property real amplitudeFloor: slider.waveFloor
+            property real playheadRamp: slider.effectiveWaveRamp
+            property real leadingRamp: slider.waveRampIn
+            property real transitionAmount: slider.waveTransition
+            property real strokeHalfWidth: 0.9
 
             vertexShader: Paths.projectRoot + "/Assets/shaders/waveForm.vert.qsb"
             fragmentShader: Paths.projectRoot + "/Assets/shaders/waveForm.frag.qsb"

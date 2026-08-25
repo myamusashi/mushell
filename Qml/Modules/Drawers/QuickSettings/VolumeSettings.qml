@@ -43,7 +43,7 @@ ScrollView {
                 }
 
                 delegate: RowLayout {
-                    id: del
+                    id: volumeEntryDelegate
 
                     required property var modelData
                     required property int index
@@ -52,28 +52,28 @@ ScrollView {
 
                     StyledRect {
                         id: sinkIndicator
-                        property color target: root.currentSinkIndex === del.index ? Colours.m3Colors.m3Primary : "transparent"
-                        property color cFrom
-                        property color cTo
-                        property bool cActive: false
-                        property real cBlend: 1.0
-                        onCBlendChanged: {
-                            if (!cActive)
+                        property color target: root.currentSinkIndex === volumeEntryDelegate.index ? Colours.m3Colors.m3Primary : "transparent"
+                        property color colorFrom
+                        property color colorTo
+                        property bool colorBlending: false
+                        property real colorBlendProgress: 1.0
+                        onColorBlendProgressChanged: {
+                            if (!colorBlending)
                                 return;
-                            if (cBlend >= 1) {
-                                color = cTo;
-                                cActive = false;
-                            } else if (cBlend > 0) {
-                                color = Colours.blendColors(cFrom, cTo, cBlend);
+                            if (colorBlendProgress >= 1) {
+                                color = colorTo;
+                                colorBlending = false;
+                            } else if (colorBlendProgress > 0) {
+                                color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                             }
                         }
                         onTargetChanged: {
-                            cAnim.stop();
-                            cFrom = color;
-                            cTo = target;
-                            cActive = true;
-                            cBlend = 0.0;
-                            cAnim.start();
+                            colorBlendAnim.stop();
+                            colorFrom = color;
+                            colorTo = target;
+                            colorBlending = true;
+                            colorBlendProgress = 0.0;
+                            colorBlendAnim.start();
                         }
 
                         implicitWidth: 15
@@ -83,9 +83,9 @@ ScrollView {
                         border.color: Colours.m3Colors.m3Primary
 
                         NAnim {
-                            id: cAnim
+                            id: colorBlendAnim
                             target: sinkIndicator
-                            property: "cBlend"
+                            property: "colorBlendProgress"
                             from: 0.0
                             to: 1.0
                             duration: Appearance.animations.durations.small
@@ -93,19 +93,19 @@ ScrollView {
                     }
 
                     StyledText {
-                        text: del.modelData.description ?? ""
-                        color: root.currentSinkIndex === del.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
+                        text: volumeEntryDelegate.modelData.description ?? ""
+                        color: root.currentSinkIndex === volumeEntryDelegate.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
                         font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: root.currentSinkIndex === del.index ? Font.Medium : Font.Normal
+                        font.weight: root.currentSinkIndex === volumeEntryDelegate.index ? Font.Medium : Font.Normal
                     }
 
                     TapHandler {
                         onTapped: {
-                            root.currentSinkIndex = del.index;
+                            root.currentSinkIndex = volumeEntryDelegate.index;
                             Quickshell.execDetached({
-                                command: ["wpctl", "set-default", del.modelData.nodeId]
+                                command: ["wpctl", "set-default", volumeEntryDelegate.modelData.nodeId]
                             });
-                            Configs.audio.defaultSinkName = del.modelData.name;
+                            Configs.audio.defaultSinkName = volumeEntryDelegate.modelData.name;
                         }
                     }
                 }
@@ -113,7 +113,7 @@ ScrollView {
 
             MixerEntry {
                 useCustomProperties: true
-                node: Pipewire.defaultAudioSink
+                audioNode: Pipewire.defaultAudioSink
                 customProperty: AudioProfiles {}
             }
 
@@ -149,7 +149,7 @@ ScrollView {
                     MixerEntry {
                         id: mixerGroup
 
-                        node: groups.modelData.source
+                        audioNode: groups.modelData.source
                     }
                 }
             }

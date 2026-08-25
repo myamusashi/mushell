@@ -27,8 +27,8 @@ Item {
 
     readonly property string effectiveSource: GlobalStates.previewWallpaper !== "" ? GlobalStates.previewWallpaper : Paths.currentWallpaper
 
-    readonly property var _shaderNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll", "hexTile"]
-    readonly property var _typeMap: ({
+    readonly property var transitionShaderNames: ["fade", "wipeDown", "circleExpand", "dissolve", "splitHorizontal", "slideUp", "pixelate", "diagonalWipe", "boxExpand", "roll", "hexTile"]
+    readonly property var transitionTypeMap: ({
             "fade": 0,
             "wipeDown": 1,
             "circle": 2,
@@ -43,20 +43,20 @@ Item {
         })
 
     // Which slot is the "active" (currently shown)
-    // 0 = imgA, 1 = imgB
-    property int _slot: 0
-    property bool _busy: false
-    property int _typeResolved: 0
-    property url _pendingUrl: ""
-    property bool _hasPending: false
-    property var _toImg: null
-    property bool _isVideoWallpaper: false
-    property bool _targetVideo: false
-    property int _videoSlot: 0
-    property var _toVideo: null
-    property bool _sourceVideo: false
-    property bool _transitionStarted: false
-    readonly property bool _pauseVideo: {
+    // 0 = imageA, 1 = imageB
+    property int activeImageSlot: 0
+    property bool transitionBusy: false
+    property int resolvedTransitionType: 0
+    property url pendingUrl: ""
+    property bool hasPendingUrl: false
+    property var incomingImage: null
+    property bool isVideoWallpaper: false
+    property bool targetIsVideo: false
+    property int activeVideoSlot: 0
+    property var incomingPlayer: null
+    property bool sourceIsVideo: false
+    property bool transitionStarted: false
+    readonly property bool pauseVideo: {
         const toplevels = Hypr.focusedWorkspace?.toplevels?.values ?? [];
         return toplevels.some(toplevel => toplevel.wayland?.activated && (toplevel.wayland?.fullscreen || !toplevel.lastIpcObject?.floating) && !GlobalStates.isLockscreenOpen);
     }
@@ -66,7 +66,7 @@ Item {
     }
 
     function updateVideoPlayback() {
-        if (_pauseVideo) {
+        if (pauseVideo) {
             videoPlayerA.pause();
             videoPlayerB.pause();
         } else {
@@ -78,292 +78,292 @@ Item {
     }
 
     function playVideo(player) {
-        if (_pauseVideo)
+        if (pauseVideo)
             player.pause();
         else
             player.play();
     }
 
-    on_PauseVideoChanged: updateVideoPlayback()
+    onPauseVideoChanged: updateVideoPlayback()
 
-    // Returns -1 when lowPerfMode is on; _startTransition intercepts it.
-    function _resolveType() {
+    // Returns -1 when lowPerfMode is on; startImageTransition intercepts it.
+    function resolveTransitionType() {
         if (Configs.wallpaper.transitionLowPerfMode)
             return -1;
         const t = Configs.wallpaper.transition;
         if (t === "random")
             return Math.floor(Math.random() * 10);
-        const v = _typeMap[t];
+        const v = transitionTypeMap[t];
         return (v !== undefined) ? v : 0;
     }
 
-    function _active() {
-        return _slot === 0 ? imgA : imgB;
+    function activeImage() {
+        return activeImageSlot === 0 ? imageA : imageB;
     }
-    function _inactive() {
-        return _slot === 0 ? imgB : imgA;
-    }
-
-    function _activeVideoOutput() {
-        return _videoSlot === 0 ? videoOutputA : videoOutputB;
+    function inactiveImage() {
+        return activeImageSlot === 0 ? imageB : imageA;
     }
 
-    function _inactiveVideoPlayer() {
-        return _videoSlot === 0 ? videoPlayerB : videoPlayerA;
+    function activeVideoOutput() {
+        return activeVideoSlot === 0 ? videoOutputA : videoOutputB;
     }
 
-    function _inactiveVideoOutput() {
-        return _videoSlot === 0 ? videoOutputB : videoOutputA;
+    function inactiveVideoPlayer() {
+        return activeVideoSlot === 0 ? videoPlayerB : videoPlayerA;
+    }
+
+    function inactiveVideoOutput() {
+        return activeVideoSlot === 0 ? videoOutputB : videoOutputA;
     }
 
     function load(url) {
         if (isVideo(url)) {
-            if (_isVideoWallpaper)
-                _startVideoTransition(url);
+            if (isVideoWallpaper)
+                startVideoTransition(url);
             else {
                 videoPlayerA.source = Qt.resolvedUrl(url);
                 playVideo(videoPlayerA);
-                _isVideoWallpaper = true;
+                isVideoWallpaper = true;
             }
             return;
         }
 
-        if (_isVideoWallpaper && url === "") {
+        if (isVideoWallpaper && url === "") {
             videoPlayerA.stop();
             videoPlayerA.source = "";
             videoPlayerB.stop();
             videoPlayerB.source = "";
-            _isVideoWallpaper = false;
-            _sourceVideo = false;
-            _targetVideo = false;
-            _toVideo = null;
-            _busy = false;
-            anim.stop();
+            isVideoWallpaper = false;
+            sourceIsVideo = false;
+            targetIsVideo = false;
+            incomingPlayer = null;
+            transitionBusy = false;
+            progressAnimation.stop();
             return;
         }
 
-        if (url === "" || url === _active().source)
+        if (url === "" || url === activeImage().source)
             return;
-        if (_busy) {
-            _pendingUrl = url;
-            _hasPending = true;
+        if (transitionBusy) {
+            pendingUrl = url;
+            hasPendingUrl = true;
             return;
         }
-        _startTransition(url);
+        startImageTransition(url);
     }
 
-    function _startVideoTransition(url) {
-        if (_busy) {
-            _pendingUrl = url;
-            _hasPending = true;
+    function startVideoTransition(url) {
+        if (transitionBusy) {
+            pendingUrl = url;
+            hasPendingUrl = true;
             return;
         }
 
-        _typeResolved = _resolveType();
-        if (Configs.wallpaper.transition === "none" || _typeResolved === -1) {
+        resolvedTransitionType = resolveTransitionType();
+        if (Configs.wallpaper.transition === "none" || resolvedTransitionType === -1) {
             videoPlayerA.stop();
             videoPlayerB.stop();
             videoPlayerA.source = "";
             videoPlayerB.source = "";
-            const player = _inactiveVideoPlayer();
+            const player = inactiveVideoPlayer();
             player.source = Qt.resolvedUrl(url);
             playVideo(player);
-            _videoSlot = 1 - _videoSlot;
+            activeVideoSlot = 1 - activeVideoSlot;
             return;
         }
 
-        const name = _shaderNames[_typeResolved] ?? "fade";
-        fx.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
+        const name = transitionShaderNames[resolvedTransitionType] ?? "fade";
+        transitionEffect.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
 
-        fx.source1 = _isVideoWallpaper ? _activeVideoOutput() : _active();
-        fx.source2 = _inactiveVideoOutput();
+        transitionEffect.source1 = isVideoWallpaper ? activeVideoOutput() : activeImage();
+        transitionEffect.source2 = inactiveVideoOutput();
         videoOutputA.layer.enabled = true;
         videoOutputB.layer.enabled = true;
 
-        _targetVideo = true;
-        _busy = true;
-        _transitionStarted = false;
+        targetIsVideo = true;
+        transitionBusy = true;
+        transitionStarted = false;
 
-        const player = _inactiveVideoPlayer();
-        _toVideo = player;
+        const player = inactiveVideoPlayer();
+        incomingPlayer = player;
         player.source = Qt.resolvedUrl(url);
         playVideo(player);
     }
 
-    function _startTransition(url) {
-        _typeResolved = _resolveType();
-        _sourceVideo = _isVideoWallpaper;
+    function startImageTransition(url) {
+        resolvedTransitionType = resolveTransitionType();
+        sourceIsVideo = isVideoWallpaper;
 
-        if (Configs.wallpaper.transition === "none" || _typeResolved === -1) {
-            if (_sourceVideo) {
+        if (Configs.wallpaper.transition === "none" || resolvedTransitionType === -1) {
+            if (sourceIsVideo) {
                 videoPlayerA.stop();
                 videoPlayerA.source = "";
                 videoPlayerB.stop();
                 videoPlayerB.source = "";
-                _isVideoWallpaper = false;
-                _sourceVideo = false;
+                isVideoWallpaper = false;
+                sourceIsVideo = false;
             }
-            _inactive().source = url;
-            _slot = 1 - _slot;
-            _inactive().source = "";
+            inactiveImage().source = url;
+            activeImageSlot = 1 - activeImageSlot;
+            inactiveImage().source = "";
             return;
         }
 
-        const name = _shaderNames[_typeResolved] ?? "fade";
-        fx.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
+        const name = transitionShaderNames[resolvedTransitionType] ?? "fade";
+        transitionEffect.fragmentShader = `${Paths.projectRoot}/Assets/shaders/transitions/${name}.frag.qsb`;
 
-        if (_sourceVideo) {
-            fx.source1 = _activeVideoOutput();
-            fx.source2 = _inactive();
-            _activeVideoOutput().layer.enabled = true;
-        } else if (_slot === 0) {
-            fx.source1 = imgA;
-            fx.source2 = imgB;
+        if (sourceIsVideo) {
+            transitionEffect.source1 = activeVideoOutput();
+            transitionEffect.source2 = inactiveImage();
+            activeVideoOutput().layer.enabled = true;
+        } else if (activeImageSlot === 0) {
+            transitionEffect.source1 = imageA;
+            transitionEffect.source2 = imageB;
         } else {
-            fx.source1 = imgB;
-            fx.source2 = imgA;
+            transitionEffect.source1 = imageB;
+            transitionEffect.source2 = imageA;
         }
 
-        _targetVideo = false;
-        _transitionStarted = false;
-        _toImg = _inactive();
-        _busy = true;
-        _toImg.source = url;
+        targetIsVideo = false;
+        transitionStarted = false;
+        incomingImage = inactiveImage();
+        transitionBusy = true;
+        incomingImage.source = url;
 
-        if (_toImg.status === Image.Ready) {
-            _beginAnim();
-        } else if (_toImg.status === Image.Error) {
+        if (incomingImage.status === Image.Ready) {
+            beginTransition();
+        } else if (incomingImage.status === Image.Error) {
             console.warn("[Wallpaper] Immediate error loading:", url);
-            _busy = false;
-            _toImg = null;
+            transitionBusy = false;
+            incomingImage = null;
         }
     }
 
-    function _onImgStatus(img) {
-        if (!_busy || img !== _toImg)
+    function handleImageStatus(img) {
+        if (!transitionBusy || img !== incomingImage)
             return;
         if (img.status === Image.Ready) {
-            _beginAnim();
+            beginTransition();
         } else if (img.status === Image.Error) {
             console.warn("[Wallpaper] Failed to load:", img.source);
             img.source = "";
-            _busy = false;
-            _toImg = null;
-            _drainPending();
+            transitionBusy = false;
+            incomingImage = null;
+            loadPendingUrl();
         }
     }
 
-    function _beginAnim() {
-        if (_transitionStarted)
+    function beginTransition() {
+        if (transitionStarted)
             return;
-        _transitionStarted = true;
-        fx.progress = 0.0;
+        transitionStarted = true;
+        transitionEffect.progress = 0.0;
         if (Window.window)
             Window.window.requestActivate();
-        anim.restart();
+        progressAnimation.restart();
     }
 
-    function _commitTransition() {
-        if (!_busy)
+    function commitTransition() {
+        if (!transitionBusy)
             return;
-        if (_targetVideo) {
-            const oldPlayer = _videoSlot === 0 ? videoPlayerA : videoPlayerB;
+        if (targetIsVideo) {
+            const oldPlayer = activeVideoSlot === 0 ? videoPlayerA : videoPlayerB;
             oldPlayer.stop();
             oldPlayer.source = "";
-            _videoSlot = 1 - _videoSlot;
+            activeVideoSlot = 1 - activeVideoSlot;
             videoOutputA.layer.enabled = false;
             videoOutputB.layer.enabled = false;
-            _isVideoWallpaper = true;
-            _busy = false;
-            fx.progress = 0.0;
-            _toVideo = null;
-            _drainPending();
+            isVideoWallpaper = true;
+            transitionBusy = false;
+            transitionEffect.progress = 0.0;
+            incomingPlayer = null;
+            loadPendingUrl();
             return;
         }
 
-        if (_sourceVideo) {
+        if (sourceIsVideo) {
             videoPlayerA.stop();
             videoPlayerA.source = "";
             videoPlayerB.stop();
             videoPlayerB.source = "";
-            _isVideoWallpaper = false;
-            _sourceVideo = false;
+            isVideoWallpaper = false;
+            sourceIsVideo = false;
             videoOutputA.layer.enabled = false;
             videoOutputB.layer.enabled = false;
         }
 
-        const newSlot = 1 - _slot;
-        const oldImg = (newSlot === 0) ? imgB : imgA;
+        const newSlot = 1 - activeImageSlot;
+        const oldImg = (newSlot === 0) ? imageB : imageA;
         const oldPath = oldImg.source.toString().replace("file://", "");
 
-        _busy = false;
-        _slot = newSlot;
+        transitionBusy = false;
+        activeImageSlot = newSlot;
         oldImg.source = "";
-        fx.progress = 0.0;
-        _toImg = null;
+        transitionEffect.progress = 0.0;
+        incomingImage = null;
 
         ImageCache.evict(oldPath);
 
-        _drainPending();
+        loadPendingUrl();
     }
 
-    function _maybeBeginVideoTransition() {
-        if (_toVideo === null)
+    function tryBeginVideoTransition() {
+        if (incomingPlayer === null)
             return;
-        if (_toVideo.mediaStatus !== MediaPlayer.LoadedMedia && _toVideo.mediaStatus !== MediaPlayer.BufferedMedia)
+        if (incomingPlayer.mediaStatus !== MediaPlayer.LoadedMedia && incomingPlayer.mediaStatus !== MediaPlayer.BufferedMedia)
             return;
-        _beginAnim();
+        beginTransition();
     }
 
-    function _drainPending() {
-        if (_hasPending) {
-            const url = _pendingUrl;
-            _hasPending = false;
-            _pendingUrl = "";
+    function loadPendingUrl() {
+        if (hasPendingUrl) {
+            const url = pendingUrl;
+            hasPendingUrl = false;
+            pendingUrl = "";
             if (isVideo(url))
-                _startVideoTransition(url);
+                startVideoTransition(url);
             else
-                _startTransition(url);
+                startImageTransition(url);
         }
     }
 
-    function _onVideoError(player) {
-        if (!_busy || _transitionStarted || _toVideo !== player)
+    function handleVideoError(player) {
+        if (!transitionBusy || transitionStarted || incomingPlayer !== player)
             return;
         player.stop();
         player.source = "";
-        _toVideo = null;
-        _targetVideo = false;
-        _busy = false;
+        incomingPlayer = null;
+        targetIsVideo = false;
+        transitionBusy = false;
         videoOutputA.layer.enabled = false;
         videoOutputB.layer.enabled = false;
     }
 
     // Resolution helper (call whenever viewport resizes and shader is idle)
-    function _updateResolution() {
-        if (!_busy) {
+    function updateResolution() {
+        if (!transitionBusy) {
             const w = root.width;
             const h = root.height;
-            fx.resolution = Qt.vector2d(w, h);
-            fx.invResolution = Qt.vector2d(1.0 / w, 1.0 / h);
+            transitionEffect.resolution = Qt.vector2d(w, h);
+            transitionEffect.invResolution = Qt.vector2d(1.0 / w, 1.0 / h);
         }
     }
 
     Component.onCompleted: {
-        imgA.sourceSize = Qt.size(root.width, root.height);
-        imgB.sourceSize = Qt.size(root.width, root.height);
+        imageA.sourceSize = Qt.size(root.width, root.height);
+        imageB.sourceSize = Qt.size(root.width, root.height);
 
         const w = root.width;
         const h = root.height;
-        fx.resolution = Qt.vector2d(w, h);
-        fx.invResolution = Qt.vector2d(1.0 / w, 1.0 / h);
+        transitionEffect.resolution = Qt.vector2d(w, h);
+        transitionEffect.invResolution = Qt.vector2d(1.0 / w, 1.0 / h);
 
         if (root.isVideo(root.effectiveSource)) {
             videoPlayerA.source = Qt.resolvedUrl(root.effectiveSource);
             playVideo(videoPlayerA);
-            _isVideoWallpaper = true;
+            isVideoWallpaper = true;
         } else {
-            imgA.source = root.effectiveSource;
+            imageA.source = root.effectiveSource;
         }
     }
 
@@ -374,7 +374,7 @@ Item {
         videoOutput: videoOutputA
         onErrorOccurred: (error, errorString) => {
             console.warn("[Wallpaper] Video error:", errorString);
-            root._onVideoError(videoPlayerA);
+            root.handleVideoError(videoPlayerA);
         }
     }
 
@@ -382,7 +382,7 @@ Item {
         target: videoPlayerA
 
         function onMediaStatusChanged() {
-            root._maybeBeginVideoTransition();
+            root.tryBeginVideoTransition();
         }
     }
 
@@ -402,7 +402,7 @@ Item {
         videoOutput: videoOutputB
         onErrorOccurred: (error, errorString) => {
             console.warn("[Wallpaper] Video error:", errorString);
-            root._onVideoError(videoPlayerB);
+            root.handleVideoError(videoPlayerB);
         }
     }
 
@@ -410,7 +410,7 @@ Item {
         target: videoPlayerB
 
         function onMediaStatusChanged() {
-            root._maybeBeginVideoTransition();
+            root.tryBeginVideoTransition();
         }
     }
 
@@ -424,37 +424,37 @@ Item {
     }
 
     Image {
-        id: imgA
+        id: imageA
 
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
         layer.enabled: true
-        visible: !root._busy && root._slot === 0
-        onStatusChanged: root._onImgStatus(imgA)
+        visible: !root.transitionBusy && root.activeImageSlot === 0
+        onStatusChanged: root.handleImageStatus(imageA)
     }
 
     Image {
-        id: imgB
+        id: imageB
 
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         cache: true
         layer.enabled: true
-        visible: !root._busy && root._slot === 1
-        onStatusChanged: root._onImgStatus(imgB)
+        visible: !root.transitionBusy && root.activeImageSlot === 1
+        onStatusChanged: root.handleImageStatus(imageB)
     }
 
     ShaderEffect {
-        id: fx
+        id: transitionEffect
 
         anchors.fill: parent
         z: 2
 
-        property var source1: imgA
-        property var source2: imgB
+        property var source1: imageA
+        property var source2: imageB
 
         property real progress: 0.0
         property real smoothAmount: 0.05
@@ -464,21 +464,21 @@ Item {
 
         vertexShader: Paths.projectRoot + "/Assets/shaders/ImageTransition.vert.qsb"
         fragmentShader: Paths.projectRoot + "/Assets/shaders/transitions/fade.frag.qsb"
-        visible: root._busy
+        visible: root.transitionBusy
         blending: false
         layer.enabled: false
     }
 
     NumberAnimation {
-        id: anim
+        id: progressAnimation
 
-        target: fx
+        target: transitionEffect
         property: "progress"
         from: 0.0
         to: 1.0
         duration: Configs.wallpaper.transitionDuration
         easing.type: Easing.Linear
-        onStopped: root._commitTransition()
+        onStopped: root.commitTransition()
     }
 
     onEffectiveSourceChanged: root.load(root.effectiveSource)

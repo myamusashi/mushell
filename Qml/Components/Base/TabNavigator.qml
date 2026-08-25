@@ -55,11 +55,11 @@ Item {
         if (list.length === 0)
             return;
 
-        let idx = list.findIndex(i => root.isFocused(i));
-        if (idx < 0)
-            idx = delta > 0 ? -1 : 0;
+        let index = list.findIndex(i => root.isFocused(i));
+        if (index < 0)
+            index = delta > 0 ? -1 : 0;
 
-        const target = ((idx + delta) % list.length + list.length) % list.length;
+        const target = ((index + delta) % list.length + list.length) % list.length;
         root.activate(list[target]);
     }
 

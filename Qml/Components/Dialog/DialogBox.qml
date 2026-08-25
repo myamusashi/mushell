@@ -116,7 +116,7 @@ LazyLoader {
                     ExtendedFloatingButton {
                         implicitWidth: 80
                         implicitHeight: 40
-                        bgRadius: Appearance.rounding.normal
+                        backgroundRadius: Appearance.rounding.normal
                         icon.name: "cancel"
                         icon.color: Colours.m3Colors.m3Primary
                         text: qsTr("No")

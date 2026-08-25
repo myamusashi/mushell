@@ -59,7 +59,7 @@ Rectangle {
                 model: root.segmentCount
 
                 delegate: Item {
-                    id: cell
+                    id: segmentCell
 
                     required property int index
 
@@ -70,14 +70,14 @@ Rectangle {
                         id: segment
 
                         readonly property int litSegments: Math.round(root.ratio * root.segmentCount)
-                        readonly property bool lit: cell.index < litSegments
+                        readonly property bool isLit: segmentCell.index < litSegments
 
                         anchors.centerIn: parent
-                        width: cell.width
-                        height: cell.height
+                        width: segmentCell.width
+                        height: segmentCell.height
                         radius: 0
 
-                        color: lit ? "white" : "transparent"
+                        color: isLit ? "white" : "transparent"
                         border.color: "black"
                         border.width: 0.5
                     }

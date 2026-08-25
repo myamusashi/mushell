@@ -18,10 +18,10 @@ Item {
     signal pinToggled(int id, bool newState)
 
     onEntryIdChanged: {
-        d.clear();
+        entryDetails.clear();
 
         if (root.entryId >= 0) {
-            d.loading = true;
+            entryDetails.loading = true;
             ClipboardManager.requestFullEntry(root.entryId);
         }
     }
@@ -46,23 +46,23 @@ Item {
         function onFullEntryReady(entry) {
             if (entry.id !== root.entryId)
                 return;
-            d.entryType = entry.type ?? "text";
-            d.isImage = entry.type === "image";
-            d.content = entry.content ?? "";
-            d.sourceApp = entry.sourceApp ?? "";
-            d.pinned = entry.pinned ?? false;
-            d.sizeBytes = entry.sizeBytes ?? 0;
-            d.timestamp = root.formatTimestamp(entry.timestamp ?? 0);
-            d.fileName = entry.fileName ?? "";
+            entryDetails.entryType = entry.type ?? "text";
+            entryDetails.isImage = entry.type === "image";
+            entryDetails.content = entry.content ?? "";
+            entryDetails.sourceApp = entry.sourceApp ?? "";
+            entryDetails.pinned = entry.pinned ?? false;
+            entryDetails.sizeBytes = entry.sizeBytes ?? 0;
+            entryDetails.timestamp = root.formatTimestamp(entry.timestamp ?? 0);
+            entryDetails.fileName = entry.fileName ?? "";
 
-            d.previewPath = entry.previewPath ?? "";
+            entryDetails.previewPath = entry.previewPath ?? "";
 
-            d.loading = false;
+            entryDetails.loading = false;
         }
     }
 
     QtObject {
-        id: d
+        id: entryDetails
 
         property bool loading: false
         property bool isImage: false
@@ -113,14 +113,14 @@ Item {
         anchors.centerIn: parent
         implicitWidth: 30
         implicitHeight: 30
-        status: root.entryId >= 0 && d.loading
+        status: root.entryId >= 0 && entryDetails.loading
     }
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: Appearance.margin.normal
         spacing: Appearance.spacing.large
-        visible: root.entryId >= 0 && !d.loading
+        visible: root.entryId >= 0 && !entryDetails.loading
 
         RowLayout {
             Layout.fillWidth: true
@@ -137,35 +137,35 @@ Item {
                         implicitWidth: 20
                         implicitHeight: 20
                         radius: Appearance.rounding.small
-                        color: Qt.alpha(d.isImage ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3SurfaceContainerHigh, 0.18)
+                        color: Qt.alpha(entryDetails.isImage ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3SurfaceContainerHigh, 0.18)
 
                         Icon {
                             anchors.centerIn: parent
-                            icon: d.isImage ? "image" : "assignment"
+                            icon: entryDetails.isImage ? "image" : "assignment"
                             font.pixelSize: Appearance.fonts.size.large
-                            color: d.isImage ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
+                            color: entryDetails.isImage ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurface
                         }
                     }
 
                     StyledText {
-                        text: d.isImage ? qsTr("Image") : qsTr("Text")
+                        text: entryDetails.isImage ? qsTr("Image") : qsTr("Text")
                         font.pixelSize: Appearance.fonts.size.normal
                         font.weight: Font.Medium
                         color: Colours.m3Colors.m3OnSurface
                     }
 
                     StyledText {
-                        visible: d.isImage && d.fileName.length > 0
+                        visible: entryDetails.isImage && entryDetails.fileName.length > 0
                         Layout.maximumWidth: 220
                         Layout.fillWidth: false
-                        text: d.fileName
+                        text: entryDetails.fileName
                         elide: Text.ElideRight
                         font.pixelSize: Appearance.fonts.size.normal
                         color: Colours.m3Colors.m3OnSurfaceVariant
                     }
 
                     StyledRect {
-                        visible: d.sourceApp.length > 0
+                        visible: entryDetails.sourceApp.length > 0
                         implicitWidth: srcLabel.implicitWidth + Appearance.padding.normal
                         implicitHeight: 18
                         radius: Appearance.rounding.small
@@ -175,7 +175,7 @@ Item {
                             id: srcLabel
 
                             anchors.centerIn: parent
-                            text: d.sourceApp
+                            text: entryDetails.sourceApp
                             font.pixelSize: Appearance.fonts.size.small
                             color: Colours.m3Colors.m3OnSecondaryContainer
                         }
@@ -186,13 +186,13 @@ Item {
                     spacing: Appearance.spacing.smaller
 
                     StyledText {
-                        text: d.timestamp
+                        text: entryDetails.timestamp
                         font.pixelSize: Appearance.fonts.size.small
                         color: Colours.m3Colors.m3OnSurfaceVariant
                     }
 
                     StyledText {
-                        text: root.formatSize(d.sizeBytes)
+                        text: root.formatSize(entryDetails.sizeBytes)
                         font.pixelSize: Appearance.fonts.size.small
                         color: Colours.m3Colors.m3OnSurfaceVariant
                     }
@@ -208,15 +208,15 @@ Item {
 
                 Icon {
                     anchors.centerIn: parent
-                    icon: d.pinned ? "keep" : "keep_off"
+                    icon: entryDetails.pinned ? "keep" : "keep_off"
                     font.pixelSize: Appearance.fonts.size.large
-                    color: d.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
+                    color: entryDetails.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
                 }
 
                 MArea {
                     id: pinArea
 
-                    onClicked: root.pinToggled(root.entryId, !d.pinned)
+                    onClicked: root.pinToggled(root.entryId, !entryDetails.pinned)
                 }
             }
 
@@ -264,7 +264,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: !d.isImage
+            visible: !entryDetails.isImage
             clip: true
 
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
@@ -291,7 +291,7 @@ Item {
 
             TextEdit {
                 width: textScroll.width
-                text: d.content
+                text: entryDetails.content
                 readOnly: true
                 selectByMouse: true
                 selectByKeyboard: true
@@ -312,7 +312,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: d.isImage
+            visible: entryDetails.isImage
             clip: true
 
             ScrollBar.vertical.policy: ScrollBar.AsNeeded
@@ -335,11 +335,11 @@ Item {
             }
 
             Item {
-                width: Math.max(imageScroll.width, img.paintedWidth * imageZoom.scale)
-                height: Math.max(imageScroll.height, img.paintedHeight * imageZoom.scale)
+                width: Math.max(imageScroll.width, previewImage.paintedWidth * imageZoom.scale)
+                height: Math.max(imageScroll.height, previewImage.paintedHeight * imageZoom.scale)
 
                 Image {
-                    id: img
+                    id: previewImage
 
                     anchors.centerIn: parent
                     width: imageScroll.width * imageZoom.scale
@@ -348,7 +348,7 @@ Item {
                     smooth: true
                     asynchronous: true
 
-                    source: d.previewPath.length > 0 ? ("file://" + d.previewPath) : ""
+                    source: entryDetails.previewPath.length > 0 ? ("file://" + entryDetails.previewPath) : ""
                     sourceSize: Qt.size(300, 300)
 
                     opacity: status === Image.Ready ? 1.0 : 0.0
@@ -359,7 +359,7 @@ Item {
 
                 StyledText {
                     anchors.centerIn: parent
-                    visible: img.status === Image.Loading
+                    visible: previewImage.status === Image.Loading
                     text: qsTr("Loading…")
                     font.pixelSize: Appearance.fonts.size.medium
                     color: Colours.m3Colors.m3Secondary

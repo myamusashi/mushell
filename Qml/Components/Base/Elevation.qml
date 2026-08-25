@@ -10,14 +10,14 @@ RectangularShadow {
     anchors.fill: parent
 
     property int level
-    property real dp: [0, 1, 3, 6, 8, 12][level]
+    property real elevationDp: [0, 1, 3, 6, 8, 12][level]
 
     color: Qt.alpha(Colours.m3Colors.m3Shadow, 0.7)
-    blur: (dp * 5) ** 0.7
-    spread: -dp * 0.3 + (dp * 0.1) ** 2
-    offset.y: dp / 2
+    blur: (elevationDp * 5) ** 0.7
+    spread: -elevationDp * 0.3 + (elevationDp * 0.1) ** 2
+    offset.y: elevationDp / 2
 
-    Behavior on dp {
+    Behavior on elevationDp {
         NAnim {}
     }
 }

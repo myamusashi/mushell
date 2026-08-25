@@ -10,16 +10,16 @@ Item {
 
     anchors.fill: parent
 
-    property alias source: borderFx.source
-    property alias progress: borderFx.progress
-    property alias radius: borderFx.radius
-    property alias borderWidth: borderFx.borderWidth
-    property alias borderColor: borderFx.borderColor
-    property alias animDuration: borderAnim.duration
-    property alias anim: borderAnim
+    property alias source: borderEffect.source
+    property alias progress: borderEffect.progress
+    property alias radius: borderEffect.radius
+    property alias borderWidth: borderEffect.borderWidth
+    property alias borderColor: borderEffect.borderColor
+    property alias animationDuration: progressAnimation.duration
+    property alias animation: progressAnimation
 
     ShaderEffect {
-        id: borderFx
+        id: borderEffect
 
         anchors.fill: parent
 
@@ -36,13 +36,13 @@ Item {
     }
 
     NAnim {
-        id: borderAnim
+        id: progressAnimation
 
-        target: borderFx
+        target: borderEffect
         property: "progress"
         from: 1.0
         to: 0.0
         duration: 500
-        onFinished: borderFx.destroy()
+        onFinished: borderEffect.destroy()
     }
 }

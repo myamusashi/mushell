@@ -120,30 +120,30 @@ MaterialShape {
         QtObject {
             id: waveGeo
 
-            readonly property real w: waveShape.parent.width
-            readonly property real h: waveShape.parent.height
+            readonly property real widthPx: waveShape.parent.width
+            readonly property real heightPx: waveShape.parent.height
 
             property real fillPercentage: 0
-            property real fillHeight: h * (fillPercentage / 100)
-            property real waveY: h - fillHeight
+            property real fillHeight: heightPx * (fillPercentage / 100)
+            property real waveY: heightPx - fillHeight
             property real amplitude: 3
-            property real wavelength: w / 5
+            property real wavelength: widthPx / 5
 
             function buildPath() {
                 if (fillHeight <= 0)
                     return "M 0 0";
 
                 var points = 100;
-                var d = "M 0 " + h + " L 0 " + waveY;
+                var pathData = "M 0 " + heightPx + " L 0 " + waveY;
 
                 for (var i = 0; i <= points; i++) {
-                    var x = (i / points) * w;
+                    var x = (i / points) * widthPx;
                     var y = waveY + Math.sin((x / wavelength) * Math.PI * 2) * amplitude;
-                    d += " L " + x + " " + y;
+                    pathData += " L " + x + " " + y;
                 }
 
-                d += " L " + w + " " + h + " Z";
-                return d;
+                pathData += " L " + widthPx + " " + heightPx + " Z";
+                return pathData;
             }
         }
     }

@@ -97,7 +97,7 @@ Rectangle {
                 icon: modelData.icon
                 enabled: modelData.enabled
                 isRotate: modelData.spinOnClick
-                mArea.onClicked: modelData.clicked()
+                mouseArea.onClicked: modelData.clicked()
             }
         }
 
@@ -188,7 +188,7 @@ Rectangle {
         id: iconButton
 
         property bool isRotate: false
-        property alias mArea: mArea
+        property alias mouseArea: mouseArea
 
         property bool keyboardFocusable: true
 
@@ -197,46 +197,46 @@ Rectangle {
         }
 
         Keys.onReturnPressed: event => {
-            mArea.clicked();
+            mouseArea.clicked();
             event.accepted = true;
         }
 
         Keys.onSpacePressed: event => {
-            mArea.clicked();
+            mouseArea.clicked();
             event.accepted = true;
         }
 
-        property color target: mArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.08) : mArea.containsPress ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.1) : enabled ? Colours.m3Colors.m3OnSurfaceVariant : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
-        property color cFrom
-        property color cTo
-        property bool cActive: false
-        property real cBlend: 1.0
-        onCBlendChanged: {
-            if (!cActive)
+        property color target: mouseArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.08) : mouseArea.containsPress ? Qt.alpha(Colours.m3Colors.m3OnSurfaceVariant, 0.1) : enabled ? Colours.m3Colors.m3OnSurfaceVariant : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
+        property color colorFrom
+        property color colorTo
+        property bool colorBlending: false
+        property real colorBlendProgress: 1.0
+        onColorBlendProgressChanged: {
+            if (!colorBlending)
                 return;
-            if (cBlend >= 1) {
-                color = cTo;
-                cActive = false;
-            } else if (cBlend > 0) {
-                color = Colours.blendColors(cFrom, cTo, cBlend);
+            if (colorBlendProgress >= 1) {
+                color = colorTo;
+                colorBlending = false;
+            } else if (colorBlendProgress > 0) {
+                color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
             }
         }
         onTargetChanged: {
-            cAnim.stop();
-            cFrom = color;
-            cTo = target;
-            cActive = true;
-            cBlend = 0.0;
-            cAnim.start();
+            colorBlendAnim.stop();
+            colorFrom = color;
+            colorTo = target;
+            colorBlending = true;
+            colorBlendProgress = 0.0;
+            colorBlendAnim.start();
         }
         font.pixelSize: Appearance.fonts.size.large * 1.2
         rotation: isRotate ? 0 : 360
         transformOrigin: Item.Center
 
         NAnim {
-            id: cAnim
+            id: colorBlendAnim
             target: iconButton
-            property: "cBlend"
+            property: "colorBlendProgress"
             from: 0.0
             to: 1.0
         }
@@ -249,7 +249,7 @@ Rectangle {
         }
 
         MouseArea {
-            id: mArea
+            id: mouseArea
 
             anchors.fill: parent
             hoverEnabled: true

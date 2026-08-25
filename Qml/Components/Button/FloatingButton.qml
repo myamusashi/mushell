@@ -21,19 +21,19 @@ Item {
     // M3 size preset: "small" | "normal" | "large"
     property string size: "normal"
 
-    readonly property int fabSize: root.size === "small" ? 40 : root.size === "large" ? 96 : 56
-    readonly property int fabRadius: root.size === "small" ? 12 : root.size === "large" ? 28 : 16
-    readonly property int fabIconSize: root.size === "large" ? 36 : 24
+    readonly property int actionButtonSize: root.size === "small" ? 40 : root.size === "large" ? 96 : 56
+    readonly property int actionButtonRadius: root.size === "small" ? 12 : root.size === "large" ? 28 : 16
+    readonly property int actionButtonIconSize: root.size === "large" ? 36 : 24
 
-    readonly property color bgColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
 
-    property alias bgRadius: background.radius
+    property alias backgroundRadius: background.radius
     property bool pressed
     property bool hovered
     property color color: Colours.m3Colors.m3PrimaryContainer
     property IconComponent icon: IconComponent {}
 
-    readonly property bool kbFocused: root.activeFocus
+    readonly property bool keyboardFocused: root.activeFocus
 
     property bool keyboardFocusable: true
 
@@ -53,8 +53,8 @@ Item {
         }
     }
 
-    implicitWidth: root.fabSize
-    implicitHeight: root.fabSize
+    implicitWidth: root.actionButtonSize
+    implicitHeight: root.actionButtonSize
 
     // qmllint disable
     states: [
@@ -76,7 +76,7 @@ Item {
         },
         State {
             name: "focused"
-            when: root.enabled && root.kbFocused
+            when: root.enabled && root.keyboardFocused
             PropertyChanges {
                 target: focusRing
                 opacity: 1
@@ -84,7 +84,7 @@ Item {
         },
         State {
             name: "normal"
-            when: root.enabled && !root.hovered && !root.pressed && !root.kbFocused
+            when: root.enabled && !root.hovered && !root.pressed && !root.keyboardFocused
         }
     ]
     // qmllint enable
@@ -103,15 +103,15 @@ Item {
     Elevation {
         // M3 FAB elevations: level 3 at rest, focus and press, level 4 on hover.
         // Fully transparent containers (icon-toggle style usage) carry no shadow.
-        level: !root.enabled || root.bgColor.a === 0 ? 0 : root.hovered && !root.pressed ? 4 : 3
+        level: !root.enabled || root.backgroundColor.a === 0 ? 0 : root.hovered && !root.pressed ? 4 : 3
     }
 
     StyledRect {
         id: background
 
         anchors.fill: parent
-        radius: root.fabRadius
-        color: root.bgColor
+        radius: root.actionButtonRadius
+        color: root.backgroundColor
         transformOrigin: Item.Center
 
         SimpleRipple {
@@ -183,6 +183,6 @@ Item {
     component IconComponent: QtObject {
         property color color: Colours.m3Colors.m3OnPrimaryContainer
         property string name: ""
-        property int size: root.fabIconSize
+        property int size: root.actionButtonIconSize
     }
 }

@@ -38,7 +38,7 @@ Slider {
     readonly property real invertedVisualPosition: 1 - visualPosition
     readonly property int dotCount: stepSize > 0 ? Math.floor((to - from) / stepSize) + 1 : 0
 
-    property bool useAnim: true
+    property bool animateChanges: true
     property string icon: ""
     property int iconSize: 0
     property int valueWidth: isHorizontal ? 200 : StyledSlide.ContainerSize.M
@@ -92,9 +92,9 @@ Slider {
 
             readonly property real effectiveIconSize: root.iconSize || Appearance.fonts.size.large
             readonly property real iconSpaceNeeded: effectiveIconSize + 20
-            readonly property real emptyWidthH: root.handleGap + ((1 - root.visualPosition) * root.availableTrackSize) - (root.handleSize / 2 + root.handleGap)
-            readonly property real emptyHeightV: root.handleGap + ((1 - root.invertedVisualPosition) * root.availableTrackSize) - (root.handleSize / 2 + root.handleGap)
-            readonly property bool iconInEmpty: root.isHorizontal ? emptyWidthH > iconSpaceNeeded : emptyHeightV > iconSpaceNeeded
+            readonly property real freeWidthHorizontal: root.handleGap + ((1 - root.visualPosition) * root.availableTrackSize) - (root.handleSize / 2 + root.handleGap)
+            readonly property real freeHeightVertical: root.handleGap + ((1 - root.invertedVisualPosition) * root.availableTrackSize) - (root.handleSize / 2 + root.handleGap)
+            readonly property bool iconInEmpty: root.isHorizontal ? freeWidthHorizontal > iconSpaceNeeded : freeHeightVertical > iconSpaceNeeded
 
             active: root.icon !== ""
             z: 10
@@ -181,7 +181,7 @@ Slider {
             // qmllint enable
 
             transitions: Transition {
-                enabled: root.useAnim
+                enabled: root.animateChanges
                 AnchorAnimation {
                     duration: Appearance.animations.durations.small
                     easing.type: Easing.BezierSpline
@@ -243,19 +243,19 @@ Slider {
                 height: root.snapDotSize
                 radius: root.snapDotSize / 2
                 color: isFilled ? root.snapDotFilledColor : root.snapDotEmptyColor
-                property color cFrom
-                property color cTo
-                property bool cActive: false
-                property real cBlend: 1.0
+                property color colorFrom
+                property color colorTo
+                property bool colorBlending: false
+                property real colorBlendProgress: 1.0
 
-                onCBlendChanged: {
-                    if (!cActive)
+                onColorBlendProgressChanged: {
+                    if (!colorBlending)
                         return;
-                    if (cBlend >= 1) {
-                        color = cTo;
-                        cActive = false;
-                    } else if (cBlend > 0) {
-                        color = Colours.blendColors(cFrom, cTo, cBlend);
+                    if (colorBlendProgress >= 1) {
+                        color = colorTo;
+                        colorBlending = false;
+                    } else if (colorBlendProgress > 0) {
+                        color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                     }
                 }
 
@@ -264,18 +264,18 @@ Slider {
                 z: 5
 
                 onIsFilledChanged: {
-                    cAnim.stop();
-                    cFrom = color;
-                    cTo = isFilled ? root.snapDotFilledColor : root.snapDotEmptyColor;
-                    cActive = true;
-                    cBlend = 0.0;
-                    cAnim.start();
+                    colorBlendAnim.stop();
+                    colorFrom = color;
+                    colorTo = isFilled ? root.snapDotFilledColor : root.snapDotEmptyColor;
+                    colorBlending = true;
+                    colorBlendProgress = 0.0;
+                    colorBlendAnim.start();
                 }
 
                 NAnim {
-                    id: cAnim
+                    id: colorBlendAnim
                     target: snapDot
-                    property: "cBlend"
+                    property: "colorBlendProgress"
                     from: 0.0
                     to: 1.0
                     duration: Appearance.animations.durations.small
@@ -297,11 +297,11 @@ Slider {
         opacity: 1.0
 
         Behavior on width {
-            enabled: root.useAnim
+            enabled: root.animateChanges
             NAnim {}
         }
         Behavior on height {
-            enabled: root.useAnim
+            enabled: root.animateChanges
             NAnim {}
         }
 
@@ -321,13 +321,13 @@ Slider {
             transformOrigin: root.isHorizontal ? Item.Bottom : Item.Right
 
             Behavior on opacity {
-                enabled: root.useAnim
+                enabled: root.animateChanges
                 NAnim {
                     duration: Appearance.animations.durations.small
                 }
             }
             Behavior on scale {
-                enabled: root.useAnim
+                enabled: root.animateChanges
                 NAnim {
                     duration: Appearance.animations.durations.small
                 }
@@ -336,11 +336,11 @@ Slider {
             StyledRect {
                 id: valuePopupBubble
 
-                readonly property real hPad: 10
-                readonly property real vPad: 6
+                readonly property real horizontalPadding: 10
+                readonly property real verticalPadding: 6
 
-                width: valueLabel.implicitWidth + hPad * 2
-                height: valueLabel.implicitHeight + vPad * 2
+                width: valueLabel.implicitWidth + horizontalPadding * 2
+                height: valueLabel.implicitHeight + verticalPadding * 2
                 x: 0
                 y: 0
 
