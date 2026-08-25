@@ -296,34 +296,15 @@ Item {
                         onTriggered: WallpaperFileModels.debouncedSearchQuery = searchField.text
                     }
 
-                    Row {
+                    ConnectedButtonGroup {
                         Layout.alignment: Qt.AlignHCenter
 
-                        Repeater {
-                            model: [qsTr("Static"), qsTr("Video")]
+                        currentIndex: root.wallpaperType
+                        model: [qsTr("Static"), qsTr("Video")]
 
-                            delegate: ExtendedFloatingButton {
-                                id: tabButton
-
-                                required property int index
-                                required property string modelData
-
-                                readonly property bool selected: root.wallpaperType === index
-
-                                text: modelData
-                                color: selected ? Colours.m3Colors.m3SecondaryContainer : "transparent"
-                                textColor: selected ? Colours.m3Colors.m3OnSecondaryContainer : Colours.m3Colors.m3OnSurfaceVariant
-                                rippleColor: Colours.m3Colors.m3OnSurfaceVariant
-                                bgRadius: Appearance.rounding.full
-                                leftPad: 16
-                                rightPad: 16
-                                topPad: 8
-                                bottomPad: 8
-                                onClicked: {
-                                    root.wallpaperType = index;
-                                    Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
-                                }
-                            }
+                        onClicked: index => {
+                            root.wallpaperType = index;
+                            Qt.callLater(() => wallpaperPath.selectCurrentWallpaper());
                         }
                     }
 
@@ -483,36 +464,36 @@ Item {
                                 Rectangle {
                                     id: dimOverlay
                                     property color target: Qt.rgba(0, 0, 0, delegateItem.isCurrent ? 0.0 : 0.22)
-                                    property color cFrom
-                                    property color cTo
-                                    property bool cActive: false
-                                    property real cBlend: 1.0
-                                    onCBlendChanged: {
-                                        if (!cActive)
+                                    property color colorFrom
+                                    property color colorTo
+                                    property bool colorBlending: false
+                                    property real colorBlendProgress: 1.0
+                                    onColorBlendProgressChanged: {
+                                        if (!colorBlending)
                                             return;
-                                        if (cBlend >= 1) {
-                                            color = cTo;
-                                            cActive = false;
-                                        } else if (cBlend > 0) {
-                                            color = Colours.blendColors(cFrom, cTo, cBlend);
+                                        if (colorBlendProgress >= 1) {
+                                            color = colorTo;
+                                            colorBlending = false;
+                                        } else if (colorBlendProgress > 0) {
+                                            color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
                                         }
                                     }
                                     onTargetChanged: {
-                                        cAnim.stop();
-                                        cFrom = color;
-                                        cTo = target;
-                                        cActive = true;
-                                        cBlend = 0.0;
-                                        cAnim.start();
+                                        colorBlendAnim.stop();
+                                        colorFrom = color;
+                                        colorTo = target;
+                                        colorBlending = true;
+                                        colorBlendProgress = 0.0;
+                                        colorBlendAnim.start();
                                     }
 
                                     anchors.fill: parent
                                     radius: cardRect.radius
 
                                     NAnim {
-                                        id: cAnim
+                                        id: colorBlendAnim
                                         target: dimOverlay
-                                        property: "cBlend"
+                                        property: "colorBlendProgress"
                                         from: 0.0
                                         to: 1.0
                                     }

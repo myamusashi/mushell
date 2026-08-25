@@ -2,15 +2,13 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell.Widgets
 
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Core.States
 import qs.Services
 import qs.Components.Base
-
+import qs.Components.Button
 import "Settings"
 
 Item {
@@ -22,7 +20,7 @@ Item {
         leftMargin: Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize - 0.05 : 0 // no gap
     }
 
-    property alias saveIndex: tabGroup.currentIndex
+    property int saveIndex: 0
     property bool isControlCenterOpen: GlobalStates.isQuickSettingsOpen
 
     implicitWidth: GlobalStates.isQuickSettingsOpen ? parent.width * 0.3 : 0
@@ -64,88 +62,27 @@ Item {
                 margin: Appearance.margin.normal
                 radius: Appearance.rounding.full
 
-                TabBar {
+                ConnectedButtonGroup {
                     id: tabGroup
 
-                    spacing: 2
-                    background: Item {}
+                    currentIndex: root.saveIndex
 
-                    Repeater {
-                        model: [
-                            {
-                                "icon": "settings",
-                                "name": "Settings",
-                                "index": 0
-                            },
-                            {
-                                "icon": "speaker",
-                                "name": "Volume",
-                                "index": 1
-                            },
-                            {
-                                "icon": "speed",
-                                "name": "Performance",
-                                "index": 2
-                            }
-                        ]
-                        TabButton {
-                            id: buttonDelegate
-
-                            required property var modelData
-                            required property int index
-
-                            implicitWidth: contentItem.implicitWidth + 32
-                            implicitHeight: parent.height
-                            text: modelData.name
-
-                            contentItem: Item {
-                                implicitWidth: rowLayout.implicitWidth
-                                implicitHeight: rowLayout.implicitHeight
-
-                                Row {
-                                    id: rowLayout
-
-                                    spacing: Appearance.spacing.small
-                                    anchors.centerIn: parent
-
-                                    Icon {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        icon: buttonDelegate.modelData.icon
-                                        color: tabGroup.currentIndex === buttonDelegate.modelData.index ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3SurfaceVariant
-                                        font.pixelSize: Appearance.fonts.size.large
-                                    }
-
-                                    StyledText {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        text: buttonDelegate.modelData.name
-                                        color: tabGroup.currentIndex === buttonDelegate.modelData.index ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3SurfaceVariant
-                                        font.pixelSize: Appearance.fonts.size.large
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        wrapMode: Text.NoWrap
-                                        elide: Text.ElideNone
-                                    }
-                                }
-                            }
-
-                            background: StyledRect {
-                                radius: {
-                                    if (buttonDelegate.modelData.index === 0)
-                                        return Appearance.rounding.full;
-                                    else if (buttonDelegate.modelData.index === 2)
-                                        return Appearance.rounding.full;
-                                    else
-                                        return 0;
-                                }
-
-                                color: tabGroup.currentIndex === buttonDelegate.modelData.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3SurfaceContainer
-                                topLeftRadius: buttonDelegate.modelData.index === 0 ? Appearance.rounding.full : Appearance.rounding.small
-                                bottomLeftRadius: buttonDelegate.modelData.index === 0 ? Appearance.rounding.full : Appearance.rounding.small
-                                topRightRadius: buttonDelegate.modelData.index === 2 ? Appearance.rounding.full : Appearance.rounding.small
-                                bottomRightRadius: buttonDelegate.modelData.index === 2 ? Appearance.rounding.full : Appearance.rounding.small
-                            }
+                    model: [
+                        {
+                            icon: "settings",
+                            label: qsTr("Settings")
+                        },
+                        {
+                            icon: "speaker",
+                            label: qsTr("Volume")
+                        },
+                        {
+                            icon: "speed",
+                            label: qsTr("Performance")
                         }
-                    }
+                    ]
+
+                    onClicked: index => root.saveIndex = index
                 }
             }
 

@@ -9,9 +9,8 @@ import Quickshell.Widgets
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.States
-import qs.Core.Utils
 import qs.Services
-
+import qs.Components.Button
 import "History" as Hist
 
 ClippingWrapperRectangle {
@@ -23,7 +22,7 @@ ClippingWrapperRectangle {
     property int selectedIndex: 0
     property int selectedTab: 0
 
-    readonly property real maxH: Hypr.focusedMonitor.height * 0.55
+    readonly property real maxHeight: Hypr.focusedMonitor.height * 0.55
     onIsScreenCapturePanelOpenChanged: {
         if (isScreenCapturePanelOpen)
             ScreenCaptureHistory.reloadFiles();
@@ -37,7 +36,7 @@ ClippingWrapperRectangle {
     clip: true
     visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
     implicitWidth: root.selectedTab === 0 ? 300 : 340
-    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, root.maxH) : 0 // qmllint disable
+    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, root.maxHeight) : 0 // qmllint disable
     radius: Appearance.rounding.normal
 
     Behavior on implicitWidth {
@@ -67,6 +66,7 @@ ClippingWrapperRectangle {
                 margins: Appearance.margin.normal
             }
             spacing: Appearance.spacing.small
+            focus: true
 
             Keys.onPressed: function (event) {
                 switch (event.key) {
@@ -114,70 +114,27 @@ ClippingWrapperRectangle {
                 }
             }
 
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 0
-
-                StyledRect {
-                    id: captureTab
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-                    focus: GlobalStates.isScreenCapturePanelOpen && root.selectedTab === 0
-                    readonly property bool isSelected: root.selectedTab === 0
-                    onFocusChanged: {
-                        if (focus && GlobalStates.isScreenCapturePanelOpen)
-                            captureTab.forceActiveFocus();
+            ConnectedButtonGroup {
+                currentIndex: root.selectedTab
+                model: [
+                    {
+                        icon: "capture",
+                        label: qsTr("Capture")
+                    },
+                    {
+                        icon: "history",
+                        label: qsTr("History")
                     }
-                    radius: Appearance.rounding.normal
-                    color: isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Surface
+                ]
 
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: qsTr("Capture")
-                        color: captureTab.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
-                        font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: captureTab.isSelected ? Font.DemiBold : Font.Normal
-                    }
-
-                    MArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.selectedTab = 0
-                    }
-                }
-
-                StyledRect {
-                    id: historyTab
-
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 32
-                    focus: GlobalStates.isScreenCapturePanelOpen && root.selectedTab === 1
-                    readonly property bool isSelected: root.selectedTab === 1
-                    radius: Appearance.rounding.normal
-                    color: isSelected ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3Surface
-
-                    StyledText {
-                        anchors.centerIn: parent
-                        text: qsTr("History")
-                        color: historyTab.isSelected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Outline
-                        font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: historyTab.isSelected ? Font.DemiBold : Font.Normal
-                    }
-
-                    MArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.selectedTab = 1
-                    }
-                }
+                onClicked: index => root.selectedTab = index
             }
 
             StackLayout {
                 id: stackLayout
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.selectedTab === 0 ? screenshotLayout.implicitHeight : Math.min(historyFlickable.contentHeight + 10, root.maxH * 0.65)
+                Layout.preferredHeight: root.selectedTab === 0 ? screenshotLayout.implicitHeight : Math.min(historyFlickable.contentHeight + 10, root.maxHeight * 0.65)
                 currentIndex: root.selectedTab
                 clip: true
 
@@ -210,7 +167,7 @@ ClippingWrapperRectangle {
                     id: historyScroll
 
                     Layout.fillWidth: true
-                    Layout.preferredHeight: Math.min(historyFlickable.contentHeight + 10, root.maxH * 0.65)
+                    Layout.preferredHeight: Math.min(historyFlickable.contentHeight + 10, root.maxHeight * 0.65)
                     clip: true
 
                     ScrollBar.vertical.policy: ScrollBar.AsNeeded

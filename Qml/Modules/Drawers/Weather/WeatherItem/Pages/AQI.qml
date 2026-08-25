@@ -2,12 +2,12 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell.Widgets
 
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 
 import "Markdown"
 
@@ -25,7 +25,9 @@ Pages {
         clip: true
         spacing: Appearance.spacing.normal
 
-        property string description: tabGroup.currentIndex === 0 ? DetailText.usAQI : DetailText.euroAQI
+        property int selectedTab: 0
+
+        property string description: selectedTab === 0 ? DetailText.usAQI : DetailText.euroAQI
 
         Header {
             icon: "waves"
@@ -192,43 +194,15 @@ Pages {
                     }
                 }
 
-                TabBar {
+                ConnectedButtonGroup {
                     id: tabGroup
 
-                    implicitWidth: parent.width
-                    implicitHeight: 35
+                    Layout.alignment: Qt.AlignHCenter
 
-                    Repeater {
-                        model: ["United States AQI", "European AQI"]
-                        delegate: TabButton {
-                            id: buttonDelegate
+                    currentIndex: column.selectedTab
+                    model: [qsTr("United States AQI"), qsTr("European AQI")]
 
-                            required property var modelData
-                            required property int index
-                            implicitHeight: parent.height
-                            text: modelData
-                            contentItem: StyledText {
-                                text: buttonDelegate.modelData
-                                font.pixelSize: Appearance.fonts.size.large
-                                horizontalAlignment: Text.AlignHCenter
-                                verticalAlignment: Text.AlignVCenter
-                                color: tabGroup.currentIndex === buttonDelegate.index ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3Primary
-                            }
-                            background: Rectangle {
-                                property real animatedRadius: tabGroup.currentIndex === buttonDelegate.index ? Appearance.rounding.full : 3
-
-                                color: tabGroup.currentIndex === buttonDelegate.index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnPrimary
-                                topLeftRadius: (buttonDelegate.index === 0 || tabGroup.currentIndex === buttonDelegate.index) ? animatedRadius : 3
-                                bottomLeftRadius: (buttonDelegate.index === 0 || tabGroup.currentIndex === buttonDelegate.index) ? animatedRadius : 3
-                                topRightRadius: (buttonDelegate.index === 1 || tabGroup.currentIndex === buttonDelegate.index) ? animatedRadius : 3
-                                bottomRightRadius: (buttonDelegate.index === 1 || tabGroup.currentIndex === buttonDelegate.index) ? animatedRadius : 3
-
-                                Behavior on animatedRadius {
-                                    NAnim {}
-                                }
-                            }
-                        }
-                    }
+                    onClicked: index => column.selectedTab = index
                 }
             }
         }
