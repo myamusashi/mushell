@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
@@ -10,7 +11,6 @@ import qs.Services
 Item {
     id: root
 
-    // Segment labels: plain strings or { icon, label } objects.
     property var model: []
     property int currentIndex: 0
 
@@ -72,6 +72,8 @@ Item {
         property bool pressed
         property bool hovered
 
+        readonly property real targetInnerRadius: segment.isSelected ? segment.height * 0.5 : segment.pressed ? 4 : 8
+
         readonly property real preferredWidth: contentRow.implicitWidth + 32
 
         Component.onCompleted: root.reportSegmentWidth(segment.index, segment.preferredWidth)
@@ -116,48 +118,31 @@ Item {
             event.accepted = true;
         }
 
-        // qmllint disable
-        states: [
-            State {
-                name: "pressed"
-                when: segment.pressed
-                PropertyChanges {
-                    target: segmentBackground
-                    scale: 0.98
-                }
-            },
-            State {
-                name: "focused"
-                when: segment.activeFocus
-                PropertyChanges {
-                    target: focusRing
-                    opacity: 1
-                }
-            }
-        ]
-        // qmllint enable
-
-        transitions: [
-            Transition {
-                from: "*"
-                to: "*"
-                NAnim {
-                    properties: "scale,opacity"
-                    duration: Appearance.animations.durations.small
-                }
-            }
-        ]
-
         StyledRect {
             id: segmentBackground
 
             anchors.fill: parent
-            topLeftRadius: segment.isFirst ? Appearance.rounding.full : 8
-            bottomLeftRadius: segment.isFirst ? Appearance.rounding.full : 8
-            topRightRadius: segment.isLast ? Appearance.rounding.full : 8
-            bottomRightRadius: segment.isLast ? Appearance.rounding.full : 8
+            topLeftRadius: segment.isFirst ? Appearance.rounding.full : segment.targetInnerRadius
+            bottomLeftRadius: segment.isFirst ? Appearance.rounding.full : segment.targetInnerRadius
+            topRightRadius: segment.isLast ? Appearance.rounding.full : segment.targetInnerRadius
+            bottomRightRadius: segment.isLast ? Appearance.rounding.full : segment.targetInnerRadius
             color: segment.isSelected ? root.selectedColor : root.unselectedColor
-            transformOrigin: Item.Center
+
+            Behavior on topLeftRadius {
+                NAnim {}
+            }
+
+            Behavior on bottomLeftRadius {
+                NAnim {}
+            }
+
+            Behavior on topRightRadius {
+                NAnim {}
+            }
+
+            Behavior on bottomRightRadius {
+                NAnim {}
+            }
 
             Behavior on color {
                 CAnim {}
@@ -174,12 +159,6 @@ Item {
             bottomRightRadius: segmentBackground.bottomRightRadius
             color: segment.contentColor
             opacity: segment.hovered || segment.pressed ? (segment.pressed ? 0.12 : 0.08) : 0
-
-            Behavior on opacity {
-                NAnim {
-                    duration: Appearance.animations.durations.small
-                }
-            }
         }
 
         Rectangle {
@@ -193,13 +172,7 @@ Item {
             color: "transparent"
             border.color: Colours.m3Colors.m3Primary
             border.width: 2
-            opacity: 0
-
-            Behavior on opacity {
-                NAnim {
-                    duration: Appearance.animations.durations.small
-                }
-            }
+            opacity: segment.activeFocus ? 1 : 0
         }
 
         RowLayout {
