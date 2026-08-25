@@ -19,11 +19,15 @@ ClippingWrapperRectangle {
 
     anchors.centerIn: parent
 
-    property int isScreenCapturePanelOpen: GlobalStates.isScreenCapturePanelOpen
+    property bool isScreenCapturePanelOpen: GlobalStates.isScreenCapturePanelOpen
     property int selectedIndex: 0
     property int selectedTab: 0
 
     readonly property real maxH: Hypr.focusedMonitor.height * 0.55
+    onIsScreenCapturePanelOpenChanged: {
+        if (isScreenCapturePanelOpen)
+            ScreenCaptureHistory.reloadFiles();
+    }
 
     border {
         color: GlobalStates.isScreenCapturePanelOpen ? Colours.m3Colors.m3Outline : "transparent"
