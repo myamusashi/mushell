@@ -24,13 +24,14 @@ Prioritize: correctness, no regressions, performance, API stability, readability
 - Prefer `QQmlListProperty`/`QAbstractListModel` over raw `QObject*` lists to QML for anything runtime-mutable.
 - Async work (D-Bus, file I/O, subprocess calls) must not block the QML/UI thread — use `QtConcurrent`/signals, never sync blocking calls in a QML-invoked slot.
 - Non-QObject types: `unique_ptr`/`shared_ptr`. QObject-derived types: use Qt parent-child ownership, don't also wrap in a smart pointer.
+- Always format with clang-format and passed linting with clang-tidy everytime you change the plugins code
 
 ## QML style
 
 - ALWAYS format with `.qmlformat.ini`; AND ALWAYS run LINTING with `Assets/shell/qmllint_qs.sh` EVERYTIME YOU FINISHED THE CODE.
 - Imports: `qs.<path_from_Qml_directory_root>` unless the target is in the same directory.
 - IDs: `camelCase`, descriptive (`root`, `rect`, `mouseArea` OK as defaults).
-- Local properties: `camelCase`, descriptive, no abbreviations/underscores; comment above if there are many.
+- Local properties: `camelCase`, descriptive, NO abbreviations AND underscores.
 - Order: `id` → `property` declarations → signal handlers → children. Don't interleave.
 - Avoid nested `Loader`/`Instantiator` chains where `Repeater` or a direct binding works.
 - Extract inline `Component {}` blocks >30 lines or reused more than once into their own file.
