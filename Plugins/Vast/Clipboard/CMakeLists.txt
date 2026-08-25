@@ -53,4 +53,5 @@ vast_module(vast-clipboard
         Qt::Sql
         wayland-ext-data-control
         vast-core
+        vast-jobs
 )

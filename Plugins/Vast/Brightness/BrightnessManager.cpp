@@ -1,4 +1,5 @@
 #include "BrightnessManager.hpp"
+#include "../Jobs/JobExecutor.hpp"
 
 #include <cstdint>
 #include <expected>
@@ -6,7 +7,6 @@
 #include <ddcutil_c_api.h>
 #include <filesystem>
 #include <memory>
-#include <mutex>
 #include <qcontainerfwd.h>
 #include <qdebug.h>
 
@@ -18,20 +18,17 @@
 #include <qstring.h>
 #include <qtmetamacros.h>
 #include <qtypes.h>
-#include <ranges>
 #include <string>
 #include <utility>
 #include <string_view>
 #include <vector>
-#include <stop_token>
-#include <shared_mutex>
 
 namespace vast {
 
     namespace {
-        constexpr std::uint8_t K_VCP_BRIGHTNESS = 0x10;
-        constexpr int          K_MIN_PERCENT    = 0;
-        constexpr int          K_MAX_PERCENT    = 100;
+        constexpr uint8_t K_VCP_BRIGHTNESS = 0x10;
+        constexpr int     K_MIN_PERCENT    = 0;
+        constexpr int     K_MAX_PERCENT    = 100;
     }
 
     constexpr int BrightnessManager::clampPercent(int v) noexcept {
@@ -40,12 +37,12 @@ namespace vast {
 
     BrightnessManager::BrightnessManager(QObject* parent) : QObject(parent) {}
 
-    /* NOTE: no explicit destructor body needed
-	 * each DisplayWorkers m_thread is a std::jthread, its destructor calls
-     * request_stop() then join() automatically. The stop_token wakes the
-     * condition_variable_any::wait, so every worker exits cleanly with zero
-     * explicit teardown code here
-	 */
+    /* NOTE: no explicit destructor body needed.
+     * Write jobs capture shared_ptr<DisplayWorker>, so a write still queued or
+     * running at shutdown keeps its state alive and closes DDC handles from
+     * the worker thread. Completion callbacks are queued with `this` as
+     * context, so once the manager is gone they are dropped, never dereferenced.
+     */
 
     std::expected<DdcHandle, BrightnessError> BrightnessManager::openDdcHandle(DDCA_Display_Ref ref) noexcept {
         DDCA_Display_Handle h{};
@@ -160,11 +157,7 @@ namespace vast {
                 };
                 // clang-format on
 
-                auto worker = std::make_unique<DisplayWorker>(std::move(meta), initial);
-                spawnWorkerThread(id, *worker);
-
-                std::unique_lock const lock(mWorkersMutex);
-                mWorkers.emplace(id, std::move(worker));
+                mWorkers.emplace(id, std::make_shared<DisplayWorker>(std::move(meta), initial));
             }
             ddca_free_display_info_list(infoList);
         }
@@ -196,29 +189,24 @@ namespace vast {
                                                     .ddcHandle     = {},
                 };
                 // clang-format on
-                auto worker = std::make_unique<DisplayWorker>(std::move(meta), initial);
-                spawnWorkerThread(id, *worker);
-                std::unique_lock const lock(mWorkersMutex);
-                mWorkers.emplace(id, std::move(worker));
+                mWorkers.emplace(id, std::make_shared<DisplayWorker>(std::move(meta), initial));
             }
         }
 
         emit displayListChanged();
     }
 
-    void BrightnessManager::spawnWorkerThread(const QString& id, DisplayWorker& worker) {
-        worker.spawnThread([this, &worker, id](const std::stop_token& st) { workerLoop(id, worker, st); });
-    }
+    // Queues exactly one hardware write per display onto the shared worker.
+    // Called from the UI thread and re-invoked from write completions when a
+    // newer value arrived while the previous write was in flight.
+    void BrightnessManager::dispatchWrite(const QString& id, const std::shared_ptr<DisplayWorker>& worker) {
+        if (!worker->beginWrite())
+            return;
 
-    void BrightnessManager::workerLoop(const QString& id, DisplayWorker& worker, const std::stop_token& st) {
-        while (!st.stop_requested()) {
-            const auto maybeValue = worker.waitForValue(st);
-            if (!maybeValue)
-                break;
+        vast::JobExecutor::instance().post([this, id, worker]() {
+            const int          percent = clampPercent(worker->takePending());
 
-            const int          percent = clampPercent(*maybeValue);
-            const DisplayMeta& meta    = worker.meta();
-
+            const DisplayMeta& meta   = worker->meta();
             const auto         result = [&]() -> std::expected<void, BrightnessError> {
                 switch (meta.type) {
                     case DisplayType::Ddc: return writeDdcBrightness(meta.ddcHandle, percent);
@@ -227,18 +215,28 @@ namespace vast {
                 std::unreachable();
             }();
 
-            if (result) {
-                worker.setCurrentBrightness(percent);
-                emit brightnessChanged(id, percent);
-            } else {
-                qWarning() << "[BrightnessManager] set failed for" << id << "—" << result.error().message;
-            }
-        }
+            QMetaObject::invokeMethod(
+                this,
+                [this, id, worker, percent, result] {
+                    worker->endWrite();
+
+                    if (result) {
+                        worker->setCurrentBrightness(percent);
+                        emit brightnessChanged(id, percent);
+                    } else
+                        qWarning() << "[BrightnessManager] set failed for" << id << "—" << result.error().message;
+
+                    // A newer value may have arrived while the hardware write
+                    // was in flight; drain it instead of leaving the display stale.
+                    if (worker->hasPending())
+                        dispatchWrite(id, worker);
+                },
+                Qt::QueuedConnection);
+        });
     }
 
     QVariantList BrightnessManager::displays() const {
-        std::shared_lock const lock(mWorkersMutex);
-        QList<QVariant>        out;
+        QList<QVariant> out;
         out.reserve(static_cast<qsizetype>(mWorkers.size()));
 
         for (const auto& [id, worker] : mWorkers) {
@@ -254,33 +252,32 @@ namespace vast {
     }
 
     void BrightnessManager::setBrightness(const QString& displayId, int percent) {
-        std::shared_lock const lock(mWorkersMutex);
         if (const auto it = mWorkers.find(displayId); it != mWorkers.end()) {
-            it->second->enqueue(clampPercent(percent));
+            it->second->storePending(clampPercent(percent));
+            dispatchWrite(displayId, it->second);
         }
     }
 
     void BrightnessManager::setBrightnessGroup(const QVariantMap& targets) {
-        std::shared_lock const lock(mWorkersMutex);
-
-        // 1. write all values before waking any thread
-        // this guarantees the narrowest possible window between displays
+        // Store all pending values first, then dispatch, so every display's
+        // queued write picks up its final value in one sweep.
         for (const auto& [id, value] : targets.asKeyValueRange())
             if (const auto it = mWorkers.find(id); it != mWorkers.end())
-                it->second->pushPending(clampPercent(value.toInt()));
+                it->second->storePending(clampPercent(value.toInt()));
 
-        // 2. notify all simultaneously
         for (const auto& [id, value] : targets.asKeyValueRange())
             if (const auto it = mWorkers.find(id); it != mWorkers.end())
-                it->second->notifyWorker();
+                dispatchWrite(id, it->second);
     }
 
     void BrightnessManager::setBrightnessAll(int percent) {
-        std::shared_lock const lock(mWorkersMutex);
-        const int              v = clampPercent(percent);
+        const int v = clampPercent(percent);
 
-        std::ranges::for_each(mWorkers, [v](const auto& kv) { kv.second->pushPending(v); });
-        std::ranges::for_each(mWorkers, [](const auto& kv) { kv.second->notifyWorker(); });
+        for (const auto& [id, worker] : mWorkers)
+            worker->storePending(v);
+
+        for (const auto& [id, worker] : mWorkers)
+            dispatchWrite(id, worker);
     }
 
     void BrightnessManager::saveProfile(const QString& name, const QVariantMap& targets) {
@@ -300,4 +297,4 @@ namespace vast {
         return mProfileStore.names();
     }
 
-}
+} // namespace vast

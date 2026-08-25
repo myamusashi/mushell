@@ -52,12 +52,12 @@ namespace {
         return 0.0;
     }
 
-    constexpr int          K_PRECISION_BITS = 22;
-    constexpr std::int32_t K_ROUNDING_BIAS  = 1 << (K_PRECISION_BITS - 1);
+    constexpr int     K_PRECISION_BITS = 22;
+    constexpr int32_t K_ROUNDING_BIAS  = 1 << (K_PRECISION_BITS - 1);
 
     struct SResizeWeights {
-        std::vector<int>                       mins;
-        std::vector<std::vector<std::int32_t>> weights;
+        std::vector<int>                  mins;
+        std::vector<std::vector<int32_t>> weights;
     };
 
     // precompute_coeffs() from Pillow's Resample.c (double precision stage).
@@ -100,10 +100,10 @@ namespace {
             }
 
             // normalize_coeffs_8bpc(): quantize to fixed point.
-            std::vector<std::int32_t> ints(static_cast<size_t>(xmax));
+            std::vector<int32_t> ints(static_cast<size_t>(xmax));
             for (int x = 0; x < xmax; x++) {
                 const double w               = kk[static_cast<size_t>(x)];
-                ints[static_cast<size_t>(x)] = static_cast<std::int32_t>(w < 0 ? -0.5 + w * (1 << K_PRECISION_BITS) : 0.5 + w * (1 << K_PRECISION_BITS));
+                ints[static_cast<size_t>(x)] = static_cast<int32_t>(w < 0 ? -0.5 + w * (1 << K_PRECISION_BITS) : 0.5 + w * (1 << K_PRECISION_BITS));
             }
 
             result.mins[static_cast<size_t>(xx)]    = xmin;
@@ -113,9 +113,9 @@ namespace {
     }
 
     // clip8(): lookup-table equivalent of Pillow's clip8_lookups.
-    inline std::uint8_t clip8(std::int32_t v) {
-        const auto shifted = static_cast<std::int32_t>(v >> K_PRECISION_BITS);
-        return static_cast<std::uint8_t>(std::clamp(shifted, 0, 255));
+    inline uint8_t clip8(int32_t v) {
+        const auto shifted = static_cast<int32_t>(v >> K_PRECISION_BITS);
+        return static_cast<uint8_t>(std::clamp(shifted, 0, 255));
     }
 
     // Pillow's MULDIV255: rounded (a*b)/255.
@@ -138,19 +138,19 @@ namespace {
                 const auto srcLine = std::span<const QRgb>(reinterpret_cast<const QRgb*>(in.constScanLine(y)), static_cast<size_t>(in.width()));
                 auto       dstLine = std::span<QRgb>(reinterpret_cast<QRgb*>(mid.scanLine(y)), static_cast<size_t>(newWidth));
                 for (int x = 0; x < newWidth; x++) {
-                    const std::vector<std::int32_t>& taps = wx.weights[static_cast<size_t>(x)];
-                    const int                        xmin = wx.mins[static_cast<size_t>(x)];
-                    std::int32_t                     r    = K_ROUNDING_BIAS;
-                    std::int32_t                     g    = K_ROUNDING_BIAS;
-                    std::int32_t                     b    = K_ROUNDING_BIAS;
-                    std::int32_t                     a    = K_ROUNDING_BIAS;
+                    const std::vector<int32_t>& taps = wx.weights[static_cast<size_t>(x)];
+                    const int                   xmin = wx.mins[static_cast<size_t>(x)];
+                    int32_t                     r    = K_ROUNDING_BIAS;
+                    int32_t                     g    = K_ROUNDING_BIAS;
+                    int32_t                     b    = K_ROUNDING_BIAS;
+                    int32_t                     a    = K_ROUNDING_BIAS;
                     for (size_t i = 0; i < taps.size(); i++) {
                         const QRgb px = srcLine[static_cast<size_t>(xmin) + i];
-                        r += static_cast<std::int32_t>(qRed(px)) * taps[i];
-                        g += static_cast<std::int32_t>(qGreen(px)) * taps[i];
-                        b += static_cast<std::int32_t>(qBlue(px)) * taps[i];
+                        r += static_cast<int32_t>(qRed(px)) * taps[i];
+                        g += static_cast<int32_t>(qGreen(px)) * taps[i];
+                        b += static_cast<int32_t>(qBlue(px)) * taps[i];
                         if (PROCESS_ALPHA)
-                            a += static_cast<std::int32_t>(qAlpha(px)) * taps[i];
+                            a += static_cast<int32_t>(qAlpha(px)) * taps[i];
                     }
                     dstLine[static_cast<size_t>(x)] = qRgba(clip8(r), clip8(g), clip8(b), PROCESS_ALPHA ? clip8(a) : 255);
                 }
@@ -162,22 +162,22 @@ namespace {
         {
             const SResizeWeights wy = makeWeights(in.height(), newHeight);
             for (int y = 0; y < newHeight; y++) {
-                auto                             dstLine = std::span<QRgb>(reinterpret_cast<QRgb*>(out.scanLine(y)), static_cast<size_t>(newWidth));
-                const std::vector<std::int32_t>& taps    = wy.weights[static_cast<size_t>(y)];
-                const int                        ymin    = wy.mins[static_cast<size_t>(y)];
+                auto                        dstLine = std::span<QRgb>(reinterpret_cast<QRgb*>(out.scanLine(y)), static_cast<size_t>(newWidth));
+                const std::vector<int32_t>& taps    = wy.weights[static_cast<size_t>(y)];
+                const int                   ymin    = wy.mins[static_cast<size_t>(y)];
                 for (int x = 0; x < newWidth; x++) {
-                    std::int32_t r = K_ROUNDING_BIAS;
-                    std::int32_t g = K_ROUNDING_BIAS;
-                    std::int32_t b = K_ROUNDING_BIAS;
-                    std::int32_t a = K_ROUNDING_BIAS;
+                    int32_t r = K_ROUNDING_BIAS;
+                    int32_t g = K_ROUNDING_BIAS;
+                    int32_t b = K_ROUNDING_BIAS;
+                    int32_t a = K_ROUNDING_BIAS;
                     for (size_t i = 0; i < taps.size(); i++) {
                         const QRgb px = std::span<const QRgb>(reinterpret_cast<const QRgb*>(mid.constScanLine(ymin + static_cast<int>(i))),
                                                               static_cast<size_t>(newWidth))[static_cast<size_t>(x)];
-                        r += static_cast<std::int32_t>(qRed(px)) * taps[i];
-                        g += static_cast<std::int32_t>(qGreen(px)) * taps[i];
-                        b += static_cast<std::int32_t>(qBlue(px)) * taps[i];
+                        r += static_cast<int32_t>(qRed(px)) * taps[i];
+                        g += static_cast<int32_t>(qGreen(px)) * taps[i];
+                        b += static_cast<int32_t>(qBlue(px)) * taps[i];
                         if (PROCESS_ALPHA)
-                            a += static_cast<std::int32_t>(qAlpha(px)) * taps[i];
+                            a += static_cast<int32_t>(qAlpha(px)) * taps[i];
                     }
                     dstLine[static_cast<size_t>(x)] = qRgba(clip8(r), clip8(g), clip8(b), PROCESS_ALPHA ? clip8(a) : 255);
                 }

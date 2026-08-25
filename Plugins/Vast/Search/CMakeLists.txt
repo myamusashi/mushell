@@ -12,6 +12,6 @@ vast_module(vast-search
         SearchEngine.cpp
     LIBRARIES
         Qt::Gui
-        Qt6::Concurrent
+        vast-jobs
         vast-core
 )

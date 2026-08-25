@@ -1,13 +1,15 @@
 #pragma once
 
 #include <cstdint>
+#include <vector>
 #include <qlist.h>
+
+#include <array>
 #include <qobject.h>
 #include <qhash.h>
 #include <qstring.h>
 #include <qbytearray.h>
 #include <qtclasshelpermacros.h>
-#include <qthreadpool.h>
 
 #include <functional>
 #include <memory>
@@ -73,6 +75,29 @@ namespace vast {
         [[nodiscard]] static QString extractFileName(const QString& metaMime, const QByteArray& metaContent);
         void                         readOfferAsync(int fd, std::function<void(QByteArray)> onRead);
 
+        // Single-threaded async fd plumbing: clipboard payloads are drained
+        // from / written to peer pipes by this object's own event loop (the
+        // shared executor thread), never by a pool thread.
+        struct OfferRead {
+            int                             fd{-1};
+            QByteArray                      content;
+            std::array<char, 65536>         buf;
+            QSocketNotifier*                notifier{nullptr};
+            std::function<void(QByteArray)> onRead;
+        };
+        struct SourceWrite {
+            int              fd{-1};
+            QByteArray       content;
+            qsizetype        offset{0};
+            QSocketNotifier* notifier{nullptr};
+        };
+
+        void startSourceWrite(int fd, const QByteArray& content);
+        void pumpOfferRead(OfferRead* read);
+        void finishOfferRead(OfferRead* read);
+        void pumpSourceWrite(SourceWrite* write);
+        void finishSourceWrite(SourceWrite* write);
+
         struct DisplayDeleter {
             void operator()(wl_display* display) const;
         };
@@ -114,7 +139,7 @@ namespace vast {
 
         bool                                                           mInitialized{false};
         bool                                                           mReconnecting{false};
-
-        static QThreadPool*                                            sendPool();
+        std::vector<std::unique_ptr<OfferRead>>                        mOfferReads;
+        std::vector<std::unique_ptr<SourceWrite>>                      mSourceWrites;
     };
 }

@@ -8,7 +8,7 @@
 
 namespace vast {
 
-    enum class ClipboardType : std::uint8_t {
+    enum class ClipboardType : uint8_t {
         Text,
         Html,
         Image,

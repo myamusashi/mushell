@@ -1,17 +1,14 @@
 #include "ImageCache.hpp"
+#include "../Jobs/JobExecutor.hpp"
 
 #include <qhashfunctions.h>
-#include <mutex>
 #include <qimagereader.h>
-#include <QMutexLocker>
 #include <qobject.h>
 #include <qnamespace.h>
 #include <qlogging.h>
 #include <qjsengine.h>
 #include <qqmlengine.h>
 #include <qjsondocument.h>
-#include <qrunnable.h>
-#include <qthreadpool.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qassert.h>
@@ -19,38 +16,8 @@
 #include <expected>
 #include <qtmetamacros.h>
 #include <qtypes.h>
-#include <utility>
 
 using namespace Qt::StringLiterals;
-
-class DecodeTask : public QObject, public QRunnable {
-    Q_OBJECT
-
-  public:
-    DecodeTask(ImageCache* cache, QString path, QSize targetSize) : mCache(cache), mPath(std::move(path)), mTargetSize(targetSize) {
-        setAutoDelete(true);
-    }
-
-    void run() override {
-        QImageReader reader(mPath);
-        reader.setAutoTransform(true);
-        if (mTargetSize.isValid())
-            reader.setScaledSize(reader.size().scaled(mTargetSize, Qt::KeepAspectRatioByExpanding));
-
-        if (reader.read().isNull())
-            qWarning() << "[ImageCache] Failed to preload:" << mPath;
-
-        mCache->store(mPath);
-        emit mCache->imageReady(mPath);
-    }
-
-  private:
-    ImageCache* mCache;
-    QString     mPath;
-    QSize       mTargetSize;
-};
-
-#include "ImageCache.moc"
 
 ImageCache* ImageCache::sInstance = nullptr;
 
@@ -93,13 +60,29 @@ QString ImageCache::copyAndPreload(const QString& path, QSize targetSize) {
 }
 
 void ImageCache::preload(const QString& path, QSize targetSize) {
-    {
-        std::unique_lock const lock(mRwMutex);
-        if (mDone.contains(path) || mLoading.contains(path))
-            return;
-        mLoading.insert(path);
-    }
-    QThreadPool::globalInstance()->start(new DecodeTask(this, path, targetSize));
+    // Main-thread bookkeeping only; every mutation of mDone/mLoading happens
+    // here or in queued completions back on this thread.
+    if (mDone.contains(path) || mLoading.contains(path))
+        return;
+    mLoading.insert(path);
+
+    vast::JobExecutor::instance().post([this, path, targetSize]() {
+        QImageReader reader(path);
+        reader.setAutoTransform(true);
+        if (targetSize.isValid())
+            reader.setScaledSize(reader.size().scaled(targetSize, Qt::KeepAspectRatioByExpanding));
+
+        if (reader.read().isNull())
+            qWarning() << "[ImageCache] Failed to preload:" << path;
+
+        QMetaObject::invokeMethod(
+            this,
+            [this, path] {
+                store(path);
+                emit imageReady(path);
+            },
+            Qt::QueuedConnection);
+    });
 }
 
 std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QString& qsUrl, const QString& cacheKey) {
@@ -150,13 +133,11 @@ std::expected<QString, ImageCacheError> ImageCache::saveProviderImage(const QStr
 }
 
 void ImageCache::evict(const QString& path) {
-    std::unique_lock const lock(mRwMutex);
     mDone.remove(path);
     mLoading.remove(path);
 }
 
 void ImageCache::store(const QString& path) {
-    std::unique_lock const lock(mRwMutex);
     mLoading.remove(path);
     mDone.insert(path);
 

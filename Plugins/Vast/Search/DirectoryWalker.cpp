@@ -1,5 +1,6 @@
 #include "DirectoryWalker.hpp"
 #include "../FuzzyMatcher.hpp"
+#include "../Jobs/JobExecutor.hpp"
 
 #include <qdir.h>
 #include <qfileinfo.h>
@@ -8,7 +9,6 @@
 #include <qset.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qthreadpool.h>
 #include <qtmetamacros.h>
 #include <qcontainerfwd.h>
 #include <qvariant.h>
@@ -102,8 +102,7 @@ namespace vast {
         const WalkConfig  cfg{.showHidden = mShowHidden, .nameFilters = mNameFilters};
         const int         maxDepth = mMaxDepth;
         const QStringList roots    = mRoots;
-
-        QThreadPool::globalInstance()->start([this, generation, cfg, maxDepth, roots]() {
+        JobExecutor::instance().post([this, generation, cfg, maxDepth, roots]() {
             QVariantList  entries;
             int           budget = K_MAX_ENTRIES;
             QSet<QString> visited;

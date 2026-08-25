@@ -9,4 +9,5 @@ vast_module(vast-utils
     LIBRARIES
         material-color-utilities
         vast-materialcolor
+        vast-jobs
 )

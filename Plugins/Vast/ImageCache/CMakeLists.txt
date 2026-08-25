@@ -8,4 +8,5 @@ vast_module(vast-imagecache
     LIBRARIES
         Qt::Gui
         Qt::Quick
+        vast-jobs
 )

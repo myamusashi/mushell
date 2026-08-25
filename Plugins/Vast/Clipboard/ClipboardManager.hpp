@@ -2,8 +2,6 @@
 
 #include "ClipboardModel.hpp"
 #include "ClipboardEntry.hpp"
-#include "ClipboardContentClassifier.hpp"
-#include "ClipboardPreviewCache.hpp"
 #include "LoopbackGuard.hpp"
 
 #include <qcontainerfwd.h>
@@ -16,7 +14,6 @@
 #include <qtmetamacros.h>
 #include <qtclasshelpermacros.h>
 #include <qtypes.h>
-#include <qthread.h>
 
 namespace vast {
 
@@ -73,13 +70,13 @@ namespace vast {
       private:
         void                                setupConnections();
         void                                loadAllEntries();
+        virtual void                        appendFullEntry(QVariantMap& map, ClipboardEntry&& entry);
         void                                pruneIfNeeded();
         void                                onSelectionReceived(const QString& mimeType, const QByteArray& content, const QString& fileName);
         [[nodiscard]] bool                  queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName);
         void                                persistToHistory(const QString& mimeType, const QByteArray& content, const QString& fileName);
 
         QPointer<ClipboardModel>            mModel;
-        QThread                             mWaylandThread;
         std::unique_ptr<WaylandDataControl> mWayland;
         std::unique_ptr<ClipboardDatabase>  mDatabase;
 

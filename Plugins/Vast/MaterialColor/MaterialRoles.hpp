@@ -8,7 +8,7 @@
 
 // Dynamic color roles, in materialyoucolor's COLOR_NAMES order. The ordinal
 // doubles as the JSON key via materialRoleName().
-enum class MaterialRole : std::uint8_t {
+enum class MaterialRole : uint8_t {
     Background,
     OnBackground,
     Surface,
@@ -75,7 +75,7 @@ enum class MaterialRole : std::uint8_t {
 const char* materialRoleName(MaterialRole role);
 
 // Scheme variants supported by generate_colors_material.py's --scheme.
-enum class EMaterialVariant : std::uint8_t {
+enum class EMaterialVariant : uint8_t {
     TonalSpot,
     Neutral,
     Vibrant,
@@ -109,7 +109,7 @@ struct SMaterialContrastCurve {
 // get_curve() from color_spec_2025.py: canonical curves for known defaults.
 SMaterialContrastCurve defaultContrastCurve(double defaultContrast);
 
-enum class EMaterialPolarity : std::uint8_t {
+enum class EMaterialPolarity : uint8_t {
     Darker,
     Lighter,
     Nearer,
@@ -118,7 +118,7 @@ enum class EMaterialPolarity : std::uint8_t {
     RelativeLighter,
 };
 
-enum class EMaterialDeltaConstraint : std::uint8_t {
+enum class EMaterialDeltaConstraint : uint8_t {
     Exact,
     Nearer,
     Farther,

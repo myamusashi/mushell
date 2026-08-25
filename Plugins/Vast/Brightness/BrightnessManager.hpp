@@ -3,7 +3,6 @@
 #include "BrightnessProfileStore.hpp"
 
 #include <ddcutil_types.h>
-#include <functional>
 #include <qcontainerfwd.h>
 #include <map>
 #include <memory>
@@ -16,16 +15,10 @@
 #include <qvariantmap.h>
 
 #include <atomic>
-#include <condition_variable>
 #include <cstdint>
 #include <expected>
 #include <filesystem>
-#include <mutex>
-#include <optional>
-#include <shared_mutex>
-#include <stop_token>
 #include <string>
-#include <thread>
 #include <utility>
 
 extern "C" {
@@ -49,7 +42,6 @@ namespace vast {
 
         DdcHandle(const DdcHandle&)            = delete;
         DdcHandle& operator=(const DdcHandle&) = delete;
-
         DdcHandle(DdcHandle&& o) noexcept : mHandle(std::exchange(o.mHandle, nullptr)) {}
 
         DdcHandle& operator=(DdcHandle&& o) noexcept {
@@ -78,7 +70,7 @@ namespace vast {
         DDCA_Display_Handle mHandle{nullptr};
     };
 
-    enum class DisplayType : std::uint8_t {
+    enum class DisplayType : uint8_t {
         Ddc,
         Backlight
     };
@@ -91,69 +83,56 @@ namespace vast {
         DdcHandle             ddcHandle;
     };
 
-    // owns a jthread + a single "latest pending value" slot
-    // non-copyable and non-movable (mutex/cv members)
+    // Per-display state shared between the UI thread and the single JobExecutor
+    // worker that performs every hardware write. No thread per display anymore:
+    // rapid changes coalesce into the one pending slot, and a single queued
+    // write per display drains whatever value is latest by the time it runs.
     class DisplayWorker final {
       public:
-        explicit DisplayWorker(DisplayMeta meta, int initialBrightness) noexcept : mMeta(std::move(meta)), mCurrentBrightness(initialBrightness) {}
+        ~DisplayWorker()                          = default;
+        DisplayWorker(DisplayWorker&&)            = delete;
+        DisplayWorker& operator=(DisplayWorker&&) = delete;
+        explicit DisplayWorker(DisplayMeta meta, int initialBrightness) : mMeta(std::move(meta)), mCurrentBrightness(initialBrightness) {}
 
-        ~DisplayWorker()                                            = default;
-        DisplayWorker(const DisplayWorker&)                         = delete;
-        DisplayWorker& operator=(const DisplayWorker&)              = delete;
-        DisplayWorker(DisplayWorker&&)                              = delete;
-        DisplayWorker&                   operator=(DisplayWorker&&) = delete;
+        DisplayWorker(const DisplayWorker&)                              = delete;
+        DisplayWorker&                   operator=(const DisplayWorker&) = delete;
 
         [[nodiscard]] const DisplayMeta& meta() const noexcept {
             return mMeta;
         }
+
         [[nodiscard]] int currentBrightness() const noexcept {
-            return mCurrentBrightness.load(std::memory_order_acquire);
+            return mCurrentBrightness;
+        }
+        void setCurrentBrightness(int v) noexcept {
+            mCurrentBrightness = v;
         }
 
-        // push a pending value WITHOUT notifying, used in group/atomic operations
-        // so all displays get their value before any thread wakes
-        void pushPending(int percent) noexcept {
+        void storePending(int percent) noexcept {
             mPendingValue.store(percent, std::memory_order_release);
         }
-
-        // wake the worker thread so it can process m_pendingValue
-        void notifyWorker() noexcept {
-            mCv.notify_one();
+        [[nodiscard]] bool hasPending() const noexcept {
+            return mPendingValue.load(std::memory_order_acquire) != K_EMPTY;
+        }
+        [[nodiscard]] int takePending() noexcept {
+            return mPendingValue.exchange(K_EMPTY, std::memory_order_acq_rel);
         }
 
-        void enqueue(int percent) noexcept {
-            pushPending(percent);
-            notifyWorker();
+        // Serializes hardware access: at most one queued write per display.
+        [[nodiscard]] bool beginWrite() noexcept {
+            return !mWriteInFlight.exchange(true, std::memory_order_acq_rel);
         }
-
-        void spawnThread(std::function<void(std::stop_token)> fn) {
-            mThread = std::jthread(std::move(fn));
-        }
-
-        // blocks the calling thread until a new value arrives or stop is requested
-        // returns the clamped value, or nullopt on stop
-        [[nodiscard]] std::optional<int> waitForValue(std::stop_token st) {
-            std::unique_lock lock(mMutex);
-            const bool       notStopped = mCv.wait(lock, std::move(st), [this] { return mPendingValue.load(std::memory_order_acquire) != K_EMPTY; });
-            if (!notStopped)
-                return std::nullopt;
-            const int v = mPendingValue.exchange(K_EMPTY, std::memory_order_acq_rel);
-            return v == K_EMPTY ? std::nullopt : std::make_optional(v);
-        }
-
-        void setCurrentBrightness(int v) noexcept {
-            mCurrentBrightness.store(v, std::memory_order_release);
+        void endWrite() noexcept {
+            mWriteInFlight.store(false, std::memory_order_release);
         }
 
       private:
-        static constexpr int        K_EMPTY = -1;
+        static constexpr int K_EMPTY = -1;
 
-        DisplayMeta                 mMeta;
-        std::atomic<int>            mPendingValue{K_EMPTY};
-        std::atomic<int>            mCurrentBrightness{K_EMPTY};
-        std::mutex                  mMutex;
-        std::condition_variable_any mCv;
-        std::jthread                mThread;
+        DisplayMeta          mMeta;
+        std::atomic<int>     mPendingValue{K_EMPTY};
+        std::atomic<bool>    mWriteInFlight{false};
+        int                  mCurrentBrightness; // main-thread only
     };
 
     class BrightnessManager final : public QObject {
@@ -187,7 +166,7 @@ namespace vast {
         void displayListChanged();
 
       private:
-        using WorkerMap = std::map<QString, std::unique_ptr<DisplayWorker>>;
+        using WorkerMap = std::map<QString, std::shared_ptr<DisplayWorker>>;
         [[nodiscard]] static std::expected<DdcHandle, BrightnessError> openDdcHandle(DDCA_Display_Ref ref) noexcept;
         [[nodiscard]] static std::expected<int, BrightnessError>       readDdcBrightness(const DdcHandle& handle) noexcept;
         [[nodiscard]] static std::expected<void, BrightnessError>      writeDdcBrightness(const DdcHandle& handle, int percent) noexcept;
@@ -195,14 +174,12 @@ namespace vast {
         [[nodiscard]] static std::expected<int, BrightnessError>       readBacklightBrightness(const std::filesystem::path& root) noexcept;
         [[nodiscard]] static std::expected<void, BrightnessError>      writeBacklightBrightness(const std::filesystem::path& root, int percent) noexcept;
 
-        void                                                           spawnWorkerThread(const QString& id, DisplayWorker& worker);
-        void                                                           workerLoop(const QString& id, DisplayWorker& worker, const std::stop_token& st);
+        void                                                           dispatchWrite(const QString& id, const std::shared_ptr<DisplayWorker>& worker);
 
         [[nodiscard]] static constexpr int                             clampPercent(int v) noexcept;
 
         WorkerMap                                                      mWorkers;
         BrightnessProfileStore                                         mProfileStore;
-        mutable std::shared_mutex                                      mWorkersMutex;
     };
 
-}
+} // namespace vast

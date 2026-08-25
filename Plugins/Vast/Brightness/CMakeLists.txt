@@ -9,6 +9,7 @@ vast_module(vast-brightness
         BrightnessProfileStore.cpp
     LIBRARIES
         PkgConfig::DDCUTIL
+        vast-jobs
 )
 
 target_include_directories(vast-brightness SYSTEM PRIVATE ${DDCUTIL_INCLUDE_DIRS})

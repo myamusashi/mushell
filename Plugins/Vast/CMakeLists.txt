@@ -10,6 +10,7 @@ vast_module(vast-core
         fzy_core
 )
 
+add_subdirectory(Jobs)
 add_subdirectory(Audio)
 add_subdirectory(Brightness)
 add_subdirectory(Clipboard)

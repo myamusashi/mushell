@@ -25,7 +25,7 @@ class ColorMaterial : public QObject {
     Q_PROPERTY(QString error READ error NOTIFY errorChanged)
 
   public:
-    enum Scheme : std::uint8_t {
+    enum Scheme : uint8_t {
         TonalSpot,
         Vibrant,
         Expressive,
@@ -76,22 +76,22 @@ class ColorMaterial : public QObject {
     void errorChanged();
 
   private:
-    void          scheduleRebuild();
-    void          rebuild();
-    void          applyResult(const QVariantMap& colors, const QColor& sourceColor, const QString& error);
+    void        scheduleRebuild();
+    void        rebuild();
+    void        applyResult(const QVariantMap& colors, const QColor& sourceColor, const QString& error);
 
-    QUrl          mSource;
-    int           mRescaleSize   = 128;
-    bool          mDarkMode      = true;
-    Scheme        mScheme        = TonalSpot;
-    double        mContrastLevel = 0.0;
-    bool          mSmart         = false;
+    QUrl        mSource;
+    int         mRescaleSize   = 128;
+    bool        mDarkMode      = true;
+    Scheme      mScheme        = TonalSpot;
+    double      mContrastLevel = 0.0;
+    bool        mSmart         = false;
 
-    QTimer        mDebounce;
-    std::uint64_t mGeneration = 0;
+    QTimer      mDebounce;
+    uint64_t    mGeneration = 0;
 
-    QVariantMap   mColors;
-    QColor        mSourceColor;
-    bool          mReady = false;
-    QString       mError;
+    QVariantMap mColors;
+    QColor      mSourceColor;
+    bool        mReady = false;
+    QString     mError;
 };

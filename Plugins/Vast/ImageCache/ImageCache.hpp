@@ -5,16 +5,14 @@
 #include <qlogging.h>
 #include <qobject.h>
 #include <qqmlintegration.h>
-#include <qthreadpool.h>
 #include <qset.h>
 #include <qsize.h>
 #include <QtQml/qqml.h>
 #include <expected>
 #include <cstdint>
 #include <qtmetamacros.h>
-#include <shared_mutex>
 
-enum class ImageCacheError : std::uint8_t {
+enum class ImageCacheError : uint8_t {
     NoEngine,
     InvalidUrl,
     NoProvider,
@@ -25,8 +23,6 @@ enum class ImageCacheError : std::uint8_t {
 
 class QQmlEngine;
 
-/// QML singleton created through create(). The QML engine owns the returned
-/// instance for its lifetime; the parentless allocation in create() is intentional.
 class ImageCache : public QObject {
     Q_OBJECT
     QML_SINGLETON
@@ -35,9 +31,7 @@ class ImageCache : public QObject {
   public:
     static ImageCache* create(QQmlEngine* /*engine*/, QJSEngine* /*unused*/);
     static ImageCache* instance();
-    ~ImageCache() override {
-        QThreadPool::globalInstance()->waitForDone();
-    }
+    ~ImageCache() override                      = default;
     ImageCache(const ImageCache&)               = delete;
     ImageCache& operator=(const ImageCache&)    = delete;
     ImageCache(ImageCache&&)                    = delete;
@@ -71,12 +65,12 @@ class ImageCache : public QObject {
 
     QQmlEngine*                  mEngine = nullptr;
 
-    mutable std::shared_mutex    mRwMutex;
+    // Main-thread-only state: mutated in QML-invoked entry points and in
+    // completions queued back onto the creating thread; decode jobs on the
+    // shared executor touch captured locals only.
+    QSet<QString>   mLoading;
+    QSet<QString>   mDone;
+    ImageCacheIndex mIndex;
 
-    QSet<QString>                mLoading;
-    QSet<QString>                mDone;
-    ImageCacheIndex              mIndex;
-
-    void                         store(const QString& path);
-    friend class DecodeTask;
+    void            store(const QString& path);
 };

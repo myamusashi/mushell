@@ -1,5 +1,6 @@
 #include "SearchEngine.hpp"
 #include "../FuzzyMatcher.hpp"
+#include "../Jobs/JobExecutor.hpp"
 #include "FileSearchModel.hpp"
 #include "LaunchHistoryStore.hpp"
 
@@ -14,7 +15,6 @@
 #include <qset.h>
 #include <qstring.h>
 #include <qthread.h>
-#include <qthreadpool.h>
 #include <qtmetamacros.h>
 #include <qtypes.h>
 #include <qvariant.h>
@@ -106,11 +106,9 @@ namespace vast {
             return out;
         }
 
-        const QString     normQuery      = FuzzyMatcher::normalizeText(query).trimmed();
-        const QStringList normQueryWords = normQuery.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+        const QString                                normQuery      = FuzzyMatcher::normalizeText(query).trimmed();
+        const QStringList                            normQueryWords = normQuery.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
 
-        // Query words are encoded exactly once per keystroke and reused
-        // across every app x field pair below.
         const std::vector<FuzzyMatcher::EncodedWord> encodedWords = FuzzyMatcher::encodeWords(normQueryWords);
 
         qsizetype                                    queryChars = 0;
@@ -168,7 +166,7 @@ namespace vast {
 
         emit         fileSearchStarted();
 
-        QThreadPool::globalInstance()->start([this, generation, thresholdPerChar, files, query]() {
+        JobExecutor::instance().post([this, generation, thresholdPerChar, files, query]() {
             static const QRegularExpression kWhitespace(R"(\s+)");
 
             const QString                   normQuery  = FuzzyMatcher::normalizeText(query).trimmed();

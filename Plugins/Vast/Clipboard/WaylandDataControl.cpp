@@ -3,9 +3,6 @@
 
 #include "ext-data-control-v1-client-protocol.h"
 
-#include <array>
-#include <cstdint>
-#include <functional>
 #include <qfileinfo.h>
 #include <qguiapplication.h>
 #include <qhashfunctions.h>
@@ -19,7 +16,6 @@
 #include <qsocketnotifier.h>
 #include <qstringview.h>
 #include <qtextdocument.h>
-#include <qthreadpool.h>
 
 #include <qtimer.h>
 #include <qtmetamacros.h>
@@ -27,14 +23,17 @@
 #include <qurl.h>
 
 #include <algorithm>
+#include <fcntl.h>
+
+#include <array>
+#include <cstdint>
+#include <functional>
 #include <cerrno>
 #include <cstring>
-#include <span>
 #include <string>
 #include <system_error>
 #include <utility>
 
-#include <qthread.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <wayland-client-protocol.h>
@@ -44,6 +43,14 @@ namespace vast {
 
     namespace {
         void registryGlobalRemove(void* /*unused*/, wl_registry* /*unused*/, uint32_t /*unused*/) {};
+
+        // Peer pipes are drained/written from this object's event loop, so the
+        // fds must not block.
+        void makeFdNonBlocking(int fd) {
+            const int flags = ::fcntl(fd, F_GETFL);
+            if (flags >= 0)
+                ::fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+        }
     }
 
     void WaylandDataControl::DisplayDeleter::operator()(wl_display* display) const {
@@ -181,25 +188,7 @@ namespace vast {
             ::close(fd);
             return;
         }
-        const QByteArray& content = contentIt.value();
-
-        WaylandDataControl::sendPool()->start([content, fd]() {
-            const std::string msg     = std::system_category().message(errno);
-            qint64            written = 0;
-            while (written < content.size()) {
-                const auto    remaining = std::span(content).subspan(static_cast<size_t>(written));
-                const ssize_t n         = ::write(fd, remaining.data(), remaining.size());
-                if (n < 0) {
-                    if (errno == EINTR)
-                        continue;
-                    if (errno != EPIPE)
-                        qWarning() << "[WaylandDataControl] write failed:" << QString::fromStdString(msg);
-                    break;
-                }
-                written += n;
-            }
-            ::close(fd);
-        });
+        self->startSourceWrite(fd, contentIt.value());
     }
 
     void sourceCancelled(void* data, ext_data_control_source_v1* source) {
@@ -214,21 +203,6 @@ namespace vast {
         .send      = sourceSend,
         .cancelled = sourceCancelled,
     };
-
-    QThreadPool* WaylandDataControl::sendPool() {
-        // A pool bounded at 2 threads for clipboard-content writes. Previously this was a
-        // Meyers singleton plus a second static bool whose only job was to run
-        // setMaxThreadCount(2) exactly once -- more moving parts than the one line of
-        // setup needed. A tiny self-configuring subclass does the same thing with one
-        // static and no IIFE.
-        struct BoundedSendPool : QThreadPool {
-            BoundedSendPool() {
-                setMaxThreadCount(2);
-            }
-        };
-        static BoundedSendPool pool;
-        return &pool;
-    }
 
     WaylandDataControl::WaylandDataControl(ClipboardManager* parent) : QObject{parent} {}
 
@@ -322,6 +296,26 @@ namespace vast {
     void WaylandDataControl::shutdown() {
         delete mDisplayNotifier;
         mDisplayNotifier = nullptr;
+
+        // Cancel in-flight clipboard payload transfers; peers see EOF/EPIPE.
+        for (const auto& r : mOfferReads) {
+            if (r->notifier) {
+                r->notifier->setEnabled(false);
+                delete r->notifier;
+            }
+            if (r->fd >= 0)
+                ::close(r->fd);
+        }
+        mOfferReads.clear();
+        for (const auto& w : mSourceWrites) {
+            if (w->notifier) {
+                w->notifier->setEnabled(false);
+                delete w->notifier;
+            }
+            if (w->fd >= 0)
+                ::close(w->fd);
+        }
+        mSourceWrites.clear();
 
         // Not unique_ptr-wrapped -- see the field comment in the header.
         for (auto it = mPendingSources.cbegin(); it != mPendingSources.cend(); ++it)
@@ -494,18 +488,111 @@ namespace vast {
     }
 
     void WaylandDataControl::readOfferAsync(int fd, std::function<void(QByteArray)> onRead) {
-        QThreadPool::globalInstance()->start([this, fd, onRead = std::move(onRead)]() {
-            QThread::currentThread()->setPriority(QThread::LowPriority);
+        makeFdNonBlocking(fd);
 
-            QByteArray              content;
-            std::array<char, 65536> buf; // NOLINT(cppcoreguidelines-pro-type-member-init): read() initializes the written range.
-            ssize_t                 n = 0;
-            while ((n = ::read(fd, buf.data(), buf.size())) > 0)
-                content.append(buf.data(), static_cast<qsizetype>(n));
-            ::close(fd);
+        auto  state   = std::make_unique<OfferRead>();
+        auto* raw     = state.get();
+        raw->fd       = fd;
+        raw->onRead   = std::move(onRead);
+        raw->notifier = new QSocketNotifier(fd, QSocketNotifier::Read, this);
+        connect(raw->notifier, &QSocketNotifier::activated, this, [this, raw](int) { pumpOfferRead(raw); });
+        mOfferReads.push_back(std::move(state));
 
-            QMetaObject::invokeMethod(this, [onRead, content = std::move(content)]() mutable { onRead(std::move(content)); }, Qt::QueuedConnection);
-        });
+        pumpOfferRead(raw); // payload may already be buffered
+    }
+
+    void WaylandDataControl::pumpOfferRead(OfferRead* read) {
+        bool waitMore = false;
+        while (true) {
+            const ssize_t n = ::read(read->fd, read->buf.data(), read->buf.size());
+            if (n > 0) {
+                read->content.append(read->buf.data(), static_cast<qsizetype>(n));
+                continue;
+            }
+            if (n < 0 && errno == EINTR)
+                continue;
+            if (n < 0 && errno == EAGAIN) {
+                waitMore = true; // more bytes later; keep the transfer alive
+                break;
+            }
+            // EOF or hard error: deliver what we have, matching the old
+            // blocking reader's tolerance.
+            break;
+        }
+
+        if (waitMore)
+            return;
+
+        auto       onReadCallback = std::move(read->onRead);
+        QByteArray readPayload    = std::move(read->content);
+        finishOfferRead(read);
+        onReadCallback(std::move(readPayload));
+    }
+
+    void WaylandDataControl::finishOfferRead(OfferRead* read) {
+        for (auto it = mOfferReads.begin(); it != mOfferReads.end(); ++it) {
+            if (it->get() != read)
+                continue;
+            if (read->notifier) {
+                read->notifier->setEnabled(false);
+                delete read->notifier;
+                read->notifier = nullptr;
+            }
+            ::close(read->fd);
+            read->fd = -1;
+            mOfferReads.erase(it);
+            return;
+        }
+    }
+
+    void WaylandDataControl::startSourceWrite(int fd, const QByteArray& content) {
+        makeFdNonBlocking(fd);
+
+        auto  state   = std::make_unique<SourceWrite>();
+        auto* raw     = state.get();
+        raw->fd       = fd;
+        raw->content  = content;
+        raw->notifier = new QSocketNotifier(fd, QSocketNotifier::Write, this);
+        connect(raw->notifier, &QSocketNotifier::activated, this, [this, raw](int) { pumpSourceWrite(raw); });
+        mSourceWrites.push_back(std::move(state));
+
+        pumpSourceWrite(raw);
+    }
+
+    void WaylandDataControl::pumpSourceWrite(SourceWrite* write) {
+        while (write->offset < write->content.size()) {
+            std::string           errorMsg = std::system_category().message(errno);
+            std::span<const char> buf{write->content.constData(), static_cast<size_t>(write->content.size())};
+            auto                  remaining = buf.subspan(static_cast<size_t>(write->offset));
+            const ssize_t         n         = ::write(write->fd, remaining.data(), remaining.size());
+            if (n < 0) {
+                if (errno == EINTR)
+                    continue;
+                if (errno == EAGAIN)
+                    return;
+                if (errno != EPIPE)
+                    qWarning() << "[WaylandDataControl] write failed:" << errorMsg;
+                break;
+            }
+            write->offset += n;
+        }
+        finishSourceWrite(write);
+    }
+
+    void WaylandDataControl::finishSourceWrite(SourceWrite* write) {
+        for (auto it = mSourceWrites.begin(); it != mSourceWrites.end(); ++it) {
+            if (it->get() != write)
+                continue;
+            if (write->notifier) {
+                write->notifier->setEnabled(false);
+                delete write->notifier;
+                write->notifier = nullptr;
+            }
+            ::close(write->fd);
+            write->fd = -1;
+            mSourceWrites.erase(it);
+            return;
+        }
     }
 
     void WaylandDataControl::setClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName) {

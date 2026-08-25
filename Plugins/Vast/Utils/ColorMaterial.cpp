@@ -1,7 +1,6 @@
 #include "ColorMaterial.hpp"
 
 #include <qcolor.h>
-#include <qthreadpool.h>
 #include <qstring.h>
 #include <qurl.h>
 #include <qvariant.h>
@@ -14,6 +13,7 @@
 #include <cstdint>
 
 #include "PaletteBuilder.hpp"
+#include "../Jobs/JobExecutor.hpp"
 
 namespace {
 
@@ -140,7 +140,7 @@ void ColorMaterial::scheduleRebuild() {
 
 void ColorMaterial::rebuild() {
     ++mGeneration;
-    const std::uint64_t generation = mGeneration;
+    const uint64_t generation = mGeneration;
 
     // Accepts both file:// URLs and plain absolute paths (MPRIS art paths
     // arrive without a scheme).
@@ -160,7 +160,7 @@ void ColorMaterial::rebuild() {
     const double  contrastLevel = mContrastLevel;
     const bool    smart         = mSmart;
 
-    QThreadPool::globalInstance()->start([this, generation, path, mode, scheme, rescaleSize, contrastLevel, smart] {
+    vast::JobExecutor::instance().post([this, generation, path, mode, scheme, rescaleSize, contrastLevel, smart] {
         const auto result = buildPalette(path, mode, scheme, smart, rescaleSize, contrastLevel);
         QMetaObject::invokeMethod(
             this,

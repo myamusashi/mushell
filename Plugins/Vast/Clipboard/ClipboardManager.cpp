@@ -3,6 +3,7 @@
 #include "ClipboardContentClassifier.hpp"
 #include "ClipboardPreviewCache.hpp"
 #include "WaylandDataControl.hpp"
+#include "../Jobs/JobExecutor.hpp"
 
 #include <ClipboardModel.hpp>
 #include <memory>
@@ -12,7 +13,6 @@
 #include <qlogging.h>
 #include <qnamespace.h>
 #include <qlist.h>
-#include <qthreadpool.h>
 #include <qobjectdefs.h>
 #include <qtimer.h>
 #include <qdatetime.h>
@@ -32,13 +32,18 @@ namespace vast {
     }
 
     ClipboardManager::~ClipboardManager() {
-        if (mWayland && mWaylandThread.isRunning()) {
-            QMetaObject::invokeMethod(mWayland.get(), "shutdown", Qt::BlockingQueuedConnection);
-            mWayland->deleteLater();
-            mWaylandThread.quit();
-            mWaylandThread.wait();
-            [[maybe_unused]] auto* releasedWayland = mWayland.release();
-        }
+        if (!mWayland)
+            return;
+
+        // Hand the object back to its own thread: deleteLater queues
+        // destruction onto the shared executor's event loop, where
+        // ~WaylandDataControl -> shutdown() tears the Wayland state down on
+        // the same thread its socket notifier and roundtrips lived on.
+        auto* wayland = mWayland.release();
+        if (wayland->thread()->isRunning())
+            wayland->deleteLater();
+        else
+            delete wayland;
     }
 
     [[nodiscard]] bool ClipboardManager::initialize(const QString& dbPath) {
@@ -55,13 +60,16 @@ namespace vast {
         setupConnections();
         loadAllEntries();
 
-        mWayland->moveToThread(&mWaylandThread);
-        mWaylandThread.start();
-
-        bool waylandInitialized = false;
-        QMetaObject::invokeMethod(mWayland.get(), "initialize", Qt::BlockingQueuedConnection, Q_RETURN_ARG(bool, waylandInitialized));
-        if (!waylandInitialized)
-            qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
+        // The data-control object lives on the shared executor thread: its
+        // socket notifier, reconnect timers and blocking registry roundtrips
+        // stay off the UI thread. The serialized queue guarantees this init
+        // job runs before any setClipboardContent posted afterwards.
+        auto* wayland = mWayland.get();
+        wayland->moveToThread(vast::JobExecutor::instance().thread());
+        vast::JobExecutor::instance().post([wayland]() {
+            if (!wayland->initialize())
+                qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
+        });
 
         return true;
     }
@@ -80,12 +88,8 @@ namespace vast {
                 mModel->prepend(entry);
                 pruneIfNeeded();
 
-                if (entry.isImage() && !entry.data.isEmpty()) {
-                    QThreadPool::globalInstance()->start([id = entry.id, data = entry.data]() {
-                        QThread::currentThread()->setPriority(QThread::LowPriority);
-                        ClipboardPreviewCache::write(id, data);
-                    });
-                }
+                if (entry.isImage() && !entry.data.isEmpty())
+                    vast::JobExecutor::instance().post([id = entry.id, data = entry.data]() { ClipboardPreviewCache::write(id, data); });
             },
             Qt::DirectConnection);
 
@@ -133,10 +137,7 @@ namespace vast {
                     return;
 
                 QByteArray data = r->data;
-                QThreadPool::globalInstance()->start([id, data = std::move(data)]() {
-                    QThread::currentThread()->setPriority(QThread::LowPriority);
-                    ClipboardPreviewCache::write(id, data);
-                });
+                vast::JobExecutor::instance().post([id, data = std::move(data)]() { ClipboardPreviewCache::write(id, data); });
             });
         }
     }
@@ -307,7 +308,7 @@ namespace vast {
     }
 
     [[nodiscard]] bool ClipboardManager::queueClipboardContent(const QString& mimeType, const QByteArray& content, const QString& fileName) {
-        if (!mWayland || !mWaylandThread.isRunning())
+        if (!mWayland)
             return false;
 
         return QMetaObject::invokeMethod(
@@ -408,6 +409,8 @@ namespace vast {
             return;
 
         QTimer::singleShot(0, this, [this, id]() {
+            if (!mDatabase)
+                return;
             auto result = mDatabase->fetchById(id);
             if (!result) {
                 qWarning() << "[ClipboardManager] fetchById failed:" << result.error();
@@ -417,28 +420,48 @@ namespace vast {
             if (id != mPendingEntryId)
                 return;
 
-            auto        entry = std::move(*result);
-            QVariantMap map;
-            map[QStringLiteral("id")]        = entry.id;
-            map[QStringLiteral("type")]      = entry.typeString();
-            map[QStringLiteral("content")]   = entry.content;
-            map[QStringLiteral("mimeType")]  = entry.mimeType;
-            map[QStringLiteral("pinned")]    = entry.pinned;
-            map[QStringLiteral("sourceApp")] = entry.sourceApp;
-            map[QStringLiteral("sizeBytes")] = entry.sizeBytes;
-            map[QStringLiteral("timestamp")] = entry.timestamp;
-            map[QStringLiteral("fileName")]  = entry.fileName.isEmpty() ? QString{} : QFileInfo(entry.fileName).fileName();
-
-            if (entry.isImage()) {
-                if (!ClipboardPreviewCache::exists(entry.id) && !entry.data.isEmpty())
+            if (result->isImage() && !ClipboardPreviewCache::exists(result->id) && !result->data.isEmpty()) {
+                // The heavy PNG encode + disk write run on the shared worker.
+                // fullEntryReady still fires exactly once, only after the
+                // preview path exists -- same contract as the old synchronous
+                // write, minus the UI-thread stall.
+                auto entry = std::move(*result);
+                vast::JobExecutor::instance().post([this, entry = std::move(entry)]() mutable {
                     ClipboardPreviewCache::write(entry.id, entry.data);
 
-                if (ClipboardPreviewCache::exists(entry.id))
-                    map[QStringLiteral("previewPath")] = ClipboardPreviewCache::path(entry.id);
+                    QMetaObject::invokeMethod(
+                        this,
+                        [this, entry = std::move(entry)]() mutable {
+                            if (!mDatabase || entry.id != mPendingEntryId)
+                                return;
+                            QVariantMap map;
+                            appendFullEntry(map, std::move(entry));
+                            emit fullEntryReady(std::move(map));
+                        },
+                        Qt::QueuedConnection);
+                });
+                return;
             }
 
+            QVariantMap map;
+            appendFullEntry(map, std::move(*result));
             emit fullEntryReady(std::move(map));
         });
+    }
+
+    void ClipboardManager::appendFullEntry(QVariantMap& map, ClipboardEntry&& entry) {
+        map.insert(QStringLiteral("id"), entry.id);
+        map.insert(QStringLiteral("type"), entry.typeString());
+        map.insert(QStringLiteral("content"), QVariant::fromValue(std::move(entry.content)));
+        map.insert(QStringLiteral("mimeType"), QVariant::fromValue(std::move(entry.mimeType)));
+        map.insert(QStringLiteral("pinned"), entry.pinned);
+        map.insert(QStringLiteral("sourceApp"), QVariant::fromValue(std::move(entry.sourceApp)));
+        map.insert(QStringLiteral("sizeBytes"), entry.sizeBytes);
+        map.insert(QStringLiteral("timestamp"), entry.timestamp);
+        map.insert(QStringLiteral("fileName"), entry.fileName.isEmpty() ? QString{} : QFileInfo(entry.fileName).fileName());
+
+        if (entry.isImage() && (ClipboardPreviewCache::exists(entry.id) || !entry.data.isEmpty()))
+            map.insert(QStringLiteral("previewPath"), ClipboardPreviewCache::path(entry.id));
     }
 
     void ClipboardManager::pruneIfNeeded() {
