@@ -36,9 +36,9 @@ Singleton {
     property bool includeAudio: false
     property bool showCursor: true
 
-    property string pendingVideoPath
-    property string pendingOutputDir
-    property var pendingCallback
+    property var _thumbnailQueue: []
+    property var _currentThumbnailJob: null
+    property bool _thumbnailBusy: false
 
     property var _cache: []
     property var defaultSink: sinks()[0] ?? null
@@ -111,8 +111,8 @@ Singleton {
 
         screenshotDir: root.screenshotDir
 
-        onNotify: (summary, body, urgency, icon, app) => {
-            root.sendNotification(summary, body, urgency, icon, app);
+        onNotify: (summary, body, urgency, icon, app, actions) => {
+            root.sendNotification(summary, body, urgency, icon, app, actions);
         }
     }
 
@@ -230,8 +230,9 @@ Singleton {
 
     Process {
         id: ffprobeProcess
-
         property string videoPath
+        property string outputDir
+        property var callback: null
 
         command: ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", videoPath]
         stdout: StdioCollector {
@@ -245,13 +246,18 @@ Singleton {
                 const s = Math.floor(ts % 60);
                 const formatted = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
 
-                const fi = root.pendingVideoPath.split("/").pop();
-                const baseName = fi.substring(0, fi.lastIndexOf("."));
-                const thumb = root.pendingOutputDir + "/" + baseName + ".png";
+                const fileName = ffprobeProcess.videoPath.split("/").pop();
+                const dot = fileName.lastIndexOf(".");
+                if (dot <= 0) {
+                    root._finishThumbnailJob(ffprobeProcess.videoPath, "", ffprobeProcess.callback);
+                    return;
+                }
 
                 ffmpegProcess.seek = formatted;
-                ffmpegProcess.videoPath = root.pendingVideoPath;
-                ffmpegProcess.thumb = thumb;
+                ffmpegProcess.videoPath = ffprobeProcess.videoPath;
+                ffmpegProcess.outputDir = ffprobeProcess.outputDir;
+                ffmpegProcess.thumb = ffprobeProcess.outputDir + "/" + fileName.substring(0, dot) + ".png";
+                ffmpegProcess.callback = ffprobeProcess.callback;
                 ffmpegProcess.running = true;
             }
         }
@@ -263,36 +269,40 @@ Singleton {
         property string seek
         property string videoPath
         property string thumb
+        property string outputDir
+        property var callback: null
 
-        command: ["ffmpeg", "-ss", seek, "-i", videoPath, "-vframes", "1", "-q:v", "2", "-vf", "scale=256:-1", thumb, "-y", "-v", "error"]
+        // mkdir -p first: requested output dir may not exist yet (e.g. ~/.cache/video-thumbnails)
+        command: ["sh", "-c", "mkdir -p \"$1\" && exec ffmpeg -ss \"$2\" -i \"$3\" -vframes 1 -q:v 2 -vf scale=256:-1 \"$4\" -y -v error", "sh", outputDir, seek, videoPath, thumb]
 
         // qmllint disable
         onExited: (exitCode, exitStatus) => {
             // qmllint enable
-            const vp = root.pendingVideoPath;
-            const tp = (exitCode === 0) ? ffmpegProcess.thumb : "";
-            const cb = root.pendingCallback;
-            root.pendingVideoPath = "";
-            root.pendingOutputDir = "";
-            root.pendingCallback = null;
-            root.thumbnailReady(vp, tp);
-            if (cb)
-                cb(vp, tp);
+            root._finishThumbnailJob(ffmpegProcess.videoPath, exitCode === 0 ? ffmpegProcess.thumb : "", ffmpegProcess.callback);
         }
     }
 
-    Process {
-        id: actionNotifyProcess
+    // one live instance per actionable notification; collects the chosen
+    // action identifier from `notify-send --wait` and opens the target
+    Component {
+        id: actionNotifyComponent
 
-        property string file
+        Process {
+            id: actionProcess
 
-        stdout: StdioCollector {
-            onStreamFinished: {
-                const action = text.trim();
-                if (action === "default")
-                    Quickshell.execDetached({
-                        command: ["xdg-open", actionNotifyProcess.file]
-                    });
+            property string filePath: ""
+            property string dirPath: ""
+
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    const action = text.trim();
+                    const target = action === "folder" ? actionProcess.dirPath : actionProcess.filePath;
+                    if ((action === "open" || action === "folder" || action === "default") && target)
+                        Quickshell.execDetached({
+                            command: ["xdg-open", target]
+                        });
+                    Qt.callLater(actionProcess.destroy);
+                }
             }
         }
     }
@@ -453,17 +463,43 @@ Singleton {
     }
 
     function createThumbnail(videoPath, outputDir) {
-        root.generate(videoPath, outputDir, (vp, tp) => {
-            root.thumbnailReady(vp, tp);
-        });
+        root.generate(videoPath, outputDir, null);
     }
 
     function generate(videoPath, outputDir, callback) {
-        pendingVideoPath = videoPath;
-        pendingOutputDir = outputDir;
-        pendingCallback = callback;
-        ffprobeProcess.videoPath = videoPath;
+        const active = root._currentThumbnailJob;
+        if (active && active.videoPath === videoPath && active.outputDir === outputDir)
+            return;
+        for (const job of root._thumbnailQueue)
+            if (job.videoPath === videoPath && job.outputDir === outputDir)
+                return;
+        root._thumbnailQueue.push({
+            videoPath: videoPath,
+            outputDir: outputDir,
+            callback: callback
+        });
+        root._startNextThumbnailJob();
+    }
+
+    function _startNextThumbnailJob() {
+        if (root._thumbnailBusy || root._thumbnailQueue.length === 0)
+            return;
+        const job = root._thumbnailQueue.shift();
+        root._currentThumbnailJob = job;
+        root._thumbnailBusy = true;
+        ffprobeProcess.videoPath = job.videoPath;
+        ffprobeProcess.outputDir = job.outputDir;
+        ffprobeProcess.callback = job.callback;
         ffprobeProcess.running = true;
+    }
+
+    function _finishThumbnailJob(videoPath, thumbnailPath, callback) {
+        root.thumbnailReady(videoPath, thumbnailPath);
+        if (callback)
+            callback(videoPath, thumbnailPath);
+        root._currentThumbnailJob = null;
+        root._thumbnailBusy = false;
+        root._startNextThumbnailJob();
     }
 
     function screenshotWindow(action) {
@@ -502,31 +538,48 @@ Singleton {
         });
     }
 
-    function sendNotification(summary, body, urgency, icon, app) {
-        const args = ["-a", app || "screengrab"];
+    function sendNotification(summary, body, urgency, icon, app, actions) {
+        const args = ["notify-send", "-a", app || "screengrab"];
         if (urgency && urgency !== "normal")
             args.push("-u", urgency);
         if (icon)
             args.push("-i", icon);
+
+        const hasActions = actions && actions.length > 0;
+        if (hasActions) {
+            args.push("--wait");
+            for (let i = 0; i < actions.length; i++)
+                args.push("--action=" + actions[i].id + "=" + actions[i].label);
+        }
         args.push(summary, body);
-        Quickshell.execDetached({
-            command: ["notify-send"].concat(args)
+
+        if (!hasActions) {
+            Quickshell.execDetached({
+                command: args
+            });
+            return;
+        }
+
+        // --wait keeps the client alive so action clicks come back on stdout
+        const proc = actionNotifyComponent.createObject(root, {
+            filePath: body,
+            dirPath: body.substring(0, Math.max(body.lastIndexOf("/"), 0)) || "/"
         });
+        proc.command = args;
+        proc.running = true;
     }
 
     function gotoLink(file, thumb, showNotification) {
-        if (showNotification) {
-            const args = ["notify-send", "-a", "screengrab"];
-            if (thumb)
-                args.push("-i", thumb);
-            args.push("--action", "default=open link", "--wait", "Capture Saved", file);
-            actionNotifyProcess.file = file;
-            actionNotifyProcess.command = args;
-            actionNotifyProcess.running = true;
-        } else {
+        if (showNotification)
+            root.sendNotification("Capture Saved", file, "normal", thumb ?? "", "screengrab", [
+                {
+                    "id": "default",
+                    "label": qsTr("Open")
+                }
+            ]);
+        else
             Quickshell.execDetached({
                 command: ["xdg-open", file]
             });
-        }
     }
 }
