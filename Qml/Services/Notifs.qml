@@ -142,6 +142,7 @@ Singleton {
         bodySupported: true
         imageSupported: true
         persistenceSupported: true
+        inlineReplySupported: true
 
         onNotification: notif => {
             notif.tracked = true;
@@ -301,6 +302,14 @@ Singleton {
                 notif.hasActionIcons = notif.notification.hasActionIcons;
             }
 
+            function onHasInlineReplyChanged() {
+                notif.hasInlineReply = notif.notification.hasInlineReply;
+            }
+
+            function onInlineReplyPlaceholderChanged() {
+                notif.inlineReplyPlaceholder = notif.notification.inlineReplyPlaceholder;
+            }
+
             function onActionsChanged() {
                 notif.actions = notif.notification.actions.map(a => ({
                             identifier: a.identifier,
@@ -344,6 +353,8 @@ Singleton {
         property int urgency: NotificationUrgency.Normal
         property bool resident: false
         property bool hasActionIcons: false
+        property bool hasInlineReply: false
+        property string inlineReplyPlaceholder: ""
         property list<var> actions: []
         property var locks: new Set()
 
@@ -380,6 +391,15 @@ Singleton {
             }
         }
 
+        function sendInlineReply(text) {
+            const trimmed = text.trim();
+
+            if (!notification || closed || !hasInlineReply || trimmed === "")
+                return;
+
+            notification.sendInlineReply(trimmed);
+        }
+
         function dismissPopup() {
             popup = false;
         }
@@ -409,6 +429,8 @@ Singleton {
             urgency = notification.urgency;
             resident = notification.resident;
             hasActionIcons = notification.hasActionIcons;
+            hasInlineReply = notification.hasInlineReply;
+            inlineReplyPlaceholder = notification.inlineReplyPlaceholder;
             actions = notification.actions.map(a => ({
                         identifier: a.identifier,
                         text: a.text,
