@@ -55,18 +55,6 @@ RowLayout {
                 rightMargin: Appearance.margin.small
             }
 
-            SplitButton {
-                id: splitButton
-
-                Layout.alignment: Qt.AlignVCenter
-                model: root.targets
-                textRole: "display"
-                currentIndex: root.selectedIndex
-                icon.name: "tv_displays"
-                text: root.targets[root.selectedIndex]?.display ?? qsTr("All")
-                onMenuItemActivated: index => root.targetId = root.targets[index].value
-            }
-
             StyledSlide {
                 id: brightnessSlider
 
@@ -84,6 +72,18 @@ RowLayout {
                     else
                         Brightness.setBrightnessForDisplay(root.targetId, brightnessSlider.value);
                 }
+            }
+
+            SplitButton {
+                id: splitButton
+
+                Layout.alignment: Qt.AlignVCenter
+                model: root.targets
+                textRole: "display"
+                currentIndex: root.selectedIndex
+                icon.name: "tv_displays"
+                text: root.targets[root.selectedIndex]?.display ?? qsTr("All")
+                onMenuItemActivated: index => root.targetId = root.targets[index].value
             }
         }
     }
