@@ -65,6 +65,7 @@ SettingsPageBase {
                 textRole: "display"
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? Configs.bar.workspacesIndicator
+                icon.name: "workspaces"
 
                 onMenuItemActivated: index => Configs.bar.workspacesIndicator = model[index].display
             }

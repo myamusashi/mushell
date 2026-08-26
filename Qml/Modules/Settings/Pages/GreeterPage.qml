@@ -27,11 +27,24 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Wallpaper type:")
 
-            ExtendedFloatingButton {
-                text: Configs.greeterConfig.useVideoWallpaper ? qsTr("Video") : qsTr("Static")
-                color: Colours.m3Colors.m3SecondaryContainer
-                textColor: Colours.m3Colors.m3OnSecondaryContainer
-                onClicked: Configs.greeterConfig.useVideoWallpaper = !Configs.greeterConfig.useVideoWallpaper
+            SplitButton {
+                id: wallpaperButton
+
+                readonly property int selectedIndex: Configs.greeterConfig.useVideoWallpaper ? 0 : 1
+
+                model: [
+                    {
+                        display: "Video"
+                    },
+                    {
+                        display: "Static"
+                    }
+                ]
+
+                textRole: "display"
+                icon.name: "wallpaper"
+                text: model[selectedIndex] ? model[selectedIndex].display : ""
+                currentIndex: selectedIndex
             }
         }
 

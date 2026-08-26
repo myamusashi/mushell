@@ -52,6 +52,7 @@ SettingsPageBase {
                 textRole: "display"
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? Configs.mediaPlayer.sliderType
+                icon.name: "sliders"
 
                 onMenuItemActivated: index => Configs.mediaPlayer.sliderType = model[index].display
             }

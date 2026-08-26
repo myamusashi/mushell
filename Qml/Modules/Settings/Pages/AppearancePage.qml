@@ -97,7 +97,7 @@ Item {
                                     display: name
                                 }))
                         textRole: "display"
-                        menuIcon.name: "format_color_fill"
+                        icon.name: "format_color_fill"
                         currentIndex: selectedIndex
                         text: model[selectedIndex]?.display ?? Configs.colors.scheme
 

@@ -4,10 +4,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import qs.Components.Button
+import qs.Components.Base
 import qs.Core.Configs
 import qs.Services
-import qs.Components.Base
-import qs.Components.Button
 
 import "../Components"
 
@@ -226,8 +226,8 @@ SettingsPageBase {
         text: qsTr("Add Timeout")
         Layout.fillWidth: true
         Layout.preferredHeight: 40
-        color: "transparent"
         outlined: true
+        textColor: Colours.m3Colors.m3OnSurface
         onClicked: root.addTimeout()
     }
 }

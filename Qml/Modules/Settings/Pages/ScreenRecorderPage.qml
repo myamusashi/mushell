@@ -35,6 +35,7 @@ SettingsPageBase {
                 ]
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? ""
+                icon.name: "autofps_select"
 
                 onMenuItemActivated: index => {
                     Configs.screenRecorder.maxFps = model[index].value;
@@ -69,6 +70,7 @@ SettingsPageBase {
                 ]
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? ""
+                icon.name: "shutter_speed"
 
                 onMenuItemActivated: index => {
                     Configs.screenRecorder.bitrate = model[index].value;
@@ -111,6 +113,7 @@ SettingsPageBase {
                 ]
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? ""
+                icon.name: "hd"
 
                 onMenuItemActivated: index => {
                     Configs.screenRecorder.videoCodec = model[index].value;
@@ -149,6 +152,7 @@ SettingsPageBase {
                 ]
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? ""
+                icon.name: "hd"
 
                 onMenuItemActivated: index => {
                     Configs.screenRecorder.audioCodec = model[index].value;
@@ -179,6 +183,7 @@ SettingsPageBase {
                 ]
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? ""
+                icon.name: "power"
 
                 onMenuItemActivated: index => {
                     Configs.screenRecorder.lowPower = model[index].value;

@@ -168,10 +168,10 @@ Item {
                                     display: "a (5 GHz)"
                                 }
                             ]
-                            menuIcon.name: "graphic_eq"
                             textRole: "display"
                             currentIndex: selectedIndex
                             text: model[selectedIndex]?.display ?? "bg (2.4 GHz)"
+                            icon.name: "graphic_eq"
 
                             onMenuItemActivated: index => Hotspot.band = index === 0 ? "bg" : "a"
                         }
@@ -185,7 +185,6 @@ Item {
                         onClicked: {
                             if (Hotspot.isActive) {
                                 Hotspot.stop();
-                                // Wait briefly then restart with new settings
                                 Qt.callLater(function () {
                                     Qt.callLater(Hotspot.start);
                                 });
