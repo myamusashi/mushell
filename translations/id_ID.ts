@@ -39,24 +39,34 @@
         <translation>AQI</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="32"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="69"/>
         <source>Air quality</source>
         <translation>Kualitas udara</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="50"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="87"/>
         <source>Current conditions</source>
         <translation>Cuaca sekarang</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="148"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="171"/>
         <source>United States AQI:</source>
         <translation>United States AQI:</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="152"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="175"/>
         <source>European AQi:</source>
         <translation>Eropa AQI:</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="224"/>
+        <source>United States AQI</source>
+        <translation>AQI Amerika Serikat</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/AQI.qml" line="224"/>
+        <source>European AQI</source>
+        <translation>AQI Eropa</translation>
     </message>
 </context>
 <context>
@@ -393,13 +403,22 @@
 <context>
     <name>BrightnessControls</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="44"/>
-        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="52"/>
         <source>All monitors</source>
-        <translation>Semua monitor</translation>
+        <translation type="vanished">Semua monitor</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="84"/>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="22"/>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="63"/>
+        <source>All</source>
+        <translation>Semua</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="26"/>
+        <source>Internal</source>
+        <translation>Internal</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/Settings/BrightnessControls.qml" line="135"/>
         <source>Night mode</source>
         <translation>Mode Malam</translation>
     </message>
@@ -740,6 +759,11 @@
         <location filename="../Qml/Modules/Drawers/Launcher/History/Content.qml" line="102"/>
         <source>Open</source>
         <translation>Buka</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/Notifications/Components/Content.qml" line="162"/>
+        <source>Reply…</source>
+        <translation>Balas…</translation>
     </message>
 </context>
 <context>
@@ -1331,37 +1355,37 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>FileListItem</name>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="79"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="69"/>
         <source>Folder</source>
         <translation>Folder</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="81"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="71"/>
         <source>file</source>
         <translation>berkas</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="81"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="71"/>
         <source>File</source>
         <translation>Berkas</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="86"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="76"/>
         <source>B</source>
         <translation>B</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="88"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="78"/>
         <source>KiB</source>
         <translation>KiB</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="90"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="80"/>
         <source>MiB</source>
         <translation>MiB</translation>
     </message>
     <message>
-        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="91"/>
+        <location filename="../Qml/Components/Dialog/FileDialog/delegate/FileListItem.qml" line="81"/>
         <source>GiB</source>
         <translation>GiB</translation>
     </message>
@@ -2328,11 +2352,11 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
     <message>
         <location filename="../Qml/Services/Notifs.qml" line="49"/>
         <location filename="../Qml/Services/Notifs.qml" line="65"/>
-        <location filename="../Qml/Services/Notifs.qml" line="170"/>
-        <location filename="../Qml/Services/Notifs.qml" line="179"/>
-        <location filename="../Qml/Services/Notifs.qml" line="225"/>
-        <location filename="../Qml/Services/Notifs.qml" line="229"/>
-        <location filename="../Qml/Services/Notifs.qml" line="236"/>
+        <location filename="../Qml/Services/Notifs.qml" line="171"/>
+        <location filename="../Qml/Services/Notifs.qml" line="180"/>
+        <location filename="../Qml/Services/Notifs.qml" line="226"/>
+        <location filename="../Qml/Services/Notifs.qml" line="230"/>
+        <location filename="../Qml/Services/Notifs.qml" line="237"/>
         <source>Notifications</source>
         <translation>Notifikasi</translation>
     </message>
@@ -2342,32 +2366,32 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
         <translation>Menghapus %1 notifikasi terlama untuk menegakkan batas</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="170"/>
+        <location filename="../Qml/Services/Notifs.qml" line="171"/>
         <source>No cached notifications found</source>
         <translation>Tidak ada notifikasi tersimpan</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="179"/>
+        <location filename="../Qml/Services/Notifs.qml" line="180"/>
         <source>Invalid notification cache format</source>
         <translation>Format cache notifikasi tidak valid</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="225"/>
+        <location filename="../Qml/Services/Notifs.qml" line="226"/>
         <source>Loaded %1 notification(s) from cache</source>
         <translation>Memuat %1 notifikasi dari cache</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="229"/>
+        <location filename="../Qml/Services/Notifs.qml" line="230"/>
         <source>Failed to load notifications: %1</source>
         <translation>Gagal memuat notifikasi: %1</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="236"/>
+        <location filename="../Qml/Services/Notifs.qml" line="237"/>
         <source>Notification cache doesn&apos;t exist, creating it</source>
         <translation>Cache notifikasi tidak ada, sedang membuat</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/Notifs.qml" line="318"/>
+        <location filename="../Qml/Services/Notifs.qml" line="327"/>
         <source>now</source>
         <translation>Sekarang</translation>
     </message>
@@ -2754,8 +2778,8 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>Precipitation</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Precipitation.qml" line="32"/>
         <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Precipitation.qml" line="33"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Precipitation.qml" line="32"/>
         <source>Precipitation</source>
         <translation>Curah hujan</translation>
     </message>
@@ -2795,6 +2819,24 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
         <location filename="../Qml/Modules/DynamicIsland/ProgressContent.qml" line="86"/>
         <source>Cancel</source>
         <translation>Batal</translation>
+    </message>
+</context>
+<context>
+    <name>QuickSettings</name>
+    <message>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/QuickSettings.qml" line="73"/>
+        <source>Settings</source>
+        <translation>Pengaturan</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/QuickSettings.qml" line="77"/>
+        <source>Volume</source>
+        <translation>Volume</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Drawers/QuickSettings/QuickSettings.qml" line="81"/>
+        <source>Performance</source>
+        <translation>Kinerja</translation>
     </message>
 </context>
 <context>
@@ -2842,12 +2884,12 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>ScreenCaptureHistory</name>
     <message>
-        <location filename="../Qml/Services/ScreenCaptureHistory.qml" line="26"/>
+        <location filename="../Qml/Services/ScreenCaptureHistory.qml" line="23"/>
         <source>Failed to parse file metadata: %1</source>
         <translation>Gagal memuat berkas metadata: %1</translation>
     </message>
     <message>
-        <location filename="../Qml/Services/ScreenCaptureHistory.qml" line="26"/>
+        <location filename="../Qml/Services/ScreenCaptureHistory.qml" line="23"/>
         <source>Screen Capture</source>
         <translation>Tangkapan Layar</translation>
     </message>
@@ -2863,6 +2905,11 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
         <location filename="../Qml/Modules/Drawers/ScreenRecorder/ScreenRecorder.qml" line="182"/>
         <source>Recording</source>
         <translation>Perekaman</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Services/ScreenRecorder/ScreenRecorder.qml" line="577"/>
+        <source>Open</source>
+        <translation>Buka</translation>
     </message>
 </context>
 <context>
@@ -2931,19 +2978,32 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>Screencapture</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="133"/>
+        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="124"/>
         <source>Capture</source>
         <translation>Menangkap</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="158"/>
+        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="128"/>
         <source>History</source>
         <translation>Histori</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="239"/>
+        <location filename="../Qml/Modules/Drawers/Launcher/Screencapture.qml" line="202"/>
         <source>No captures yet</source>
         <translation>Belum ada tangkapan</translation>
+    </message>
+</context>
+<context>
+    <name>Screenshotter</name>
+    <message>
+        <location filename="../Qml/Services/ScreenRecorder/Screenshotter.qml" line="39"/>
+        <source>Open Image</source>
+        <translation>Buka Gambar</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Services/ScreenRecorder/Screenshotter.qml" line="43"/>
+        <source>Show in Folder</source>
+        <translation>Tampilkan di Folder</translation>
     </message>
 </context>
 <context>
@@ -2993,34 +3053,29 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
         <translation>Umum</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="67"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="72"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="76"/>
         <source>Appearance</source>
         <translation>Tampilan</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="72"/>
-        <source>Shell</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="76"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="131"/>
         <source>Greeter</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="80"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="89"/>
         <source>Top Bar</source>
         <translation>Bilah Atas</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="84"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="80"/>
         <source>Wallpaper</source>
         <translation>Wallpaper</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="89"/>
         <source>Integrations</source>
-        <translation>Integrasi</translation>
+        <translation type="vanished">Integrasi</translation>
     </message>
     <message>
         <location filename="../Qml/Modules/Settings/Settings.qml" line="93"/>
@@ -3033,42 +3088,56 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
         <translation>Cuaca</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="101"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="67"/>
         <source>Language</source>
         <translation>Bahasa</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="105"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="85"/>
+        <source>Modules</source>
+        <translation>Modul</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="114"/>
+        <source>Connectivity</source>
+        <translation>Konektivitas</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="118"/>
         <source>Network &amp; Internet</source>
         <translation>Jaringan &amp; Internet</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="114"/>
         <source>System</source>
-        <translation>Sistem</translation>
+        <translation type="vanished">Sistem</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="118"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="105"/>
         <source>Clipboard</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="122"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="101"/>
         <source>Notification</source>
         <translation>Notifikasi</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="109"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="122"/>
         <source>KDE Connect</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="126"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="109"/>
         <source>Screen Recorder</source>
         <translation>Perekam Layar</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Settings/Settings.qml" line="130"/>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="127"/>
+        <source>Session</source>
+        <translation>Sesi</translation>
+    </message>
+    <message>
+        <location filename="../Qml/Modules/Settings/Settings.qml" line="135"/>
         <source>Idle</source>
         <translation>Nganggur</translation>
     </message>
@@ -3097,8 +3166,8 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>Sun</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Sun.qml" line="57"/>
         <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Sun.qml" line="81"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Sun.qml" line="57"/>
         <source>Sun</source>
         <translation>Matahari</translation>
     </message>
@@ -3235,8 +3304,8 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>Visibility</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Visibility.qml" line="28"/>
         <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Visibility.qml" line="36"/>
+        <location filename="../Qml/Modules/Drawers/Weather/WeatherItem/Pages/Visibility.qml" line="28"/>
         <source>Visibility</source>
         <translation>Visibilitas</translation>
     </message>
@@ -3327,17 +3396,17 @@ Hembusan kencang dapat mencabut pohon, merusak bangunan, dan membuat berkendara 
 <context>
     <name>WallpaperSelector</name>
     <message>
-        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="252"/>
+        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="256"/>
         <source>Search wallpapers</source>
         <translation>Cari wallpapers</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="303"/>
+        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="307"/>
         <source>Static</source>
         <translation>Statis</translation>
     </message>
     <message>
-        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="303"/>
+        <location filename="../Qml/Modules/Drawers/WallpaperSelector/WallpaperSelector.qml" line="307"/>
         <source>Video</source>
         <translation>Vidio</translation>
     </message>
