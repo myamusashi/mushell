@@ -1,10 +1,6 @@
 #include "AudioDevicesWatcher.hpp"
 #include "AudioDevicesModel.hpp"
 
-#include <cstdint>
-#include <array>
-#include <cstdio>
-#include <exception>
 #include <qdebug.h>
 #include <qjsengine.h>
 #include <qobject.h>
@@ -12,16 +8,19 @@
 #include <qlist.h>
 #include <qhashfunctions.h>
 #include <qqmlengine.h>
-
-#include <algorithm>
-#include <cstring>
-#include <memory>
-#include <mutex>
-#include <spa/utils/dict.h>
-#include <spa/utils/hook.h>
 #include <qtimer.h>
 #include <qtmetamacros.h>
 #include <qtypes.h>
+
+#include <cstdint>
+#include <array>
+#include <cstdio>
+#include <exception>
+#include <algorithm>
+#include <cstring>
+#include <memory>
+#include <spa/utils/dict.h>
+#include <spa/utils/hook.h>
 #include <span>
 #include <stdexcept>
 #include <string_view>
@@ -359,13 +358,11 @@ void AudioDevicesWatcher::poll() {
     pw_thread_loop_unlock(app->loop());
 
     if (!changed) {
-        // Nothing dirty — exponential backoff to reduce idle CPU
         mPollIntervalMs = std::min(mPollIntervalMs * 2, K_MAX_POLL_MS);
         mTimer->start(mPollIntervalMs);
         return;
     }
 
-    // Activity detected — reset to fast polling
     mPollIntervalMs = K_MIN_POLL_MS;
     mModel->setDevices(snapshot);
     emit devicesChanged();
