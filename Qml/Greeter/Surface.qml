@@ -283,7 +283,7 @@ WlSessionLockSurface {
             spacing: Appearance.spacing.small
 
             FloatingButton {
-                size: "small"
+                size: "regular"
                 icon.name: "restart_alt"
                 icon.color: root.dynColors.onSurface
                 color: Qt.alpha(root.dynColors.surfaceContainerHighest, 0.8)
@@ -294,7 +294,7 @@ WlSessionLockSurface {
             }
 
             FloatingButton {
-                size: "small"
+                size: "regular"
                 icon.name: "power_settings_new"
                 icon.color: root.dynColors.onSurface
                 color: Qt.alpha(root.dynColors.surfaceContainerHighest, 0.8)

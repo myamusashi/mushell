@@ -8,22 +8,14 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 
-/// Material 3 floating action button (icon only).
-/// Specs: https://m3.material.io/components/floating-action-button/specs
-/// - Containers: small 40x40 (corner-medium 12), normal 56x56 (corner-large 16), large 96x96 (corner-extra-large 28)
-/// - Icons: 24px (small/normal), 36px (large)
-/// - Container primaryContainer, icon onPrimaryContainer
-/// - State layer (icon color): hover 8%, pressed 10%
-/// - Elevation: level 3 at rest/focus/pressed, level 4 on hover
 Item {
     id: root
 
-    // M3 size preset: "small" | "normal" | "large"
-    property string size: "normal"
+    property string size: "medium"
 
-    readonly property int actionButtonSize: root.size === "small" ? 40 : root.size === "large" ? 96 : 56
-    readonly property int actionButtonRadius: root.size === "small" ? 12 : root.size === "large" ? 28 : 16
-    readonly property int actionButtonIconSize: root.size === "large" ? 36 : 24
+    readonly property int actionButtonSize: root.size === "small" ? 32 : root.size === "regular" ? 40 : root.size === "large" ? 96 : 56
+    readonly property int actionButtonRadius: root.size === "small" ? 12 : root.size === "regular" ? 12 : root.size === "large" ? 28 : 16
+    readonly property int actionButtonIconSize: root.size === "small" ? 16 : root.size === "large" ? 36 : 24
 
     readonly property color backgroundColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
 
