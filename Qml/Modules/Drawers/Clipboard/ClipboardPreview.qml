@@ -3,11 +3,12 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Vast.Clipboard
 
+import qs.Components.Feedback
+import qs.Components.Button
+import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Components.Base
-import qs.Components.Feedback
 
 Item {
     id: root
@@ -200,55 +201,21 @@ Item {
             }
 
             // Pin button
-            StyledRect {
-                implicitWidth: 32
-                implicitHeight: 32
-                radius: Appearance.rounding.small
-                color: pinArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.18) : Qt.alpha(Colours.m3Colors.m3SurfaceContainerHigh, 0.5)
+            FloatingButton {
+                size: "small"
+                icon.name: entryDetails.pinned ? "keep" : "keep_off"
+                icon.color: entryDetails.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
+                color: Qt.alpha(Colours.m3Colors.m3SurfaceContainerHigh, 0.5)
 
-                Icon {
-                    anchors.centerIn: parent
-                    icon: entryDetails.pinned ? "keep" : "keep_off"
-                    font.pixelSize: Appearance.fonts.size.large
-                    color: entryDetails.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
-                }
-
-                MArea {
-                    id: pinArea
-
-                    onClicked: root.pinToggled(root.entryId, !entryDetails.pinned)
-                }
+                onClicked: root.pinToggled(root.entryId, !entryDetails.pinned)
             }
 
-            // Copy button
-            StyledRect {
-                implicitWidth: 80
-                implicitHeight: 32
-                radius: Appearance.rounding.small
-                color: copyArea.containsMouse ? Colours.m3Colors.m3Primary : Qt.alpha(Colours.m3Colors.m3Primary, 0.75)
-
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: Appearance.spacing.small
-
-                    Icon {
-                        icon: "content_copy"
-                        font.pixelSize: Appearance.fonts.size.large
-                        color: Colours.m3Colors.m3OnPrimary
-                    }
-                    StyledText {
-                        text: qsTr("Copy")
-                        font.pixelSize: Appearance.fonts.size.normal
-                        font.weight: Font.Medium
-                        color: Colours.m3Colors.m3OnPrimary
-                    }
-                }
-
-                MArea {
-                    id: copyArea
-
-                    onClicked: root.copyRequested(root.entryId)
-                }
+            ExtendedFloatingButton {
+                text: qsTr("Copy")
+                icon.name: "content_copy"
+                color: Colours.m3Colors.m3SecondaryContainer
+                textColor: Colours.m3Colors.m3OnSecondaryContainer
+                onClicked: root.copyRequested(root.entryId)
             }
         }
 
