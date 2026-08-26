@@ -26,7 +26,6 @@ vast-shell/
 │   ├── packages/
 │   │   ├── app2unit.nix
 │   │   ├── material-symbols.nix
-│   │   ├── qmlfmt.nix
 │   │   └── vastctl.nix
 │   └── plugins/
 │       ├── AnotherRipple.nix
@@ -115,7 +114,6 @@ vast-shell/
 │       └── Translation/        # Vast.Translation — TranslationManager
 │
 ├── Assets/
-│   ├── go/formatting.go       # QML auto-formatter / linter
 │   ├── images/                # image_not_found, wallpaper fallbacks
 │   ├── shaders/               # borderProgress, waveForm, wavy, ImageTransition
 │   │   └── transitions/       # boxExpand, circleExpand, diagonalWipe, dissolve,
