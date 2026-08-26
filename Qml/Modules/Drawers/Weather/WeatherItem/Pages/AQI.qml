@@ -27,7 +27,42 @@ Pages {
 
         property int selectedTab: 0
 
-        property string description: selectedTab === 0 ? DetailText.usAQI : DetailText.euroAQI
+        readonly property var scales: [
+            {
+                description: DetailText.usAQI,
+                value: Weather.usAQI,
+                category: Weather.usAQICategory,
+                bounds: [50, 100, 150, 200, 300],
+                max: 500
+            },
+            {
+                description: DetailText.euroAQI,
+                value: Weather.europeanAQI,
+                category: Weather.europeanAQICategory,
+                bounds: [25, 50, 75, 100, 150],
+                max: 250
+            }
+        ]
+
+        readonly property var currentScale: scales[selectedTab]
+
+        property string description: currentScale.description
+
+        function sliderFraction(value, bounds, max) {
+            const segmentCount = bounds.length + 1;
+            const segmentWidth = 1 / segmentCount;
+
+            let lowerBound = 0;
+            for (let i = 0; i < bounds.length; i++) {
+                const upperBound = bounds[i];
+                if (value <= upperBound)
+                    return (i + (value - lowerBound) / (upperBound - lowerBound)) * segmentWidth;
+
+                lowerBound = upperBound;
+            }
+
+            return Math.min(1, (segmentCount - 1 + (value - lowerBound) / (max - lowerBound)) * segmentWidth);
+        }
 
         Header {
             icon: "waves"
@@ -60,13 +95,13 @@ Pages {
                     Layout.alignment: Qt.AlignLeft
 
                     StyledText {
-                        text: Weather.europeanAQI
+                        text: column.currentScale.value
                         color: Colours.m3Colors.m3Primary
                         font.pixelSize: Appearance.fonts.size.extraLarge
                     }
 
                     StyledText {
-                        text: Weather.europeanAQICategory
+                        text: column.currentScale.category
                         color: Colours.m3Colors.m3Primary
                         font.pixelSize: Appearance.fonts.size.normal
                     }
@@ -118,22 +153,8 @@ Pages {
                         border.width: 2
                         border.color: Colours.m3Colors.m3OnSurface
                         x: {
-                            var position = 0;
-                            var value = Weather.usAQI;
-
-                            if (value <= 50) {
-                                position = (value / 50) * 0.2; // 0-20% of gradient
-                            } else if (value <= 100) {
-                                position = 0.2 + ((value - 50) / 50) * 0.2; // 20-40%
-                            } else if (value <= 150) {
-                                position = 0.4 + ((value - 100) / 50) * 0.2; // 40-60%
-                            } else if (value <= 200) {
-                                position = 0.6 + ((value - 150) / 50) * 0.2; // 60-80%
-                            } else if (value <= 300) {
-                                position = 0.8 + ((value - 200) / 100) * 0.2; // 80-100%
-                            } else {
-                                position = Math.min(1.0, 0.8 + ((value - 300) / 200) * 0.2);
-                            }
+                            const scale = column.currentScale;
+                            const position = column.sliderFraction(scale.value, scale.bounds, scale.max);
 
                             return Math.min(Math.max(0, position * parent.width - width / 2), parent.width - width);
                         }
