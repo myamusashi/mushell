@@ -8,7 +8,6 @@ import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
 import qs.Components.Button
-import qs.Components.Menu
 import qs.Components.Dialog.FileDialog
 
 import "../Components"
@@ -232,7 +231,9 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Transition Animation Mode:")
 
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.wallpaper.transition)
+
                 model: [
                     {
                         display: "none"
@@ -272,13 +273,13 @@ SettingsPageBase {
                     },
                     {
                         display: "hexTile"
-                    },
+                    }
                 ]
-                Layout.preferredWidth: 200
-                currentIndex: -1
-                placeholderText: Configs.wallpaper.transition
-                isItemActive: (md, _) => md.display === Configs.wallpaper.transition
-                onActivated: index => Configs.wallpaper.transition = model[index].display
+                textRole: "display"
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? Configs.wallpaper.transition
+
+                onMenuItemActivated: index => Configs.wallpaper.transition = model[index].display
             }
         }
 

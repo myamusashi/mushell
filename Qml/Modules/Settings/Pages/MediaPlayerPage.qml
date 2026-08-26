@@ -2,8 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 
 import qs.Core.Configs
+import qs.Components.Button
 import qs.Components.Base
-import qs.Components.Menu
 
 import "../Components"
 
@@ -38,10 +38,9 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Slider type:")
 
-            DropdownField {
-                id: waveTypeCombo
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.mediaPlayer.sliderType)
 
-                Layout.preferredWidth: 250
                 model: [
                     {
                         display: "Wavy"
@@ -50,10 +49,11 @@ SettingsPageBase {
                         display: "WaveForm"
                     }
                 ]
-                currentIndex: -1
-                placeholderText: Configs.mediaPlayer.sliderType
-                isItemActive: (md, _) => md.display === Configs.mediaPlayer.sliderType
-                onActivated: index => Configs.mediaPlayer.sliderType = model[index].display
+                textRole: "display"
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? Configs.mediaPlayer.sliderType
+
+                onMenuItemActivated: index => Configs.mediaPlayer.sliderType = model[index].display
             }
         }
     }

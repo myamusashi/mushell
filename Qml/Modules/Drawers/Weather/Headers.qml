@@ -5,6 +5,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Feedback
 
 ColumnLayout {
@@ -114,18 +115,17 @@ ColumnLayout {
                 Layout.fillWidth: true
             }
 
-            Icon {
+            FloatingButton {
                 Layout.alignment: Qt.AlignRight
-                icon: "refresh"
-                color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.size.large * 1.5
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Weather.canRefresh ? Qt.PointingHandCursor : Qt.ForbiddenCursor
-                    onClicked: Weather.refresh()
-                }
+                implicitWidth: 32
+                implicitHeight: 32
+                backgroundRadius: Appearance.rounding.normal
+                icon.name: "refresh"
+                icon.color: Colours.m3Colors.m3OnSurface
+                icon.size: Appearance.fonts.size.large * 1.5
+                color: "transparent"
+                enabled: Weather.canRefresh
+                onClicked: Weather.refresh()
             }
         }
     }

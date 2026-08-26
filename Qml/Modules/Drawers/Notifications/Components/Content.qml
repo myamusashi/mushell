@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
+import qs.Components.Button
 import qs.Services
 
 Column {
@@ -62,28 +63,16 @@ Column {
             }
         }
 
-        StyledRect {
-            id: expandButton
-
+        FloatingButton {
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
             Layout.alignment: Qt.AlignVCenter
-            radius: Appearance.rounding.large
+            backgroundRadius: Appearance.rounding.large
+            icon.name: root.isShowMoreBody ? "expand_less" : "expand_more"
+            icon.color: Colours.m3Colors.m3OnSurfaceVariant
+            icon.size: Appearance.fonts.size.extraLarge
             color: "transparent"
-
-            Icon {
-                anchors.centerIn: parent
-                icon: root.isShowMoreBody ? "expand_less" : "expand_more"
-                font.pixelSize: Appearance.fonts.size.extraLarge
-                color: Colours.m3Colors.m3OnSurfaceVariant
-            }
-
-            MArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.isShowMoreBody = !root.isShowMoreBody
-            }
+            onClicked: root.isShowMoreBody = !root.isShowMoreBody
         }
     }
 
@@ -169,36 +158,19 @@ Column {
             }
         }
 
-        StyledRect {
+        FloatingButton {
             id: sendButton
 
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
-            radius: Appearance.rounding.full
+            backgroundRadius: Appearance.rounding.full
+            icon.name: "send"
+            icon.color: Qt.alpha(Colours.m3Colors.m3OnBackground, replyField.hasText ? 1 : 0.4)
+            icon.size: Appearance.fonts.size.extraLarge
             color: Colours.m3Colors.m3SurfaceContainerHigh
-
-            Icon {
-                anchors.centerIn: parent
-                icon: "send"
-                font.pixelSize: Appearance.fonts.size.extraLarge
-                color: Colours.m3Colors.m3OnBackground
-                opacity: replyField.hasText ? 1 : 0.4
-
-                Behavior on opacity {
-                    NAnim {
-                        duration: Appearance.animations.durations.small
-                    }
-                }
-            }
-
-            MArea {
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    if (replyField.hasText)
-                        root.sendReply();
-                }
+            onClicked: {
+                if (replyField.hasText)
+                    root.sendReply();
             }
         }
     }

@@ -3,11 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import qs.Components.Button
 
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
-import qs.Components.Menu
 
 import "../Components"
 
@@ -177,10 +177,9 @@ SettingsPageBase {
 
         onConfigValueChanged: appCombo.currentIndex = appModel.values.findIndex(item => item.display === configValue)
 
-        DropdownField {
+        SplitButton {
             id: appCombo
 
-            Layout.preferredWidth: 250
             model: ScriptModel {
                 id: appModel
 
@@ -194,10 +193,27 @@ SettingsPageBase {
                     return [...new Map(mapped.map(e => [e.display, e])).values()];
                 }
             }
+            textRole: "display"
+            icon.name: appSettingRow.categories.reduce((acc, item) => {
+                switch (item) {
+                case "TerminalEmulator":
+                    return "terminal";
+                case "FileManager":
+                    return "folder_open";
+                case "Viewer":
+                    return "imagesmode";
+                case "Video":
+                    return "video_file";
+                case "AudioVideo":
+                    return "audio_file";
+                default:
+                    return acc;
+                }
+            }, "apps")
             currentIndex: appModel.values.findIndex(item => item.display === appSettingRow.configValue)
-            placeholderText: appSettingRow.configValue
-            isItemActive: (md, _) => md.display === appSettingRow.configValue
-            onActivated: index => appSettingRow.configChanged(appModel.values[index].display)
+            text: appModel.values[currentIndex]?.display ?? appSettingRow.configValue
+
+            onMenuItemActivated: index => appSettingRow.configChanged(appModel.values[index].display)
         }
     }
 }

@@ -12,7 +12,7 @@ import qs.Components.Base
 Item {
     id: root
 
-    readonly property color backgroundColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: root.enabled || root.color.a === 0 ? root.color : Qt.alpha(root.color, 0.12)
 
     property alias backgroundRadius: background.radius
     property string text: ""

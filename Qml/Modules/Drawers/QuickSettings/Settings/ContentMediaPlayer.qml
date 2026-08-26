@@ -156,76 +156,63 @@ RowLayout {
                     Layout.alignment: Qt.AlignCenter
                     spacing: Appearance.spacing.normal
 
-                    Icon {
-                        icon: "discover_tune"
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        font.pixelSize: Appearance.fonts.size.large
-                        Layout.preferredWidth: 18
-                        Layout.preferredHeight: 18
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Configs.mediaPlayer.showLyrics = false
-                        }
+                    FloatingButton {
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "discover_tune"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
+                        icon.size: Appearance.fonts.size.large
+                        color: "transparent"
+                        onClicked: Configs.mediaPlayer.showLyrics = false
                     }
 
-                    Icon {
-                        icon: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
-                        color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
-                        font.pixelSize: Appearance.fonts.size.large
-                        Layout.preferredWidth: 18
-                        Layout.preferredHeight: 18
+                    FloatingButton {
+                        implicitWidth: 18
+                        implicitHeight: 18
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
+                        icon.color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
+                        icon.size: Appearance.fonts.size.large
+                        color: "transparent"
                         enabled: Players.active?.shuffleSupported
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (Players.active)
-                                    Players.active.shuffle = !Players.active.shuffle;
-                            }
+                        onClicked: {
+                            if (Players.active)
+                                Players.active.shuffle = !Players.active.shuffle;
                         }
                     }
 
-                    Icon {
-                        Layout.preferredWidth: 22
-                        Layout.preferredHeight: 22
-                        icon: "skip_previous"
-                        font.pixelSize: Appearance.fonts.size.extraLarge
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.previous()
-                        }
+                    FloatingButton {
+                        implicitWidth: 22
+                        implicitHeight: 22
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "skip_previous"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+                        icon.size: Appearance.fonts.size.extraLarge
+                        color: "transparent"
+                        onClicked: Players.active?.previous()
                     }
 
-                    Icon {
-                        icon: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.extraLarge
-                        MArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.togglePlaying()
-                        }
+                    FloatingButton {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+                        icon.size: Appearance.fonts.size.extraLarge
+                        color: "transparent"
+                        onClicked: Players.active?.togglePlaying()
                     }
 
-                    Icon {
-                        Layout.preferredWidth: 22
-                        Layout.preferredHeight: 22
-                        icon: "skip_next"
-                        font.pixelSize: Appearance.fonts.size.extraLarge
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.next()
-                        }
+                    FloatingButton {
+                        implicitWidth: 22
+                        implicitHeight: 22
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "skip_next"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+                        icon.size: Appearance.fonts.size.extraLarge
+                        color: "transparent"
+                        onClicked: Players.active?.next()
                     }
 
                     FloatingButton {
@@ -375,80 +362,67 @@ RowLayout {
                     anchors.centerIn: parent
                     spacing: Appearance.spacing.small
 
-                    Icon {
-                        icon: "lyrics"
-                        color: enabled ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurfaceVariant : Colours.m3Colors.m3OnSurfaceVariant)
-                        font.pixelSize: Appearance.fonts.size.larger
-                        Layout.preferredWidth: 24
-                        Layout.preferredHeight: 24
+                    FloatingButton {
+                        implicitWidth: 24
+                        implicitHeight: 24
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "lyrics"
+                        icon.color: enabled ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurfaceVariant : Colours.m3Colors.m3OnSurfaceVariant)
+                        icon.size: Appearance.fonts.size.larger
+                        color: "transparent"
                         enabled: LyricsProvider.state === LyricsProvider.State.Ready
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (LyricsProvider.state === LyricsProvider.State.Ready)
-                                    Configs.mediaPlayer.showLyrics = true;
-                            }
+                        onClicked: {
+                            if (LyricsProvider.state === LyricsProvider.State.Ready)
+                                Configs.mediaPlayer.showLyrics = true;
                         }
                     }
 
-                    Icon {
-                        icon: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
-                        color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
-                        font.pixelSize: Appearance.fonts.size.larger
-                        Layout.preferredWidth: 24
-                        Layout.preferredHeight: 24
+                    FloatingButton {
+                        implicitWidth: 24
+                        implicitHeight: 24
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: Players.active?.shuffleSupported || Players.active?.shuffleSupported || Players.active?.shuffle ? "shuffle_on" : "shuffle"
+                        icon.color: Players.active?.shuffleSupported || Players.active?.shuffle ? (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary) : (Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.outline : Colours.m3Colors.m3Outline)
+                        icon.size: Appearance.fonts.size.larger
+                        color: "transparent"
                         enabled: Players.active?.shuffleSupported
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                if (Players.active)
-                                    Players.active.shuffle = !Players.active.shuffle;
-                            }
+                        onClicked: {
+                            if (Players.active)
+                                Players.active.shuffle = !Players.active.shuffle;
                         }
                     }
 
-                    Icon {
-                        icon: "skip_previous"
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        font.pixelSize: Appearance.fonts.size.extraLarge
-                        Layout.preferredWidth: 32
-                        Layout.preferredHeight: 32
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.previous()
-                        }
+                    FloatingButton {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "skip_previous"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
+                        icon.size: Appearance.fonts.size.extraLarge
+                        color: "transparent"
+                        onClicked: Players.active?.previous()
                     }
 
-                    Icon {
-                        icon: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
-                        font.pixelSize: Appearance.fonts.size.extraLarge * 1.2
-                        MArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.togglePlaying()
-                        }
+                    FloatingButton {
+                        implicitWidth: 36
+                        implicitHeight: 36
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.onSurface : Colours.m3Colors.m3OnSurface
+                        icon.size: Appearance.fonts.size.extraLarge * 1.2
+                        color: "transparent"
+                        onClicked: Players.active?.togglePlaying()
                     }
 
-                    Icon {
-                        icon: "skip_next"
-                        color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
-                        font.pixelSize: Appearance.fonts.size.extraLarge
-                        Layout.preferredWidth: 32
-                        Layout.preferredHeight: 32
-
-                        MArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Players.active?.next()
-                        }
+                    FloatingButton {
+                        implicitWidth: 32
+                        implicitHeight: 32
+                        backgroundRadius: Appearance.rounding.normal
+                        icon.name: "skip_next"
+                        icon.color: Configs.mediaPlayer.dynamicColorsCover ? root.trackArtColors.primary : Colours.m3Colors.m3Primary
+                        icon.size: Appearance.fonts.size.extraLarge
+                        color: "transparent"
+                        onClicked: Players.active?.next()
                     }
 
                     FloatingButton {

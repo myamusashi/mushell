@@ -2,7 +2,7 @@ import QtQuick
 
 import qs.Core.Configs
 import qs.Components.Base
-import qs.Components.Menu
+import qs.Components.Button
 import qs.Services.ScreenRecorder
 
 import "../Components"
@@ -15,9 +15,10 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Frame Rate")
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.maxFps)
+
                 textRole: "display"
-                valueRole: "value"
                 model: [
                     {
                         display: "30 FPS",
@@ -32,8 +33,10 @@ SettingsPageBase {
                         value: 120
                     }
                 ]
-                currentValue: Configs.screenRecorder.maxFps
-                onActivated: index => {
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? ""
+
+                onMenuItemActivated: index => {
                     Configs.screenRecorder.maxFps = model[index].value;
                     ScreenRecorder.maxFps = model[index].value;
                 }
@@ -42,9 +45,10 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Bitrate")
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.bitrate)
+
                 textRole: "display"
-                valueRole: "value"
                 model: [
                     {
                         display: "1 MB",
@@ -63,8 +67,10 @@ SettingsPageBase {
                         value: "20 MB"
                     }
                 ]
-                currentValue: Configs.screenRecorder.bitrate
-                onActivated: index => {
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? ""
+
+                onMenuItemActivated: index => {
                     Configs.screenRecorder.bitrate = model[index].value;
                     ScreenRecorder.bitrate = model[index].value;
                 }
@@ -73,9 +79,10 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Video Codec")
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.videoCodec)
+
                 textRole: "display"
-                valueRole: "value"
                 model: [
                     {
                         display: "Auto",
@@ -102,8 +109,10 @@ SettingsPageBase {
                         value: "av1"
                     }
                 ]
-                currentValue: Configs.screenRecorder.videoCodec
-                onActivated: index => {
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? ""
+
+                onMenuItemActivated: index => {
                     Configs.screenRecorder.videoCodec = model[index].value;
                     ScreenRecorder.videoCodec = model[index].value;
                 }
@@ -112,9 +121,10 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Audio Codec")
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.audioCodec)
+
                 textRole: "display"
-                valueRole: "value"
                 model: [
                     {
                         display: "Auto",
@@ -137,8 +147,10 @@ SettingsPageBase {
                         value: "opus"
                     }
                 ]
-                currentValue: Configs.screenRecorder.audioCodec
-                onActivated: index => {
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? ""
+
+                onMenuItemActivated: index => {
                     Configs.screenRecorder.audioCodec = model[index].value;
                     ScreenRecorder.audioCodec = model[index].value;
                 }
@@ -147,9 +159,10 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Power Mode")
-            DropdownField {
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.lowPower)
+
                 textRole: "display"
-                valueRole: "value"
                 model: [
                     {
                         display: qsTr("Auto"),
@@ -164,8 +177,10 @@ SettingsPageBase {
                         value: "off"
                     }
                 ]
-                currentValue: Configs.screenRecorder.lowPower
-                onActivated: index => {
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? ""
+
+                onMenuItemActivated: index => {
                     Configs.screenRecorder.lowPower = model[index].value;
                     ScreenRecorder.lowPower = model[index].value;
                 }

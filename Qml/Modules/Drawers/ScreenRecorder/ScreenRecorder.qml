@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
@@ -126,19 +127,16 @@ Item {
                             Layout.fillWidth: true
                         }
 
-                        Icon {
-                            type: Icon.Material
-                            icon: "close"
-                            color: Colours.m3Colors.m3OnSurface
-                            font.pixelSize: Appearance.fonts.size.large
+                        FloatingButton {
                             Layout.alignment: Qt.AlignVCenter
-
-                            MArea {
-                                anchors.fill: parent
-                                anchors.margins: -5
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: GlobalStates.isRecordingPanelOpen = false
-                            }
+                            implicitWidth: 28
+                            implicitHeight: 28
+                            backgroundRadius: Appearance.rounding.normal
+                            icon.name: "close"
+                            icon.color: Colours.m3Colors.m3OnSurface
+                            icon.size: Appearance.fonts.size.large
+                            color: "transparent"
+                            onClicked: GlobalStates.isRecordingPanelOpen = false
                         }
                     }
                 }

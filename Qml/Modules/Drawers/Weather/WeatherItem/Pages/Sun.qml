@@ -55,7 +55,7 @@ Pages {
         Header {
             icon: "wb_sunny"
             title: qsTr("Sun")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

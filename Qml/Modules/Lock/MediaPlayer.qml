@@ -198,28 +198,34 @@ StyledRect {
                 }
             }
 
-            Icon {
-                icon: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
-                color: mediaPlayerRect.dynOnSurface
-                font.pixelSize: Appearance.fonts.size.large
-
-                MArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Players.active?.togglePlaying()
-                }
+            FloatingButton {
+                implicitWidth: 24
+                implicitHeight: 24
+                backgroundRadius: Appearance.rounding.normal
+                icon.name: "skip_previous"
+                icon.color: mediaPlayerRect.dynSurface
+                icon.size: Appearance.fonts.size.large
+                onClicked: Players.active?.previous()
             }
 
-            Icon {
-                icon: "skip_next"
-                color: mediaPlayerRect.dynOnSurface
-                font.pixelSize: Appearance.fonts.size.large
+            FloatingButton {
+                implicitWidth: 24
+                implicitHeight: 24
+                backgroundRadius: Appearance.rounding.normal
+                icon.name: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause" : "play_arrow"
+                icon.color: mediaPlayerRect.dynSurface
+                icon.size: Appearance.fonts.size.large
+                onClicked: Players.active?.togglePlaying()
+            }
 
-                MArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: Players.active?.next()
-                }
+            FloatingButton {
+                implicitWidth: 24
+                implicitHeight: 24
+                backgroundRadius: Appearance.rounding.normal
+                icon.name: "skip_next"
+                icon.color: mediaPlayerRect.dynSurface
+                icon.size: Appearance.fonts.size.large
+                onClicked: Players.active?.next()
             }
         }
 
@@ -446,41 +452,37 @@ StyledRect {
                     }
                 }
 
-                Icon {
-                    icon: "skip_previous"
-                    color: mediaPlayerRect.dynOnSurface
-                    font.pixelSize: Appearance.fonts.size.extraLarge
-
-                    MArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Players.active?.previous()
-                    }
+                FloatingButton {
+                    implicitWidth: 32
+                    implicitHeight: 32
+                    backgroundRadius: Appearance.rounding.normal
+                    icon.name: "skip_previous"
+                    icon.color: mediaPlayerRect.dynOnSurface
+                    icon.size: Appearance.fonts.size.extraLarge
+                    color: "transparent"
+                    onClicked: Players.active?.previous()
                 }
 
-                Icon {
-                    icon: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
-                    color: mediaPlayerRect.dynOnSurface
-                    font.pixelSize: Appearance.fonts.size.extraLarge
-
-                    MArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Players.active?.togglePlaying()
-                    }
+                FloatingButton {
+                    implicitWidth: 32
+                    implicitHeight: 32
+                    backgroundRadius: Appearance.rounding.normal
+                    icon.name: Players.active?.playbackState === MprisPlaybackState.Playing ? "pause_circle" : "play_circle"
+                    icon.color: mediaPlayerRect.dynOnSurface
+                    icon.size: Appearance.fonts.size.extraLarge
+                    color: "transparent"
+                    onClicked: Players.active?.togglePlaying()
                 }
 
-                Icon {
-                    icon: "skip_next"
-                    color: mediaPlayerRect.dynOnSurface
-                    font.pixelSize: Appearance.fonts.size.extraLarge
-
-                    MArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: Players.active?.next()
-                    }
+                FloatingButton {
+                    implicitWidth: 32
+                    implicitHeight: 32
+                    backgroundRadius: Appearance.rounding.normal
+                    icon.name: "skip_next"
+                    icon.color: mediaPlayerRect.dynOnSurface
+                    icon.size: Appearance.fonts.size.extraLarge
+                    color: "transparent"
+                    onClicked: Players.active?.next()
                 }
 
                 FloatingButton {

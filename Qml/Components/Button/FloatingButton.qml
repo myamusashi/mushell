@@ -17,7 +17,7 @@ Item {
     readonly property int actionButtonRadius: root.size === "small" ? 12 : root.size === "regular" ? 12 : root.size === "large" ? 28 : 16
     readonly property int actionButtonIconSize: root.size === "small" ? 16 : root.size === "large" ? 36 : 24
 
-    readonly property color backgroundColor: root.enabled ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: root.enabled || root.color.a === 0 ? root.color : Qt.alpha(root.color, 0.12)
 
     property alias backgroundRadius: background.radius
     property bool pressed
@@ -28,6 +28,10 @@ Item {
     readonly property bool keyboardFocused: root.activeFocus
 
     property bool keyboardFocusable: true
+    property bool spinning: false
+
+    onSpinningChanged: if (!spinning)
+        iconItem.rotation = 0
 
     signal clicked
 
@@ -59,14 +63,6 @@ Item {
             }
         },
         State {
-            name: "pressed"
-            when: root.enabled && root.pressed
-            PropertyChanges {
-                target: background
-                scale: 0.98
-            }
-        },
-        State {
             name: "focused"
             when: root.enabled && root.keyboardFocused
             PropertyChanges {
@@ -81,30 +77,25 @@ Item {
     ]
     // qmllint enable
 
-    transitions: [
-        Transition {
-            from: "*"
-            to: "*"
-            NAnim {
-                properties: "scale,opacity"
-                duration: Appearance.animations.durations.small
-            }
-        }
-    ]
-
     Elevation {
-        // M3 FAB elevations: level 3 at rest, focus and press, level 4 on hover.
-        // Fully transparent containers (icon-toggle style usage) carry no shadow.
-        level: !root.enabled || root.backgroundColor.a === 0 ? 0 : root.hovered && !root.pressed ? 4 : 3
+        visible: root.backgroundColor.a > 0 && root.enabled
+        radius: background.radius
+        level: root.hovered && !root.pressed ? 4 : 3
     }
 
     StyledRect {
         id: background
 
         anchors.fill: parent
-        radius: root.actionButtonRadius
+        radius: root.enabled && root.pressed ? height * 0.5 : root.actionButtonRadius
         color: root.backgroundColor
-        transformOrigin: Item.Center
+
+        Behavior on radius {
+            NAnim {
+                duration: Appearance.animations.durations.normal
+                easing.type: Easing.OutBack
+            }
+        }
 
         SimpleRipple {
             anchors.fill: parent
@@ -153,6 +144,15 @@ Item {
         icon: root.icon.name
         color: root.icon.color
         font.pixelSize: root.icon.size
+
+        RotationAnimator on rotation {
+            running: root.spinning
+            loops: Animation.Infinite
+            duration: Appearance.animations.durations.extraLarge
+            easing.type: Easing.Linear
+            from: 0
+            to: 360
+        }
     }
 
     HoverHandler {

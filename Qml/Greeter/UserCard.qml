@@ -3,9 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Components.Base
 import qs.Components.Button
-import qs.Components.Menu
+import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 
@@ -115,18 +114,19 @@ Item {
             placeHolderText: qsTr("Password")
         }
 
-        DropdownField {
+        SplitButton {
             id: sessionField
 
             Layout.fillWidth: true
-            implicitWidth: 280
+            fillWidth: true
             visible: !root.auth.unlockInProgress
             model: root.auth.sessions
             textRole: "display"
+            menuIcon.name: "window"
             currentIndex: root.auth.selectedSessionIndex
-            placeholderText: qsTr("Session")
+            text: root.auth.selectedSessionIndex >= 0 ? root.auth.sessions.get(root.auth.selectedSessionIndex)?.display ?? qsTr("Session") : qsTr("Session")
 
-            onActivated: index => {
+            onMenuItemActivated: index => {
                 root.auth.selectSession(index);
                 passwordInput.forceActiveFocus();
             }

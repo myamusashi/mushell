@@ -5,9 +5,9 @@ import QtQuick.Layouts
 import Quickshell
 
 import qs.Components.Base.NavigationRail
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Core.States
-import qs.Core.Utils
 import qs.Services
 
 import "./Components"
@@ -191,25 +191,17 @@ LazyLoader {
                             z: 2
                             spacing: Appearance.spacing.normal
 
-                            Item {
+                            FloatingButton {
                                 id: expandToggle
 
                                 Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
                                 Layout.alignment: Qt.AlignVCenter
-
-                                MArea {
-                                    anchors.fill: parent
-                                    layerRadius: Appearance.rounding.full
-                                    onClicked: navRail.expanded = !navRail.expanded
-
-                                    Icon {
-                                        anchors.centerIn: parent
-                                        icon: navRail.expanded ? "menu_open" : "menu"
-                                        font.pixelSize: Appearance.fonts.size.larger
-                                        color: Colours.m3Colors.m3OnSurfaceVariant
-                                    }
-                                }
+                                backgroundRadius: Appearance.rounding.small
+                                icon.name: navRail.expanded ? "menu_open" : "menu"
+                                icon.color: Colours.m3Colors.m3SurfaceVariant
+                                icon.size: Appearance.fonts.size.larger
+                                onClicked: navRail.expanded = !navRail.expanded
                             }
 
                             SettingsSearchField {

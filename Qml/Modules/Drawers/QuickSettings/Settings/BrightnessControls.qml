@@ -3,11 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Components.Base
 import qs.Components.Button
-import qs.Components.Menu
+import qs.Components.Base
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 
 RowLayout {
@@ -44,6 +42,7 @@ RowLayout {
         Layout.preferredHeight: 55
         radius: Appearance.rounding.small
         color: "transparent"
+
         border {
             width: 2
             color: Colours.m3Colors.m3Outline
@@ -56,68 +55,16 @@ RowLayout {
                 rightMargin: Appearance.margin.small
             }
 
-            StyledRect {
-                id: targetChip
+            SplitButton {
+                id: splitButton
 
-                visible: root.multiDisplay
                 Layout.alignment: Qt.AlignVCenter
-                implicitWidth: chipRow.implicitWidth + Appearance.padding.normal * 1.5
-                implicitHeight: 48
-
-                radius: Appearance.rounding.small
-                color: Colours.m3Colors.m3SurfaceContainer
-
-                Row {
-                    id: chipRow
-
-                    anchors.centerIn: parent
-                    spacing: Appearance.spacing.smaller
-
-                    StyledText {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: root.targets[root.selectedIndex]?.display ?? qsTr("All")
-                        font.pixelSize: Appearance.fonts.size.normal
-                        color: Colours.m3Colors.m3OnSurface
-                    }
-
-                    Item {
-                        readonly property int size: 16
-
-                        width: size
-                        height: size
-                        rotation: targetMenu.opened ? 180 : 0
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        Behavior on rotation {
-                            NAnim {}
-                        }
-
-                        Icon {
-                            anchors.centerIn: parent
-                            icon: "keyboard_arrow_down"
-                            font.pixelSize: Appearance.fonts.size.larger
-                            color: Colours.m3Colors.m3OnSurfaceVariant
-                        }
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-
-                    onClicked: targetMenu.opened ? targetMenu.close() : targetMenu.open()
-                }
-
-                DropdownMenu {
-                    id: targetMenu
-
-                    anchorItem: targetChip
-                    textRole: "display"
-                    model: root.targets
-                    currentIndex: root.selectedIndex
-                    onActivated: index => root.targetId = root.targets[index].value
-                }
+                model: root.targets
+                textRole: "display"
+                currentIndex: root.selectedIndex
+                icon.name: "tv_displays"
+                text: root.targets[root.selectedIndex]?.display ?? qsTr("All")
+                onMenuItemActivated: index => root.targetId = root.targets[index].value
             }
 
             StyledSlide {
@@ -141,15 +88,10 @@ RowLayout {
         }
     }
 
-    ExtendedFloatingButton {
-        readonly property color inactiveTextColor: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38)
-        readonly property color inactiveButtonColor: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
-
+    FloatingButton {
         icon.name: "bedtime"
-        icon.color: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3OnPrimary : inactiveTextColor
-        textColor: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3OnPrimary : inactiveTextColor
-        color: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3Primary : inactiveButtonColor
-        text: qsTr("Night mode")
+        icon.color: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3OnPrimary : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38)
+        color: Hyprsunset.isNightModeOn ? Colours.m3Colors.m3Primary : Qt.alpha(Colours.m3Colors.m3Primary, 0.3)
 
         onClicked: Hyprsunset.isNightModeOn ? Hyprsunset.down() : Hyprsunset.up()
     }

@@ -29,7 +29,7 @@ Pages {
         Header {
             icon: "compress"
             title: qsTr("Pressure")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

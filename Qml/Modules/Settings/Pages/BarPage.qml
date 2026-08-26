@@ -1,10 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
+import qs.Components.Button
 
 import qs.Core.Configs
 import qs.Components.Base
-import qs.Components.Menu
 
 import "../Components"
 
@@ -52,8 +51,9 @@ SettingsPageBase {
         SettingRow {
             label: qsTr("Workspace Indicator Style:")
 
-            DropdownField {
-                ToolTip.text: "Available values: 'dot', 'interactive'"
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.bar.workspacesIndicator)
+
                 model: [
                     {
                         display: "dot"
@@ -62,11 +62,11 @@ SettingsPageBase {
                         display: "interactive"
                     }
                 ]
-                Layout.preferredWidth: 200
-                currentIndex: -1
-                placeholderText: Configs.bar.workspacesIndicator
-                isItemActive: (md, _) => md.display === Configs.bar.workspacesIndicator
-                onActivated: index => Configs.bar.workspacesIndicator = model[index].display
+                textRole: "display"
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.display ?? Configs.bar.workspacesIndicator
+
+                onMenuItemActivated: index => Configs.bar.workspacesIndicator = model[index].display
             }
         }
 

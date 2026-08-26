@@ -67,7 +67,7 @@ Pages {
         Header {
             icon: "waves"
             title: qsTr("Air quality")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

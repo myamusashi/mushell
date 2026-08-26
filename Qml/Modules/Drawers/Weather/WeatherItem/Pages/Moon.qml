@@ -84,7 +84,7 @@ Pages {
             Header {
                 icon: "bedtime"
                 title: qsTr("Moon")
-                mouseArea.onClicked: root.isOpen = false
+                onClicked: root.isOpen = false
             }
 
             WrapperRectangle {

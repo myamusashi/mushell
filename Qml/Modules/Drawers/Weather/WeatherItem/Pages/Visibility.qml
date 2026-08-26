@@ -26,7 +26,7 @@ Pages {
         Header {
             icon: "visibility"
             title: qsTr("Visibility")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         ClippingRectangle {

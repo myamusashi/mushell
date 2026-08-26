@@ -10,7 +10,6 @@ import qs.Components.Feedback
 import qs.Components.Base
 import qs.Components.Button
 import qs.Components.Dialog
-import qs.Components.Menu
 import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
@@ -158,9 +157,9 @@ Item {
                     SettingRow {
                         label: qsTr("Bandwidth:")
 
-                        DropdownField {
-                            implicitWidth: 240
-                            currentIndex: Hotspot.band === "a" ? 1 : 0
+                        SplitButton {
+                            readonly property int selectedIndex: Hotspot.band === "a" ? 1 : 0
+
                             model: [
                                 {
                                     display: "bg (2.4 GHz)"
@@ -169,7 +168,12 @@ Item {
                                     display: "a (5 GHz)"
                                 }
                             ]
-                            onActivated: Hotspot.band = currentIndex === 0 ? "bg" : "a"
+                            menuIcon.name: "graphic_eq"
+                            textRole: "display"
+                            currentIndex: selectedIndex
+                            text: model[selectedIndex]?.display ?? "bg (2.4 GHz)"
+
+                            onMenuItemActivated: index => Hotspot.band = index === 0 ? "bg" : "a"
                         }
                     }
 
@@ -232,11 +236,13 @@ Item {
                             Repeater {
                                 model: ScriptModel {
                                     values: {
-                                        if (deviceDelegate.modelData.type !== DeviceType.Wifi)
+                                        if (deviceDelegate.modelData.type !== DeviceType.Wifi) // qmllint disable
                                             return [];
                                         return [...deviceDelegate.modelData.networks.values].sort((a, b) => {
                                             if (a.connected !== b.connected)
                                                 return b.connected - a.connected;
+                                            if (a.known !== b.known)
+                                                return b.known - a.known;
                                             return b.signalStrength - a.signalStrength;
                                         });
                                     }
@@ -333,13 +339,13 @@ Item {
                                                 icon: {
                                                     const p = Math.round((networkDelegate.modelData?.signalStrength ?? 0) * 100);
                                                     if (p >= 80)
-                                                        return "network_wifi";
+                                                        return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_locked" : "network_wifi";
                                                     if (p >= 50)
-                                                        return "network_wifi_3_bar";
+                                                        return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_3_bar_locked" : "network_wifi_3_bar";
                                                     if (p >= 30)
-                                                        return "network_wifi_2_bar";
+                                                        return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_2_bar_locked" : "network_wifi_2_bar";
                                                     if (p >= 15)
-                                                        return "network_wifi_1_bar";
+                                                        return networkDelegate.modelData && !networkDelegate.modelData.known ? "network_wifi_1_bar_locked" : "network_wifi_1_bar";
                                                     return "signal_wifi_0_bar";
                                                 }
                                                 color: networkDelegate.modelData.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurface
@@ -366,23 +372,24 @@ Item {
                                             }
                                         }
 
-                                        NetActionButton {
-                                            icon: networkDelegate.modelData?.connected ? "link_off" : "wifi_add"
-                                            iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                        FloatingButton {
+                                            implicitWidth: 28
+                                            implicitHeight: 28
+                                            backgroundRadius: Appearance.rounding.normal
+                                            icon.name: networkDelegate.modelData?.connected ? "link_off" : "wifi_add"
+                                            icon.color: Colours.m3Colors.m3SurfaceVariant
+                                            icon.size: Appearance.fonts.size.large * 1.5
                                             onClicked: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.tryConnect()
                                         }
 
-                                        NetActionButton {
-                                            icon: "delete"
-                                            iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                        FloatingButton {
+                                            implicitWidth: 28
+                                            implicitHeight: 28
+                                            backgroundRadius: Appearance.rounding.normal
+                                            icon.name: "delete"
+                                            icon.color: Colours.m3Colors.m3SurfaceVariant
+                                            icon.size: Appearance.fonts.size.large * 1.5
                                             onClicked: networkDelegate.modelData?.forget()
-                                        }
-
-                                        Icon {
-                                            visible: networkDelegate.modelData?.known === false
-                                            icon: "lock"
-                                            color: networkDelegate.modelData.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
-                                            font.pixelSize: Appearance.fonts.size.normal
                                         }
                                     }
                                 }
@@ -395,32 +402,6 @@ Item {
                     Layout.fillHeight: true
                 }
             }
-        }
-    }
-
-    component NetActionButton: Item {
-        id: actionButton
-
-        signal clicked
-
-        required property string icon
-        required property color iconColor
-
-        implicitWidth: 28
-        implicitHeight: 28
-
-        Icon {
-            anchors.fill: parent
-            icon: actionButton.icon
-            color: actionButton.iconColor
-            font.pixelSize: Appearance.fonts.size.large * 1.5
-        }
-
-        MArea {
-            anchors.fill: parent
-            layerColor: Colours.m3Colors.m3OnSurface
-            cursorShape: Qt.PointingHandCursor
-            onClicked: actionButton.clicked()
         }
     }
 }

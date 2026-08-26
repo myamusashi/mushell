@@ -29,7 +29,7 @@ Pages {
         Header {
             icon: "wb_sunny"
             title: qsTr("UV Index")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

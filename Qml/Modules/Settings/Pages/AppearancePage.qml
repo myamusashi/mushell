@@ -3,12 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
+import qs.Components.Button
 
 import qs.Core.Configs
 import qs.Services
 import qs.Components.Base
 import qs.Components.Dialog.FileDialog
-import qs.Components.Menu
 
 import "../Components"
 
@@ -90,16 +90,18 @@ Item {
                 SettingRow {
                     label: qsTr("Material Scheme:")
 
-                    DropdownField {
-                        Layout.preferredWidth: 220
+                    SplitButton {
+                        readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.colors.scheme)
+
                         model: ["vibrant", "tonal-spot", "expressive", "monochrome", "rainbow", "fruit-salad", "neutral", "fidelity", "content"].map(name => ({
                                     display: name
                                 }))
-                        placeholderText: Configs.colors.scheme
-                        isItemActive: (md, _) => md.display === Configs.colors.scheme
-                        onActivated: index => {
-                            Configs.colors.scheme = model[index].display;
-                        }
+                        textRole: "display"
+                        menuIcon.name: "format_color_fill"
+                        currentIndex: selectedIndex
+                        text: model[selectedIndex]?.display ?? Configs.colors.scheme
+
+                        onMenuItemActivated: index => Configs.colors.scheme = model[index].display
                     }
                 }
             }

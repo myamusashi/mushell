@@ -29,7 +29,7 @@ Pages {
         Header {
             icon: "water_drop"
             title: qsTr("Humidity")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

@@ -30,7 +30,7 @@ Pages {
         Header {
             icon: "rainy"
             title: qsTr("Precipitation")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {

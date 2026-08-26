@@ -8,6 +8,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import qs.Components.Button
 
 ItemDelegate {
     id: root
@@ -166,30 +167,23 @@ ItemDelegate {
             }
         }
 
-        Item {
+        FloatingButton {
+            id: pinButton
+
             Layout.preferredWidth: 28
             Layout.preferredHeight: 28
             Layout.alignment: Qt.AlignVCenter
             visible: root.hovered || root.pinned
-            opacity: pinArea.containsMouse ? 1.0 : 0.6
+            opacity: pinButton.hovered ? 1.0 : 0.6
+            backgroundRadius: Appearance.rounding.normal
+            icon.name: root.pinned ? "keep" : "keep_off"
+            icon.color: root.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
+            icon.size: Appearance.fonts.size.large
+            color: "transparent"
+            onClicked: root.pinToggled(root.entryId, !root.pinned)
 
             Behavior on opacity {
                 NAnim {}
-            }
-
-            Icon {
-                anchors.centerIn: parent
-                icon: root.pinned ? "keep" : "keep_off"
-                font.pixelSize: Appearance.fonts.size.large
-                color: root.pinned ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
-            }
-
-            MouseArea {
-                id: pinArea
-
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: root.pinToggled(root.entryId, !root.pinned)
             }
         }
     }

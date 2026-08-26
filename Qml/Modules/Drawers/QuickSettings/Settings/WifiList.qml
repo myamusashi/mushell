@@ -7,6 +7,7 @@ import Quickshell.Widgets
 import Quickshell.Networking
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Components.Feedback
 import qs.Components.Dialog
 import qs.Core.Configs
@@ -293,15 +294,25 @@ WrapperRectangle {
                                     }
                                 }
 
-                                NetActionButton {
-                                    icon: networkDelegate.modelData?.connected ? "link_off" : "wifi_add"
-                                    iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                FloatingButton {
+                                    implicitWidth: 28
+                                    implicitHeight: 28
+                                    backgroundRadius: Appearance.rounding.normal
+                                    icon.name: networkDelegate.modelData?.connected ? "link_off" : "wifi_add"
+                                    icon.color: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                    icon.size: Appearance.fonts.size.large * 1.5
+                                    color: "transparent"
                                     onClicked: networkDelegate.modelData?.connected ? networkDelegate.modelData.disconnect() : networkDelegate.tryConnect()
                                 }
 
-                                NetActionButton {
-                                    icon: "delete"
-                                    iconColor: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                FloatingButton {
+                                    implicitWidth: 28
+                                    implicitHeight: 28
+                                    backgroundRadius: Appearance.rounding.normal
+                                    icon.name: "delete"
+                                    icon.color: networkDelegate.modelData?.connected ? Colours.m3Colors.m3OnPrimary : Colours.m3Colors.m3OnSurfaceVariant
+                                    icon.size: Appearance.fonts.size.large * 1.5
+                                    color: "transparent"
                                     onClicked: networkDelegate.modelData?.forget()
                                 }
                             }
@@ -309,32 +320,6 @@ WrapperRectangle {
                     }
                 }
             }
-        }
-    }
-
-    component NetActionButton: Item {
-        id: actionButton
-
-        signal clicked
-
-        required property string icon
-        required property color iconColor
-
-        implicitWidth: 28
-        implicitHeight: 28
-
-        Icon {
-            anchors.fill: parent
-            icon: actionButton.icon
-            color: actionButton.iconColor
-            font.pixelSize: Appearance.fonts.size.large * 1.5
-        }
-
-        MArea {
-            anchors.fill: parent
-            layerColor: Colours.m3Colors.m3OnSurface
-            cursorShape: Qt.PointingHandCursor
-            onClicked: actionButton.clicked()
         }
     }
 }

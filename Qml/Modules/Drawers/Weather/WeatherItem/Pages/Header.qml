@@ -1,16 +1,18 @@
 import QtQuick
 
+import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Components.Base
 
 Row {
     id: root
 
-    property alias mouseArea: mouseArea
     property alias icon: iconItem.icon
     property alias title: titleItem.text
+
+    signal clicked
 
     width: parent.width
     spacing: Appearance.spacing.normal
@@ -33,25 +35,19 @@ Row {
     }
 
     Item {
-        width: parent.width - iconItem.width - titleItem.width - closeIcon.width - root.spacing * 3
+        width: parent.width - iconItem.width - titleItem.width - closeButton.width - root.spacing * 3
         height: 1
     }
 
-    Icon {
-        id: closeIcon
+    FloatingButton {
+        id: closeButton
 
-        type: Icon.Material
-        icon: "close"
-        font.pixelSize: Appearance.fonts.size.large * 1.5
-        color: Colours.m3Colors.m3Red
+        size: "regular"
+        icon.name: "close"
+        icon.color: Colours.m3Colors.m3Red
+        icon.size: Appearance.fonts.size.large * 1.5
+        color: "transparent"
 
-        MArea {
-            id: mouseArea
-
-            anchors.fill: parent
-            layerColor: "transparent"
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-        }
+        onClicked: root.clicked()
     }
 }

@@ -6,8 +6,8 @@ import Quickshell.Io
 import Quickshell.Services.Mpris
 
 import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 
 StyledRect {
@@ -86,19 +86,16 @@ StyledRect {
                         clicked: () => Players.active?.next()
                     }
                 ]
-                delegate: Icon {
+                delegate: FloatingButton {
                     required property var modelData
 
-                    icon: modelData.icon
-                    font.pixelSize: Appearance.fonts.size.large * 1.4
-                    color: Colours.m3Colors.m3OnBackground
-
-                    MArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        hoverEnabled: true
-                        onClicked: parent.modelData.clicked()
-                    }
+                    implicitWidth: 24
+                    implicitHeight: 24
+                    backgroundRadius: Appearance.rounding.normal
+                    icon.name: modelData.icon
+                    icon.color: Colours.m3Colors.m3Background
+                    icon.size: Appearance.fonts.size.large * 1.4
+                    onClicked: modelData.clicked()
                 }
             }
         }

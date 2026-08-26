@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787554765,
-        "narHash": "sha256-T8/KnUqqMPtcGl7ICouiXflRUWUS0OwYS3O1Bo/+RVY=",
+        "lastModified": 1787626444,
+        "narHash": "sha256-h6XkjOs9RbVhQAqGTEx5bWuGC2lCSfdR7ezLdTiwdiY=",
         "owner": "myamusashi",
         "repo": "Another-Ripple",
-        "rev": "2e403895ae98afa266f8fb46c1bcea23d44941be",
+        "rev": "d8b2a3b95d0515bc52e2143b786a87931841c840",
         "type": "github"
       },
       "original": {

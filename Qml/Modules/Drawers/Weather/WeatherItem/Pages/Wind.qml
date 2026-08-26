@@ -29,7 +29,7 @@ Pages {
         Header {
             icon: "air"
             title: qsTr("Wind")
-            mouseArea.onClicked: root.isOpen = false
+            onClicked: root.isOpen = false
         }
 
         WrapperRectangle {
