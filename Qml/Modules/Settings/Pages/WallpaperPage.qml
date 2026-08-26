@@ -278,6 +278,7 @@ SettingsPageBase {
                 textRole: "display"
                 currentIndex: selectedIndex
                 text: model[selectedIndex]?.display ?? Configs.wallpaper.transition
+                icon.name: "transition_chop"
 
                 onMenuItemActivated: index => Configs.wallpaper.transition = model[index].display
             }

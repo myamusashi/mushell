@@ -107,6 +107,10 @@ LazyLoader {
                                     {
                                         icon: "screen_record",
                                         label: qsTr("Screen Recorder")
+                                    },
+                                    {
+                                        icon: "volume_up",
+                                        label: qsTr("Audio")
                                     }
                                 ]
                             },
@@ -292,25 +296,32 @@ LazyLoader {
                             active: settingsLoader.currentPage === 10
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: InternetPage {}
+                            sourceComponent: VolumePage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 11
                             active: settingsLoader.currentPage === 11
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: KDEConnectPage {}
+                            sourceComponent: InternetPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 12
                             active: settingsLoader.currentPage === 12
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: GreeterPage {}
+                            sourceComponent: KDEConnectPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 13
                             active: settingsLoader.currentPage === 13
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            sourceComponent: GreeterPage {}
+                        }
+                        Loader {
+                            visible: settingsLoader.currentPage === 14
+                            active: settingsLoader.currentPage === 14
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             sourceComponent: IdlePage {}

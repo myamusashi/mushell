@@ -160,54 +160,78 @@ Item {
         },
         {
             page: 10,
+            pageLabel: "Volume",
+            card: "Playback",
+            terms: ["Per App Volume", "System Sounds", "Application Volume", "Media Title"]
+        },
+        {
+            page: 10,
+            pageLabel: "Volume",
+            card: "Output Devices",
+            terms: ["Speaker", "Headphone", "Default Output", "Device Volume"]
+        },
+        {
+            page: 10,
+            pageLabel: "Volume",
+            card: "Input Devices",
+            terms: ["Microphone", "Default Input", "Mic Volume"]
+        },
+        {
+            page: 10,
+            pageLabel: "Volume",
+            card: "Configuration",
+            terms: ["Audio Profile", "Card Profile", "Off", "Pro Audio"]
+        },
+        {
+            page: 11,
             pageLabel: "Network & Internet",
             card: "Hotspot",
             terms: ["Hotspot Sharing", "User Hotspot", "Hotspot Password", "Hotspot Interface", "Bandwidth"]
         },
         {
-            page: 10,
+            page: 11,
             pageLabel: "Network & Internet",
             card: "Wi-Fi",
             terms: ["Enable Wi-Fi"]
         },
         {
-            page: 11,
+            page: 12,
             pageLabel: "KDE Connect",
             card: "Device Discovery",
             terms: ["Enable Polling"]
         },
         {
-            page: 11,
+            page: 12,
             pageLabel: "KDE Connect",
             card: "Local Device",
             terms: ["Device ID"]
         },
         {
-            page: 11,
+            page: 12,
             pageLabel: "KDE Connect",
             card: "Paired Devices",
             terms: []
         },
         {
-            page: 11,
+            page: 12,
             pageLabel: "KDE Connect",
             card: "Available Devices",
             terms: []
         },
         {
-            page: 12,
+            page: 13,
             pageLabel: "Greeter",
             card: "Greeter Wallpaper",
             terms: ["Wallpaper Type", "Upload Wallpaper", "Preview"]
         },
         {
-            page: 13,
+            page: 14,
             pageLabel: "Idle",
             card: "Idle Management",
             terms: ["Enable Idle Detection"]
         },
         {
-            page: 13,
+            page: 14,
             pageLabel: "Idle",
             card: "Timeouts",
             terms: []
