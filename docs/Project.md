@@ -40,7 +40,8 @@ vast-shell/
 │   │   │                      # FocusCage, NAnim, SettingRow, StyledRect,
 │   │   │                      # StyledSlide, StyledSwitch, StyledText,
 │   │   │                      # StyledTextInput, Wallpaper, Wavy
-│   │   ├── Button/            # ExtendedFloatingButton, FloatingButton
+│   │   ├── Button/            # ConnectedButtonGroup, ExtendedFloatingButton,
+│   │   │                      # FloatingButton, SplitButton
 │   │   ├── Menu/              # ContextMenu, DropdownField, DropdownMenu,
 │   │   │                      # MenuDivider, MenuItem, MenuSurface
 │   │   ├── Dialog/
