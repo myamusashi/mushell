@@ -6,6 +6,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
+import Vast.Audio
 
 import qs.Core.Configs
 import qs.Core.Utils
@@ -21,6 +22,27 @@ ScrollView {
     clip: true
 
     property int currentSinkIndex: 0
+
+    property var audioCards: ({})
+    property string audioProfileName: ""
+    property string audioProfileDescription: ""
+
+    Instantiator {
+        id: audioProfiles
+
+        model: AudioProfilesWatcher.cards
+        delegate: QtObject {
+            required property var card
+            required property string name
+            required property string description
+
+            Component.onCompleted: {
+                root.audioCards = card;
+                root.audioProfileName = name;
+                root.audioProfileDescription = description;
+            }
+        }
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -39,7 +61,11 @@ ScrollView {
 
             Repeater {
                 model: ScriptModel {
-                    values: [...Audio.listSink]
+                    values: Pipewire.nodes.values.filter(n => !n.isStream && n.audio && (n.type & PwNodeType.Sink)).map(n => ({
+                                nodeId: n.id,
+                                name: n.name,
+                                description: n.description
+                            }))
                 }
 
                 delegate: RowLayout {
@@ -114,7 +140,10 @@ ScrollView {
             MixerEntry {
                 useCustomProperties: true
                 audioNode: Pipewire.defaultAudioSink
-                customProperty: AudioProfiles {}
+                customProperty: AudioProfiles {
+                    card: root.audioCards
+                    Layout.fillWidth: true
+                }
             }
 
             Rectangle {

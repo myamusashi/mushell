@@ -12,45 +12,55 @@ import qs.Core.Configs
 Singleton {
     id: root
 
-    readonly property var listSink: Pipewire.nodes.values.filter(e => e.isSink && !e.isStream).map(e => ({
-                nodeId: e.id,
-                name: e.name,
-                description: e.description
-            }))
-    // Numeric PipeWire device ID (quint32, 0 while disconnected)
-    readonly property int idPipewire: AudioProfilesWatcher.deviceId
-    // Index of the currently active profile (-1 if unknown)
-    readonly property int activeProfileIndex: AudioProfilesWatcher.activeIndex
-    readonly property var activeProfiles: {
-        const ap = AudioProfilesWatcher.activeProfile;
-        return (ap && ap.index >= 0) ? [ap] : [];
-    }
-    // Roles: index, name, description, available, readable
-    readonly property var models: AudioProfilesWatcher.profiles
+    // Mirrors the AudioCardsModel backing object; values are AudioCard* instances.
+    readonly property var cards: AudioProfilesWatcher.cards
+
+    // Exposed so consumers (and our own signal handler) can observe a single
+    // boolean even though the source of truth now lives on AudioProfilesWatcher.
     readonly property bool audioConnected: AudioProfilesWatcher.connected
+
+    // Pick the AudioCard that backs Pipewire's current default sink. Falls back
+    // to the first card so the Quick Settings drawer still has a profile to show
+    // when the user hasn't selected anything yet.
+    readonly property var defaultSinkCard: {
+        if (!cards)
+            return null;
+        const all = cards.count();
+        if (all <= 0)
+            return null;
+        const sink = Pipewire.defaultAudioSink;
+        if (sink) {
+            for (let i = 0; i < all; i++) {
+                const c = cards.card(i);
+                if (c && c.deviceId === sink.id)
+                    return c;
+            }
+        }
+        return cards.card(0);
+    }
 
     property bool restartPending: false
     property bool wasAudioConnected: false
     property bool restoringAudioState: false
 
     Component.onCompleted: {
-        if (audioConnected && !restoringAudioState) {
-            wasAudioConnected = true;
+        if (root.audioConnected && !root.restoringAudioState) {
+            root.wasAudioConnected = true;
             restoreTimer.start();
         }
     }
 
     onAudioConnectedChanged: {
-        if (audioConnected && !wasAudioConnected && !restoringAudioState) {
-            wasAudioConnected = true;
+        if (root.audioConnected && !root.wasAudioConnected && !root.restoringAudioState) {
+            root.wasAudioConnected = true;
             restoreTimer.start();
         }
-        if (!audioConnected) {
-            wasAudioConnected = false;
-            if (restoringAudioState) {
+        if (!root.audioConnected) {
+            root.wasAudioConnected = false;
+            if (root.restoringAudioState) {
                 restoreTimer.stop();
                 profileRestoreDelay.stop();
-                restoringAudioState = false;
+                root.restoringAudioState = false;
             }
         }
     }
@@ -77,12 +87,15 @@ Singleton {
             return;
         restoringAudioState = true;
         const savedSink = Configs.audio.defaultSinkName;
-        if (savedSink) {
-            const sink = root.listSink.find(s => s.name === savedSink);
-            if (sink) {
-                Quickshell.execDetached({
-                    command: ["wpctl", "set-default", sink.nodeId]
-                });
+        if (savedSink && cards) {
+            for (let i = 0; i < cards.count(); i++) {
+                const c = cards.card(i);
+                if (c && c.name === savedSink) {
+                    Quickshell.execDetached({
+                        command: ["wpctl", "set-default", c.deviceId]
+                    });
+                    break;
+                }
             }
         }
         profileRestoreDelay.start();
@@ -90,34 +103,40 @@ Singleton {
 
     function restoreProfiles() {
         const profiles = Configs.audio.sinkProfiles;
-        if (!profiles || typeof profiles !== "object")
+        if (!profiles || typeof profiles !== "object" || !cards)
             return;
-        const device = AudioProfilesWatcher.deviceName;
-        if (!device)
+        const total = cards.count();
+        if (total <= 0)
             return;
-        const savedIndex = profiles[device];
-        if (savedIndex === undefined || savedIndex < 0)
-            return;
-        const deviceId = AudioProfilesWatcher.deviceId;
-        if (!deviceId)
-            return;
-        const model = AudioProfilesWatcher.profiles;
-        for (let i = 0; i < model.count(); i++) {
-            const p = model.get(i);
-            if (p.index === savedIndex && p.available === "yes") {
-                Quickshell.execDetached({
-                    command: ["pw-cli", "set-param", String(deviceId), "Profile", `{ "index": ${p.index} }`]
-                });
-                break;
+
+        for (let i = 0; i < total; i++) {
+            const card = cards.card(i);
+            if (!card || !card.name)
+                continue;
+            const savedIndex = profiles[card.name];
+            if (savedIndex === undefined || savedIndex < 0)
+                continue;
+            const deviceId = card.deviceId;
+            if (!deviceId)
+                continue;
+            const model = card.profiles;
+            for (let j = 0; j < model.count(); j++) {
+                const p = model.get(j);
+                if (p.index === savedIndex && p.available === "yes") {
+                    Quickshell.execDetached({
+                        command: ["pw-cli", "set-param", String(deviceId), "Profile", `{ "index": ${p.index} }`]
+                    });
+                    break;
+                }
             }
         }
     }
 
-    function getIcon(node: PwNode): string {
+    function getIcon(node) {
         return node.isSink ? getSinkIcon(node) : getSourceIcon(node);
     }
 
-    function getSinkIcon(node: PwNode): string {
+    function getSinkIcon(node) {
         if (node.audio.muted)
             return "volume_off";
         if (node.audio.volume > 0.5)
@@ -127,22 +146,22 @@ Singleton {
         return "volume_mute";
     }
 
-    function getSourceIcon(node: PwNode): string {
+    function getSourceIcon(node) {
         return node.audio.muted ? "mic_off" : "mic";
     }
 
-    function toggleMute(node: PwNode) {
+    function toggleMute(node) {
         node.audio.muted = !node.audio.muted;
     }
 
-    function wheelAction(event: WheelEvent, node: PwNode) {
+    function wheelAction(event, node) {
         const delta = event.angleDelta.y < 0 ? -0.01 : 0.01;
         node.audio.volume = Math.max(0.0, Math.min(1.3, node.audio.volume + delta));
     }
 
     IpcHandler {
         target: "audio"
-        function deviceList(): string {
+        function deviceList() {
             const m = AudioDevicesWatcher.devices;
             const r = [];
             for (let i = 0; i < m.count(); i++) {
@@ -159,18 +178,27 @@ Singleton {
             }
             return JSON.stringify(r);
         }
-        function deviceSet(name: string): void {
+        function deviceSet(name) {
             Quickshell.execDetached({
                 command: ["wpctl", "set-default", name]
             });
         }
-        function profileList(): string {
-            const m = AudioProfilesWatcher.profiles;
+        function profileList() {
+            const card = root.defaultSinkCard;
+            if (!card)
+                return JSON.stringify({
+                    deviceId: 0,
+                    deviceName: "",
+                    activeIndex: -1,
+                    profiles: []
+                });
+
+            const m = card.profiles;
             const count = m.count();
             const r = {
-                deviceId: AudioProfilesWatcher.deviceId,
-                deviceName: AudioProfilesWatcher.deviceName,
-                activeIndex: AudioProfilesWatcher.activeIndex,
+                deviceId: card.deviceId,
+                deviceName: card.name,
+                activeIndex: card.activeIndex,
                 profiles: []
             };
             for (let i = 0; i < count; i++) {
@@ -185,9 +213,12 @@ Singleton {
             }
             return JSON.stringify(r);
         }
-        function profileSet(name: string): void {
+        function profileSet(name) {
+            const card = root.defaultSinkCard;
+            if (!card)
+                return;
             Quickshell.execDetached({
-                command: ["wpctl", "set-profile", String(AudioProfilesWatcher.deviceId), name]
+                command: ["wpctl", "set-profile", String(card.deviceId), name]
             });
         }
     }

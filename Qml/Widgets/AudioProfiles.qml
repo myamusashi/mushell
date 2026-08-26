@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Vast.Audio
 
 import qs.Core.Configs
 import qs.Components.Button
@@ -11,19 +10,25 @@ import qs.Services
 SplitButton {
     id: root
 
+    property var card: Audio.defaultSinkCard
+
+    readonly property var resolvedCard: card
+    readonly property var profileModel: resolvedCard ? resolvedCard.profiles : null
+
     function profileAt(i) {
-        return typeof Audio.models.get === "function" ? Audio.models.get(i) : Audio.models[i];
+        return profileModel ? profileModel.get(i) : null;
     }
-    readonly property int profileCount: typeof Audio.models.count === "function" ? Audio.models.count() : Audio.models.count ?? Audio.models.length ?? 0
-    leadingFillsWidth: true
+
+    readonly property int profileCount: profileModel ? profileModel.count() : 0
 
     readonly property int selectedIndex: {
+        if (!resolvedCard)
+            return -1;
         for (let i = 0; i < root.profileCount; ++i) {
             const profile = root.profileAt(i);
-            if (profile && profile.index === Audio.activeProfileIndex)
+            if (profile && profile.index === resolvedCard.activeIndex)
                 return i;
         }
-
         return -1;
     }
 
@@ -32,7 +37,8 @@ SplitButton {
         return profile ? profile.readable : "";
     }
 
-    model: Audio.models
+    leadingFillsWidth: true
+    model: profileModel
     textRole: "readable"
     currentIndex: root.selectedIndex
     text: root.selectedLabel
@@ -41,14 +47,14 @@ SplitButton {
 
     onMenuItemActivated: rowIndex => {
         const profile = root.profileAt(rowIndex);
-        if (!profile || profile.available !== "yes")
+        if (!profile || profile.available !== "yes" || !resolvedCard)
             return;
 
         Quickshell.execDetached({
-            command: ["pw-cli", "set-param", String(Audio.idPipewire), "Profile", `{ "index": ${profile.index} }`]
+            command: ["pw-cli", "set-param", String(resolvedCard.deviceId), "Profile", `{ "index": ${profile.index} }`]
         });
 
-        const deviceName = AudioProfilesWatcher.deviceName;
+        const deviceName = resolvedCard.name;
         if (deviceName) {
             const profiles = Configs.audio.sinkProfiles;
             const copied = Object.assign({}, profiles || {});
