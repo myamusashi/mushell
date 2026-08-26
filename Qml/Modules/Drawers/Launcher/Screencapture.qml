@@ -115,6 +115,8 @@ ClippingWrapperRectangle {
             }
 
             ConnectedButtonGroup {
+                Layout.fillWidth: true
+                fillWidth: true
                 currentIndex: root.selectedTab
                 model: [
                     {

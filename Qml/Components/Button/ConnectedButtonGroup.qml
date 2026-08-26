@@ -20,6 +20,10 @@ Item {
     property color unselectedContentColor: Colours.m3Colors.m3OnSurfaceVariant
 
     property int textSize: Appearance.fonts.size.normal
+
+    property bool fillWidth: false
+
+    readonly property real distributedSegmentWidth: root.model.length > 0 ? (root.width - (root.model.length - 1) * 2) / root.model.length : 0
     property var reportedSegmentWidths: []
 
     signal clicked(int index)
@@ -82,7 +86,7 @@ Item {
 
         Component.onDestruction: root.reportSegmentWidth(segment.index, 0)
 
-        width: root.segmentWidth
+        width: root.fillWidth ? root.distributedSegmentWidth : root.segmentWidth
         height: root.height
         activeFocusOnTab: root.enabled
 
