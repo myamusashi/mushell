@@ -9,7 +9,6 @@
 #include <qtimer.h>
 #include <qtypes.h>
 #include <memory>
-#include <vector>
 
 #include "AudioCardsModel.hpp"
 
@@ -37,6 +36,8 @@ class AudioProfilesWatcher : public QObject {
     [[nodiscard]] bool connected() const {
         return mConnected;
     }
+
+    Q_INVOKABLE void setProfile(quint32 deviceId, int profileIndex);
 
   signals:
     void cardsChanged();

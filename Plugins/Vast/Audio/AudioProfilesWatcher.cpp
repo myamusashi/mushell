@@ -38,6 +38,7 @@ extern "C" {
 #include <pipewire/pipewire.h>
 #include <spa/param/profile.h>
 #include <spa/pod/iter.h>
+#include <spa/pod/builder.h>
 }
 
 struct PwThreadLoopDeleter {
@@ -135,6 +136,10 @@ namespace {
         }
     }
 
+    spa_pod* apBuildProfilePod(spa_pod_builder* b, int32_t index) {
+        return static_cast<spa_pod*>(spa_pod_builder_add_object(b, SPA_TYPE_OBJECT_ParamProfile, SPA_PARAM_Profile, SPA_PARAM_PROFILE_index, SPA_POD_Int(index)));
+    }
+
     QString apFormatProfileName(const QString& name) {
         if (name == u"off")
             return QStringLiteral("Off");
@@ -209,6 +214,21 @@ namespace {
         }
         [[nodiscard]] pw_registry* registry() const {
             return mRegistry.get();
+        }
+
+        void setDeviceProfile(uint32_t deviceId, int32_t profileIndex) {
+            auto it = std::ranges::find_if(mDevices, [deviceId](const ApDeviceNodeT* d) { return d->pwId == deviceId; });
+            if (it == mDevices.end())
+                return;
+
+            std::array<uint8_t, 1024> buffer{};
+            spa_pod_builder           builder = SPA_POD_BUILDER_INIT(buffer.data(), buffer.size());
+
+            const spa_pod*            pod = apBuildProfilePod(&builder, profileIndex);
+            if (!pod)
+                return;
+
+            pw_device_set_param(reinterpret_cast<pw_device*>((*it)->proxy), SPA_PARAM_Profile, 0, pod);
         }
 
         std::vector<ApDeviceNodeT*>     mDevices;
@@ -475,14 +495,23 @@ void AudioProfilesWatcher::poll() {
     pw_thread_loop_unlock(app->loop());
 
     if (!changed) {
-        // Nothing dirty — exponential backoff to reduce idle CPU
+        // Nothing dirty, exponential backoff to reduce idle CPU
         mPollIntervalMs = std::min(mPollIntervalMs * 2, K_MAX_POLL_MS);
         mTimer->start(mPollIntervalMs);
         return;
     }
 
-    // Activity detected — reset to fast polling
     mPollIntervalMs = K_MIN_POLL_MS;
     emit cardsChanged();
     mTimer->start(mPollIntervalMs);
+}
+
+void AudioProfilesWatcher::setProfile(quint32 deviceId, int profileIndex) {
+    if (!mPw->app)
+        return;
+
+    PwApp* app = mPw->app.get();
+    pw_thread_loop_lock(app->loop());
+    app->setDeviceProfile(deviceId, profileIndex);
+    pw_thread_loop_unlock(app->loop());
 }

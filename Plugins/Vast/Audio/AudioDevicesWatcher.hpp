@@ -34,6 +34,9 @@ class AudioDevicesWatcher : public QObject {
         return mConnected;
     }
 
+    Q_INVOKABLE void setDefaultSink(const QString& nodeName);
+    Q_INVOKABLE void setDefaultSource(const QString& nodeName);
+
   signals:
     void connectedChanged();
     void devicesChanged();

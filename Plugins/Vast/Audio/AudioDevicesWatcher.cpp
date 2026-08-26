@@ -1,6 +1,7 @@
 #include "AudioDevicesWatcher.hpp"
 #include "AudioDevicesModel.hpp"
 
+#include <mutex>
 #include <qdebug.h>
 #include <qjsengine.h>
 #include <qobject.h>
@@ -23,11 +24,13 @@
 #include <spa/utils/hook.h>
 #include <span>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <vector>
 
 extern "C" {
 #include <pipewire/pipewire.h>
+#include <pipewire/extensions/metadata.h>
 }
 
 namespace {
@@ -52,11 +55,17 @@ namespace {
             pw_proxy_destroy(reinterpret_cast<pw_proxy*>(p));
         }
     };
+    struct PwMetadataDeleter {
+        void operator()(pw_metadata* p) const {
+            pw_proxy_destroy(reinterpret_cast<pw_proxy*>(p));
+        }
+    };
 
     using UniquePwThreadLoop = std::unique_ptr<pw_thread_loop, PwThreadLoopDeleter>;
     using UniquePwContext    = std::unique_ptr<pw_context, PwContextDeleter>;
     using UniquePwCore       = std::unique_ptr<pw_core, PwCoreDeleter>;
     using UniquePwRegistry   = std::unique_ptr<pw_registry, PwRegistryDeleter>;
+    using UniquePwMetadata   = std::unique_ptr<pw_metadata, PwMetadataDeleter>;
 
     constexpr int K_MAX_STR = 256;
 
@@ -155,6 +164,24 @@ namespace {
         [[nodiscard]] pw_registry* registry() const {
             return mRegistry.get();
         }
+        [[nodiscard]] pw_metadata* metadata() const {
+            return mMetadata.get();
+        }
+
+        // Takes ownership of a freshly-bound "default" metadata proxy from
+        // adRegistryEventGlobal. No-op if we already have one (registry can
+        // in principle announce it again on reconnect handling elsewhere).
+        void bindMetadata(pw_metadata* proxy) {
+            mMetadata.reset(proxy);
+        }
+
+        void setDefaultSink(std::string_view nodeName) {
+            setDefaultNode("default.configured.audio.sink", nodeName);
+        }
+
+        void setDefaultSource(std::string_view nodeName) {
+            setDefaultNode("default.configured.audio.source", nodeName);
+        }
 
         std::vector<AdNodeT*>           mNodes;
         spa_hook                        mRegistryListener{};
@@ -165,10 +192,24 @@ namespace {
         static const pw_proxy_events    S_PROXY_EVENTS;
 
       private:
+        void setDefaultNode(const char* key, std::string_view nodeName) {
+            if (!mMetadata)
+                return;
+
+            // PipeWire/wireplumber metadata value: JSON object with the node's
+            // node.name string (NOT the numeric node id used elsewhere).
+            std::string value = R"({"name":")";
+            value.append(nodeName);
+            value += "\"}";
+
+            pw_metadata_set_property(mMetadata.get(), PW_ID_CORE, key, "Spa:String:JSON", value.c_str());
+        }
+
         UniquePwThreadLoop mLoop;
         UniquePwContext    mContext;
         UniquePwCore       mCore;
         UniquePwRegistry   mRegistry;
+        UniquePwMetadata   mMetadata;
     };
 
     void adNodeEventInfo(void* data, const pw_node_info* info) {
@@ -203,6 +244,20 @@ namespace {
 
     void adRegistryEventGlobal(void* data, uint32_t id, uint32_t /*permissions*/, const char* type, uint32_t /*version*/, const spa_dict* props) {
         auto* app = static_cast<PwApp*>(data);
+
+        if (strcmp(type, PW_TYPE_INTERFACE_Metadata) == 0) {
+            if (app->metadata())
+                return; // already bound
+
+            const char* name = adSafeLookup(props, PW_KEY_METADATA_NAME);
+            if (strcmp(name, "default") != 0)
+                return;
+
+            auto* proxy = static_cast<pw_metadata*>(pw_registry_bind(app->registry(), id, PW_TYPE_INTERFACE_Metadata, PW_VERSION_METADATA, 0));
+            if (proxy)
+                app->bindMetadata(proxy);
+            return;
+        }
 
         if (strcmp(type, PW_TYPE_INTERFACE_Node) != 0)
             return;
@@ -368,4 +423,24 @@ void AudioDevicesWatcher::poll() {
     emit devicesChanged();
 
     mTimer->start(mPollIntervalMs);
+}
+
+void AudioDevicesWatcher::setDefaultSink(const QString& nodeName) {
+    if (!mPw->app)
+        return;
+
+    PwApp* app = mPw->app.get();
+    pw_thread_loop_lock(app->loop());
+    app->setDefaultSink(nodeName.toStdString());
+    pw_thread_loop_unlock(app->loop());
+}
+
+void AudioDevicesWatcher::setDefaultSource(const QString& nodeName) {
+    if (!mPw->app)
+        return;
+
+    PwApp* app = mPw->app.get();
+    pw_thread_loop_lock(app->loop());
+    app->setDefaultSource(nodeName.toStdString());
+    pw_thread_loop_unlock(app->loop());
 }
