@@ -5,6 +5,7 @@
 #include <qhash.h>
 #include <qstringview.h>
 #include <span>
+#include <algorithm>
 #include <qcontainerfwd.h>
 #include <qhashfunctions.h>
 #include <utility>
@@ -42,10 +43,14 @@ QHash<int, QByteArray> AudioProfilesModel::roleNames() const {
     return roles;
 }
 
-void AudioProfilesModel::setProfiles(std::span<const ProfileEntry> profiles) {
+bool AudioProfilesModel::setProfiles(std::span<const ProfileEntry> profiles) {
+    if (std::ranges::equal(mProfiles, profiles))
+        return false;
+
     beginResetModel();
     mProfiles.assign(profiles.begin(), profiles.end());
     endResetModel();
+    return true;
 }
 
 QVariantMap AudioProfilesModel::get(int row) const {

@@ -19,6 +19,10 @@ vast_module(vast-audio
         AudioDevicesModel.cpp
         AudioDevicesWatcher.hpp
         AudioDevicesWatcher.cpp
+        AudioCard.hpp
+        AudioCard.cpp
+        AudioCardsModel.hpp
+        AudioCardsModel.cpp
     LIBRARIES
         PkgConfig::PIPEWIRE
 )

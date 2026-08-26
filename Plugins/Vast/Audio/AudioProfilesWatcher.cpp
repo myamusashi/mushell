@@ -32,7 +32,6 @@
 #include <span>
 #include <stdexcept>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 extern "C" {
@@ -84,6 +83,7 @@ struct ApDeviceNodeT {
 
     uint32_t                                    pwId = 0;
     std::array<char, K_MAX_STR>                 name{};
+    std::array<char, K_MAX_STR>                 description{};
 
     std::array<ApProfileEntryT, K_MAX_PROFILES> profiles{};
     int                                         profileCount = 0;
@@ -133,6 +133,32 @@ namespace {
             case SPA_PARAM_AVAILABILITY_no: return "no";
             default: return "unknown";
         }
+    }
+
+    QString apFormatProfileName(const QString& name) {
+        if (name == u"off")
+            return QStringLiteral("Off");
+        if (name == u"pro-audio")
+            return QStringLiteral("Pro Audio");
+
+        const QStringList parts = name.split(QLatin1Char('+'));
+        QStringList       out;
+        out.reserve(parts.size());
+
+        for (QString part : parts) {
+            part = part.trimmed();
+            if (part.startsWith(QLatin1String("output:")))
+                part.remove(0, 7);
+            else if (part.startsWith(QLatin1String("input:")))
+                part.remove(0, 6);
+
+            QStringList words = part.split(QLatin1Char('-'));
+            for (QString& w : words)
+                if (!w.isEmpty())
+                    w[0] = w[0].toUpper();
+            out << words.join(QLatin1Char(' '));
+        }
+        return out.join(QStringLiteral(" + "));
     }
 
     class PwApp {
@@ -186,6 +212,7 @@ namespace {
         }
 
         std::vector<ApDeviceNodeT*>     mDevices;
+        std::vector<uint32_t>           mRemovedIds;
         spa_hook                        mRegistryListener{};
 
         static const pw_registry_events S_REGISTRY_EVENTS;
@@ -206,6 +233,12 @@ namespace {
             const char* n = apSafeLookup(info->props, PW_KEY_DEVICE_NAME);
             if (*n)
                 apSafeCopy(d->name, n);
+
+            const char* desc = apSafeLookup(info->props, PW_KEY_DEVICE_DESCRIPTION);
+            if (!*desc)
+                desc = apSafeLookup(info->props, PW_KEY_DEVICE_NICK);
+            if (*desc)
+                apSafeCopy(d->description, desc);
         }
 
         if (info->change_mask & PW_DEVICE_CHANGE_MASK_PARAMS) {
@@ -311,6 +344,10 @@ namespace {
         d->pwId = id;
         apSafeCopy(d->name, apSafeLookup(props, PW_KEY_DEVICE_NAME));
 
+        const char* desc = apSafeLookup(props, PW_KEY_DEVICE_DESCRIPTION);
+        if (!*desc)
+            desc = apSafeLookup(props, PW_KEY_DEVICE_NICK);
+        apSafeCopy(d->description, desc);
         d->proxy = static_cast<pw_proxy*>(pw_registry_bind(app->registry(), id, PW_TYPE_INTERFACE_Device, PW_VERSION_DEVICE, 0));
         if (!d->proxy) {
             delete d;
@@ -332,6 +369,7 @@ namespace {
 
         ApDeviceNodeT* d = *it;
         app->mDevices.erase(it);
+        app->mRemovedIds.push_back(id);
         pw_proxy_destroy(d->proxy);
     }
 
@@ -374,33 +412,7 @@ AudioProfilesWatcher* AudioProfilesWatcher::create(QQmlEngine* /*unused*/, QJSEn
     return &sInstance;
 }
 
-QString AudioProfilesWatcher::formatProfileName(const QString& name) {
-    if (name == u"off")
-        return QStringLiteral("Off");
-    if (name == u"pro-audio")
-        return QStringLiteral("Pro Audio");
-
-    const QStringList parts = name.split(QLatin1Char('+'));
-    QStringList       out;
-    out.reserve(parts.size());
-
-    for (QString part : parts) {
-        part = part.trimmed();
-        if (part.startsWith(QLatin1String("output:")))
-            part.remove(0, 7);
-        else if (part.startsWith(QLatin1String("input:")))
-            part.remove(0, 6);
-
-        QStringList words = part.split(QLatin1Char('-'));
-        for (QString& w : words)
-            if (!w.isEmpty())
-                w[0] = w[0].toUpper();
-        out << words.join(QLatin1Char(' '));
-    }
-    return out.join(QStringLiteral(" + "));
-}
-
-AudioProfilesWatcher::AudioProfilesWatcher(QObject* parent) : QObject(parent), mModel(new AudioProfilesModel(this)), mTimer(new QTimer(this)), mPw(std::make_unique<PwState>()) {
+AudioProfilesWatcher::AudioProfilesWatcher(QObject* parent) : QObject(parent), mCards(new AudioCardsModel(this)), mTimer(new QTimer(this)), mPw(std::make_unique<PwState>()) {
     try {
         mPw->app   = std::make_unique<PwApp>();
         mConnected = true;
@@ -421,49 +433,48 @@ void AudioProfilesWatcher::poll() {
     if (!mPw->app)
         return;
 
-    PwApp* app = mPw->app.get();
-
-    struct DeviceSnapshot {
-        quint32             deviceId{};
-        QString             deviceName;
-        qsizetype           activeIdx{};
-        QVariantMap         activeProfile;
-        QList<ProfileEntry> profiles;
-    };
-    QList<DeviceSnapshot> snapshots;
+    PwApp* app     = mPw->app.get();
+    bool   changed = false;
 
     pw_thread_loop_lock(app->loop());
     while (ApDeviceNodeT* d = apDrainDirty(app->mDevices)) {
-        const QString  actName = QString::fromUtf8(d->activeName.data());
+        const QString actName = QString::fromUtf8(d->activeName.data());
 
-        DeviceSnapshot snap;
-        snap.deviceId      = d->pwId;
-        snap.deviceName    = QString::fromUtf8(d->name.data());
-        snap.activeIdx     = d->activeIndex;
-        snap.activeProfile = {
+        CardEntry     entry;
+        entry.deviceId      = d->pwId;
+        entry.name          = QString::fromUtf8(d->name.data());
+        entry.description   = QString::fromUtf8(d->description.data());
+        entry.activeIndex   = d->activeIndex;
+        entry.activeProfile = {
             {QStringLiteral("index"), d->activeIndex},
             {QStringLiteral("name"), actName},
             {QStringLiteral("description"), QString::fromUtf8(d->activeDescription.data())},
             {QStringLiteral("available"), QString::fromUtf8(d->activeAvailable.data())},
-            {QStringLiteral("readable"), formatProfileName(actName)},
+            {QStringLiteral("readable"), apFormatProfileName(actName)},
         };
 
-        snap.profiles.reserve(d->profileCount);
+        entry.profiles.reserve(d->profileCount);
         for (const auto& e : std::span(d->profiles.data(), static_cast<size_t>(d->profileCount))) {
             const QString nm = QString::fromUtf8(e.name.data());
-            snap.profiles.append(ProfileEntry{
+            entry.profiles.append(ProfileEntry{
                 .index       = e.index,
                 .name        = nm,
                 .description = QString::fromUtf8(e.description.data()),
                 .available   = QString::fromUtf8(e.available.data()),
-                .readable    = formatProfileName(nm),
+                .readable    = apFormatProfileName(nm),
             });
         }
-        snapshots.append(std::move(snap));
+        mCards->upsertCard(entry);
+        changed = true;
+    }
+    if (!app->mRemovedIds.empty()) {
+        for (const uint32_t id : app->mRemovedIds)
+            changed |= mCards->removeCard(id);
+        app->mRemovedIds.clear();
     }
     pw_thread_loop_unlock(app->loop());
 
-    if (snapshots.isEmpty()) {
+    if (!changed) {
         // Nothing dirty — exponential backoff to reduce idle CPU
         mPollIntervalMs = std::min(mPollIntervalMs * 2, K_MAX_POLL_MS);
         mTimer->start(mPollIntervalMs);
@@ -472,22 +483,6 @@ void AudioProfilesWatcher::poll() {
 
     // Activity detected — reset to fast polling
     mPollIntervalMs = K_MIN_POLL_MS;
-
-    for (const DeviceSnapshot& snap : snapshots) {
-        const bool deviceChanged  = (mDeviceId != snap.deviceId || mDeviceName != snap.deviceName);
-        const bool profileChanged = (mActiveIndex != snap.activeIdx || mActiveProfile != snap.activeProfile);
-
-        mDeviceId      = snap.deviceId;
-        mDeviceName    = snap.deviceName;
-        mActiveIndex   = snap.activeIdx;
-        mActiveProfile = snap.activeProfile;
-        mModel->setProfiles(snap.profiles);
-
-        if (deviceChanged)
-            emit deviceInfoChanged();
-        if (profileChanged)
-            emit activeProfileChanged();
-    }
-
+    emit cardsChanged();
     mTimer->start(mPollIntervalMs);
 }

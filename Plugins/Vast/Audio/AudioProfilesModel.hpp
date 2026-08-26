@@ -46,7 +46,7 @@ class AudioProfilesModel : public QAbstractListModel {
     [[nodiscard]] QVariant                data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     [[nodiscard]] QHash<int, QByteArray>  roleNames() const override;
 
-    void                                  setProfiles(std::span<const ProfileEntry> profiles);
+    bool                                  setProfiles(std::span<const ProfileEntry> profiles);
 
     [[nodiscard]] Q_INVOKABLE QVariantMap get(int row) const;
     [[nodiscard]] Q_INVOKABLE qsizetype   count() const {
