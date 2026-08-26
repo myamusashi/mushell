@@ -106,8 +106,12 @@ Item {
     Component.onCompleted: requestThumbnailChecks()
 
     onIsWallpaperSwitcherOpenChanged: {
-        if (!isWallpaperSwitcherOpen)
-            GlobalStates.previewWallpaper = ""; // closing without confirm reverts the live preview
+        if (!isWallpaperSwitcherOpen) {
+            GlobalStates.previewWallpaper = "";
+            return;
+        }
+
+        wallpaperType = isVideo(Paths.currentWallpaper) ? 1 : 0;
     }
 
     Connections {
@@ -146,7 +150,7 @@ Item {
                     root.pendingVideoPath = "";
                     root.setWallpaper(videoPath, root.thumbnailPathFor(videoPath));
                 } else if (status === Image.Error)
-                    root.pendingVideoPath = ""; // failed extraction must not leak into later colour loads
+                    root.pendingVideoPath = "";
             }
         }
     }
@@ -166,10 +170,10 @@ Item {
         }
 
         onExited: { // qmllint disable signal-handler-parameters
-            for (const path of root.checkBatch) {
+            for (const path of root.checkBatch)
                 if (root.thumbnailAvailability[path] === undefined)
                     root.markThumbnail(path, false);
-            }
+
             root.checkBatch = [];
             root.drainThumbnailChecks();
         }
