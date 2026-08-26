@@ -11,8 +11,8 @@ import qs.Core.States
 import qs.Core.Utils
 import qs.Services
 
-import "WeatherItem/Pages" as WP
-import "WeatherItem" as WI
+import "WeatherItem/Pages" as WeatherPages
+import "WeatherItem" as WeatherItems
 
 Item {
     id: root
@@ -20,6 +20,8 @@ Item {
     anchors {
         right: parent.right
         verticalCenter: parent.verticalCenter
+        bottomMargin: Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize : 0
+        topMargin: (Configs.generals.enableOuterBorder ? Configs.generals.outerBorderSize : 0) + Configs.bar.barHeight
     }
 
     readonly property bool anyPageOpen: humidityPages.isOpen || sunPages.isOpen || pressurePages.isOpen || visibilityPages.isOpen || windPages.isOpen || uvIndexPages.isOpen || aqiPages.isOpen || precipitationPages.isOpen || moonPages.isOpen
@@ -128,11 +130,11 @@ Item {
                     sourceComponent: ColumnLayout {
                         spacing: Appearance.spacing.large
 
-                        WI.ForecastHourly {
+                        WeatherItems.ForecastHourly {
                             Layout.fillWidth: true
                         }
 
-                        WI.ForecastDaily {
+                        WeatherItems.ForecastDaily {
                             Layout.fillWidth: true
                         }
                     }
@@ -154,42 +156,42 @@ Item {
 
                         Card {
                             zoomPage: humidityPages
-                            content: WI.Humidity {}
+                            content: WeatherItems.Humidity {}
                         }
                         Card {
                             zoomPage: sunPages
-                            content: WI.Sun {}
+                            content: WeatherItems.Sun {}
                         }
                         Card {
                             zoomPage: pressurePages
-                            content: WI.Pressure {}
+                            content: WeatherItems.Pressure {}
                         }
                         Card {
                             zoomPage: visibilityPages
-                            content: WI.Visibility {}
+                            content: WeatherItems.Visibility {}
                         }
                         Card {
                             zoomPage: windPages
-                            content: WI.Wind {}
+                            content: WeatherItems.Wind {}
                         }
                         Card {
                             zoomPage: uvIndexPages
-                            content: WI.UVIndex {}
+                            content: WeatherItems.UVIndex {}
                         }
                         Card {
                             zoomPage: aqiPages
-                            content: WI.AQI {}
+                            content: WeatherItems.AQI {}
                         }
                         Card {
                             zoomPage: precipitationPages
-                            content: WI.Precipitation {}
+                            content: WeatherItems.Precipitation {}
                         }
                         Card {
                             zoomPage: moonPages
-                            content: WI.Moon {}
+                            content: WeatherItems.Moon {}
                         }
 
-                        WI.Cloudiness {
+                        WeatherItems.Cloudiness {
                             implicitWidth: 150
                             implicitHeight: 150
                         }
@@ -214,39 +216,39 @@ Item {
         onReleased: {}
     }
 
-    WP.Humidity {
+    WeatherPages.Humidity {
         id: humidityPages
     }
 
-    WP.Sun {
+    WeatherPages.Sun {
         id: sunPages
     }
 
-    WP.Pressure {
+    WeatherPages.Pressure {
         id: pressurePages
     }
 
-    WP.Visibility {
+    WeatherPages.Visibility {
         id: visibilityPages
     }
 
-    WP.Wind {
+    WeatherPages.Wind {
         id: windPages
     }
 
-    WP.AQI {
+    WeatherPages.AQI {
         id: aqiPages
     }
 
-    WP.Precipitation {
+    WeatherPages.Precipitation {
         id: precipitationPages
     }
 
-    WP.Moon {
+    WeatherPages.Moon {
         id: moonPages
     }
 
-    WP.UVIndex {
+    WeatherPages.UVIndex {
         id: uvIndexPages
     }
 
