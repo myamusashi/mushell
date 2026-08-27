@@ -196,8 +196,6 @@ namespace {
             if (!mMetadata)
                 return;
 
-            // PipeWire/wireplumber metadata value: JSON object with the node's
-            // node.name string (NOT the numeric node id used elsewhere).
             std::string value = R"({"name":")";
             value.append(nodeName);
             value += "\"}";

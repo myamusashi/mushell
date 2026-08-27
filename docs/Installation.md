@@ -77,7 +77,7 @@ shell
 |---|---|
 | Shell | `quickshell-git`, `hyprland`, `foot`, `polkit` |
 | Qt6 | `qt6-base`, `qt6-declarative`, `qt6-multimedia`, `qt6-5compat`, `qt6-graphs`, `kf6-qtmultimedia` |
-| Media | `ffmpeg`, `wireplumber`, `wl-clipboard`, `wl-screenrec` |
+| Media | `ffmpeg`, `wl-clipboard`, `wl-screenrec` |
 | Network / Notifications | `iw`, `libnotify` |
 | Fonts | `ttf-material-symbols-variable-git`, `ttf-weather-icons`, `google-sans-flex` (optional), `Hack` (optional) |
 | Utils | `findutils`, `grep`, `gawk`, `sed`, `util-linux` |
@@ -126,7 +126,7 @@ sudo dnf install qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtsvg-devel \
                  qt6-qtshadertools-devel qt6-qttools-devel
 
 # Runtime
-sudo dnf install pipewire wireplumber iw libnotify polkit \
+sudo dnf install pipewire iw libnotify polkit \
                  wl-clipboard ffmpeg foot hyprland findutils grep sed gawk util-linux
 ```
 
@@ -151,7 +151,7 @@ sudo zypper install qt6-base-devel qt6-declarative-devel qt6-svg-devel \
                     qt6-shadertools-devel qt6-tools-devel
 
 # Runtime
-sudo zypper install pipewire wireplumber iw libnotify-tools polkit \
+sudo zypper install pipewire iw libnotify-tools polkit \
                     wl-clipboard ffmpeg foot hyprland findutils grep sed gawk util-linux
 ```
 
@@ -172,7 +172,7 @@ sudo emerge -av dev-qt/qtbase:6 dev-qt/qtdeclarative:6 dev-qt/qtsvg:6 \
                 dev-qt/qtshadertools:6 dev-qt/qttools:6
 
 # Runtime
-sudo emerge -av media-video/pipewire media-video/wireplumber net-wireless/iw \
+sudo emerge -av media-video/pipewire net-wireless/iw \
                 x11-libs/libnotify sys-auth/polkit \
                 gui-apps/wl-clipboard media-video/ffmpeg gui-apps/foot \
                 gui-wm/hyprland sys-apps/util-linux
@@ -194,7 +194,7 @@ sudo xbps-install -S qt6-base-devel qt6-declarative-devel qt6-svg-devel \
                      qt6-shadertools-devel qt6-tools
 
 # Runtime
-sudo xbps-install -S pipewire wireplumber iw libnotify polkit \
+sudo xbps-install -S pipewire iw libnotify polkit \
                      wl-clipboard ffmpeg foot hyprland findutils grep sed gawk util-linux
 ```
 

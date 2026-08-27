@@ -16,7 +16,6 @@
     util-linux,
     wl-clipboard,
     ffmpeg,
-    wireplumber,
     foot,
     python314,
     kdePackages,
@@ -43,7 +42,6 @@
         gnused
         util-linux
         remove-bg
-        wireplumber
         iw
         libnotify
         polkit

@@ -39,7 +39,7 @@ install_system_packages() {
 		base-devel git cmake ninja clang extra-cmake-modules patchelf pkgconf
 		qt6-base qt6-declarative qt6-wayland qt6-svg qt6-graphs qt6-multimedia qt6-5compat qt6-shadertools qt6-tools
 		rust pipewire ddcutil i2c-tools go wayland wayland-protocols
-		findutils grep sed gawk util-linux libnotify wireplumber
+		findutils grep sed gawk util-linux libnotify
 		iw polkit wl-clipboard ffmpeg foot hyprland xdg-desktop-portal
 		spirv-tools vulkan-headers cli11 cpptrace jemalloc libdrm mesa libxcb glib2
 	)
