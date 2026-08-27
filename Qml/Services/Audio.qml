@@ -91,9 +91,7 @@ Singleton {
             for (let i = 0; i < cards.count(); i++) {
                 const c = cards.card(i);
                 if (c && c.name === savedSink) {
-                    Quickshell.execDetached({
-                        command: ["wpctl", "set-default", c.deviceId]
-                    });
+                    AudioDevicesWatcher.setDefaultSink(c.name);
                     break;
                 }
             }
@@ -123,9 +121,7 @@ Singleton {
             for (let j = 0; j < model.count(); j++) {
                 const p = model.get(j);
                 if (p.index === savedIndex && p.available === "yes") {
-                    Quickshell.execDetached({
-                        command: ["pw-cli", "set-param", String(deviceId), "Profile", `{ "index": ${p.index} }`]
-                    });
+                    AudioProfilesWatcher.setProfile(deviceId, p.index);
                     break;
                 }
             }
@@ -179,9 +175,7 @@ Singleton {
             return JSON.stringify(r);
         }
         function deviceSet(name) {
-            Quickshell.execDetached({
-                command: ["wpctl", "set-default", name]
-            });
+            AudioDevicesWatcher.setDefaultSink(name);
         }
         function profileList() {
             const card = root.defaultSinkCard;
@@ -217,9 +211,12 @@ Singleton {
             const card = root.defaultSinkCard;
             if (!card)
                 return;
-            Quickshell.execDetached({
-                command: ["wpctl", "set-profile", String(card.deviceId), name]
-            });
+
+            const match = card.profiles.find(p => p.name === name);
+            if (!match)
+                return;
+
+            AudioProfilesWatcher.setProfile(card.deviceId, match.index);
         }
     }
 }

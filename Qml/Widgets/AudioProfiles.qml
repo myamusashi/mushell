@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
+import Vast.Audio
 
 import qs.Core.Configs
 import qs.Components.Button
@@ -50,9 +51,7 @@ SplitButton {
         if (!profile || profile.available !== "yes" || !resolvedCard)
             return;
 
-        Quickshell.execDetached({
-            command: ["pw-cli", "set-param", String(resolvedCard.deviceId), "Profile", `{ "index": ${profile.index} }`]
-        });
+        AudioProfilesWatcher.setProfile(resolvedCard.deviceId, profile.index);
 
         const deviceName = resolvedCard.name;
         if (deviceName) {

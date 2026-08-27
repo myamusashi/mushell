@@ -128,9 +128,7 @@ ScrollView {
                     TapHandler {
                         onTapped: {
                             root.currentSinkIndex = volumeEntryDelegate.index;
-                            Quickshell.execDetached({
-                                command: ["wpctl", "set-default", volumeEntryDelegate.modelData.nodeId]
-                            });
+                            AudioDevicesWatcher.setDefaultSink(volumeEntryDelegate.modelData.name);
                             Configs.audio.defaultSinkName = volumeEntryDelegate.modelData.name;
                         }
                     }
