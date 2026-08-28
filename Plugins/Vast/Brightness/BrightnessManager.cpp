@@ -140,12 +140,19 @@ namespace vast {
                 auto        handleResult = openDdcHandle(info.dref);
                 if (!handleResult) {
                     qWarning() << "[BrightnessManager] DDC open failed:" << handleResult.error().message;
+                    emit initializationFailed(
+                        QStringLiteral("DDC open failed for %1: %2").arg(QString::fromUtf8(info.model_name), QString::fromStdString(handleResult.error().message)));
                     continue;
                 }
 
-                const int     initial = readDdcBrightness(*handleResult).value_or(50);
-                const QString id      = QString::fromUtf8(info.model_name);
-                const QString name    = QStringLiteral("%1 %2").arg(QString::fromUtf8(info.mfg_id)).arg(QString::fromUtf8(info.model_name));
+                const int initial = readDdcBrightness(*handleResult).value_or(50);
+                // dispno is ddcutil's own stable per-monitor identifier, unique
+                // even across two identical-model displays; model_name alone
+                // collides for matched monitor pairs and silently drops the
+                // second one from mWorkers (std::map::emplace is a no-op on an
+                // existing key).
+                const QString id   = QStringLiteral("ddc-%1").arg(info.dispno);
+                const QString name = QStringLiteral("%1 %2").arg(QString::fromUtf8(info.mfg_id)).arg(QString::fromUtf8(info.model_name));
 
                 // clang-format off
                 auto          meta = DisplayMeta{
@@ -192,6 +199,9 @@ namespace vast {
                 mWorkers.emplace(id, std::make_shared<DisplayWorker>(std::move(meta), initial));
             }
         }
+
+        if (mWorkers.empty())
+            emit initializationFailed(QStringLiteral("no controllable displays found (no DDC/CI monitors and no sysfs backlight device)"));
 
         emit displayListChanged();
     }
