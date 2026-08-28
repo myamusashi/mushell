@@ -14,6 +14,7 @@
 #include <qnamespace.h>
 #include <qlist.h>
 #include <qobjectdefs.h>
+#include <qpointer.h>
 #include <qtimer.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
@@ -60,13 +61,12 @@ namespace vast {
         setupConnections();
         loadAllEntries();
 
-        // The data-control object lives on the shared executor thread: its
-        // socket notifier, reconnect timers and blocking registry roundtrips
-        // stay off the UI thread. The serialized queue guarantees this init
-        // job runs before any setClipboardContent posted afterwards.
-        auto* wayland = mWayland.get();
+        QPointer<WaylandDataControl> wayland = mWayland.get();
         wayland->moveToThread(vast::JobExecutor::instance().thread());
         vast::JobExecutor::instance().post([wayland]() {
+            if (!wayland)
+                return;
+
             if (!wayland->initialize())
                 qWarning() << "[ClipboardManager] Wayland data control failed to initialize";
         });
