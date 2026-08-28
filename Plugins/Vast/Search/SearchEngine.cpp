@@ -166,7 +166,7 @@ namespace vast {
 
         emit         fileSearchStarted();
 
-        JobExecutor::instance().post([this, generation, thresholdPerChar, files, query]() {
+        vast::JobExecutor::instance().post([this, generation, thresholdPerChar, files, query]() {
             static const QRegularExpression kWhitespace(R"(\s+)");
 
             const QString                   normQuery  = FuzzyMatcher::normalizeText(query).trimmed();

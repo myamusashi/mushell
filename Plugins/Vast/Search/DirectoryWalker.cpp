@@ -102,7 +102,7 @@ namespace vast {
         const WalkConfig  cfg{.showHidden = mShowHidden, .nameFilters = mNameFilters};
         const int         maxDepth = mMaxDepth;
         const QStringList roots    = mRoots;
-        JobExecutor::instance().post([this, generation, cfg, maxDepth, roots]() {
+        vast::JobExecutor::instance().post([this, generation, cfg, maxDepth, roots]() {
             QVariantList  entries;
             int           budget = K_MAX_ENTRIES;
             QSet<QString> visited;
