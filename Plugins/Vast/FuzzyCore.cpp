@@ -22,18 +22,18 @@ namespace vast::fzy {
         }
 
         std::vector<int> byteToCharMap(const QByteArray& utf8) {
-            std::vector<int> map(static_cast<size_t>(utf8.size()) + 1, 0);
+            std::vector<int> boundaryIndex(static_cast<size_t>(utf8.size()) + 1, 0);
             int              charIndex = 0;
             qsizetype        byte      = 0;
             while (byte < utf8.size()) {
-                map[static_cast<size_t>(byte)] = charIndex;
+                boundaryIndex[static_cast<size_t>(byte)] = charIndex;
                 do {
                     ++byte;
                 } while (byte < utf8.size() && isUtf8Continuation(utf8.at(byte)));
                 ++charIndex;
             }
-            map[static_cast<size_t>(utf8.size())] = charIndex;
-            return map;
+            boundaryIndex[static_cast<size_t>(utf8.size())] = charIndex;
+            return boundaryIndex;
         }
 
         double clampScore(double raw, qsizetype needleLength) {

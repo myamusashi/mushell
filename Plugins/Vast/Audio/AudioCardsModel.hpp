@@ -47,13 +47,6 @@ class AudioCardsModel : public QAbstractListModel {
     [[nodiscard]] QVariant               data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
     [[nodiscard]] QHash<int, QByteArray> roleNames() const override;
 
-    // Returns true if any field, role, or profile list actually changed for
-    // an existing card; the insert branch always returns true (new membership
-    // is itself a change). dataChanged is emitted internally for the affected
-    // row when this returns true, so flat-role bindings (model.name,
-    // model.activeProfile, ...) refresh correctly — callers don't need to
-    // emit anything themselves. The return value is also used by
-    // AudioProfilesWatcher::poll() to drive its idle-backoff timer.
     bool                                 removeCard(quint32 deviceId);
     bool                                 upsertCard(const CardEntry& entry);
 
