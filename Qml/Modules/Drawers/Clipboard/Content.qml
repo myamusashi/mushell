@@ -232,7 +232,7 @@ ColumnLayout {
                     color: Qt.alpha(Colours.m3Colors.m3OutlineVariant, 0.6)
                 }
 
-                ClipboardPreview {
+                Preview {
                     Layout.preferredWidth: root.uiState.previewWidth
                     Layout.fillHeight: true
                     entryId: root.currentId

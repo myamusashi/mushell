@@ -204,7 +204,7 @@ Item {
                 }
             }
 
-            delegate: ClipboardItemDelegate {
+            delegate: Delegate {
                 required property var modelData
 
                 visible: index < Configs.clipboard.maxEntries
@@ -215,64 +215,64 @@ Item {
                 pinned: modelData.pinned
                 sourceApp: modelData.sourceApp
                 fileName: modelData.fileName
-                isSelected: entryList.GridView.isCurrentItem
+                isSelected: GridView.isCurrentItem
                 inVisual: root.uiState.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
-                width: entryList.GridView.view.cellWidth
+                width: GridView.view.cellWidth
                 height: 64
                 onActivated: ClipboardManager.copyToClipboard(entryId)
                 onPinToggled: (id, s) => ClipboardManager.pin(id, s)
                 onRemoveRequested: id => ClipboardManager.remove(id)
             }
         }
+    }
 
-        StyledText {
-            anchors.centerIn: verticalFlick
-            visible: entryList.count === 0
-            text: root.searchText.length > 0 ? qsTr("No results for ") + root.searchText : qsTr("Clipboard is empty")
-            font.pixelSize: Appearance.fonts.size.medium
-            color: Colours.m3Colors.m3OnSurfaceVariant
-        }
+    StyledText {
+        anchors.centerIn: verticalFlick
+        visible: entryList.count === 0
+        text: root.searchText.length > 0 ? qsTr("No results for ") + root.searchText : qsTr("Clipboard is empty")
+        font.pixelSize: Appearance.fonts.size.medium
+        color: Colours.m3Colors.m3OnSurfaceVariant
+    }
 
-        Row {
-            id: pageIndicatorRow
+    Row {
+        id: pageIndicatorRow
 
-            anchors.bottom: horizontalScrollBar.top
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottomMargin: Appearance.margin.small
-            spacing: 6
-            visible: entryList.totalPages > 1
+        anchors.bottom: horizontalScrollBar.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottomMargin: Appearance.margin.small
+        spacing: 6
+        visible: entryList.totalPages > 1
 
-            Repeater {
-                model: entryList.totalPages
+        Repeater {
+            model: entryList.totalPages
 
-                delegate: Rectangle {
-                    required property int index
+            delegate: Rectangle {
+                required property int index
 
-                    implicitWidth: entryList.currentPage === index ? 16 : 6
-                    implicitHeight: 6
-                    radius: 3
-                    color: entryList.currentPage === index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
-                    opacity: entryList.currentPage === index ? 1.0 : 0.5
+                implicitWidth: entryList.currentPage === index ? 16 : 6
+                implicitHeight: 6
+                radius: 3
+                color: entryList.currentPage === index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
+                opacity: entryList.currentPage === index ? 1.0 : 0.5
 
-                    Behavior on implicitWidth {
-                        NAnim {}
-                    }
+                Behavior on implicitWidth {
+                    NAnim {}
+                }
 
-                    Behavior on opacity {
-                        NAnim {}
-                    }
+                Behavior on opacity {
+                    NAnim {}
                 }
             }
         }
+    }
 
-        ScrollBar {
-            id: horizontalScrollBar
+    ScrollBar {
+        id: horizontalScrollBar
 
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            orientation: Qt.Horizontal
-            policy: ScrollBar.AsNeeded
-        }
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        orientation: Qt.Horizontal
+        policy: ScrollBar.AsNeeded
     }
 }
