@@ -18,13 +18,9 @@ Item {
     property int selectedIndex: -1
     readonly property string query: searchField.text.trim()
 
-    // z-lift above the page Loaders so the results popup overlays page content.
     z: 2
     implicitHeight: searchField.implicitHeight
 
-    // Static index of every settings card: navigation-rail page index, page
-    // title, card title and the row labels it contains. Mirrors Pages/;
-    // keep in sync when pages change.
     readonly property var entries: [
         {
             page: 0,

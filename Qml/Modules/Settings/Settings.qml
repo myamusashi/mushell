@@ -189,7 +189,6 @@ LazyLoader {
                             }
                         }
 
-                        // z-lift so the search results popup overlays page content.
                         RowLayout {
                             Layout.fillWidth: true
                             z: 2
