@@ -6,6 +6,8 @@
 #include <qqmlintegration.h>
 #include <qtranslator.h>
 
+#include <memory>
+
 class TranslationManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage NOTIFY languageChanged)
@@ -27,7 +29,7 @@ class TranslationManager : public QObject {
     void languageChanged();
 
   private:
-    QTranslator       mTranslator;
-    QString           mCurrentLanguage;
-    const QStringList M_AVAILABLE_LANGUAGES;
+    std::unique_ptr<QTranslator> mTranslator;
+    QString                      mCurrentLanguage;
+    const QStringList            M_AVAILABLE_LANGUAGES;
 };
