@@ -124,11 +124,11 @@ namespace vast {
 
             QMetaObject::invokeMethod(
                 this,
-                [this, generation, entries]() {
+                [this, generation, entries = std::move(entries)]() mutable {
                     if (mGeneration.loadRelaxed() != generation)
                         return;
                     setWalking(false);
-                    emit walkFinished(entries);
+                    emit walkFinished(std::move(entries));
                 },
                 Qt::QueuedConnection);
         });
