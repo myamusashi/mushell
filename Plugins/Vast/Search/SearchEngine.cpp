@@ -240,9 +240,14 @@ namespace vast {
 
             QMetaObject::invokeMethod(
                 this,
-                [this, generation, out]() {
+                [this, generation, out = std::move(out)]() {
                     if (mFileSearchGeneration.loadRelaxed() != generation)
                         return;
+                    // setEntries takes const QVariantList& and unpacks each
+                    // QVariant into a QMap<QString,QVariant> via toMap(),
+                    // a different container type, so there's nothing left
+                    // to move here. The capture above is the real saving:
+                    // `out` is moved into the lambda instead of copied.
                     mFileResults->setEntries(out);
                 },
                 Qt::QueuedConnection);
