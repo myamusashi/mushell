@@ -1,5 +1,7 @@
 .pragma library
 
+let tempCaptureCounter = 0;
+
 function pad(n) {
     return String(n).padStart(2, "0");
 }
@@ -14,7 +16,8 @@ function screenshotPath(screenshotDir) {
 }
 
 function tempCapturePath() {
-    return "/tmp/quickshell-capture-" + generateTimestamp() + ".png";
+    tempCaptureCounter = (tempCaptureCounter + 1) % 1000000;
+    return "/tmp/quickshell-capture-" + Date.now() + "-" + tempCaptureCounter + "-" + Math.floor(Math.random() * 100000) + ".png";
 }
 
 function videoPath(videoDir) {

@@ -7,7 +7,7 @@ import Quickshell.Wayland
 import qs.Core.States
 import qs.Services
 
-LazyLoader {
+Scope {
     id: root
 
     property point startPos
@@ -40,88 +40,100 @@ LazyLoader {
         GlobalStates.isSelectionOpen = false;
     }
 
-    activeAsync: GlobalStates.isSelectionOpen
-    component: PanelWindow {
-        anchors {
-            top: true
-            left: true
-            right: true
-            bottom: true
-        }
-        color: "transparent"
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-        WlrLayershell.layer: WlrLayer.Overlay
+    Variants {
+        model: GlobalStates.isSelectionOpen ? Quickshell.screens : []
 
-        Image {
-            anchors.fill: parent
-            source: root.mode === "cross-monitor" ? root.frozenImageUrl : ""
-            visible: root.mode === "cross-monitor" && root.frozenImageUrl !== ""
-            cache: false
-            fillMode: Image.PreserveAspectCrop
-        }
+        delegate: PanelWindow {
+            id: window
 
-        Rectangle {
-            anchors.fill: parent
-            color: Qt.alpha(Colours.m3Colors.m3Background, 0.5)
-        }
+            required property ShellScreen modelData
 
-        Rectangle {
-            visible: root.selecting
-            x: Math.min(root.startPos.x, root.endPos.x)
-            y: Math.min(root.startPos.y, root.endPos.y)
-            width: Math.abs(root.endPos.x - root.startPos.x)
-            height: Math.abs(root.endPos.y - root.startPos.y)
+            readonly property real offsetX: modelData.x
+            readonly property real offsetY: modelData.y
+
+            anchors {
+                top: true
+                left: true
+                right: true
+                bottom: true
+            }
             color: "transparent"
-            border.color: Colours.m3Colors.m3OnSurface
-            border.width: 2
+            screen: modelData
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+            WlrLayershell.layer: WlrLayer.Overlay
+
+            Image {
+                anchors.fill: parent
+                source: root.mode === "cross-monitor" ? root.frozenImageUrl : ""
+                visible: root.mode === "cross-monitor" && root.frozenImageUrl !== ""
+                cache: false
+                fillMode: Image.PreserveAspectCrop
+            }
 
             Rectangle {
                 anchors.fill: parent
-                color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.25)
+                color: Qt.alpha(Colours.m3Colors.m3Background, 0.5)
             }
-        }
 
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.CrossCursor
+            Rectangle {
+                visible: root.selecting
+                x: Math.min(root.startPos.x, root.endPos.x) - window.offsetX
+                y: Math.min(root.startPos.y, root.endPos.y) - window.offsetY
+                width: Math.abs(root.endPos.x - root.startPos.x)
+                height: Math.abs(root.endPos.y - root.startPos.y)
+                color: "transparent"
+                border.color: Colours.m3Colors.m3OnSurface
+                border.width: 2
 
-            onPressed: e => {
-                root.startPos = Qt.point(e.x, e.y);
-                root.endPos = Qt.point(e.x, e.y);
-                root.selecting = true;
-            }
-            onPositionChanged: e => {
-                if (root.selecting)
-                    root.endPos = Qt.point(e.x, e.y);
-            }
-            onReleased: e => {
-                root.selecting = false;
-                root.close();
-
-                const x = Math.min(root.startPos.x, e.x);
-                const y = Math.min(root.startPos.y, e.y);
-                const w = Math.abs(e.x - root.startPos.x);
-                const h = Math.abs(e.y - root.startPos.y);
-
-                if (w < 5 || h < 5) {
-                    root.cancelled();
-                    return;
+                Rectangle {
+                    anchors.fill: parent
+                    color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.25)
                 }
-                root.geometrySelected(`${Math.round(x)},${Math.round(y)} ${Math.round(w)}x${Math.round(h)}`);
             }
-        }
 
-        Item {
-            id: focusCatcher
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.CrossCursor
 
-            anchors.fill: parent
-            focus: GlobalStates.isSelectionOpen
+                onPressed: e => {
+                    root.startPos = Qt.point(e.x + window.offsetX, e.y + window.offsetY);
+                    root.endPos = Qt.point(e.x + window.offsetX, e.y + window.offsetY);
+                    root.selecting = true;
+                }
+                onPositionChanged: e => {
+                    if (root.selecting)
+                        root.endPos = Qt.point(e.x + window.offsetX, e.y + window.offsetY);
+                }
+                onReleased: e => {
+                    root.selecting = false;
+                    const releasePos = Qt.point(e.x + window.offsetX, e.y + window.offsetY);
+                    root.close();
 
-            Keys.onEscapePressed: {
-                root.close();
-                root.cancelled();
+                    const x = Math.min(root.startPos.x, releasePos.x);
+                    const y = Math.min(root.startPos.y, releasePos.y);
+                    const w = Math.abs(releasePos.x - root.startPos.x);
+                    const h = Math.abs(releasePos.y - root.startPos.y);
+
+                    if (w < 5 || h < 5) {
+                        root.cancelled();
+                        return;
+                    }
+                    root.geometrySelected(`${Math.round(x)},${Math.round(y)} ${Math.round(w)}x${Math.round(h)}`);
+                }
             }
-            Component.onCompleted: forceActiveFocus()
+
+            Item {
+                id: focusCatcher
+
+                anchors.fill: parent
+                focus: GlobalStates.isSelectionOpen
+
+                Keys.onEscapePressed: {
+                    root.close();
+                    root.cancelled();
+                }
+                Component.onCompleted: forceActiveFocus()
+            }
         }
     }
 }

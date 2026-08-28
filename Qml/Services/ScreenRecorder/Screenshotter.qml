@@ -13,7 +13,7 @@ import qs.Components.Base
 import qs.Services
 import "shellUtils.js" as Utils
 
-Item {
+Scope {
     id: root
 
     required property string screenshotDir
@@ -344,12 +344,116 @@ Item {
         }
     }
 
-    // Multi-window selection overlay — one PanelWindow per screen
-    Instantiator {
+    // Parallel per-screen capture — Variants per Quickshell docs.
+    // Each screen gets its own PanelWindow+ScreencopyView so all outputs
+    // freeze at the same compositor frame; no sequential captureLoader loop.
+    property int pendingCaptureCount: 0
+
+    Timer {
+        id: multiCaptureWatchdog
+
+        interval: 4000
+        repeat: false
+        onTriggered: {
+            if (root.isMultiCapturing) {
+                console.log("multiCapture watchdog: timed out with", root.pendingCaptureCount, "pending,", root.allScreenPaths.length, "succeeded");
+                root.isMultiCapturing = false;
+                if (root.allScreenPaths.length === 0) {
+                    root.notify("Screenshot Failed", "Capture timed out, please try again.", "critical", "dialog-error", "Screenshot");
+                    if (root.captureDoneCallback) {
+                        const cb = root.captureDoneCallback;
+                        root.captureDoneCallback = null;
+                        cb("");
+                    }
+                } else {
+                    root.compositeAllCaptures();
+                }
+            }
+        }
+    }
+
+    Variants {
+        id: multiCaptureVariants
+
+        model: root.isMultiCapturing ? Quickshell.screens : []
+
+        delegate: PanelWindow {
+            id: multiCaptureWindow
+
+            required property ShellScreen modelData
+
+            visible: true
+            color: "transparent"
+            screen: modelData
+            implicitWidth: modelData.width
+            implicitHeight: modelData.height
+            exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+            WlrLayershell.layer: WlrLayer.Overlay
+
+            property bool multiDone: false
+            property int multiGrabRetries: 0
+
+            function multiDoGrab() {
+                if (multiCaptureWindow.width <= 0 || multiCaptureWindow.height <= 0) {
+                    if (multiCaptureWindow.multiGrabRetries < 20) {
+                        multiCaptureWindow.multiGrabRetries++;
+                        multiGrabRetryTimer.restart();
+                    } else {
+                        console.log("multiCapture: giving up on", modelData.name);
+                        root.pendingCaptureCount = Math.max(0, root.pendingCaptureCount - 1);
+                        if (root.pendingCaptureCount === 0 && root.isMultiCapturing)
+                            root.compositeAllCaptures();
+                    }
+                    return;
+                }
+                multiScreencopyView.grabToImage(result => {
+                    const path = Utils.tempCapturePath();
+                    if (result && result.saveToFile(path)) {
+                        root.allScreenPaths.push({
+                            screen: modelData,
+                            path: "file://" + path
+                        });
+                    } else {
+                        console.log("multi capture failed for screen", modelData.name);
+                    }
+                    root.pendingCaptureCount = Math.max(0, root.pendingCaptureCount - 1);
+                    if (root.pendingCaptureCount === 0 && root.isMultiCapturing)
+                        root.compositeAllCaptures();
+                });
+            }
+
+            Timer {
+                id: multiGrabRetryTimer
+
+                interval: 50
+                repeat: false
+                onTriggered: multiCaptureWindow.multiDoGrab()
+            }
+
+            ScreencopyView {
+                id: multiScreencopyView
+
+                anchors.fill: parent
+                captureSource: modelData
+                live: false
+                paintCursor: false
+
+                onHasContentChanged: {
+                    if (!hasContent || multiCaptureWindow.multiDone)
+                        return;
+                    multiCaptureWindow.multiDone = true;
+                    multiCaptureWindow.multiDoGrab();
+                }
+            }
+        }
+    }
+
+    // Per-screen selection overlay — Variants per Quickshell docs
+    Variants {
         id: selectionOverlay
 
-        model: Quickshell.screens
-        active: root.selectionOpen
+        model: root.selectionOpen ? Quickshell.screens : []
 
         delegate: PanelWindow {
             required property ShellScreen modelData
@@ -815,13 +919,17 @@ Item {
 
     function freezeAllScreens(callback) {
         root.allScreenPaths = [];
-        root.captureIndex = 0;
         root.captureDoneCallback = callback;
+        root.pendingCaptureCount = Quickshell.screens.length;
         root.isMultiCapturing = true;
-        root.captureNext();
+        multiCaptureWatchdog.restart();
     }
 
     function captureNext() {
+        // Legacy sequential path kept for captureLoader.onActiveChanged
+        // compat; multi capture now uses Variants + pendingCaptureCount.
+        if (root.isMultiCapturing)
+            return;
         const screens = Quickshell.screens;
         if (root.captureIndex >= screens.length) {
             root.compositeAllCaptures();
@@ -837,9 +945,15 @@ Item {
     }
 
     function compositeAllCaptures() {
+        multiCaptureWatchdog.stop();
         if (root.allScreenPaths.length === 0) {
             root.isMultiCapturing = false;
             root.notify("Screenshot Failed", "No screens captured.", "critical", "dialog-error", "Screenshot");
+            if (root.captureDoneCallback) {
+                const cb = root.captureDoneCallback;
+                root.captureDoneCallback = null;
+                cb("");
+            }
             return;
         }
         compositeLoader.active = true;
