@@ -21,6 +21,7 @@ import "Bar"
 import "Volume"
 import "Brightness"
 import "ScreenRecorder"
+import "DynamicIsland"
 
 Variants {
     model: Quickshell.screens

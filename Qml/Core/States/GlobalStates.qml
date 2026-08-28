@@ -42,7 +42,7 @@ Singleton {
 
     property bool isBarOpen: Configs.bar.alwaysOpenBar
 
-    property bool isDynamicIslandActive: false
+    property bool isDragAndDropActive: false
     property var pendingShareFiles: []
 
     property bool isLockscreenOpen: false
@@ -82,10 +82,10 @@ Singleton {
         osd.resume(name);
     }
 
-    function setDynamicIslandActive(value, silent): void {
-        if (root.isDynamicIslandActive === value)
+    function setDragAndDropActive(value, silent): void {
+        if (root.isDragAndDropActive === value)
             return;
-        root.isDynamicIslandActive = value;
+        root.isDragAndDropActive = value;
         if (!value || silent)
             return;
         ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
@@ -95,7 +95,7 @@ Singleton {
         if (!files || files.length === 0)
             return;
         root.pendingShareFiles = files;
-        root.setDynamicIslandActive(true, true);
+        root.setDragAndDropActive(true, true);
     }
 
     function setPanel(name, value): void {
