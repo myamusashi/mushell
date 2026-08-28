@@ -119,10 +119,11 @@ Item {
 
             Layout.fillWidth: true
             fillWidth: true
+            leadingFillsWidth: true
             visible: !root.auth.unlockInProgress
             model: root.auth.sessions
             textRole: "display"
-            menuIcon.name: "window"
+            icon.name: "window"
             currentIndex: root.auth.selectedSessionIndex
             text: root.auth.selectedSessionIndex >= 0 ? root.auth.sessions.get(root.auth.selectedSessionIndex)?.display ?? qsTr("Session") : qsTr("Session")
 
