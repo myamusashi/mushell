@@ -1,8 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell.Io
 import Quickshell.Widgets
 import Quickshell.Wayland
@@ -23,6 +21,7 @@ WrapperRectangle {
 
     implicitWidth: uiState.listWidth + (Configs.clipboard.enablePreview ? (uiState.previewWidth + Appearance.spacing.small * 2) : 0)
     implicitHeight: GlobalStates.isClipboardOpen ? Configs.clipboard.height : 0
+    visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
     radius: Appearance.rounding.normal
     color: Colours.m3Colors.m3SurfaceContainerLow
     clip: true
@@ -46,6 +45,7 @@ WrapperRectangle {
         function list(): string {
             return JSON.stringify(ClipboardManager.model.entries());
         }
+
         function status(): string {
             return JSON.stringify({
                 enabled: ClipboardManager.enabled,
@@ -53,12 +53,15 @@ WrapperRectangle {
                 maxEntries: ClipboardManager.maxEntries
             });
         }
+
         function remove(id: int): void {
             ClipboardManager.remove(id);
         }
+
         function clear(): bool {
             return ClipboardManager.clearAll();
         }
+
         function search(query: string): void {
             ClipboardManager.model.setFilter(query);
         }
@@ -69,7 +72,6 @@ WrapperRectangle {
 
         readonly property int listWidth: Configs.clipboard.width
         readonly property int previewWidth: 400
-
         property bool previewFocused: false
         property bool visualActive: false
         property int visualAnchor: 0
@@ -99,15 +101,9 @@ WrapperRectangle {
     Loader {
         active: (!Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name) && GlobalStates.isClipboardOpen // qmllint disable
         asynchronous: true
-        sourceComponent: clipboardWindow
-    }
-
-    Component {
-        id: clipboardWindow
-
-        FocusCage {
+        sourceComponent: FocusCage {
             active: GlobalStates.isClipboardOpen
-            defaultFocus: Configs.clipboard.enableVimKeybinds ? vimFocus : searchField
+            defaultFocus: Configs.clipboard.enableVimKeybinds ? vimFocus : content.searchField
             anchors.fill: parent
 
             Item {
@@ -115,588 +111,14 @@ WrapperRectangle {
 
                 width: 0
                 height: 0
-
-                Keys.onPressed: event => searchField.keyPressed(event)
+                Keys.onPressed: event => content.handleKey(event)
             }
 
-            ColumnLayout {
-                id: clipboardLayout
+            Content {
+                id: content
 
                 anchors.fill: parent
-
-                readonly property int currentId: {
-                    if (entryList.currentIndex < 0 || !entryList.currentItem)
-                        return -1;
-                    return entryList.currentItem.entryId; // qmllint disable
-                }
-
-                spacing: 0
-
-                Item {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 48
-
-                    Rectangle {
-                        anchors.bottom: parent.bottom
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        height: 1
-                        color: Qt.alpha(Colours.m3Colors.m3OutlineVariant, 0.6)
-                    }
-
-                    RowLayout {
-                        anchors {
-                            fill: parent
-                            leftMargin: Appearance.margin.large
-                            rightMargin: Appearance.margin.large
-                            topMargin: Appearance.margin.smaller
-                            bottomMargin: Appearance.margin.smaller
-                        }
-                        spacing: Appearance.spacing.smaller
-
-                        Icon {
-                            id: searchIcon
-                            property color target: searchField.isFocused ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
-                            property color colorFrom
-                            property color colorTo
-                            property bool colorBlending: false
-                            property real colorBlendProgress: 1.0
-                            onColorBlendProgressChanged: {
-                                if (!colorBlending)
-                                    return;
-                                if (colorBlendProgress >= 1) {
-                                    color = colorTo;
-                                    colorBlending = false;
-                                } else if (colorBlendProgress > 0) {
-                                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
-                                }
-                            }
-                            onTargetChanged: {
-                                colorBlendAnim.stop();
-                                colorFrom = color;
-                                colorTo = target;
-                                colorBlending = true;
-                                colorBlendProgress = 0.0;
-                                colorBlendAnim.start();
-                            }
-
-                            icon: "search"
-                            font.pixelSize: Appearance.fonts.size.larger
-
-                            NAnim {
-                                id: colorBlendAnim
-                                target: searchIcon
-                                property: "colorBlendProgress"
-                                from: 0.0
-                                to: 1.0
-                            }
-                        }
-
-                        StyledTextInput {
-                            id: searchField
-
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 35
-
-                            autoFocus: !Configs.clipboard.enableVimKeybinds
-
-                            placeHolderText: qsTr("Search clipboard…")
-
-                            Timer {
-                                id: searchDebounce
-
-                                interval: 150
-                                repeat: false
-                                onTriggered: ClipboardManager.model.setFilter(searchField.text)
-                            }
-
-                            onTextChanged: {
-                                if (text.length === 0) {
-                                    searchDebounce.stop();
-                                    ClipboardManager.model.setFilter("");
-                                } else {
-                                    searchDebounce.restart();
-                                }
-                            }
-                            toggleButtonVisible: false
-
-                            onAccepted: {
-                                if (Configs.clipboard.enableVimKeybinds && !searchField.isFocused) {
-                                    // Copy moved to "y" in vim mode.
-                                    return;
-                                }
-
-                                if (clipboardLayout.currentId >= 0) {
-                                    ClipboardManager.copyToClipboard(clipboardLayout.currentId);
-                                    if (!Configs.clipboard.keepOpenAfterCopy)
-                                        GlobalStates.isClipboardOpen = false;
-                                }
-                            }
-
-                            onKeyPressed: event => {
-                                if (searchField.isFocused) {
-                                    if (!searchField.hasSelection && event.key === Qt.Key_Escape) {
-                                        vimFocus.forceActiveFocus();
-                                        event.accepted = true;
-                                    }
-                                    return;
-                                }
-
-                                const vim = Configs.clipboard.enableVimKeybinds;
-
-                                if (vim) {
-                                    if (event.key === Qt.Key_Slash) {
-                                        searchField.requestKeyboardFocus();
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_Escape && uiState.visualActive) {
-                                        uiState.visualActive = false;
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_V) {
-                                        uiState.visualActive = !uiState.visualActive;
-                                        if (uiState.visualActive)
-                                            uiState.visualAnchor = entryList.currentIndex;
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_J) {
-                                        entryList.moveCurrentIndexDown();
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_K) {
-                                        entryList.moveCurrentIndexUp();
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_H) {
-                                        entryList.moveCurrentIndexLeft();
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_L) {
-                                        entryList.moveCurrentIndexRight();
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (uiState.visualActive && event.key === Qt.Key_Y) {
-                                        const ids = entryList.visualSelectedIds();
-                                        const copied = ids.length > 0 && ClipboardManager.copySelection(ids);
-                                        if (copied) {
-                                            const n = ids.length === 1 ? qsTr("entry") : qsTr("entries");
-                                            ToastService.show(qsTr("Copied %1 %2").arg(ids.length).arg(n), qsTr("Clipboard"), "edit-paste");
-                                            if (!Configs.clipboard.keepOpenAfterCopy)
-                                                GlobalStates.isClipboardOpen = false;
-                                        }
-                                        uiState.visualActive = false;
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (uiState.visualActive && event.key === Qt.Key_D) {
-                                        const ids = entryList.visualSelectedIds();
-                                        const removed = ClipboardManager.removeMany(ids);
-                                        if (removed > 0) {
-                                            const n = removed === 1 ? qsTr("entry") : qsTr("entries");
-                                            ToastService.show(qsTr("Deleted %1 %2").arg(removed).arg(n), qsTr("Clipboard"), "edit-delete");
-                                        }
-                                        uiState.visualActive = false;
-                                        entryList.currentIndex = Math.min(entryList.currentIndex, entryList.count - 1);
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_Y && clipboardLayout.currentId >= 0) {
-                                        ClipboardManager.copyToClipboard(clipboardLayout.currentId);
-                                        if (!Configs.clipboard.keepOpenAfterCopy)
-                                            GlobalStates.isClipboardOpen = false;
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_D) {
-                                        const item = entryList.currentItem;
-                                        if (clipboardLayout.currentId >= 0 && item && !item.pinned) // qmllint disable
-                                            ClipboardManager.remove(clipboardLayout.currentId);
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_P) {
-                                        const item = entryList.currentItem;
-                                        if (clipboardLayout.currentId >= 0 && item)
-                                            ClipboardManager.pin(clipboardLayout.currentId, !item.pinned); // qmllint disable
-                                        event.accepted = true;
-                                        return;
-                                    }
-
-                                    if (event.key === Qt.Key_Q) {
-                                        GlobalStates.isClipboardOpen = false;
-                                        event.accepted = true;
-                                        return;
-                                    }
-                                }
-
-                                if (event.key === Qt.Key_Up) {
-                                    entryList.moveCurrentIndexUp();
-                                    event.accepted = true;
-                                }
-
-                                if (event.key === Qt.Key_Down) {
-                                    entryList.moveCurrentIndexDown();
-                                    event.accepted = true;
-                                }
-
-                                if (event.key === Qt.Key_Left) {
-                                    entryList.moveCurrentIndexLeft();
-                                    event.accepted = true;
-                                }
-
-                                if (event.key === Qt.Key_Right) {
-                                    entryList.moveCurrentIndexRight();
-                                    event.accepted = true;
-                                }
-
-                                if (event.key === Qt.Key_Q && !vim) {
-                                    GlobalStates.isClipboardOpen = false;
-                                    event.accepted = true;
-                                }
-
-                                if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_T) {
-                                    Configs.clipboard.enablePreview = !Configs.clipboard.enablePreview;
-                                    event.accepted = true;
-                                    return;
-                                }
-
-                                if (event.key === Qt.Key_Delete && !vim) {
-                                    const item = entryList.currentItem;
-                                    if (clipboardLayout.currentId >= 0 && item && !item.pinned) // qmllint disable
-                                        ClipboardManager.remove(clipboardLayout.currentId);
-                                    event.accepted = true;
-                                }
-
-                                if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_P && !vim) {
-                                    const item = entryList.currentItem;
-                                    if (clipboardLayout.currentId >= 0 && item)
-                                        ClipboardManager.pin(clipboardLayout.currentId, !item.pinned); // qmllint disable
-                                    event.accepted = true;
-                                    return;
-                                }
-
-                                if (event.key === Qt.Key_Tab) {
-                                    uiState.previewFocused = true;
-                                    event.accepted = true;
-                                }
-                            }
-                        }
-
-                        StyledText {
-                            text: (entryList.currentPage + 1) + " / " + entryList.totalPages
-                            font.pixelSize: Appearance.fonts.size.small
-                            color: Colours.m3Colors.m3OnSurfaceVariant
-                            visible: entryList.totalPages > 0 && searchField.text.length === 0 && !uiState.visualActive
-                        }
-
-                        StyledText {
-                            text: qsTr("VISUAL") + " " + entryList.visualSelectableCount
-                            font.pixelSize: Appearance.fonts.size.small
-                            font.bold: true
-                            color: Colours.m3Colors.m3Primary
-                            visible: uiState.visualActive
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    spacing: Appearance.spacing.small
-
-                    Item {
-                        Layout.preferredWidth: uiState.listWidth
-                        Layout.fillHeight: true
-
-                        Flickable {
-                            id: verticalFlick
-
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                                top: parent.top
-                                bottom: pageIndicatorRow.top
-                                topMargin: Appearance.margin.small
-                                bottomMargin: Appearance.margin.small
-                            }
-
-                            contentWidth: width
-                            contentHeight: entryList.height
-                            clip: true
-                            flickableDirection: Flickable.VerticalFlick
-
-                            onDraggingChanged: scrollAnim.stop()
-
-                            onDragStarted: scrollAnim.stop()
-
-                            onFlickStarted: scrollAnim.stop()
-
-                            ScrollBar.vertical: ScrollBar {
-                                policy: ScrollBar.AsNeeded
-                            }
-
-                            GridView {
-                                id: entryList
-
-                                width: verticalFlick.width
-                                height: Math.max(1, Configs.clipboard.listEntries) * (64 + Appearance.spacing.small)
-
-                                readonly property int visualStart: uiState.visualActive ? Math.min(uiState.visualAnchor, currentIndex) : -1
-                                readonly property int visualEnd: uiState.visualActive ? Math.max(uiState.visualAnchor, currentIndex) : -1
-
-                                readonly property int visualSelectableCount: {
-                                    let n = 0;
-                                    for (let i = visualStart; i <= visualEnd; ++i) {
-                                        const t = ClipboardManager.model.typeAtRow(i);
-                                        if (t === "text" || t === "html")
-                                            ++n;
-                                    }
-                                    return n;
-                                }
-
-                                function visualSelectedIds(): var {
-                                    const ids = [];
-                                    const start = Math.min(uiState.visualAnchor, currentIndex);
-                                    const end = Math.max(uiState.visualAnchor, currentIndex);
-                                    for (let i = start; i <= end; ++i)
-                                        ids.push(ClipboardManager.model.idAtRow(i));
-                                    return ids;
-                                }
-
-                                clip: false
-                                currentIndex: 0
-                                model: ClipboardManager.model
-
-                                flow: GridView.FlowTopToBottom
-                                cellWidth: width
-                                cellHeight: 64 + Appearance.spacing.small
-                                snapMode: GridView.SnapOneRow
-                                maximumFlickVelocity: 1000
-                                boundsBehavior: Flickable.StopAtBounds
-
-                                readonly property int itemsPerPage: Math.max(1, Configs.clipboard.listEntries)
-                                readonly property int maxVisibleCount: Math.min(count, Configs.clipboard.maxEntries)
-                                readonly property int totalPages: Math.max(1, Math.ceil(maxVisibleCount / itemsPerPage))
-                                readonly property int currentPage: Math.max(0, Math.min(totalPages - 1, Math.round(contentX / width)))
-
-                                onContentXChanged: {
-                                    var maxContentX = Math.max(0, (totalPages - 1) * width);
-                                    if (contentX > maxContentX) {
-                                        contentX = maxContentX;
-                                    }
-                                }
-
-                                function ensureCurrentVisible() {
-                                    const itemY = (currentIndex % itemsPerPage) * cellHeight;
-                                    const viewport = verticalFlick.height;
-                                    const currentY = verticalFlick.contentY;
-                                    let targetY = -1;
-                                    if (itemY < currentY)
-                                        targetY = itemY;
-                                    else if (itemY + cellHeight > currentY + viewport)
-                                        targetY = itemY + cellHeight - viewport;
-                                    if (targetY < 0)
-                                        return;
-                                    targetY = Math.max(0, Math.min(targetY, verticalFlick.contentHeight - viewport));
-                                    scrollAnim.stop();
-                                    scrollAnim.to = targetY;
-                                    scrollAnim.start();
-                                }
-
-                                onCurrentIndexChanged: ensureCurrentVisible()
-
-                                NAnim {
-                                    id: scrollAnim
-
-                                    target: verticalFlick
-                                    property: "contentY"
-                                    duration: Appearance.animations.durations.small
-                                }
-
-                                ScrollBar.vertical: ScrollBar {
-                                    policy: ScrollBar.AlwaysOff
-                                }
-                                ScrollBar.horizontal: horizontalScrollBar
-
-                                highlightMoveDuration: 200
-                                highlightFollowsCurrentItem: true
-                                highlightRangeMode: GridView.ApplyRange
-                                highlight: StyledRect {
-                                    color: Colours.m3Colors.m3SurfaceContainerHigh
-                                    width: entryList.cellWidth
-                                    height: entryList.cellHeight
-                                }
-
-                                rebound: Transition {
-                                    NAnim {
-                                        properties: "x,y"
-                                    }
-                                }
-
-                                add: Transition {
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        from: 0
-                                        to: 1
-                                    }
-                                }
-
-                                remove: Transition {
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        from: 1
-                                        to: 0
-                                    }
-                                }
-
-                                move: Transition {
-                                    NAnim {
-                                        properties: "x,y"
-                                        duration: Appearance.animations.durations.small
-                                    }
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        to: 1
-                                        duration: Appearance.animations.durations.small
-                                    }
-                                }
-
-                                addDisplaced: Transition {
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        to: 1
-                                        duration: Appearance.animations.durations.small
-                                    }
-                                }
-
-                                displaced: Transition {
-                                    NAnim {
-                                        properties: "opacity,scale"
-                                        to: 1
-                                        duration: Appearance.animations.durations.small
-                                    }
-                                }
-
-                                delegate: ClipboardItemDelegate {
-                                    required property var modelData
-
-                                    visible: index < Configs.clipboard.maxEntries
-
-                                    entryId: modelData.entryId
-                                    type: modelData.type
-                                    preview: modelData.preview
-                                    timestamp: modelData.timestamp
-                                    pinned: modelData.pinned
-                                    sourceApp: modelData.sourceApp
-                                    fileName: modelData.fileName
-                                    isSelected: GridView.isCurrentItem
-                                    inVisual: uiState.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
-
-                                    width: GridView.view.cellWidth
-                                    height: 64
-
-                                    onActivated: ClipboardManager.copyToClipboard(entryId)
-                                    onPinToggled: (id, s) => ClipboardManager.pin(id, s)
-                                    onRemoveRequested: id => ClipboardManager.remove(id)
-                                }
-                            }
-                        }
-
-                        StyledText {
-                            anchors.centerIn: verticalFlick
-                            visible: entryList.count === 0
-                            text: searchField.text.length > 0 ? qsTr("No results for ") + searchField.text : qsTr("Clipboard is empty")
-                            font.pixelSize: Appearance.fonts.size.medium
-                            color: Colours.m3Colors.m3OnSurfaceVariant
-                        }
-
-                        Row {
-                            id: pageIndicatorRow
-
-                            anchors.bottom: horizontalScrollBar.top
-                            anchors.horizontalCenter: parent.horizontalCenter
-                            anchors.bottomMargin: Appearance.margin.small
-                            spacing: 6
-                            visible: entryList.totalPages > 1
-
-                            Repeater {
-                                model: entryList.totalPages
-                                delegate: Rectangle {
-                                    required property int index
-                                    implicitWidth: entryList.currentPage === index ? 16 : 6
-                                    implicitHeight: 6
-                                    radius: 3
-                                    color: entryList.currentPage === index ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OutlineVariant
-                                    opacity: entryList.currentPage === index ? 1.0 : 0.5
-
-                                    Behavior on implicitWidth {
-                                        NAnim {}
-                                    }
-                                    Behavior on opacity {
-                                        NAnim {}
-                                    }
-                                }
-                            }
-                        }
-
-                        ScrollBar {
-                            id: horizontalScrollBar
-
-                            anchors.bottom: parent.bottom
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            orientation: Qt.Horizontal
-                            policy: ScrollBar.AsNeeded
-                        }
-                    }
-
-                    Loader {
-                        id: previewLoader
-
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        active: Configs.clipboard.enablePreview
-                        visible: active
-
-                        sourceComponent: RowLayout {
-                            anchors.fill: parent
-                            spacing: Appearance.spacing.small
-
-                            Rectangle {
-                                Layout.preferredWidth: 1
-                                Layout.fillHeight: true
-                                color: Qt.alpha(Colours.m3Colors.m3OutlineVariant, 0.6)
-                            }
-
-                            ClipboardPreview {
-                                Layout.preferredWidth: uiState.previewWidth
-                                Layout.fillHeight: true
-                                entryId: clipboardLayout.currentId
-
-                                onCopyRequested: id => ClipboardManager.copyToClipboard(id)
-                                onPinToggled: (id, pinned) => ClipboardManager.pin(id, pinned)
-                            }
-                        }
-                    }
-                }
+                uiState: uiState
             }
         }
     }
