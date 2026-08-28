@@ -176,12 +176,12 @@ Singleton {
     }
 
     GlobalShortcut { // qmllint disable
-        name: "dynamicIsland"
+        name: "dragAndDrop"
         onPressed: GlobalStates.setDragAndDropActive(!GlobalStates.isDragAndDropActive)
     }
 
     IpcHandler {
-        target: "dynamicIsland"
+        target: "dragAndDrop"
 
         function start(): void {
             GlobalStates.setDragAndDropActive(true);

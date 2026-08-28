@@ -71,7 +71,7 @@ vast-shell/
 │   │   │   ├── Bar/           # Bar, Left, Middle, Right
 │   │   │   ├── Calendar/
 │   │   │   ├── Clipboard/     # ClipboardItemDelegate, ClipboardPreview
-│   │   │   ├── DynamicIsland/ # ConfirmDeviceContent, DeviceListContent, DoneContent,
+│   │   │   ├── DragAndDrop/   # ConfirmDeviceContent, DeviceListContent, DoneContent,
 │   │   │   │                  # DraggingContent, FilesDroppedContent, ProgressContent
 │   │   │   ├── Launcher/      # App, CaptureItem, Screencapture, History
 │   │   │   ├── Notifications/ # Content, NotifIcon, Wrapper
@@ -135,7 +135,7 @@ vast-shell/
 
 **KDE Connect**
 - [x] Device discovery, pairing, and transfer UI
-- [x] Drag-and-drop file sharing via Dynamic Island
+- [x] Drag-and-drop file sharing via Drag and Drop
 - [x] Settings page with polling controls and device management
 
 **Bluetooth**

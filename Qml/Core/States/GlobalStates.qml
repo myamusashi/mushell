@@ -88,7 +88,7 @@ Singleton {
         root.isDragAndDropActive = value;
         if (!value || silent)
             return;
-        ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Dynamic Island"), "application-vnd.oasis.opendocument.text", 5000);
+        ToastService.show(qsTr("Drag and drop is active. Drop files onto the island to share them."), qsTr("Drag and Drop"), "application-vnd.oasis.opendocument.text", 5000);
     }
 
     function shareFilesViaKdeConnect(files): void {

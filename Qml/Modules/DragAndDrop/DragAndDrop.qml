@@ -26,7 +26,7 @@ LazyLoader {
 
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.namespace: "shell:dynamicIsland"
+        WlrLayershell.namespace: "shell:dragAndDrop"
         WlrLayershell.layer: WlrLayer.Overlay
 
         mask: Region {

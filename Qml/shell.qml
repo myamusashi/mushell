@@ -8,7 +8,7 @@ import Quickshell
 
 import qs.Components.Feedback
 import qs.Modules.Drawers
-import qs.Modules.DynamicIsland
+import qs.Modules.DragAndDrop
 import qs.Modules.Lock
 import qs.Modules.Polkit
 import qs.Modules.Wallpaper
@@ -19,7 +19,7 @@ ShellRoot {
     Wall {}
     Polkit {}
     Drawers {}
-    DynamicIsland {}
+    DragAndDrop {}
     Settings {}
     Toast {}
 }
