@@ -32,7 +32,7 @@ Singleton {
     property bool transferSuccess: false
     property bool slidingUp: false
 
-    readonly property bool isArmed: GlobalStates.isDragAndDropServicesActive // qmllint disable
+    readonly property bool isArmed: GlobalStates.isDragAndDropActive // qmllint disable
     readonly property bool islandVisible: isArmed || closing || currentState !== DragAndDropServices.State.Idle
     readonly property real dotSize: 24
     readonly property int slideDuration: 300
