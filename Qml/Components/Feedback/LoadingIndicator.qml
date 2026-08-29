@@ -9,8 +9,6 @@ import M3Shapes
 Item {
     id: root
 
-    anchors.centerIn: parent
-
     property bool status: false
     property double radius: 50
     property double padding: 50
