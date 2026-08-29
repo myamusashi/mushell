@@ -13,7 +13,7 @@ import qs.Core.States
 import qs.Services
 
 LazyLoader {
-    activeAsync: GlobalStates.isDragAndDropActive || DragAndDrop.closing
+    activeAsync: GlobalStates.isDragAndDropActive || DragAndDropServices.closing
     component: PanelWindow {
         id: targetWindow
 
@@ -38,36 +38,36 @@ LazyLoader {
         }
 
         Binding {
-            target: DragAndDrop
+            target: DragAndDropServices
             property: "stackLayout"
             value: stackLayout
             when: stackLayout !== null
         }
 
         Component.onCompleted: {
-            DragAndDrop.islandBox = islandBox;
-            DragAndDrop.stackLayout = stackLayout;
+            DragAndDropServices.islandBox = islandBox;
+            DragAndDropServices.stackLayout = stackLayout;
 
-            Qt.callLater(DragAndDrop.updateContentSize);
+            Qt.callLater(DragAndDropServices.updateContentSize);
         }
 
         Component.onDestruction: {
-            if (DragAndDrop.stackLayout === stackLayout)
-                DragAndDrop.stackLayout = null;
+            if (DragAndDropServices.stackLayout === stackLayout)
+                DragAndDropServices.stackLayout = null;
         }
 
         Connections {
-            target: DragAndDrop
+            target: DragAndDropServices
 
             function onCurrentStateChanged() {
-                Qt.callLater(DragAndDrop.updateContentSize);
+                Qt.callLater(DragAndDropServices.updateContentSize);
             }
         }
 
         Item {
             id: islandHost
 
-            y: DragAndDrop.slidingUp ? (-DragAndDrop.dotSize - Configs.generals.outerBorderSize) : (Configs.generals.outerBorderSize + Configs.bar.barHeight)
+            y: DragAndDropServices.slidingUp ? (-DragAndDropServices.dotSize - Configs.generals.outerBorderSize) : (Configs.generals.outerBorderSize + Configs.bar.barHeight)
             anchors.horizontalCenter: parent.horizontalCenter
 
             implicitWidth: islandBox.contentWidth
@@ -75,7 +75,7 @@ LazyLoader {
 
             Behavior on y {
                 NAnim {
-                    duration: DragAndDrop.slideDuration
+                    duration: DragAndDropServices.slideDuration
                     easing.bezierCurve: Appearance.animations.curves.expressiveDefaultSpatial
                 }
             }
@@ -86,25 +86,25 @@ LazyLoader {
                 anchors.fill: parent
 
                 onEntered: drag => {
-                    if (drag.hasUrls && (DragAndDrop.currentState === DragAndDrop.State.Idle || DragAndDrop.currentState === DragAndDrop.State.FilesDropped))
-                        DragAndDrop.currentState = DragAndDrop.State.Dragging;
+                    if (drag.hasUrls && (DragAndDropServices.currentState === DragAndDropServices.State.Idle || DragAndDropServices.currentState === DragAndDropServices.State.FilesDropped))
+                        DragAndDropServices.currentState = DragAndDropServices.State.Dragging;
                 }
                 onExited: {
-                    if (DragAndDrop.currentState === DragAndDrop.State.Dragging)
-                        DragAndDrop.currentState = DragAndDrop.droppedFiles.length > 0 ? DragAndDrop.State.FilesDropped : DragAndDrop.State.Idle;
+                    if (DragAndDropServices.currentState === DragAndDropServices.State.Dragging)
+                        DragAndDropServices.currentState = DragAndDropServices.droppedFiles.length > 0 ? DragAndDropServices.State.FilesDropped : DragAndDropServices.State.Idle;
                 }
                 onPositionChanged: drag => {
-                    if (!drag.hasUrls && DragAndDrop.currentState === DragAndDrop.State.Dragging)
-                        DragAndDrop.currentState = DragAndDrop.droppedFiles.length > 0 ? DragAndDrop.State.FilesDropped : DragAndDrop.State.Idle;
+                    if (!drag.hasUrls && DragAndDropServices.currentState === DragAndDropServices.State.Dragging)
+                        DragAndDropServices.currentState = DragAndDropServices.droppedFiles.length > 0 ? DragAndDropServices.State.FilesDropped : DragAndDropServices.State.Idle;
                 }
                 onDropped: drop => {
-                    if (DragAndDrop.currentState !== DragAndDrop.State.Dragging)
+                    if (DragAndDropServices.currentState !== DragAndDropServices.State.Dragging)
                         return;
                     var incoming = [];
                     for (var i = 0; i < drop.urls.length; i++)
                         incoming.push(String(drop.urls[i]).replace("file://", ""));
-                    DragAndDrop.droppedFiles = DragAndDrop.droppedFiles.concat(incoming);
-                    DragAndDrop.currentState = DragAndDrop.State.FilesDropped;
+                    DragAndDropServices.droppedFiles = DragAndDropServices.droppedFiles.concat(incoming);
+                    DragAndDropServices.currentState = DragAndDropServices.State.FilesDropped;
                 }
             }
 
@@ -122,9 +122,9 @@ LazyLoader {
                 implicitWidth: islandBox.contentWidth
                 implicitHeight: islandBox.contentHeight
 
-                opacity: DragAndDrop.slidingUp ? 0 : (DragAndDrop.islandVisible ? 1 : 0)
+                opacity: DragAndDropServices.slidingUp ? 0 : (DragAndDropServices.islandVisible ? 1 : 0)
 
-                radius: DragAndDrop.currentState > DragAndDrop.State.Dragging ? Appearance.rounding.normal : Appearance.rounding.full
+                radius: DragAndDropServices.currentState > DragAndDropServices.State.Dragging ? Appearance.rounding.normal : Appearance.rounding.full
                 color: GlobalStates.drawerColors
                 clip: true
 
@@ -160,29 +160,29 @@ LazyLoader {
                     implicitWidth: islandBox.contentWidth
                     implicitHeight: islandBox.contentHeight
                     currentIndex: {
-                        switch (DragAndDrop.currentState) {
-                        case DragAndDrop.State.Dragging:
+                        switch (DragAndDropServices.currentState) {
+                        case DragAndDropServices.State.Dragging:
                             return 1;
-                        case DragAndDrop.State.FilesDropped:
+                        case DragAndDropServices.State.FilesDropped:
                             return 2;
-                        case DragAndDrop.State.SelectingDevice:
+                        case DragAndDropServices.State.SelectingDevice:
                             return 3;
-                        case DragAndDrop.State.ConfirmDevice:
+                        case DragAndDropServices.State.ConfirmDevice:
                             return 4;
-                        case DragAndDrop.State.Transferring:
+                        case DragAndDropServices.State.Transferring:
                             return 5;
-                        case DragAndDrop.State.Completed:
+                        case DragAndDropServices.State.Completed:
                             return 6;
                         default:
                             return 0;
                         }
                     }
 
-                    onCurrentIndexChanged: Qt.callLater(DragAndDrop.updateContentSize)
+                    onCurrentIndexChanged: Qt.callLater(DragAndDropServices.updateContentSize)
 
                     Item {
-                        implicitWidth: DragAndDrop.dotSize
-                        implicitHeight: DragAndDrop.dotSize
+                        implicitWidth: DragAndDropServices.dotSize
+                        implicitHeight: DragAndDropServices.dotSize
 
                         Rectangle {
                             anchors.centerIn: parent
@@ -194,74 +194,74 @@ LazyLoader {
                     }
 
                     DraggingContent {
-                        active: DragAndDrop.isDragging
+                        active: DragAndDropServices.isDragging
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isDragging)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isDragging)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isDragging)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isDragging)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                     FilesDroppedContent {
-                        island: DragAndDrop
-                        active: DragAndDrop.isFilesDropped
+                        island: DragAndDropServices
+                        active: DragAndDropServices.isFilesDropped
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isFilesDropped)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isFilesDropped)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isFilesDropped)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isFilesDropped)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                     DeviceListContent {
-                        island: DragAndDrop
-                        active: DragAndDrop.isSelectingDevice
+                        island: DragAndDropServices
+                        active: DragAndDropServices.isSelectingDevice
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isSelectingDevice)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isSelectingDevice)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isSelectingDevice)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isSelectingDevice)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                     ConfirmDeviceContent {
-                        island: DragAndDrop
-                        active: DragAndDrop.isConfirmDevice
+                        island: DragAndDropServices
+                        active: DragAndDropServices.isConfirmDevice
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isConfirmDevice)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isConfirmDevice)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isConfirmDevice)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isConfirmDevice)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                     ProgressContent {
-                        island: DragAndDrop
-                        active: DragAndDrop.isTransferring
+                        island: DragAndDropServices
+                        active: DragAndDropServices.isTransferring
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isTransferring)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isTransferring)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isTransferring)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isTransferring)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                     DoneContent {
-                        island: DragAndDrop
-                        active: DragAndDrop.isCompleted
+                        island: DragAndDropServices
+                        active: DragAndDropServices.isCompleted
                         onImplicitWidthChanged: {
-                            if (DragAndDrop.isCompleted)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isCompleted)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                         onImplicitHeightChanged: {
-                            if (DragAndDrop.isCompleted)
-                                Qt.callLater(DragAndDrop.updateContentSize);
+                            if (DragAndDropServices.isCompleted)
+                                Qt.callLater(DragAndDropServices.updateContentSize);
                         }
                     }
                 }

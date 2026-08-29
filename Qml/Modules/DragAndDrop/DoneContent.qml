@@ -3,37 +3,36 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 
-import qs.Components.Base
+import qs.Components.Button
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 
-RowLayout {
+Item {
     id: root
 
     required property var island
     required property bool active
 
-    implicitWidth: doneRowLayout.implicitWidth + 32
-    implicitHeight: 44
-    spacing: Appearance.spacing.normal
+    readonly property real contentHeight: 44
+
+    implicitWidth: doneRowLayout.implicitWidth
+    implicitHeight: contentHeight
 
     RowLayout {
         id: doneRowLayout
 
+        anchors.centerIn: parent
         spacing: Appearance.spacing.normal
         visible: root.active
 
-        Icon {
-            icon: root.island.transferSuccess ? "check_circle" : "error"
-            font.pixelSize: Appearance.fonts.size.large
-            color: root.island.transferSuccess ? Colours.m3Colors.m3Green : Colours.m3Colors.m3Error
-        }
-
-        StyledText {
+        ExtendedFloatingButton {
             text: root.island.transferSuccess ? qsTr("Sent to %1").arg(root.island.selectedDevice?.name ?? "") : qsTr("Transfer cancelled")
-            font.pixelSize: Appearance.fonts.size.normal
-            color: Colours.m3Colors.m3OnSurface
+            icon.name: root.island.transferSuccess ? "check_circle" : "error"
+            icon.color: root.island.transferSuccess ? Colours.m3Colors.m3Green : Colours.m3Colors.m3Error
+            icon.size: Appearance.fonts.size.extraLarge
+            textColor: Colours.m3Colors.m3OnSurface
+            color: "transparent"
+            onClicked: {}
         }
     }
 }

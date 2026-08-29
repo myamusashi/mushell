@@ -2,11 +2,10 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 
+import qs.Components.Button
 import qs.Components.Base
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 
 Item {
@@ -25,7 +24,7 @@ Item {
 
     function computeActiveWidth() {
         if (deviceCount === 0)
-            return 220;
+            return 250;
         var maximum = 0;
         for (var i = 0; i < deviceCount; i++) {
             deviceMetrics.text = KDEConnect.availableDevices[i].name;
@@ -76,88 +75,44 @@ Item {
 
         Column {
             width: parent.width
-            spacing: 4
+            spacing: Appearance.spacing.small
 
             Repeater {
                 model: KDEConnect.availableDevices
 
-                delegate: Rectangle {
-                    id: deviceItem
-
+                delegate: ExtendedFloatingButton {
                     required property var modelData
 
-                    width: deviceFlickable.width
+                    implicitWidth: deviceFlickable.width
                     height: root.rowHeight
-                    radius: Appearance.rounding.small
-                    color: deviceMouseArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
-
-                    MArea {
-                        id: deviceMouseArea
-
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            root.island.selectedDevice = deviceItem.modelData;
-                            root.island.goToConfirmation();
-                        }
-                    }
-
-                    RowLayout {
-                        anchors {
-                            verticalCenter: parent.verticalCenter
-                            left: parent.left
-                            leftMargin: 12
-                        }
-                        spacing: Appearance.spacing.normal
-
-                        Icon {
-                            icon: "smartphone"
-                            font.pixelSize: Appearance.fonts.size.normal
-                            color: Colours.m3Colors.m3Primary
-                        }
-
-                        StyledText {
-                            text: deviceItem.modelData.name
-                            font.pixelSize: Appearance.fonts.size.normal
-                            color: Colours.m3Colors.m3OnSurface
-                        }
+                    icon.name: "smartphone"
+                    icon.color: Colours.m3Colors.m3Primary
+                    text: modelData.name
+                    textColor: Colours.m3Colors.m3OnSurface
+                    color: "transparent"
+                    onClicked: {
+                        root.island.selectedDevice = modelData;
+                        root.island.goToConfirmation();
                     }
                 }
             }
         }
     }
 
-    Rectangle {
+    ExtendedFloatingButton {
+        id: backButton
+
         anchors {
-            bottom: parent.bottom
             right: parent.right
-            margins: 4
+            bottom: parent.bottom
+            bottomMargin: Appearance.margin.small
         }
-
-        visible: root.active
-        implicitWidth: Math.max(64, backLabel.implicitWidth + 20)
         implicitHeight: 26
-        radius: Appearance.rounding.small
-        color: backMouseArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
-
-        StyledText {
-            id: backLabel
-
-            anchors.centerIn: parent
-            text: qsTr("Back")
-            font.pixelSize: Appearance.fonts.size.small
-            font.weight: Font.DemiBold
-            color: Colours.m3Colors.m3Primary
-        }
-
-        MArea {
-            id: backMouseArea
-
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.island.goBack()
-        }
+        text: qsTr("Back")
+        icon.name: "arrow_back_ios_new"
+        icon.color: Colours.m3Colors.m3Primary
+        textColor: Colours.m3Colors.m3OnSurface
+        color: Qt.alpha(Colours.m3Colors.m3Primary, 0.12)
+        onClicked: root.island.goBack()
     }
 }

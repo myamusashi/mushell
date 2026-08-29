@@ -3,9 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls
 
+import qs.Components.Button
 import qs.Components.Base
 import qs.Core.Configs
-import qs.Core.Utils
 import qs.Services
 
 Item {
@@ -89,36 +89,18 @@ Item {
         }
     }
 
-    Rectangle {
+    ExtendedFloatingButton {
         anchors {
             bottom: parent.bottom
             right: parent.right
-            margins: 4
+            margins: Appearance.margin.small
         }
 
         visible: root.active
-        implicitWidth: Math.max(72, nextLabel.implicitWidth + 24)
         implicitHeight: 28
-        radius: Appearance.rounding.small
-        color: nextMouseArea.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
-
-        StyledText {
-            id: nextLabel
-
-            anchors.centerIn: parent
-            text: qsTr("Next")
-            font.pixelSize: Appearance.fonts.size.normal
-            font.weight: Font.DemiBold
-            color: Colours.m3Colors.m3Primary
-        }
-
-        MArea {
-            id: nextMouseArea
-
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: root.island.goToDeviceSelection()
-        }
+        color: "transparent"
+        text: qsTr("Next")
+        textColor: Colours.m3Colors.m3Primary
+        onClicked: root.island.goToDeviceSelection()
     }
 }

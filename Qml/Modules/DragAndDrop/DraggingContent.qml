@@ -45,15 +45,11 @@ Item {
                         PauseAnimation {
                             duration: dot.stagger
                         }
-                        NumberAnimation {
+                        NAnim {
                             to: 0.55
-                            duration: 300
-                            easing.type: Easing.InOutQuad
                         }
-                        NumberAnimation {
+                        NAnim {
                             to: 1
-                            duration: 300
-                            easing.type: Easing.InOutQuad
                         }
                     }
                 }
