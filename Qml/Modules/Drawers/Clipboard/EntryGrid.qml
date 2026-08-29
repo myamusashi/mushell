@@ -119,16 +119,26 @@ Item {
                     currentIndex++;
             }
 
-            function moveCurrentIndexLeft() {
+            function moveCurrentIndexByPage(delta) {
                 const page = currentPage;
-                if (page > 0)
-                    contentX = (page - 1) * width;
+                const newPage = page + delta;
+                if (newPage < 0 || newPage >= totalPages)
+                    return;
+
+                const row = currentIndex % itemsPerPage;
+                const pageStart = newPage * itemsPerPage;
+                const pageEnd = Math.min(pageStart + itemsPerPage, count) - 1;
+
+                currentIndex = Math.min(Math.max(pageStart + row, pageStart), pageEnd);
+                contentX = newPage * width;
+            }
+
+            function moveCurrentIndexLeft() {
+                moveCurrentIndexByPage(-1);
             }
 
             function moveCurrentIndexRight() {
-                const page = currentPage;
-                if (page < totalPages - 1)
-                    contentX = (page + 1) * width;
+                moveCurrentIndexByPage(1);
             }
 
             NAnim {
@@ -215,9 +225,9 @@ Item {
                 pinned: modelData.pinned
                 sourceApp: modelData.sourceApp
                 fileName: modelData.fileName
-                isSelected: GridView.isCurrentItem
+                isSelected: GridView.isCurrentItem // qmllint disable
                 inVisual: root.uiState.visualActive && index >= entryList.visualStart && index <= entryList.visualEnd
-                width: GridView.view.cellWidth
+                width: GridView.view.cellWidth // qmllint disable
                 height: 64
                 onActivated: ClipboardManager.copyToClipboard(entryId)
                 onPinToggled: (id, s) => ClipboardManager.pin(id, s)

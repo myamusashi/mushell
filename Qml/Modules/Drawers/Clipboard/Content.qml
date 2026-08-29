@@ -14,7 +14,7 @@ ColumnLayout {
     required property var uiState
 
     readonly property int currentId: {
-        if (entryGrid.entryList.currentIndex < 0 || !entryGrid.entryList.currentItem)
+        if (!entryGrid || !entryGrid.entryList || entryGrid.entryList.currentIndex < 0 || !entryGrid.entryList.currentItem)
             return -1;
         return entryGrid.entryList.currentItem.entryId; // qmllint disable
     }
@@ -25,168 +25,157 @@ ColumnLayout {
     spacing: 0
 
     function handleKey(event: var): void {
+        if (!entryGrid || !entryGrid.entryList)
+            return;
+
+        const navKeys = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Tab];
+        const isNavKey = navKeys.indexOf(event.key) !== -1;
+
         if (searchBar.searchField.isFocused) {
             if (!searchBar.searchField.hasSelection && event.key === Qt.Key_Escape) {
                 root.forceActiveFocus();
                 event.accepted = true;
+                return;
             }
-            return;
+            if (!isNavKey)
+                return;
         }
 
         const vim = Configs.clipboard.enableVimKeybinds;
+        const item = entryGrid.entryList.currentItem;
 
-        if (vim) {
-            if (event.key === Qt.Key_Slash) {
+        switch (event.key) {
+        case Qt.Key_Slash:
+            if (vim) {
                 searchBar.searchField.requestKeyboardFocus();
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_Escape && root.uiState.visualActive) {
+            break;
+        case Qt.Key_Escape:
+            if (vim && root.uiState.visualActive) {
                 root.uiState.visualActive = false;
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_V) {
+            break;
+        case Qt.Key_V:
+            if (vim) {
                 root.uiState.visualActive = !root.uiState.visualActive;
                 if (root.uiState.visualActive)
                     root.uiState.visualAnchor = entryGrid.entryList.currentIndex;
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_J) {
+            break;
+        case Qt.Key_J:
+            if (vim) {
                 entryGrid.entryList.moveCurrentIndexDown();
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_K) {
+            break;
+        case Qt.Key_K:
+            if (vim) {
                 entryGrid.entryList.moveCurrentIndexUp();
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_H) {
+            break;
+        case Qt.Key_H:
+            if (vim) {
                 entryGrid.entryList.moveCurrentIndexLeft();
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_L) {
+            break;
+        case Qt.Key_L:
+            if (vim) {
                 entryGrid.entryList.moveCurrentIndexRight();
                 event.accepted = true;
-                return;
             }
-
-            if (root.uiState.visualActive && event.key === Qt.Key_Y) {
-                const ids = entryGrid.entryList.visualSelectedIds();
-                const copied = ids.length > 0 && ClipboardManager.copySelection(ids);
-                if (copied) {
-                    const n = ids.length === 1 ? qsTr("entry") : qsTr("entries");
-                    ToastService.show(qsTr("Copied %1 %2").arg(ids.length).arg(n), qsTr("Clipboard"), "edit-paste");
+            break;
+        case Qt.Key_Y:
+            if (vim) {
+                if (root.uiState.visualActive) {
+                    const ids = entryGrid.entryList.visualSelectedIds();
+                    const copied = ids.length > 0 && ClipboardManager.copySelection(ids);
+                    if (copied) {
+                        const n = ids.length === 1 ? qsTr("entry") : qsTr("entries");
+                        ToastService.show(qsTr("Copied %1 %2").arg(ids.length).arg(n), qsTr("Clipboard"), "edit-paste");
+                        if (!Configs.clipboard.keepOpenAfterCopy)
+                            GlobalStates.isClipboardOpen = false;
+                    }
+                    root.uiState.visualActive = false;
+                } else if (root.currentId >= 0) {
+                    ClipboardManager.copyToClipboard(root.currentId);
                     if (!Configs.clipboard.keepOpenAfterCopy)
                         GlobalStates.isClipboardOpen = false;
                 }
-                root.uiState.visualActive = false;
                 event.accepted = true;
-                return;
             }
-
-            if (root.uiState.visualActive && event.key === Qt.Key_D) {
-                const ids = entryGrid.entryList.visualSelectedIds();
-                const removed = ClipboardManager.removeMany(ids);
-                if (removed > 0) {
-                    const n = removed === 1 ? qsTr("entry") : qsTr("entries");
-                    ToastService.show(qsTr("Deleted %1 %2").arg(removed).arg(n), qsTr("Clipboard"), "edit-delete");
-                }
-                root.uiState.visualActive = false;
-                entryGrid.entryList.currentIndex = Math.min(entryGrid.entryList.currentIndex, entryGrid.entryList.count - 1);
-                event.accepted = true;
-                return;
-            }
-
-            if (event.key === Qt.Key_Y && root.currentId >= 0) {
-                ClipboardManager.copyToClipboard(root.currentId);
-                if (!Configs.clipboard.keepOpenAfterCopy)
-                    GlobalStates.isClipboardOpen = false;
-                event.accepted = true;
-                return;
-            }
-
-            if (event.key === Qt.Key_D) {
-                const item = entryGrid.entryList.currentItem;
-                if (root.currentId >= 0 && item && !item.pinned) // qmllint disable
+            break;
+        case Qt.Key_D:
+            if (vim) {
+                if (root.uiState.visualActive) {
+                    const ids = entryGrid.entryList.visualSelectedIds();
+                    const removed = ClipboardManager.removeMany(ids);
+                    if (removed > 0) {
+                        const n = removed === 1 ? qsTr("entry") : qsTr("entries");
+                        ToastService.show(qsTr("Deleted %1 %2").arg(removed).arg(n), qsTr("Clipboard"), "edit-delete");
+                    }
+                    root.uiState.visualActive = false;
+                    entryGrid.entryList.currentIndex = Math.min(entryGrid.entryList.currentIndex, entryGrid.entryList.count - 1);
+                } else if (root.currentId >= 0 && item && !item.pinned) { // qmllint disable
                     ClipboardManager.remove(root.currentId);
+                }
                 event.accepted = true;
-                return;
             }
-
-            if (event.key === Qt.Key_P) {
-                const item = entryGrid.entryList.currentItem;
+            break;
+        case Qt.Key_P:
+            if (vim) {
                 if (root.currentId >= 0 && item)
                     ClipboardManager.pin(root.currentId, !item.pinned); // qmllint disable
                 event.accepted = true;
-                return;
-            }
-
-            if (event.key === Qt.Key_Q) {
-                GlobalStates.isClipboardOpen = false;
+            } else if ((event.modifiers & Qt.ControlModifier) && !vim) {
+                if (root.currentId >= 0 && item)
+                    ClipboardManager.pin(root.currentId, !item.pinned); // qmllint disable
                 event.accepted = true;
-                return;
             }
-        }
-
-        if (event.key === Qt.Key_Up) {
-            entryGrid.entryList.moveCurrentIndexUp();
-            event.accepted = true;
-        }
-
-        if (event.key === Qt.Key_Down) {
-            entryGrid.entryList.moveCurrentIndexDown();
-            event.accepted = true;
-        }
-
-        if (event.key === Qt.Key_Left) {
-            entryGrid.entryList.moveCurrentIndexLeft();
-            event.accepted = true;
-        }
-
-        if (event.key === Qt.Key_Right) {
-            entryGrid.entryList.moveCurrentIndexRight();
-            event.accepted = true;
-        }
-
-        if (event.key === Qt.Key_Q && !vim) {
+            break;
+        case Qt.Key_Q:
             GlobalStates.isClipboardOpen = false;
             event.accepted = true;
-        }
-
-        if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_T) {
-            Configs.clipboard.enablePreview = !Configs.clipboard.enablePreview;
+            break;
+        case Qt.Key_Up:
+            entryGrid.entryList.moveCurrentIndexUp();
             event.accepted = true;
-            return;
-        }
-
-        if (event.key === Qt.Key_Delete && !vim) {
-            const item = entryGrid.entryList.currentItem;
-            if (root.currentId >= 0 && item && !item.pinned) // qmllint disable
-                ClipboardManager.remove(root.currentId);
+            break;
+        case Qt.Key_Down:
+            entryGrid.entryList.moveCurrentIndexDown();
             event.accepted = true;
-        }
-
-        if ((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_P && !vim) {
-            const item = entryGrid.entryList.currentItem;
-            if (root.currentId >= 0 && item)
-                ClipboardManager.pin(root.currentId, !item.pinned); // qmllint disable
+            break;
+        case Qt.Key_Left:
+            entryGrid.entryList.moveCurrentIndexLeft();
             event.accepted = true;
-            return;
-        }
-
-        if (event.key === Qt.Key_Tab) {
+            break;
+        case Qt.Key_Right:
+            entryGrid.entryList.moveCurrentIndexRight();
+            event.accepted = true;
+            break;
+        case Qt.Key_T:
+            if (event.modifiers & Qt.ControlModifier) {
+                Configs.clipboard.enablePreview = !Configs.clipboard.enablePreview;
+                event.accepted = true;
+            }
+            break;
+        case Qt.Key_Delete:
+            if (!vim) {
+                if (root.currentId >= 0 && item && !item.pinned) // qmllint disable
+                    ClipboardManager.remove(root.currentId);
+                event.accepted = true;
+            }
+            break;
+        case Qt.Key_Tab:
             root.uiState.previewFocused = true;
             event.accepted = true;
+            break;
+        default:
+            break;
         }
     }
 
