@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Vast.Utils
 
 import qs.Core.Configs
 import qs.Services
@@ -113,7 +114,7 @@ PopupWidget {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
             onTargetChanged: {

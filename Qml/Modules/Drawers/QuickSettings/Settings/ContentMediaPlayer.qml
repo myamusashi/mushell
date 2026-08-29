@@ -8,6 +8,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Mpris
 import Vast.Lyrics
+import Vast.Utils
 
 import qs.Core.Configs
 import qs.Core.Utils
@@ -589,7 +590,7 @@ RowLayout {
                                     color = colorTo;
                                     colorBlending = false;
                                 } else if (colorBlendProgress > 0) {
-                                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                                 }
                             }
                             onTargetChanged: {

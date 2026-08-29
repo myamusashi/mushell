@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Widgets
+import Vast.Utils
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -67,7 +68,7 @@ WrapperRectangle {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 

@@ -71,10 +71,6 @@ Singleton {
         return Math.min(1, Math.max(0, x));
     }
 
-    function blendColors(src: color, dst: color, t: double): color {
-        return ColorUtils.blendColors(src, dst, t);
-    }
-
     function overlayColor(baseColor, targetColor, overlayOpacity) {
         if (overlayOpacity <= 0)
             // Impossible to influence the base
@@ -87,22 +83,6 @@ Singleton {
         let b = (targetColor.b - baseColor.b * invA) / overlayOpacity;
 
         return Qt.rgba(clamp01(r), clamp01(g), clamp01(b), 1.0);
-    }
-
-    function rgbToHct(color) {
-        return ColorUtils.rgbToHct(color);
-    }
-
-    function hctToRgb(h, c, t) {
-        return ColorUtils.hctToRgb(h, c, t);
-    }
-
-    function createTonalColor(baseColor, tone) {
-        return ColorUtils.createTonalColor(baseColor, tone);
-    }
-
-    function createAnalogousColor(baseColor, hueShift) {
-        return ColorUtils.createAnalogousColor(baseColor, hueShift);
     }
 
     FileView {
@@ -186,12 +166,12 @@ Singleton {
         readonly property color m3SurfaceVariant: root.staticTemplateColors.surfaceVariant
 
         readonly property color m3Red: m3Error
-        readonly property color m3Green: root.hctToRgb(145, 50, 70)
-        readonly property color m3Blue: root.hctToRgb(220, 50, 70)
-        readonly property color m3Yellow: root.hctToRgb(90, 60, 70)
-        readonly property color m3Orange: root.hctToRgb(30, 50, 70)
-        readonly property color m3Purple: root.hctToRgb(285, 50, 70)
-        readonly property color m3Maroon: root.hctToRgb(10, 30, 30)
+        readonly property color m3Green: ColorUtils.hctToRgb(145, 50, 70)
+        readonly property color m3Blue: ColorUtils.hctToRgb(220, 50, 70)
+        readonly property color m3Yellow: ColorUtils.hctToRgb(90, 60, 70)
+        readonly property color m3Orange: ColorUtils.hctToRgb(30, 50, 70)
+        readonly property color m3Purple: ColorUtils.hctToRgb(285, 50, 70)
+        readonly property color m3Maroon: ColorUtils.hctToRgb(10, 30, 30)
     }
 
     component MaterialTemplateComponent: M3TemplateColors {
@@ -254,12 +234,12 @@ Singleton {
         readonly property color m3SurfaceVariant: root.materialTemplateColors.surfaceVariant
 
         readonly property color m3Red: m3Error
-        readonly property color m3Green: root.hctToRgb(145, 50, 70)
-        readonly property color m3Blue: root.hctToRgb(220, 50, 70)
-        readonly property color m3Yellow: root.hctToRgb(90, 60, 70)
-        readonly property color m3Orange: root.hctToRgb(30, 50, 70)
-        readonly property color m3Purple: root.hctToRgb(285, 50, 70)
-        readonly property color m3Maroon: root.hctToRgb(10, 30, 30)
+        readonly property color m3Green: ColorUtils.hctToRgb(145, 50, 70)
+        readonly property color m3Blue: ColorUtils.hctToRgb(220, 50, 70)
+        readonly property color m3Yellow: ColorUtils.hctToRgb(90, 60, 70)
+        readonly property color m3Orange: ColorUtils.hctToRgb(30, 50, 70)
+        readonly property color m3Purple: ColorUtils.hctToRgb(285, 50, 70)
+        readonly property color m3Maroon: ColorUtils.hctToRgb(10, 30, 30)
     }
 
     component M3GeneratedTemplateComponent: M3TemplateColors {
@@ -267,83 +247,83 @@ Singleton {
             const sourceColor = root.materialTemplateColors.sourceColor;
             return sourceColor ? sourceColor : "#6750A4";
         }
-        readonly property color m3SecondarySource: root.createAnalogousColor(m3SourceColor, 60)
-        readonly property color m3TertiarySource: root.createAnalogousColor(m3SourceColor, 120)
+        readonly property color m3SecondarySource: ColorUtils.createAnalogousColor(m3SourceColor, 60)
+        readonly property color m3TertiarySource: ColorUtils.createAnalogousColor(m3SourceColor, 120)
         readonly property color m3NeutralSource: {
-            let hct = root.rgbToHct(m3SourceColor);
-            return root.hctToRgb(hct.h, 4, hct.t);
+            let hct = ColorUtils.rgbToHct(m3SourceColor);
+            return ColorUtils.hctToRgb(hct.h, 4, hct.t);
         }
         readonly property color m3NeutralVariantSource: {
-            let hct = root.rgbToHct(m3SourceColor);
-            return root.hctToRgb(hct.h, 8, hct.t);
+            let hct = ColorUtils.rgbToHct(m3SourceColor);
+            return ColorUtils.hctToRgb(hct.h, 8, hct.t);
         }
 
-        readonly property color m3Background: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 98)
-        readonly property color m3Surface: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 98)
-        readonly property color m3SurfaceDim: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 87)
-        readonly property color m3SurfaceBright: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 24 : 98)
-        readonly property color m3SurfaceContainerLowest: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 4 : 100)
-        readonly property color m3SurfaceContainerLow: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 10 : 96)
-        readonly property color m3SurfaceContainer: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 12 : 94)
-        readonly property color m3SurfaceContainerHigh: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 17 : 92)
-        readonly property color m3SurfaceContainerHighest: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 22 : 90)
+        readonly property color m3Background: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 98)
+        readonly property color m3Surface: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 98)
+        readonly property color m3SurfaceDim: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 6 : 87)
+        readonly property color m3SurfaceBright: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 24 : 98)
+        readonly property color m3SurfaceContainerLowest: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 4 : 100)
+        readonly property color m3SurfaceContainerLow: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 10 : 96)
+        readonly property color m3SurfaceContainer: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 12 : 94)
+        readonly property color m3SurfaceContainerHigh: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 17 : 92)
+        readonly property color m3SurfaceContainerHighest: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 22 : 90)
 
-        readonly property color m3OnSurface: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 10)
-        readonly property color m3OnSurfaceVariant: root.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 80 : 30)
-        readonly property color m3OnBackground: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3OnSurface: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3OnSurfaceVariant: ColorUtils.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 80 : 30)
+        readonly property color m3OnBackground: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 10)
 
-        readonly property color m3Primary: root.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 80 : 40)
-        readonly property color m3OnPrimary: root.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 20 : 100)
-        readonly property color m3PrimaryContainer: root.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 30 : 90)
-        readonly property color m3OnPrimaryContainer: root.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 90 : 10)
-        readonly property color m3PrimaryFixed: root.createTonalColor(m3SourceColor, 90)
-        readonly property color m3PrimaryFixedDim: root.createTonalColor(m3SourceColor, 80)
-        readonly property color m3OnPrimaryFixed: root.createTonalColor(m3SourceColor, 10)
-        readonly property color m3OnPrimaryFixedVariant: root.createTonalColor(m3SourceColor, 30)
+        readonly property color m3Primary: ColorUtils.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 80 : 40)
+        readonly property color m3OnPrimary: ColorUtils.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 20 : 100)
+        readonly property color m3PrimaryContainer: ColorUtils.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 30 : 90)
+        readonly property color m3OnPrimaryContainer: ColorUtils.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3PrimaryFixed: ColorUtils.createTonalColor(m3SourceColor, 90)
+        readonly property color m3PrimaryFixedDim: ColorUtils.createTonalColor(m3SourceColor, 80)
+        readonly property color m3OnPrimaryFixed: ColorUtils.createTonalColor(m3SourceColor, 10)
+        readonly property color m3OnPrimaryFixedVariant: ColorUtils.createTonalColor(m3SourceColor, 30)
 
-        readonly property color m3Secondary: root.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 80 : 40)
-        readonly property color m3OnSecondary: root.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 20 : 100)
-        readonly property color m3SecondaryContainer: root.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 30 : 90)
-        readonly property color m3OnSecondaryContainer: root.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 90 : 10)
-        readonly property color m3SecondaryFixed: root.createTonalColor(m3SecondarySource, 90)
-        readonly property color m3SecondaryFixedDim: root.createTonalColor(m3SecondarySource, 80)
-        readonly property color m3OnSecondaryFixed: root.createTonalColor(m3SecondarySource, 10)
-        readonly property color m3OnSecondaryFixedVariant: root.createTonalColor(m3SecondarySource, 30)
+        readonly property color m3Secondary: ColorUtils.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 80 : 40)
+        readonly property color m3OnSecondary: ColorUtils.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 20 : 100)
+        readonly property color m3SecondaryContainer: ColorUtils.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 30 : 90)
+        readonly property color m3OnSecondaryContainer: ColorUtils.createTonalColor(m3SecondarySource, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3SecondaryFixed: ColorUtils.createTonalColor(m3SecondarySource, 90)
+        readonly property color m3SecondaryFixedDim: ColorUtils.createTonalColor(m3SecondarySource, 80)
+        readonly property color m3OnSecondaryFixed: ColorUtils.createTonalColor(m3SecondarySource, 10)
+        readonly property color m3OnSecondaryFixedVariant: ColorUtils.createTonalColor(m3SecondarySource, 30)
 
-        readonly property color m3Tertiary: root.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 80 : 40)
-        readonly property color m3OnTertiary: root.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 20 : 100)
-        readonly property color m3TertiaryContainer: root.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 30 : 90)
-        readonly property color m3OnTertiaryContainer: root.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 90 : 10)
-        readonly property color m3TertiaryFixed: root.createTonalColor(m3TertiarySource, 90)
-        readonly property color m3TertiaryFixedDim: root.createTonalColor(m3TertiarySource, 80)
-        readonly property color m3OnTertiaryFixed: root.createTonalColor(m3TertiarySource, 10)
-        readonly property color m3OnTertiaryFixedVariant: root.createTonalColor(m3TertiarySource, 30)
+        readonly property color m3Tertiary: ColorUtils.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 80 : 40)
+        readonly property color m3OnTertiary: ColorUtils.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 20 : 100)
+        readonly property color m3TertiaryContainer: ColorUtils.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 30 : 90)
+        readonly property color m3OnTertiaryContainer: ColorUtils.createTonalColor(m3TertiarySource, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3TertiaryFixed: ColorUtils.createTonalColor(m3TertiarySource, 90)
+        readonly property color m3TertiaryFixedDim: ColorUtils.createTonalColor(m3TertiarySource, 80)
+        readonly property color m3OnTertiaryFixed: ColorUtils.createTonalColor(m3TertiarySource, 10)
+        readonly property color m3OnTertiaryFixedVariant: ColorUtils.createTonalColor(m3TertiarySource, 30)
 
-        readonly property color m3ErrorSource: root.hctToRgb(25, 84, 40)
-        readonly property color m3Error: root.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 80 : 40)
-        readonly property color m3ErrorContainer: root.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 30 : 90)
-        readonly property color m3OnError: root.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 20 : 100)
-        readonly property color m3OnErrorContainer: root.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 90 : 10)
+        readonly property color m3ErrorSource: ColorUtils.hctToRgb(25, 84, 40)
+        readonly property color m3Error: ColorUtils.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 80 : 40)
+        readonly property color m3ErrorContainer: ColorUtils.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 30 : 90)
+        readonly property color m3OnError: ColorUtils.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 20 : 100)
+        readonly property color m3OnErrorContainer: ColorUtils.createTonalColor(m3ErrorSource, Configs.colors.isDarkMode ? 90 : 10)
 
-        readonly property color m3InverseSurface: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 20)
-        readonly property color m3InverseOnSurface: root.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 20 : 95)
-        readonly property color m3InversePrimary: root.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 40 : 80)
+        readonly property color m3InverseSurface: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 90 : 20)
+        readonly property color m3InverseOnSurface: ColorUtils.createTonalColor(m3NeutralSource, Configs.colors.isDarkMode ? 20 : 95)
+        readonly property color m3InversePrimary: ColorUtils.createTonalColor(m3SourceColor, Configs.colors.isDarkMode ? 40 : 80)
 
-        readonly property color m3Outline: root.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 60 : 50)
-        readonly property color m3OutlineVariant: root.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 30 : 80)
+        readonly property color m3Outline: ColorUtils.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 60 : 50)
+        readonly property color m3OutlineVariant: ColorUtils.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 30 : 80)
 
         readonly property color m3Scrim: "#000000"
         readonly property color m3Shadow: "#000000"
         readonly property color m3SurfaceTint: m3Primary
-        readonly property color m3SurfaceVariant: root.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 30 : 90)
+        readonly property color m3SurfaceVariant: ColorUtils.createTonalColor(m3NeutralVariantSource, Configs.colors.isDarkMode ? 30 : 90)
 
         readonly property color m3Red: m3Error
-        readonly property color m3Green: root.hctToRgb(145, 50, Configs.colors.isDarkMode ? 70 : 40)
-        readonly property color m3Blue: root.hctToRgb(220, 50, Configs.colors.isDarkMode ? 70 : 40)
-        readonly property color m3Yellow: root.hctToRgb(90, 60, Configs.colors.isDarkMode ? 70 : 40)
-        readonly property color m3Orange: root.hctToRgb(30, 50, Configs.colors.isDarkMode ? 70 : 40)
-        readonly property color m3Purple: root.hctToRgb(285, 50, Configs.colors.isDarkMode ? 70 : 40)
-        readonly property color m3Maroon: root.hctToRgb(10, 40, Configs.colors.isDarkMode ? 45 : 30)
+        readonly property color m3Green: ColorUtils.hctToRgb(145, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Blue: ColorUtils.hctToRgb(220, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Yellow: ColorUtils.hctToRgb(90, 60, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Orange: ColorUtils.hctToRgb(30, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Purple: ColorUtils.hctToRgb(285, 50, Configs.colors.isDarkMode ? 70 : 40)
+        readonly property color m3Maroon: ColorUtils.hctToRgb(10, 40, Configs.colors.isDarkMode ? 45 : 30)
     }
 
     component M3TemplateColors: QtObject {

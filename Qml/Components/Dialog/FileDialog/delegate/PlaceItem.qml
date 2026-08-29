@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 
+import Vast.Utils
+
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
@@ -60,7 +62,7 @@ StyledRect {
                     color = iconColorTo;
                     iconColorBlending = false;
                 } else if (iconColorBlendProgress > 0) {
-                    color = Colours.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
+                    color = ColorUtils.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
                 }
             }
 
@@ -101,7 +103,7 @@ StyledRect {
                     color = labelColorTo;
                     labelColorBlending = false;
                 } else if (labelColorBlendProgress > 0) {
-                    color = Colours.blendColors(labelColorFrom, labelColorTo, labelColorBlendProgress);
+                    color = ColorUtils.blendColors(labelColorFrom, labelColorTo, labelColorBlendProgress);
                 }
             }
 

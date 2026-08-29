@@ -5,6 +5,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import Vast.Utils
 
 import "../../../Base"
 
@@ -51,7 +52,7 @@ Rectangle {
             color = rowColorTo;
             rowColorBlending = false;
         } else if (rowColorBlendProgress > 0) {
-            color = Colours.blendColors(rowColorFrom, rowColorTo, rowColorBlendProgress);
+            color = ColorUtils.blendColors(rowColorFrom, rowColorTo, rowColorBlendProgress);
         }
     }
 
@@ -139,7 +140,7 @@ Rectangle {
                     color = iconColorTo;
                     iconColorBlending = false;
                 } else if (iconColorBlendProgress > 0) {
-                    color = Colours.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
+                    color = ColorUtils.blendColors(iconColorFrom, iconColorTo, iconColorBlendProgress);
                 }
             }
 
@@ -181,7 +182,7 @@ Rectangle {
                     color = nameColorTo;
                     nameColorBlending = false;
                 } else if (nameColorBlendProgress > 0) {
-                    color = Colours.blendColors(nameColorFrom, nameColorTo, nameColorBlendProgress);
+                    color = ColorUtils.blendColors(nameColorFrom, nameColorTo, nameColorBlendProgress);
                 }
             }
 
@@ -225,7 +226,7 @@ Rectangle {
                     color = sizeColorTo;
                     sizeColorBlending = false;
                 } else if (sizeColorBlendProgress > 0) {
-                    color = Colours.blendColors(sizeColorFrom, sizeColorTo, sizeColorBlendProgress);
+                    color = ColorUtils.blendColors(sizeColorFrom, sizeColorTo, sizeColorBlendProgress);
                 }
             }
 
@@ -268,7 +269,7 @@ Rectangle {
                     color = extensionColorTo;
                     extensionColorBlending = false;
                 } else if (extensionColorBlendProgress > 0) {
-                    color = Colours.blendColors(extensionColorFrom, extensionColorTo, extensionColorBlendProgress);
+                    color = ColorUtils.blendColors(extensionColorFrom, extensionColorTo, extensionColorBlendProgress);
                 }
             }
 
@@ -312,7 +313,7 @@ Rectangle {
                     color = dateColorTo;
                     dateColorBlending = false;
                 } else if (dateColorBlendProgress > 0) {
-                    color = Colours.blendColors(dateColorFrom, dateColorTo, dateColorBlendProgress);
+                    color = ColorUtils.blendColors(dateColorFrom, dateColorTo, dateColorBlendProgress);
                 }
             }
 

@@ -7,6 +7,7 @@ import QtQml.Models
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Services
+import Vast.Utils
 
 Item {
     id: root
@@ -124,7 +125,7 @@ Item {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 

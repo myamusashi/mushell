@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Widgets
 import Vast.ImageCache
+import Vast.Utils
 
 import qs.Components.Base
 import qs.Core.Configs
@@ -122,7 +123,7 @@ Item {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 

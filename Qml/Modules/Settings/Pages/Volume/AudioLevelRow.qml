@@ -8,6 +8,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import Vast.Utils
 
 ColumnLayout {
     id: root
@@ -62,7 +63,7 @@ ColumnLayout {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
             onTargetChanged: {

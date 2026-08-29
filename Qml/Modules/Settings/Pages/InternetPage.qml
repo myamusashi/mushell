@@ -14,6 +14,7 @@ import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
 import qs.Services
+import Vast.Utils
 
 import "../Components"
 
@@ -262,7 +263,7 @@ Item {
                                             color = colorTo;
                                             colorBlending = false;
                                         } else if (colorBlendProgress > 0) {
-                                            color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                                            color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                                         }
                                     }
                                     onTargetChanged: {

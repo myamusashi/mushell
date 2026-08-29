@@ -9,6 +9,7 @@ import qs.Core.States
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import Vast.Utils
 
 WlSessionLockSurface {
     id: root
@@ -39,7 +40,7 @@ WlSessionLockSurface {
             bottomItem.lockIcon.color = colorTo;
             colorBlending = false;
         } else if (colorBlendProgress > 0) {
-            bottomItem.lockIcon.color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+            bottomItem.lockIcon.color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
         }
     }
 

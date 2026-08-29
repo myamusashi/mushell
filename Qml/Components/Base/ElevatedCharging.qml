@@ -6,6 +6,7 @@ import Quickshell.Services.UPower
 
 import qs.Core.Configs
 import qs.Services
+import Vast.Utils
 
 Elevation {
     id: elevation
@@ -29,7 +30,7 @@ Elevation {
             color = flashInTo;
             flashInActive = false;
         } else if (flashInBlend > 0) {
-            color = Colours.blendColors(flashInFrom, flashInTo, flashInBlend);
+            color = ColorUtils.blendColors(flashInFrom, flashInTo, flashInBlend);
         }
     }
 
@@ -54,7 +55,7 @@ Elevation {
             color = flashOutTo;
             flashOutActive = false;
         } else if (flashOutBlend > 0) {
-            color = Colours.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
+            color = ColorUtils.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
         }
     }
 

@@ -8,6 +8,7 @@ import QtQuick.Controls
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
+import Vast.Utils
 
 Slider {
     id: root
@@ -255,7 +256,7 @@ Slider {
                         color = colorTo;
                         colorBlending = false;
                     } else if (colorBlendProgress > 0) {
-                        color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                        color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                     }
                 }
 

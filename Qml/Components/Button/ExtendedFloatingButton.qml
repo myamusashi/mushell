@@ -8,6 +8,7 @@ import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
+import Vast.Utils
 
 Item {
     id: root
@@ -169,7 +170,7 @@ Item {
                     color = colorTo;
                     colorBlending = false;
                 } else if (colorBlendProgress > 0) {
-                    color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                    color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                 }
             }
 
@@ -216,7 +217,7 @@ Item {
                         color = colorTo;
                         colorBlending = false;
                     } else if (colorBlendProgress > 0) {
-                        color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                        color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                     }
                 }
 

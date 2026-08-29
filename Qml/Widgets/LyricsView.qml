@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Vast.Lyrics
+import Vast.Utils
 
 import qs.Core.Configs
 import qs.Services
@@ -100,7 +101,7 @@ Item {
                                 color = flashInTo;
                                 flashInActive = false;
                             } else if (flashInBlend > 0) {
-                                color = Colours.blendColors(flashInFrom, flashInTo, flashInBlend);
+                                color = ColorUtils.blendColors(flashInFrom, flashInTo, flashInBlend);
                             }
                         }
 
@@ -154,7 +155,7 @@ Item {
                         color = flashOutTo;
                         flashOutActive = false;
                     } else if (flashOutBlend > 0) {
-                        color = Colours.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
+                        color = ColorUtils.blendColors(flashOutFrom, flashOutTo, flashOutBlend);
                     }
                 }
 

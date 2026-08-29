@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Pipewire
 import Vast.Audio
+import Vast.Utils
 
 import qs.Core.Configs
 import qs.Core.Utils
@@ -90,7 +91,7 @@ ScrollView {
                                 color = colorTo;
                                 colorBlending = false;
                             } else if (colorBlendProgress > 0) {
-                                color = Colours.blendColors(colorFrom, colorTo, colorBlendProgress);
+                                color = ColorUtils.blendColors(colorFrom, colorTo, colorBlendProgress);
                             }
                         }
                         onTargetChanged: {
