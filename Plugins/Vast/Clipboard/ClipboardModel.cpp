@@ -1,5 +1,6 @@
 #include "ClipboardEntry.hpp"
 #include "ClipboardModel.hpp"
+#include "ClipboardContentClassifier.hpp"
 #include "../FuzzyCore.hpp"
 #include "../FuzzyMatcher.hpp"
 
@@ -374,7 +375,7 @@ namespace vast {
             return {};
 
         constexpr int kMaxChars = 120;
-        const QString collapsed = e.content.simplified();
+        const QString collapsed = ClipboardContentClassifier::buildPreview(e.type, e.content).simplified();
         return collapsed.length() > kMaxChars ? collapsed.left(kMaxChars) + QStringLiteral("…") : collapsed;
     }
 }

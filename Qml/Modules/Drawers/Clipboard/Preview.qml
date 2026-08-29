@@ -76,6 +76,18 @@ Item {
         property string entryType: "text"
         property string fileName: ""
 
+        readonly property int maxPreviewChars: 20000
+        readonly property bool isHtml: entryType === "html"
+        readonly property bool truncated: content.length > maxPreviewChars
+        readonly property string previewContent: {
+            if (!truncated)
+                return content;
+            if (!isHtml)
+                return content.slice(0, maxPreviewChars);
+            const cut = content.lastIndexOf(">", maxPreviewChars);
+            return content.slice(0, cut > 0 ? cut + 1 : maxPreviewChars);
+        }
+
         function clear() {
             loading = false;
             isImage = false;
@@ -256,21 +268,35 @@ Item {
                 }
             }
 
-            TextEdit {
+            ColumnLayout {
                 width: textScroll.width
-                text: entryDetails.content
-                readOnly: true
-                selectByMouse: true
-                selectByKeyboard: true
-                wrapMode: TextEdit.Wrap
+                spacing: Appearance.spacing.small
 
-                font.pixelSize: Appearance.fonts.size.medium
-                font.family: Appearance.fonts.family.mono
-                color: Colours.m3Colors.m3OnSurface
+                TextEdit {
+                    Layout.fillWidth: true
+                    text: entryDetails.previewContent
+                    textFormat: entryDetails.isHtml ? TextEdit.RichText : TextEdit.PlainText
+                    readOnly: true
+                    selectByMouse: true
+                    selectByKeyboard: true
+                    wrapMode: TextEdit.Wrap
 
-                selectionColor: Qt.alpha(Colours.m3Colors.m3Primary, 0.35)
-                selectedTextColor: Colours.m3Colors.m3OnSurface
-                padding: Appearance.padding.small
+                    font.pixelSize: Appearance.fonts.size.medium
+                    font.family: entryDetails.isHtml ? Appearance.fonts.family.sans : Appearance.fonts.family.mono
+                    color: Colours.m3Colors.m3OnSurface
+
+                    selectionColor: Qt.alpha(Colours.m3Colors.m3Primary, 0.35)
+                    selectedTextColor: Colours.m3Colors.m3OnSurface
+                    padding: Appearance.padding.small
+                }
+
+                StyledText {
+                    Layout.fillWidth: true
+                    visible: entryDetails.truncated
+                    text: qsTr("Preview truncated (%1 of %2 shown) — copy to get the full content").arg(root.formatSize(entryDetails.maxPreviewChars)).arg(root.formatSize(entryDetails.content.length))
+                    font.pixelSize: Appearance.fonts.size.small
+                    color: Colours.m3Colors.m3OnSurfaceVariant
+                }
             }
         }
 

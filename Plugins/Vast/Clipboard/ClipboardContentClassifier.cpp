@@ -1,11 +1,13 @@
 #include "ClipboardContentClassifier.hpp"
 #include "ClipboardEntry.hpp"
+#include "WaylandDataControl.hpp"
 
 #include <qbytearray.h>
 #include <qcryptographichash.h>
 #include <qdatetime.h>
 #include <qchar.h>
 #include <qstring.h>
+#include <qregularexpression.h>
 
 #include <algorithm>
 
@@ -27,6 +29,18 @@ namespace vast {
 
         const auto text = QString::fromUtf8(content);
         return text.isEmpty() || std::ranges::all_of(text, [](QChar c) { return c.isSpace(); });
+    }
+
+    [[nodiscard]] QString ClipboardContentClassifier::buildPreview(ClipboardType type, const QString& content) {
+        if (type != ClipboardType::Html)
+            return content;
+
+        const QByteArray                plain = WaylandDataControl::htmlToPlainText(content.toUtf8());
+        QString                         text  = QString::fromUtf8(plain);
+
+        static const QRegularExpression whitespaceRun(QStringLiteral("[\\s\\x{00A0}]+"));
+        text.replace(whitespaceRun, QStringLiteral(" "));
+        return text.trimmed();
     }
 
     [[nodiscard]] ClipboardEntry ClipboardContentClassifier::buildEntry(const QString& mimeType, const QByteArray& content, const QString& fileName, const QString& sourceApp) {
