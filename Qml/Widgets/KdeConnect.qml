@@ -22,7 +22,7 @@ StyledRect {
     color: root.dragHover ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
 
     Behavior on color {
-        NAnim {
+        CAnim {
             duration: Appearance.animations.durations.small
         }
     }
