@@ -30,6 +30,8 @@ Singleton {
     readonly property var materialPaletteSource: materialColor.ready ? materialColor.colors : root.lastValidPalette
     property var lastValidPalette: ({})
 
+    readonly property alias animatedMaterialColors: paletteAnimator.currentPalette
+
     function schemeEnum(name) {
         switch (name) {
         case "vibrant":
@@ -53,122 +55,24 @@ Singleton {
         }
     }
 
-    // OKLab-blended wallpaper palette transition state
-    property var animatedMaterialColors: ({})
-    property var paletteFrom: ({})
-    property var paletteTo: ({})
-    property real paletteProgress: 1.0
-    property bool transitioning: false
-
     onMaterialPaletteSourceChanged: {
         if (!root.materialPaletteSource || Object.keys(root.materialPaletteSource).length === 0)
             return;
-
         root.lastValidPalette = root.materialPaletteSource;
-
-        if (!root.transitioning) {
-            const snapshot = {};
-            for (const key in root.animatedMaterialColors)
-                snapshot[key] = root.animatedMaterialColors[key];
-            root.paletteFrom = snapshot;
-        }
-
-        root.paletteTo = root.toColorMap(root.materialPaletteSource);
-        root.paletteProgress = 0.0;
-        root.transitioning = true;
-        colorTransitionTimer.start();
+        paletteAnimator.transitionTo(root.materialPaletteSource);
     }
 
     Component.onCompleted: {
         if (root.materialPaletteSource && Object.keys(root.materialPaletteSource).length > 0)
-            root.animatedMaterialColors = root.toColorMap(root.materialPaletteSource);
-    }
-
-    function toColorMap(source) {
-        const result = {};
-        for (const key in source)
-            result[key] = root.toColorValue(source[key]);
-        return result;
-    }
-
-    function toColorValue(value) {
-        if (typeof value === "string") {
-            const hex = value.replace("#", "");
-            if (hex.length === 6 || hex.length === 8) {
-                const r = parseInt(hex.slice(0, 2), 16) / 255;
-                const g = parseInt(hex.slice(2, 4), 16) / 255;
-                const b = parseInt(hex.slice(4, 6), 16) / 255;
-                const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1.0;
-                return Qt.rgba(r, g, b, a);
-            }
-        }
-
-        return value;
-    }
-
-    function advancePaletteTransition() {
-        root.paletteProgress = Math.min(1, root.paletteProgress + colorTransitionTimer.interval / Appearance.animations.durations.expressiveDefaultSpatial);
-
-        // easeOutCubic
-        const eased = 1 - Math.pow(1 - root.paletteProgress, 3);
-        const blended = {};
-        for (const key in root.paletteTo)
-            blended[key] = root.paletteFrom[key] !== undefined ? root.blendColors(root.paletteFrom[key], root.paletteTo[key], eased) : root.paletteTo[key];
-
-        root.animatedMaterialColors = blended;
-
-        if (root.paletteProgress >= 1) {
-            root.animatedMaterialColors = root.paletteTo;
-            root.transitioning = false;
-            colorTransitionTimer.stop();
-        }
+            paletteAnimator.transitionTo(root.materialPaletteSource);
     }
 
     function clamp01(x) {
         return Math.min(1, Math.max(0, x));
     }
 
-    // Converts between sRGB and OKLab for perceptually uniform color blending.
-    // Use blendColors() for smooth theme transitions and animations.
-    // Do NOT use for M3 tonal palette work — that lives in HCT (rgbToHct/hctToRgb).
-    function oklabFromColor(c: color): var {
-        const l = 0.4122214708 * c.r + 0.5363325363 * c.g + 0.0514459929 * c.b;
-        const m = 0.2119034982 * c.r + 0.6806995451 * c.g + 0.1073969566 * c.b;
-        const s = 0.0883024619 * c.r + 0.2817188376 * c.g + 0.6299787005 * c.b;
-
-        const l_ = Math.cbrt(l);
-        const m_ = Math.cbrt(m);
-        const s_ = Math.cbrt(s);
-
-        return {
-            l: 0.2104542553 * l_ + 0.7936177850 * m_ - 0.0040720468 * s_,
-            a: 1.9779984951 * l_ - 2.4285922050 * m_ + 0.4505937099 * s_,
-            b: 0.0259040371 * l_ + 0.7827717662 * m_ - 0.8086757660 * s_
-        };
-    }
-
-    function oklabToColor(lab: var, alpha: double): color {
-        const l_ = lab.l + 0.3963377774 * lab.a + 0.2158037573 * lab.b;
-        const m_ = lab.l - 0.1055613458 * lab.a - 0.0638541728 * lab.b;
-        const s_ = lab.l - 0.0894841775 * lab.a - 1.2914855480 * lab.b;
-
-        const l = l_ * l_ * l_;
-        const m = m_ * m_ * m_;
-        const s = s_ * s_ * s_;
-
-        return Qt.rgba(clamp01(+4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s), clamp01(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s), clamp01(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s), alpha);
-    }
-
-    // Blend two Qt colors perceptually in OKLab space.
-    // t=0.0 → src, t=1.0 → dst
     function blendColors(src: color, dst: color, t: double): color {
-        const s = oklabFromColor(src);
-        const d = oklabFromColor(dst);
-        return oklabToColor({
-            l: s.l + (d.l - s.l) * t,
-            a: s.a + (d.a - s.a) * t,
-            b: s.b + (d.b - s.b) * t
-        }, src.a + (dst.a - src.a) * t);
+        return ColorUtils.blendColors(src, dst, t);
     }
 
     function overlayColor(baseColor, targetColor, overlayOpacity) {
@@ -185,129 +89,20 @@ Singleton {
         return Qt.rgba(clamp01(r), clamp01(g), clamp01(b), 1.0);
     }
 
-    function getSourceColor() {
-        const sourceColor = root.materialTemplateColors.sourceColor;
-        return sourceColor ? sourceColor : "#6750A4";
-    }
-
     function rgbToHct(color) {
-        let r = color.r;
-        let g = color.g;
-        let b = color.b;
-
-        r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
-        g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
-        b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
-
-        let x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
-        let y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
-        let z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
-
-        x = x / 0.95047;
-        z = z / 1.08883;
-
-        let fx = x > 0.008856 ? Math.pow(x, 1 / 3) : (7.787 * x) + (16 / 116);
-        let fy = y > 0.008856 ? Math.pow(y, 1 / 3) : (7.787 * y) + (16 / 116);
-        let fz = z > 0.008856 ? Math.pow(z, 1 / 3) : (7.787 * z) + (16 / 116);
-
-        let l = (116 * fy) - 16;
-        let a = 500 * (fx - fy);
-        let bLab = 200 * (fy - fz);
-
-        let chroma = Math.sqrt(a * a + bLab * bLab);
-        let hue = Math.atan2(bLab, a) * 180 / Math.PI;
-        if (hue < 0)
-            hue += 360;
-
-        return {
-            "h": hue,
-            "c": chroma,
-            "t": l
-        };
+        return ColorUtils.rgbToHct(color);
     }
 
     function hctToRgb(h, c, t) {
-        let hueRad = h * Math.PI / 180;
-        let a = c * Math.cos(hueRad);
-        let bLab = c * Math.sin(hueRad);
-        let l = t;
-
-        let fy = (l + 16) / 116;
-        let fx = a / 500 + fy;
-        let fz = fy - bLab / 200;
-
-        let x = fx > 0.206897 ? Math.pow(fx, 3) : (fx - 16 / 116) / 7.787;
-        let y = fy > 0.206897 ? Math.pow(fy, 3) : (fy - 16 / 116) / 7.787;
-        let z = fz > 0.206897 ? Math.pow(fz, 3) : (fz - 16 / 116) / 7.787;
-
-        x = x * 0.95047;
-        z = z * 1.08883;
-
-        let r = x * 3.2404542 + y * -1.5371385 + z * -0.4985314;
-        let g = x * -0.9692660 + y * 1.8760108 + z * 0.0415560;
-        let b = x * 0.0556434 + y * -0.2040259 + z * 1.0572252;
-
-        r = r > 0.0031308 ? 1.055 * Math.pow(r, 1 / 2.4) - 0.055 : 12.92 * r;
-        g = g > 0.0031308 ? 1.055 * Math.pow(g, 1 / 2.4) - 0.055 : 12.92 * g;
-        b = b > 0.0031308 ? 1.055 * Math.pow(b, 1 / 2.4) - 0.055 : 12.92 * b;
-
-        r = Math.max(0, Math.min(1, r));
-        g = Math.max(0, Math.min(1, g));
-        b = Math.max(0, Math.min(1, b));
-
-        return Qt.rgba(r, g, b, 1.0);
-    }
-
-    function isInGamut(r, g, b) {
-        return r >= 0 && r <= 1 && g >= 0 && g <= 1 && b >= 0 && b <= 1;
-    }
-
-    function hctToRgbWithGamutMapping(h, c, t) {
-        let maxAttempts = 20;
-        let chromaStep = c / maxAttempts;
-        let currentChroma = c;
-
-        for (let i = 0; i < maxAttempts; i++) {
-            let color = hctToRgb(h, currentChroma, t);
-
-            if (color.r >= -0.001 && color.r <= 1.001 && color.g >= -0.001 && color.g <= 1.001 && color.b >= -0.001 && color.b <= 1.001)
-                return color;
-
-            currentChroma -= chromaStep;
-            if (currentChroma < 0) {
-                currentChroma = 0;
-                break;
-            }
-        }
-
-        return hctToRgb(h, currentChroma, t);
+        return ColorUtils.hctToRgb(h, c, t);
     }
 
     function createTonalColor(baseColor, tone) {
-        let hct = rgbToHct(baseColor);
-
-        let adjustedChroma = hct.c;
-
-        if (tone < 10)
-            adjustedChroma = hct.c * 0.4;
-        else if (tone > 95)
-            adjustedChroma = hct.c * 0.3;
-        else if (tone < 20)
-            adjustedChroma = hct.c * 0.7;
-        else if (tone > 90)
-            adjustedChroma = hct.c * 0.8;
-
-        adjustedChroma = Math.min(adjustedChroma, 115);
-
-        return hctToRgbWithGamutMapping(hct.h, adjustedChroma, tone);
+        return ColorUtils.createTonalColor(baseColor, tone);
     }
 
     function createAnalogousColor(baseColor, hueShift) {
-        let hct = rgbToHct(baseColor);
-        let newHue = (hct.h + hueShift) % 360;
-        if (newHue < 0)
-            newHue += 360;
-        return hctToRgb(newHue, hct.c, hct.t);
+        return ColorUtils.createAnalogousColor(baseColor, hueShift);
     }
 
     FileView {
@@ -326,12 +121,9 @@ Singleton {
         scheme: root.schemeEnum(Configs.colors.scheme)
     }
 
-    Timer {
-        id: colorTransitionTimer
-
-        interval: 16
-        repeat: true
-        onTriggered: root.advancePaletteTransition()
+    PaletteAnimator {
+        id: paletteAnimator
+        duration: Appearance.animations.durations.expressiveDefaultSpatial
     }
 
     component StaticColorTemplateComponent: M3TemplateColors {
@@ -471,7 +263,10 @@ Singleton {
     }
 
     component M3GeneratedTemplateComponent: M3TemplateColors {
-        readonly property color m3SourceColor: root.getSourceColor()
+        readonly property color m3SourceColor: {
+            const sourceColor = root.materialTemplateColors.sourceColor;
+            return sourceColor ? sourceColor : "#6750A4";
+        }
         readonly property color m3SecondarySource: root.createAnalogousColor(m3SourceColor, 60)
         readonly property color m3TertiarySource: root.createAnalogousColor(m3SourceColor, 120)
         readonly property color m3NeutralSource: {

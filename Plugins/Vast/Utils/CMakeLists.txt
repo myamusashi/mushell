@@ -4,6 +4,10 @@ vast_module(vast-utils
     SOURCES
         ColorMaterial.hpp
         ColorMaterial.cpp
+        ColorUtils.cpp
+        ColorUtils.hpp
+        PaletteAnimator.cpp
+        PaletteAnimator.hpp
         Utils.hpp
         Utils.cpp
     LIBRARIES
