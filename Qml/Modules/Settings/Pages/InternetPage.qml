@@ -114,67 +114,71 @@ Item {
                         }
                     }
 
-                    SettingRow {
-                        label: qsTr("User hotspot:")
+                    GridLayout {
+                        columns: 2
 
-                        StyledTextInput {
-                            text: Hotspot.ssid
-                            placeHolderText: qsTr("Default: MyHotspot")
-                            passwordMode: false
-                            toggleButtonVisible: false
-                            enabled: !Hotspot.isActive
-                            opacity: enabled ? 1.0 : 0.5
-                            onTextChanged: Hotspot.ssid = text
+                        SettingRow {
+                            label: qsTr("User hotspot:")
+
+                            StyledTextInput {
+                                text: Hotspot.ssid
+                                placeHolderText: qsTr("Default: MyHotspot")
+                                passwordMode: false
+                                toggleButtonVisible: false
+                                enabled: !Hotspot.isActive
+                                opacity: enabled ? 1.0 : 0.5
+                                onTextChanged: Hotspot.ssid = text
+                            }
                         }
-                    }
 
-                    SettingRow {
-                        label: qsTr("Password hotspot:")
+                        SettingRow {
+                            label: qsTr("Password hotspot:")
 
-                        StyledTextInput {
-                            text: Hotspot.password
-                            placeHolderText: qsTr("Default: password123")
-                            passwordMode: true
-                            toggleButtonVisible: true
-                            enabled: !Hotspot.isActive
-                            opacity: enabled ? 1.0 : 0.5
-                            onTextChanged: Hotspot.password = text
+                            StyledTextInput {
+                                text: Hotspot.password
+                                placeHolderText: qsTr("Default: password123")
+                                passwordMode: true
+                                toggleButtonVisible: true
+                                enabled: !Hotspot.isActive
+                                opacity: enabled ? 1.0 : 0.5
+                                onTextChanged: Hotspot.password = text
+                            }
                         }
-                    }
 
-                    SettingRow {
-                        label: qsTr("Hotspot interface:")
+                        SettingRow {
+                            label: qsTr("Hotspot interface:")
 
-                        StyledTextInput {
-                            text: Hotspot.hotspotInterface
-                            placeHolderText: qsTr("Default: %1").arg(Hotspot.hotspotInterface || qsTr("none detected"))
-                            passwordMode: false
-                            toggleButtonVisible: false
-                            enabled: false
-                            opacity: 0.7
+                            StyledTextInput {
+                                text: Hotspot.hotspotInterface
+                                placeHolderText: qsTr("Default: %1").arg(Hotspot.hotspotInterface || qsTr("none detected"))
+                                passwordMode: false
+                                toggleButtonVisible: false
+                                enabled: false
+                                opacity: 0.7
+                            }
                         }
-                    }
 
-                    SettingRow {
-                        label: qsTr("Bandwidth:")
+                        SettingRow {
+                            label: qsTr("Bandwidth:")
 
-                        SplitButton {
-                            readonly property int selectedIndex: Hotspot.band === "a" ? 1 : 0
+                            SplitButton {
+                                readonly property int selectedIndex: Hotspot.band === "a" ? 1 : 0
 
-                            model: [
-                                {
-                                    display: "bg (2.4 GHz)"
-                                },
-                                {
-                                    display: "a (5 GHz)"
-                                }
-                            ]
-                            textRole: "display"
-                            currentIndex: selectedIndex
-                            text: model[selectedIndex]?.display ?? "bg (2.4 GHz)"
-                            icon.name: "graphic_eq"
+                                model: [
+                                    {
+                                        display: "bg (2.4 GHz)"
+                                    },
+                                    {
+                                        display: "a (5 GHz)"
+                                    }
+                                ]
+                                textRole: "display"
+                                currentIndex: selectedIndex
+                                text: model[selectedIndex]?.display ?? "bg (2.4 GHz)"
+                                icon.name: "graphic_eq"
 
-                            onMenuItemActivated: index => Hotspot.band = index === 0 ? "bg" : "a"
+                                onMenuItemActivated: index => Hotspot.band = index === 0 ? "bg" : "a"
+                            }
                         }
                     }
 

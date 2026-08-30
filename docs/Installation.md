@@ -199,3 +199,142 @@ sudo xbps-install -S pipewire iw libnotify polkit \
 ```
 
 </details>
+
+---
+
+## Bluetooth — Phone pairing troubleshooting
+
+The shell's Bluetooth UI (`BluetoothServices`) calls `Device1.Pair()` via [`Quickshell.Bluetooth`](https://quickshell.org/docs/v0.3.1/types/Quickshell.Bluetooth/BluetoothDevice/). BlueZ **requires a registered pairing agent** (`org.bluez.AgentManager1`) to answer SSP confirmations; without one you get:
+
+```
+[SIGNAL] BREDR.Disconnected - org.bluez.Reason.Local  Connection terminated by local host
+WARN quickshell.bluetooth.device: Failed to pair ... "Authentication Failed"
+```
+
+...which surfaces as `No agent available for request type 2` inside `bluetoothd` ([bluez#63], [bleak#1434], [bdteo.com](https://bdteo.com/bluez-pairing-python-agent-workaround-authentication-failed/)). This affects phone ↔ laptop (Android 16 `DisplayYesNo`) in both directions — also when `NoInputNoOutput` downgrades Secure Connections to `0x05 Insufficient Authentication` ([bluez#650]).
+
+**Root cause is not the shell** — the shell exposes the device model, but cannot register `org.bluez.Agent1` (Quickshell's `Quickshell.Io` only provides `Process`/`Socket`). The agent must be provided by the **OS/distro**.
+
+> **Always:** after a failed attempt clean stale bonding before retry:
+> ```bash
+> bluetoothctl remove XX:XX:XX:XX:XX:XX   # your phone's MAC (e.g. from `bluetoothctl devices`)
+> # also "Forget" the laptop on the phone's Bluetooth settings
+> ```
+
+<details>
+<summary>NixOS (recommended: <code>services.blueman</code>)</summary>
+
+Do **not** modify `github:myamusashi/vast-shell`'s flake — fix your system flake (`/etc/nixos/flake.nix` + `configuration.nix`):
+
+```nix
+{ config, pkgs, ... }: {
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  hardware.enableAllFirmware = true;
+
+  # Persistent DisplayYesNo agent (fixes Android 16 SSP). Don't use NoInputNoOutput for phones.
+  services.blueman.enable = true;
+  security.polkit.enable = true;
+
+  hardware.bluetooth.settings = {
+    General = {
+      Experimental = true;
+      ClassicBondedOnly = false;   # required for phone BR/EDR + JustWorks fallback
+      JustWorksRepairing = "always";
+      Enable = "Source,Sink,Media,Socket,Gateway";
+    };
+    Policy.AutoEnable = true;
+  };
+  environment.systemPackages = with pkgs; [ bluez bluez-tools ];
+}
+```
+
+Rebuild and verify:
+
+```bash
+sudo nixos-rebuild switch --flake /etc/nixos#$(hostname)
+systemctl status bluetooth --no-pager
+bluetoothctl
+# inside bluetoothctl
+agent DisplayYesNo
+default-agent
+scan on
+pair XX:XX:XX:XX:XX:XX
+trust XX:XX:XX:XX:XX:XX
+connect XX:XX:XX:XX:XX:XX
+```
+
+
+`journalctl -u bluetooth -f` should then show `Paired: yes` `Trusted: yes`, not `[DEL] Device`.
+
+**If still `AuthenticationFailed` on BlueZ 5.66+/5.70+** ([bluez#605] regression):
+
+```nix
+# flake.nix
+inputs.nixpkgs-bt.url = "github:NixOS/nixpkgs/<commit-with-bluez-5.64>";
+
+# configuration.nix
+hardware.bluetooth.package = inputs.nixpkgs-bt.legacyPackages.${pkgs.system}.bluez;
+# alternate: nixpkgs.overlays = [ (final: prev: { bluez = prev.bluez.overrideAttrs (o: { version = "5.64"; }); }) ];
+```
+
+Then `nix flake update && sudo nixos-rebuild switch`.
+
+**In-shell hacky alternative** (no system rebuild): spawn an agent from the shell via `Quickshell.Io.Process` (as `Hotspot.qml` does for `nmcli`), `Process { command: ["python3","-c", agentCode]; running: BluetoothServices.adapterEnabled }` registering `NoInputNoOutput`/`DisplayYesNo` with `simple-agent.py` logic — but this is a workaround; prefer `services.blueman`.
+
+</details>
+
+<details>
+<summary>Arch Linux / Manjaro / EndeavourOS</summary>
+
+```bash
+sudo pacman -S bluez bluez-utils blueman
+sudo systemctl enable --now bluetooth
+sudo systemctl enable --now blueman-mechanism
+# autostart blueman-applet in Hyprland exec-once or systemd user:
+# exec-once = blueman-applet
+sudo sed -i 's/#Experimental = false/Experimental = true/' /etc/bluetooth/main.conf
+sudo sed -i 's/#ClassicBondedOnly.*/ClassicBondedOnly = false/' /etc/bluetooth/main.conf
+# add under [General] if missing:
+# JustWorksRepairing = always
+# Enable = Source,Sink,Media,Socket,Gateway
+sudo systemctl restart bluetooth
+bluetoothctl # then agent DisplayYesNo / default-agent as above
+```
+
+On Arch, `archInstall.sh` does **not** set up Bluetooth — apply the above manually.
+
+</details>
+
+<details>
+<summary>Fedora / openSUSE / Void / Gentoo (generic)</summary>
+
+```bash
+# Fedora
+sudo dnf install bluez blueman
+sudo systemctl enable --now bluetooth
+# blueman-applet autostart via Hyprland exec-once
+
+# openSUSE
+sudo zypper install bluez blueman
+sudo systemctl enable --now bluetooth
+
+# Void
+sudo xbps-install -S bluez blueman
+sudo ln -s /etc/sv/bluetoothd /var/service/
+
+# Gentoo
+sudo emerge -av net-wireless/bluez net-wireless/blueman
+sudo rc-update add bluetooth default && sudo rc-service bluetooth start
+```
+
+Then ensure the agent is running (`blueman-applet` or `bluetoothctl agent DisplayYesNo`) and `ClassicBondedOnly = false` in `/etc/bluetooth/main.conf`.
+
+**Upstream docs**
+
+- Kynetics: [Pairing Agents in the BlueZ Stack](https://technotes.kynetics.com/2018/pairing-agents-bluez/) — `bluetoothctl` agent unregisters on exit, `simple-agent`/`bt-agent` daemonizes.
+- BlueZ `org.bluez.AgentManager1` — `RegisterAgent` + `RequestDefaultAgent`.
+- `bdteo.com`: [BlueZ Pairing Fix: External Python Agent & D-Bus Polling](https://bdteo.com/bluez-pairing-python-agent-workaround-authentication-failed/) — why internal `sd-bus` agent races `Pair()` on 5.66+ and requires polling fallback.
+
+</details>
+

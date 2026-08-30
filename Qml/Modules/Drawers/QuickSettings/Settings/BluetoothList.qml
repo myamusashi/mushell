@@ -16,6 +16,8 @@ WrapperRectangle {
     property real zoomOriginX: parent.width / 2
     property real zoomOriginY: parent.height / 2
 
+    clip: true
+
     border {
         width: 1
         color: Colours.m3Colors.m3Outline
@@ -61,28 +63,40 @@ WrapperRectangle {
         }
     }
 
-    Loader {
-        id: loader
+    Flickable {
+        id: flick
 
-        active: root.isVisible
-        asynchronous: true
-        width: parent.width - Appearance.margin.normal * 2
-        anchors.centerIn: parent
-        sourceComponent: ColumnLayout {
-            width: loader.width
-            spacing: Appearance.spacing.small
+        anchors.fill: parent
+        anchors.margins: Appearance.margin.normal
+        contentHeight: loader.implicitHeight
+        contentWidth: width
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
+        flickableDirection: Flickable.VerticalFlick
+        interactive: contentHeight > height
 
-            BT.Header {}
+        Loader {
+            id: loader
 
-            BT.AdapterControls {
-                isVisible: root.isVisible
+            width: parent.width
+            active: root.isVisible
+            asynchronous: true
+            sourceComponent: ColumnLayout {
+                width: loader.width
+                spacing: Appearance.spacing.small
+
+                BT.Header {}
+
+                BT.AdapterControls {
+                    isVisible: root.isVisible
+                }
+
+                BT.PairedDevices {}
+
+                BT.AvailableDevices {}
+
+                BT.BlockedDevices {}
             }
-
-            BT.PairedDevices {}
-
-            BT.AvailableDevices {}
-
-            BT.BlockedDevices {}
         }
     }
 }

@@ -68,83 +68,66 @@ SettingsPageBase {
             font.pixelSize: Appearance.fonts.size.normal
         }
 
-        RowLayout {
-            visible: BluetoothServices.adapterAvailable
-            Layout.fillWidth: true
-            spacing: Appearance.spacing.small
+        GridLayout {
+            columns: 2
+            columnSpacing: Appearance.spacing.normal
 
-            StyledText {
-                text: qsTr("Adapter")
-                color: Colours.m3Colors.m3OnSurfaceVariant
-                font.pixelSize: Appearance.fonts.size.normal
-            }
+            SettingRow {
+                visible: BluetoothServices.adapterAvailable
+                label: qsTr("Adapter")
 
-            Item {
-                Layout.fillWidth: true
-            }
-
-            StyledText {
-                text: {
-                    if (!BluetoothServices.adapter)
-                        return "—";
-                    const id = BluetoothServices.adapter.adapterId || "";
-                    const name = BluetoothServices.adapter.name || "";
-                    if (name && id)
-                        return `${name} (${id})`;
-                    return name || id || "—";
+                StyledText {
+                    text: {
+                        if (!BluetoothServices.adapter)
+                            return "—";
+                        const id = BluetoothServices.adapter.adapterId || "";
+                        const name = BluetoothServices.adapter.name || "";
+                        if (name && id)
+                            return `${name} (${id})`;
+                        return name || id || "—";
+                    }
+                    color: Colours.m3Colors.m3OnSurface
+                    font.pixelSize: Appearance.fonts.size.normal
+                    elide: Text.ElideRight
+                    Layout.maximumWidth: 320
                 }
-                color: Colours.m3Colors.m3OnSurface
-                font.pixelSize: Appearance.fonts.size.normal
-                elide: Text.ElideRight
-                Layout.maximumWidth: 320
-            }
-        }
-
-        RowLayout {
-            visible: BluetoothServices.adapterAvailable
-            Layout.fillWidth: true
-            spacing: Appearance.spacing.small
-
-            StyledText {
-                text: qsTr("Address")
-                color: Colours.m3Colors.m3OnSurfaceVariant
-                font.pixelSize: Appearance.fonts.size.normal
             }
 
-            Item {
-                Layout.fillWidth: true
+            SettingRow {
+                visible: BluetoothServices.adapterAvailable
+                label: qsTr("Address")
+
+                StyledText {
+                    text: BluetoothServices.adapter ? BluetoothServices.adapter.dbusPath : "—"
+                    color: Colours.m3Colors.m3OnSurfaceVariant
+                    font.pixelSize: Appearance.fonts.size.small
+                    elide: Text.ElideMiddle
+                    Layout.maximumWidth: 320
+                }
             }
 
-            StyledText {
-                text: BluetoothServices.adapter ? BluetoothServices.adapter.dbusPath : "—"
-                color: Colours.m3Colors.m3OnSurfaceVariant
-                font.pixelSize: Appearance.fonts.size.small
-                elide: Text.ElideMiddle
-                Layout.maximumWidth: 320
+            SettingRow {
+                visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
+                label: qsTr("Discoverable:")
+
+                StyledSwitch {
+                    Layout.preferredWidth: 52
+                    Layout.preferredHeight: 32
+                    checked: BluetoothServices.discoverable
+                    onToggled: BluetoothServices.setDiscoverable(checked)
+                }
             }
-        }
 
-        SettingRow {
-            visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
-            label: qsTr("Discoverable:")
+            SettingRow {
+                visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
+                label: qsTr("Pairable:")
 
-            StyledSwitch {
-                Layout.preferredWidth: 52
-                Layout.preferredHeight: 32
-                checked: BluetoothServices.discoverable
-                onToggled: BluetoothServices.setDiscoverable(checked)
-            }
-        }
-
-        SettingRow {
-            visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
-            label: qsTr("Pairable:")
-
-            StyledSwitch {
-                Layout.preferredWidth: 52
-                Layout.preferredHeight: 32
-                checked: BluetoothServices.pairable
-                onToggled: BluetoothServices.setPairable(checked)
+                StyledSwitch {
+                    Layout.preferredWidth: 52
+                    Layout.preferredHeight: 32
+                    checked: BluetoothServices.pairable
+                    onToggled: BluetoothServices.setPairable(checked)
+                }
             }
         }
 

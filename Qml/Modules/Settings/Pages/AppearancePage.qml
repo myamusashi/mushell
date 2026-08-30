@@ -57,27 +57,31 @@ Item {
             SettingsCard {
                 title: qsTr("Color System")
 
-                SettingRow {
-                    label: qsTr("Dark Mode:")
-                    StyledSwitch {
-                        checked: Configs.colors.isDarkMode
-                        onCheckedChanged: Configs.colors.isDarkMode = checked
-                    }
-                }
+                GridLayout {
+                    columns: 3
 
-                SettingRow {
-                    label: qsTr("Use Static Colors:")
-                    StyledSwitch {
-                        checked: Configs.colors.useStaticColors
-                        onCheckedChanged: Configs.colors.useStaticColors = checked
+                    SettingRow {
+                        label: qsTr("Dark Mode:")
+                        StyledSwitch {
+                            checked: Configs.colors.isDarkMode
+                            onCheckedChanged: Configs.colors.isDarkMode = checked
+                        }
                     }
-                }
 
-                SettingRow {
-                    label: qsTr("Use Material Colors:")
-                    StyledSwitch {
-                        checked: Configs.colors.useMaterialColor
-                        onCheckedChanged: Configs.colors.useMaterialColor = checked
+                    SettingRow {
+                        label: qsTr("Use Static Colors:")
+                        StyledSwitch {
+                            checked: Configs.colors.useStaticColors
+                            onCheckedChanged: Configs.colors.useStaticColors = checked
+                        }
+                    }
+
+                    SettingRow {
+                        label: qsTr("Use Material Colors:")
+                        StyledSwitch {
+                            checked: Configs.colors.useMaterialColor
+                            onCheckedChanged: Configs.colors.useMaterialColor = checked
+                        }
                     }
                 }
 
@@ -109,45 +113,49 @@ Item {
             SettingsCard {
                 title: qsTr("Typography System")
 
-                SettingRow {
-                    label: qsTr("Sans Serif Font:")
-                    FontPicker {
-                        Layout.preferredWidth: 250
-                        searchField: Appearance.fonts.family.sans
-                        onConfigChanged: value => Appearance.fonts.family.sans = value
-                    }
-                }
+                GridLayout {
+                    columns: 2
 
-                SettingRow {
-                    label: qsTr("Monospace Font:")
-                    FontPicker {
-                        Layout.preferredWidth: 250
-                        searchField: Appearance.fonts.family.mono
-                        onConfigChanged: value => Appearance.fonts.family.mono = value
+                    SettingRow {
+                        label: qsTr("Sans Serif Font:")
+                        FontPicker {
+                            Layout.preferredWidth: 250
+                            searchField: Appearance.fonts.family.sans
+                            onConfigChanged: value => Appearance.fonts.family.sans = value
+                        }
                     }
-                }
 
-                SettingRow {
-                    label: qsTr("Material Icon Font:")
-                    FontPicker {
-                        Layout.preferredWidth: 250
-                        searchField: Appearance.fonts.family.material
-                        onConfigChanged: value => Appearance.fonts.family.material = value
+                    SettingRow {
+                        label: qsTr("Monospace Font:")
+                        FontPicker {
+                            Layout.preferredWidth: 250
+                            searchField: Appearance.fonts.family.mono
+                            onConfigChanged: value => Appearance.fonts.family.mono = value
+                        }
                     }
-                }
 
-                SettingRow {
-                    label: qsTr("Font Size Scale:")
-                    StyledSlide {
-                        from: 0.1
-                        to: 2.0
-                        stepSize: 0.1
-                        popupDecimals: 1
-                        snapEnabled: true
-                        showValuePopup: true
-                        value: Appearance.fonts.size.scale
-                        onMoved: Appearance.fonts.size.scale = value
-                        Layout.preferredWidth: 200
+                    SettingRow {
+                        label: qsTr("Material Icon Font:")
+                        FontPicker {
+                            Layout.preferredWidth: 250
+                            searchField: Appearance.fonts.family.material
+                            onConfigChanged: value => Appearance.fonts.family.material = value
+                        }
+                    }
+
+                    SettingRow {
+                        label: qsTr("Font Size Scale:")
+                        StyledSlide {
+                            from: 0.1
+                            to: 2.0
+                            stepSize: 0.1
+                            popupDecimals: 1
+                            snapEnabled: true
+                            showValuePopup: true
+                            value: Appearance.fonts.size.scale
+                            onMoved: Appearance.fonts.size.scale = value
+                            Layout.preferredWidth: 200
+                        }
                     }
                 }
             }
@@ -155,51 +163,55 @@ Item {
             SettingsCard {
                 title: qsTr("Shapes & Layout")
 
-                SettingRow {
-                    label: qsTr("UI Corner Roundness (Normal):")
-                    StyledSlide {
-                        from: 0
-                        to: 50
-                        stepSize: 1
-                        value: Appearance.rounding.normal
-                        onMoved: Appearance.rounding.normal = value
-                        Layout.preferredWidth: 200
-                    }
-                }
+                GridLayout {
+                    columns: 2
 
-                SettingRow {
-                    label: qsTr("Element Spacing (Normal):")
-                    StyledSlide {
-                        from: 0
-                        to: 50
-                        stepSize: 1
-                        value: Appearance.spacing.normal
-                        onMoved: Appearance.spacing.normal = value
-                        Layout.preferredWidth: 200
+                    SettingRow {
+                        label: qsTr("UI Corner Roundness (Normal):")
+                        StyledSlide {
+                            from: 0
+                            to: 50
+                            stepSize: 1
+                            value: Appearance.rounding.normal
+                            onMoved: Appearance.rounding.normal = value
+                            Layout.preferredWidth: 200
+                        }
                     }
-                }
 
-                SettingRow {
-                    label: qsTr("Padding (Normal):")
-                    StyledSlide {
-                        from: 0
-                        to: 50
-                        stepSize: 1
-                        value: Appearance.padding.normal
-                        onMoved: Appearance.padding.normal = value
-                        Layout.preferredWidth: 200
+                    SettingRow {
+                        label: qsTr("Element Spacing (Normal):")
+                        StyledSlide {
+                            from: 0
+                            to: 50
+                            stepSize: 1
+                            value: Appearance.spacing.normal
+                            onMoved: Appearance.spacing.normal = value
+                            Layout.preferredWidth: 200
+                        }
                     }
-                }
 
-                SettingRow {
-                    label: qsTr("Margin (Normal):")
-                    StyledSlide {
-                        from: 0
-                        to: 50
-                        stepSize: 1
-                        value: Appearance.margin.normal
-                        onMoved: Appearance.margin.normal = value
-                        Layout.preferredWidth: 200
+                    SettingRow {
+                        label: qsTr("Padding (Normal):")
+                        StyledSlide {
+                            from: 0
+                            to: 50
+                            stepSize: 1
+                            value: Appearance.padding.normal
+                            onMoved: Appearance.padding.normal = value
+                            Layout.preferredWidth: 200
+                        }
+                    }
+
+                    SettingRow {
+                        label: qsTr("Margin (Normal):")
+                        StyledSlide {
+                            from: 0
+                            to: 50
+                            stepSize: 1
+                            value: Appearance.margin.normal
+                            onMoved: Appearance.margin.normal = value
+                            Layout.preferredWidth: 200
+                        }
                     }
                 }
             }
@@ -248,7 +260,7 @@ Item {
         StyledTextInput {
             id: pathField
 
-            implicitWidth: 300
+            implicitWidth: 350
             onEditingFinished: filePathRow.configChanged(text)
             toggleButtonVisible: false
             Component.onCompleted: text = filePathRow.configValue

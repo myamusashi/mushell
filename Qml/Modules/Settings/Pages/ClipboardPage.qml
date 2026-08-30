@@ -12,39 +12,43 @@ SettingsPageBase {
     SettingsCard {
         title: qsTr("General Settings")
 
-        SettingRow {
-            label: qsTr("Enable Clipboard:")
+        GridLayout {
+            columns: 2
 
-            StyledSwitch {
-                checked: Configs.clipboard.enabled
-                onCheckedChanged: Configs.clipboard.enabled = checked
+            SettingRow {
+                label: qsTr("Enable Clipboard:")
+
+                StyledSwitch {
+                    checked: Configs.clipboard.enabled
+                    onCheckedChanged: Configs.clipboard.enabled = checked
+                }
             }
-        }
 
-        SettingRow {
-            label: qsTr("Enable Image Previews:")
+            SettingRow {
+                label: qsTr("Enable Image Previews:")
 
-            StyledSwitch {
-                checked: Configs.clipboard.enablePreview
-                onCheckedChanged: Configs.clipboard.enablePreview = checked
+                StyledSwitch {
+                    checked: Configs.clipboard.enablePreview
+                    onCheckedChanged: Configs.clipboard.enablePreview = checked
+                }
             }
-        }
 
-        SettingRow {
-            label: qsTr("Enable Vim Keybinds:")
+            SettingRow {
+                label: qsTr("Enable Vim Keybinds:")
 
-            StyledSwitch {
-                checked: Configs.clipboard.enableVimKeybinds
-                onCheckedChanged: Configs.clipboard.enableVimKeybinds = checked
+                StyledSwitch {
+                    checked: Configs.clipboard.enableVimKeybinds
+                    onCheckedChanged: Configs.clipboard.enableVimKeybinds = checked
+                }
             }
-        }
 
-        SettingRow {
-            label: qsTr("Keep Clipboard Open After Copy:")
+            SettingRow {
+                label: qsTr("Keep Clipboard Open After Copy:")
 
-            StyledSwitch {
-                checked: Configs.clipboard.keepOpenAfterCopy
-                onCheckedChanged: Configs.clipboard.keepOpenAfterCopy = checked
+                StyledSwitch {
+                    checked: Configs.clipboard.keepOpenAfterCopy
+                    onCheckedChanged: Configs.clipboard.keepOpenAfterCopy = checked
+                }
             }
         }
     }

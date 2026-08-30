@@ -161,65 +161,69 @@ SettingsPageBase {
         title: qsTr("Image Sourcing")
         Layout.fillWidth: true
 
-        SettingRow {
-            label: qsTr("Enable Wallpaper:")
+        GridLayout {
+            columns: 2
 
-            StyledSwitch {
-                checked: Configs.wallpaper.enabledWallpaper
-                onCheckedChanged: Configs.wallpaper.enabledWallpaper = checked
+            SettingRow {
+                label: qsTr("Enable Wallpaper:")
+
+                StyledSwitch {
+                    checked: Configs.wallpaper.enabledWallpaper
+                    onCheckedChanged: Configs.wallpaper.enabledWallpaper = checked
+                }
             }
-        }
-        SettingRow {
-            label: qsTr("Wallpaper Live Preview:")
+            SettingRow {
+                label: qsTr("Wallpaper Live Preview:")
 
-            StyledSwitch {
-                checked: Configs.wallpaper.livePreview
-                onCheckedChanged: Configs.wallpaper.livePreview = checked
-            }
-        }
-
-        SettingRow {
-            label: qsTr("Wallpaper Directory Path:")
-
-            StyledTextInput {
-                id: wallpaperDirField
-                text: Configs.wallpaper.wallpaperDir
-                onTextChanged: Configs.wallpaper.wallpaperDir = text
-                implicitWidth: 350
-                toggleButtonVisible: false
-
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        wallpaperDirField.forceActiveFocus();
-                        fileDialog.openFileDialog();
-                    }
+                StyledSwitch {
+                    checked: Configs.wallpaper.livePreview
+                    onCheckedChanged: Configs.wallpaper.livePreview = checked
                 }
             }
 
-            FileDialog {
-                id: fileDialog
-                foldersOnly: true
-                selectFolder: true
-                showHidden: true
-                onFileSelected: path => Configs.wallpaper.wallpaperDir = path
+            SettingRow {
+                label: qsTr("Wallpaper Directory Path:")
+
+                StyledTextInput {
+                    id: wallpaperDirField
+                    text: Configs.wallpaper.wallpaperDir
+                    onTextChanged: Configs.wallpaper.wallpaperDir = text
+                    implicitWidth: 350
+                    toggleButtonVisible: false
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            wallpaperDirField.forceActiveFocus();
+                            fileDialog.openFileDialog();
+                        }
+                    }
+                }
+
+                FileDialog {
+                    id: fileDialog
+                    foldersOnly: true
+                    selectFolder: true
+                    showHidden: true
+                    onFileSelected: path => Configs.wallpaper.wallpaperDir = path
+                }
             }
-        }
 
-        SettingRow {
-            label: qsTr("Loaded Wallpaper Count:")
+            SettingRow {
+                label: qsTr("Loaded Wallpaper Count:")
 
-            StyledSlide {
-                from: 1
-                to: 10
-                stepSize: 1
-                snapEnabled: true
-                showValuePopup: true
-                value: Configs.wallpaper.visibleWallpaper
-                onMoved: Configs.wallpaper.visibleWallpaper = value
-                Layout.preferredWidth: 200
+                StyledSlide {
+                    from: 1
+                    to: 10
+                    stepSize: 1
+                    snapEnabled: true
+                    showValuePopup: true
+                    value: Configs.wallpaper.visibleWallpaper
+                    onMoved: Configs.wallpaper.visibleWallpaper = value
+                    Layout.preferredWidth: 200
+                }
             }
         }
     }

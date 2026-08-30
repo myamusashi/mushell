@@ -23,6 +23,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Follow Focus Monitor:")
+            description: qsTr("Bla bla bla bla bla")
 
             StyledSwitch {
                 checked: Configs.generals.followFocusMonitor
@@ -31,86 +32,11 @@ SettingsPageBase {
         }
 
         SettingRow {
-            label: qsTr("Enable Transparent Mode:")
+            label: qsTr("Show Holidays in Calendar:")
 
             StyledSwitch {
-                checked: Configs.generals.transparent
-                onCheckedChanged: Configs.generals.transparent = checked
-            }
-        }
-
-        SettingRow {
-            label: qsTr("Transparency Alpha:")
-
-            StyledSlide {
-                from: 0.1
-                to: 1.0
-                stepSize: 0.1
-                popupDecimals: 1
-                value: Configs.generals.alpha
-                onMoved: Configs.generals.alpha = value
-                Layout.preferredWidth: 200
-                filledRectColor: {
-                    if (!enabled)
-                        Colours.m3Colors.m3OnSurface;
-                    else
-                        Colours.m3Colors.m3Primary;
-                }
-                emptyRectColor: {
-                    if (!enabled)
-                        Colours.m3Colors.m3OnSurface;
-                    else
-                        Colours.m3Colors.m3SurfaceContainerHighest;
-                }
-                handleColor: {
-                    if (!enabled)
-                        Colours.m3Colors.m3InverseOnSurface;
-                    else
-                        Colours.m3Colors.m3Primary;
-                }
-                filledRectOpacity: {
-                    if (!enabled)
-                        return 0.38;
-                    else
-                        return 1.0;
-                }
-                emptyRectOpacity: {
-                    if (!enabled)
-                        return 0.12;
-                    else
-                        return 1.0;
-                }
-                handleOpacity: {
-                    if (!enabled)
-                        return 0.38;
-                    else
-                        return 1.0;
-                }
-                enabled: Configs.generals.transparent
-            }
-        }
-
-        SettingRow {
-            label: qsTr("How much radius blur for album cover:")
-
-            StyledSlide {
-                from: 1
-                to: 64
-                value: Configs.generals.coverBlurRadius
-                onMoved: Configs.generals.coverBlurRadius = value
-                Layout.preferredWidth: 200
-            }
-        }
-
-        SettingRow {
-            label: qsTr("How far the charging indicator spreads on the screen edge:")
-
-            StyledSlide {
-                from: 1
-                to: 64
-                value: Configs.generals.chargingGlowSpread
-                onMoved: Configs.generals.chargingGlowSpread = value
-                Layout.preferredWidth: 200
+                checked: Configs.generals.showHolidays
+                onCheckedChanged: Configs.generals.showHolidays = checked
             }
         }
 
@@ -123,12 +49,93 @@ SettingsPageBase {
             }
         }
 
-        SettingRow {
-            label: qsTr("Show Holidays in Calendar:")
+        GridLayout {
+            columns: 2
 
-            StyledSwitch {
-                checked: Configs.generals.showHolidays
-                onCheckedChanged: Configs.generals.showHolidays = checked
+            // transparency sections
+            SettingRow {
+                label: qsTr("Enable Transparent Mode:")
+
+                StyledSwitch {
+                    checked: Configs.generals.transparent
+                    onCheckedChanged: Configs.generals.transparent = checked
+                }
+            }
+
+            SettingRow {
+                label: qsTr("Transparency Alpha:")
+
+                StyledSlide {
+                    from: 0.1
+                    to: 1.0
+                    stepSize: 0.1
+                    popupDecimals: 1
+                    value: Configs.generals.alpha
+                    onMoved: Configs.generals.alpha = value
+                    Layout.preferredWidth: 200
+                    filledRectColor: {
+                        if (!enabled)
+                            Colours.m3Colors.m3OnSurface;
+                        else
+                            Colours.m3Colors.m3Primary;
+                    }
+                    emptyRectColor: {
+                        if (!enabled)
+                            Colours.m3Colors.m3OnSurface;
+                        else
+                            Colours.m3Colors.m3SurfaceContainerHighest;
+                    }
+                    handleColor: {
+                        if (!enabled)
+                            Colours.m3Colors.m3InverseOnSurface;
+                        else
+                            Colours.m3Colors.m3Primary;
+                    }
+                    filledRectOpacity: {
+                        if (!enabled)
+                            return 0.38;
+                        else
+                            return 1.0;
+                    }
+                    emptyRectOpacity: {
+                        if (!enabled)
+                            return 0.12;
+                        else
+                            return 1.0;
+                    }
+                    handleOpacity: {
+                        if (!enabled)
+                            return 0.38;
+                        else
+                            return 1.0;
+                    }
+                    enabled: Configs.generals.transparent
+                }
+            }
+            // transparency sections end
+
+            SettingRow {
+                label: qsTr("How much radius blur for album cover:")
+
+                StyledSlide {
+                    from: 1
+                    to: 64
+                    value: Configs.generals.coverBlurRadius
+                    onMoved: Configs.generals.coverBlurRadius = value
+                    Layout.preferredWidth: 200
+                }
+            }
+
+            SettingRow {
+                label: qsTr("How far the charging indicator spreads on the screen edge:")
+
+                StyledSlide {
+                    from: 1
+                    to: 64
+                    value: Configs.generals.chargingGlowSpread
+                    onMoved: Configs.generals.chargingGlowSpread = value
+                    Layout.preferredWidth: 200
+                }
             }
         }
     }
@@ -136,35 +143,39 @@ SettingsPageBase {
     SettingsCard {
         title: qsTr("Default Applications")
 
-        AppSettingRow {
-            label: qsTr("Terminal:")
-            categories: ["TerminalEmulator"]
-            configValue: Configs.generals.apps.terminal
-            onConfigChanged: value => Configs.generals.apps.terminal = value
-        }
-        AppSettingRow {
-            label: qsTr("File Explorer:")
-            categories: ["FileManager"]
-            configValue: Configs.generals.apps.fileExplorer
-            onConfigChanged: value => Configs.generals.apps.fileExplorer = value
-        }
-        AppSettingRow {
-            label: qsTr("Image Viewer:")
-            categories: ["Viewer"]
-            configValue: Configs.generals.apps.imageViewer
-            onConfigChanged: value => Configs.generals.apps.imageViewer = value
-        }
-        AppSettingRow {
-            label: qsTr("Video Viewer:")
-            categories: ["Video"]
-            configValue: Configs.generals.apps.videoViewer
-            onConfigChanged: value => Configs.generals.apps.videoViewer = value
-        }
-        AppSettingRow {
-            label: qsTr("Audio Settings:")
-            categories: ["AudioVideo", "Settings"]
-            configValue: Configs.generals.apps.audio
-            onConfigChanged: value => Configs.generals.apps.audio = value
+        GridLayout {
+            columns: 2
+
+            AppSettingRow {
+                label: qsTr("Terminal:")
+                categories: ["TerminalEmulator"]
+                configValue: Configs.generals.apps.terminal
+                onConfigChanged: value => Configs.generals.apps.terminal = value
+            }
+            AppSettingRow {
+                label: qsTr("File Explorer:")
+                categories: ["FileManager"]
+                configValue: Configs.generals.apps.fileExplorer
+                onConfigChanged: value => Configs.generals.apps.fileExplorer = value
+            }
+            AppSettingRow {
+                label: qsTr("Image Viewer:")
+                categories: ["Viewer"]
+                configValue: Configs.generals.apps.imageViewer
+                onConfigChanged: value => Configs.generals.apps.imageViewer = value
+            }
+            AppSettingRow {
+                label: qsTr("Video Viewer:")
+                categories: ["Video"]
+                configValue: Configs.generals.apps.videoViewer
+                onConfigChanged: value => Configs.generals.apps.videoViewer = value
+            }
+            AppSettingRow {
+                label: qsTr("Audio Settings:")
+                categories: ["AudioVideo", "Settings"]
+                configValue: Configs.generals.apps.audio
+                onConfigChanged: value => Configs.generals.apps.audio = value
+            }
         }
     }
 

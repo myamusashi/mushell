@@ -23,24 +23,15 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable Polling:")
+
             StyledSwitch {
                 checked: Configs.kdeConnect.pollingEnabled
                 onCheckedChanged: Configs.kdeConnect.pollingEnabled = checked
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-
-            StyledText {
-                text: qsTr("Poll Interval (s):")
-                font.pixelSize: Appearance.fonts.size.normal
-                color: Colours.m3Colors.m3OnSurface
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
+        SettingRow {
+            label: qsTr("Poll Interval (s):")
 
             StyledTextInput {
                 text: (Configs.kdeConnect.pollInterval / 1000).toString()
@@ -60,6 +51,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Device ID:")
+
             StyledText {
                 text: KDEConnect.myDeviceId || qsTr("Not detected")
                 font.pixelSize: Appearance.fonts.size.normal
