@@ -18,6 +18,7 @@ Item {
 
     readonly property real minWidth: 112
     readonly property real maxWidth: 280
+    readonly property real contentImplicitHeight: itemColumn.implicitHeight
 
     implicitWidth: Math.max(minWidth, Math.min(maxWidth, itemColumn.implicitWidth))
     implicitHeight: Math.min(maxHeight, itemColumn.implicitHeight)

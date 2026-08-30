@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls
 
 import qs.Components.Base
 import qs.Components.Menu
@@ -60,6 +61,15 @@ Item {
             menu.open();
     }
 
+    function toggleMenu() {
+        if (!enabled || !hasMenu)
+            return;
+        if (menu.visible)
+            menu.close();
+        else
+            menu.open();
+    }
+
     implicitHeight: segmentHeight
     implicitWidth: {
         let w = mainRow.implicitWidth + 32;
@@ -87,6 +97,7 @@ Item {
         id: menu
 
         anchorItem: root
+        closePolicy: Popup.CloseOnPressOutsideParent | Popup.CloseOnEscape
         model: root.model
         onAboutToShow: root.menuOpen = true
 
@@ -306,20 +317,28 @@ Item {
         TapHandler {
             id: menuTapHandler
 
+            property bool wasOpen: false
             enabled: root.enabled
-            onTapped: root.openMenu()
+            onPressedChanged: if (pressed)
+                wasOpen = menu.visible
+            onTapped: {
+                if (wasOpen)
+                    menu.close();
+                else
+                    menu.open();
+            }
         }
 
         Keys.onReturnPressed: event => {
             if (root.enabled) {
-                root.openMenu();
+                root.toggleMenu();
                 event.accepted = true;
             }
         }
 
         Keys.onSpacePressed: event => {
             if (root.enabled) {
-                root.openMenu();
+                root.toggleMenu();
                 event.accepted = true;
             }
         }

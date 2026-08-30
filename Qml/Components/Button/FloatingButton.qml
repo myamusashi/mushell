@@ -27,11 +27,33 @@ Item {
 
     readonly property bool keyboardFocused: activeFocus
 
-    property bool keyboardFocusable: true
     property bool spinning: false
 
-    onSpinningChanged: if (!spinning)
-        iconItem.rotation = 0
+    onSpinningChanged: {
+        if (!spinning) {
+            const r = ((iconItem.rotation % 360) + 360) % 360;
+            // Snap to normalized angle first so the animation starts from the visible angle.
+            iconItem.rotation = r;
+            // Shortest path back to 0: go forward to 360 if past halfway, then snap to 0 in onFinished.
+            resetAnim.to = r > 180 ? 360 : 0;
+            resetAnim.restart();
+        } else {
+            resetAnim.stop();
+        }
+    }
+
+    NumberAnimation {
+        id: resetAnim
+
+        target: iconItem
+        property: "rotation"
+        duration: Appearance.animations.durations.normal
+        easing.type: Easing.OutCubic
+        onFinished: {
+            if (iconItem.rotation >= 359.9)
+                iconItem.rotation = 0;
+        }
+    }
 
     signal clicked
 
