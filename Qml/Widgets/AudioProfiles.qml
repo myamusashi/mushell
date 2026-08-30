@@ -24,8 +24,8 @@ SplitButton {
     readonly property int selectedIndex: {
         if (!resolvedCard)
             return -1;
-        for (let i = 0; i < root.profileCount; ++i) {
-            const profile = root.profileAt(i);
+        for (let i = 0; i < profileCount; ++i) {
+            const profile = profileAt(i);
             if (profile && profile.index === resolvedCard.activeIndex)
                 return i;
         }
@@ -33,20 +33,20 @@ SplitButton {
     }
 
     readonly property string selectedLabel: {
-        const profile = root.selectedIndex >= 0 ? root.profileAt(root.selectedIndex) : null;
+        const profile = selectedIndex >= 0 ? profileAt(selectedIndex) : null;
         return profile ? profile.readable : "";
     }
 
     leadingFillsWidth: true
     model: profileModel
     textRole: "readable"
-    currentIndex: root.selectedIndex
-    text: root.selectedLabel
+    currentIndex: selectedIndex
+    text: selectedLabel
     isItemEnabled: md => md.available === "yes"
     disabledLabel: md => qsTr("N/A")
 
     onMenuItemActivated: rowIndex => {
-        const profile = root.profileAt(rowIndex);
+        const profile = profileAt(rowIndex);
         if (!profile || profile.available !== "yes" || !resolvedCard)
             return;
 

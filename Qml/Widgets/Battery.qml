@@ -22,8 +22,8 @@ Item {
     implicitHeight: heightBattery
 
     onBatChargingChanged: {
-        if (root.batCharging)
-            root.chargeFillIndex = root.batPercentage * 100;
+        if (batCharging)
+            chargeFillIndex = batPercentage * 100;
     }
 
     Rectangle {
@@ -91,13 +91,13 @@ Item {
     StyledRect {
         id: batteryTip
 
-        implicitWidth: 2
-        implicitHeight: 5
         anchors {
             left: batteryBody.right
             leftMargin: 0.5
             verticalCenter: parent.verticalCenter
         }
+        implicitWidth: 2
+        implicitHeight: 5
         color: root.batPercentage <= 0.2 && !root.batCharging ? Colours.m3Colors.m3Error : Qt.alpha(Colours.m3Colors.m3Outline, 0.5)
         topRightRadius: 1
         bottomRightRadius: 1

@@ -22,7 +22,7 @@ Column {
         if (text === "")
             return;
 
-        root.modelData.sendInlineReply(text);
+        modelData.sendInlineReply(text);
         replyField.text = "";
     }
 

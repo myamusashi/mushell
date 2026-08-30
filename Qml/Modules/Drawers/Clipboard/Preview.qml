@@ -21,9 +21,9 @@ Item {
     onEntryIdChanged: {
         entryDetails.clear();
 
-        if (root.entryId >= 0) {
+        if (entryId >= 0) {
             entryDetails.loading = true;
-            ClipboardManager.requestFullEntry(root.entryId);
+            ClipboardManager.requestFullEntry(entryId);
         }
     }
 

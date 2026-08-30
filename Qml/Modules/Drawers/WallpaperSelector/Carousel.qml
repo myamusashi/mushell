@@ -18,7 +18,7 @@ PathView {
     readonly property real unitWidth: width / (Configs.wallpaper.visibleWallpaper + 1)
 
     function selectCurrentWallpaper(): void {
-        const list = root.visibleWallpapers ?? [];
+        const list = visibleWallpapers ?? [];
         const idx = list.indexOf(Paths.currentWallpaper);
         currentIndex = idx !== -1 ? idx : 0;
     }
@@ -40,10 +40,10 @@ PathView {
 
     onCurrentIndexChanged: {
         if (Configs.wallpaper.livePreview && count > 0)
-            GlobalStates.previewWallpaper = (root.visibleWallpapers ?? [])[currentIndex] ?? "";
+            GlobalStates.previewWallpaper = (visibleWallpapers ?? [])[currentIndex] ?? "";
     }
     Component.onCompleted: {
-        Qt.callLater(() => root.selectCurrentWallpaper());
+        Qt.callLater(() => selectCurrentWallpaper());
     }
 
     Connections {

@@ -80,13 +80,6 @@ Singleton {
         }
     }
 
-    ScreenSelection {
-        id: select
-
-        onGeometrySelected: geo => ScreenRecorder.recordSelection(geo)
-        onCancelled: {}
-    }
-
     function openRegionSelector(): void {
         if (!ScreenRecorder.isRecording)
             select.open();
@@ -110,5 +103,12 @@ Singleton {
 
     function stopRecording(): void {
         ScreenRecorder.stopRecording();
+    }
+
+    ScreenSelection {
+        id: select
+
+        onGeometrySelected: geo => ScreenRecorder.recordSelection(geo)
+        onCancelled: {}
     }
 }

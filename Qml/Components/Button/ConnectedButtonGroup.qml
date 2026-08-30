@@ -23,7 +23,7 @@ Item {
 
     property bool fillWidth: false
 
-    readonly property real distributedSegmentWidth: root.model.length > 0 ? (root.width - (root.model.length - 1) * 2) / root.model.length : 0
+    readonly property real distributedSegmentWidth: model.length > 0 ? (width - (model.length - 1) * 2) / model.length : 0
     property var reportedSegmentWidths: []
 
     signal clicked(int index)
@@ -67,58 +67,58 @@ Item {
         required property int index
         required property var modelData
 
-        readonly property bool isSelected: root.currentIndex === segment.index
-        readonly property bool isFirst: segment.index === 0
-        readonly property bool isLast: segment.index === root.model.length - 1
-        readonly property string label: typeof segment.modelData === "string" ? segment.modelData : (segment.modelData.label ?? "")
-        readonly property string segmentIconName: typeof segment.modelData === "string" ? "" : (segment.modelData.icon ?? "")
-        readonly property color contentColor: segment.isSelected ? root.selectedContentColor : root.unselectedContentColor
+        readonly property bool isSelected: root.currentIndex === index
+        readonly property bool isFirst: index === 0
+        readonly property bool isLast: index === root.model.length - 1
+        readonly property string label: typeof modelData === "string" ? modelData : (modelData.label ?? "")
+        readonly property string segmentIconName: typeof modelData === "string" ? "" : (modelData.icon ?? "")
+        readonly property color contentColor: isSelected ? root.selectedContentColor : root.unselectedContentColor
         property bool pressed
         property bool hovered
 
-        readonly property real targetInnerRadius: segment.isSelected ? segment.height * 0.5 : segment.pressed ? 4 : 8
-
+        readonly property real targetInnerRadius: isSelected ? height * 0.5 : pressed ? 4 : 8
         readonly property real preferredWidth: contentRow.implicitWidth + 32
 
-        Component.onCompleted: root.reportSegmentWidth(segment.index, segment.preferredWidth)
-
-        onPreferredWidthChanged: root.reportSegmentWidth(segment.index, segment.preferredWidth)
-
-        Component.onDestruction: root.reportSegmentWidth(segment.index, 0)
+        onPreferredWidthChanged: root.reportSegmentWidth(index, preferredWidth)
 
         width: root.fillWidth ? root.distributedSegmentWidth : root.segmentWidth
         height: root.height
         activeFocusOnTab: root.enabled
+        pressed: segmentTapHandler.pressed
+        hovered: segmentHoverHandler.hovered
+
+        Component.onCompleted: root.reportSegmentWidth(index, preferredWidth)
+        Component.onDestruction: root.reportSegmentWidth(index, 0)
 
         function select() {
             if (!root.enabled)
                 return;
-            root.clicked(segment.index);
+            root.clicked(index);
         }
 
         function moveFocus(delta) {
-            const target = segmentRepeater.itemAt(segment.index + delta);
+            const target = segmentRepeater.itemAt(index + delta);
             if (target)
                 target.forceActiveFocus();
         }
 
         Keys.onReturnPressed: event => {
-            segment.select();
+            select();
             event.accepted = true;
         }
 
         Keys.onSpacePressed: event => {
-            segment.select();
+            select();
             event.accepted = true;
         }
 
         Keys.onLeftPressed: event => {
-            segment.moveFocus(-1);
+            moveFocus(-1);
             event.accepted = true;
         }
 
         Keys.onRightPressed: event => {
-            segment.moveFocus(1);
+            moveFocus(1);
             event.accepted = true;
         }
 
@@ -219,8 +219,5 @@ Item {
             enabled: root.enabled
             onTapped: segment.select()
         }
-
-        pressed: segmentTapHandler.pressed
-        hovered: segmentHoverHandler.hovered
     }
 }

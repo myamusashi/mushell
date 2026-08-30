@@ -24,11 +24,11 @@ ItemDelegate {
     required property bool isSelected
     property bool inVisual: false
 
-    readonly property bool isImage: root.type === "image"
-    readonly property bool isFiles: root.type === "files"
+    readonly property bool isImage: type === "image"
+    readonly property bool isFiles: type === "files"
 
     readonly property string formattedTime: {
-        const d = new Date(root.timestamp);
+        const d = new Date(timestamp);
         const now = new Date();
         const diff = now - d;
 
@@ -48,8 +48,8 @@ ItemDelegate {
     width: ListView.view?.width ?? parent?.width ?? 320
     height: 64
     hoverEnabled: true
-    highlighted: root.isSelected
-    onClicked: root.activated()
+    highlighted: isSelected
+    onClicked: activated()
 
     background: Rectangle {
         radius: Appearance.rounding.small

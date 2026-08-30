@@ -20,7 +20,7 @@ Item {
     property string placeholderText: qsTr("Select…")
     property var isItemEnabled: model => true
     property var disabledLabel: model => qsTr("N/A")
-    property var isItemActive: (model, itemIndex) => itemIndex === root.currentIndex
+    property var isItemActive: (model, itemIndex) => itemIndex === currentIndex
     property bool showScrollBar: false
 
     signal activated(int index)
@@ -29,12 +29,12 @@ Item {
     implicitHeight: 48
 
     readonly property string displayText: {
-        if (root.currentIndex < 0 || !root.model)
-            return root.placeholderText;
-        const item = root.model.get ? root.model.get(root.currentIndex) : root.model[root.currentIndex];
+        if (currentIndex < 0 || !model)
+            return placeholderText;
+        const item = model.get ? model.get(currentIndex) : model[currentIndex];
         if (!item)
-            return root.placeholderText;
-        return item[root.textRole] ?? root.placeholderText;
+            return placeholderText;
+        return item[textRole] ?? placeholderText;
     }
 
     onCurrentValueChanged: syncIndex()
@@ -43,9 +43,9 @@ Item {
     Component.onCompleted: syncIndex()
 
     function syncIndex() {
-        if (root.valueRole === "" || root.currentValue === null || root.currentValue === undefined)
+        if (valueRole === "" || currentValue === null || currentValue === undefined)
             return;
-        const model = root.model;
+        const model = model;
         if (!model)
             return;
         // C++ list models expose count()/get(i) as methods, JS models use length/indexing
@@ -55,9 +55,9 @@ Item {
             const item = getItem(i);
             if (!item)
                 continue;
-            const v = item[root.valueRole];
-            if (v === root.currentValue) {
-                root.currentIndex = i;
+            const v = item[valueRole];
+            if (v === currentValue) {
+                currentIndex = i;
                 return;
             }
         }

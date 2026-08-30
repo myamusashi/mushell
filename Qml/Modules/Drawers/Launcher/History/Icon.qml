@@ -21,13 +21,13 @@ Loader {
     height: 44
 
     Component.onCompleted: {
-        const ext = getFileExtension(root.modelData.path);
+        const ext = getFileExtension(modelData.path);
         const videoFormats = ["mkv", "mp4", "webm", "avi"];
 
         if (videoFormats.includes(ext))
-            ScreenRecorder.createThumbnail(root.modelData.path, Paths.cacheDir + "/video-thumbnails");
+            ScreenRecorder.createThumbnail(modelData.path, Paths.cacheDir + "/video-thumbnails");
         else
-            thumbnailPath = "file://" + root.modelData.path;
+            thumbnailPath = "file://" + modelData.path;
     }
 
     function getFileExtension(filepath) {

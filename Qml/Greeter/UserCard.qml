@@ -6,7 +6,6 @@ import QtQuick.Layouts
 import qs.Components.Button
 import qs.Components.Base
 import qs.Core.Configs
-import qs.Core.Utils
 
 Item {
     id: root
@@ -14,7 +13,7 @@ Item {
     required property Auth auth
     required property var colors
 
-    readonly property string initials: root.auth.currentUser.length > 0 ? root.auth.currentUser.charAt(0).toUpperCase() : "?"
+    readonly property string initials: auth.currentUser.length > 0 ? auth.currentUser.charAt(0).toUpperCase() : "?"
 
     implicitWidth: 380
     implicitHeight: contentColumn.implicitHeight + Appearance.padding.large * 2
@@ -158,11 +157,16 @@ Item {
             Repeater {
                 model: root.auth.users
 
-                delegate: UserSwitcherButton {
+                delegate: ExtendedFloatingButton {
                     required property string modelData
 
-                    username: modelData
-                    isCurrent: modelData === root.auth.currentUser
+                    readonly property bool isCurrent: modelData === root.auth.currentUser
+
+                    color: isCurrent ? root.colors.secondaryContainer : root.colors.surfaceContainerHighest
+                    icon.name: "account_circle"
+                    icon.color: isCurrent ? root.colors.onSecondaryContainer : root.colors.onSurfaceVariant
+                    text: modelData.charAt(0).toUpperCase()
+                    textColor: isCurrent ? root.colors.onSecondaryContainer : root.colors.onSurfaceVariant
 
                     onClicked: {
                         root.auth.switchUser(modelData);
@@ -227,46 +231,6 @@ Item {
             property: "x"
             to: 0
             duration: 60
-        }
-    }
-
-    component UserSwitcherButton: Item {
-        id: button
-
-        required property string username
-        required property bool isCurrent
-
-        signal clicked
-
-        implicitWidth: 40
-        implicitHeight: 40
-
-        StyledRect {
-            anchors.fill: parent
-            color: button.isCurrent ? root.colors.secondaryContainer : root.colors.surfaceContainerHighest
-            radius: Appearance.rounding.full
-            border.color: button.isCurrent ? root.colors.secondary : "transparent"
-            border.width: button.isCurrent ? 1 : 0
-
-            Behavior on color {
-                CAnim {
-                    duration: Appearance.animations.durations.small
-                }
-            }
-        }
-
-        StyledText {
-            anchors.centerIn: parent
-            text: button.username.charAt(0).toUpperCase()
-            color: button.isCurrent ? root.colors.onSecondaryContainer : root.colors.onSurfaceVariant
-            font.pixelSize: Appearance.fonts.size.large
-            font.weight: Font.Medium
-            horizontalAlignment: Text.AlignHCenter
-        }
-
-        MArea {
-            layerRadius: Appearance.rounding.full
-            onClicked: button.clicked()
         }
     }
 }

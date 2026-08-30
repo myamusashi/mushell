@@ -30,9 +30,9 @@ WrapperItem {
     readonly property real iconCellX: Appearance.margin.normal
 
     implicitWidth: compactPillWidth
-    implicitHeight: root.compactPillHeight + (Math.max(root.expandedItemHeight, labelText.implicitHeight) - root.compactPillHeight) * labelText.progress
+    implicitHeight: compactPillHeight + (Math.max(expandedItemHeight, labelText.implicitHeight) - compactPillHeight) * labelText.progress
 
-    leftMargin: root.expanded ? Appearance.margin.normal : Math.max(0, (root.width - root.compactPillWidth) / 2)
+    leftMargin: expanded ? Appearance.margin.normal : Math.max(0, (width - compactPillWidth) / 2)
     rightMargin: leftMargin
 
     MArea {

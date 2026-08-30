@@ -23,22 +23,22 @@ Item {
     property var openPopoverDate: null
 
     function closePopover() {
-        root.openPopoverDate = null;
+        openPopoverDate = null;
     }
 
     function buildCells() {
         const cells = [];
-        const firstOfMonth = new Date(root.year, root.month, 1);
+        const firstOfMonth = new Date(year, month, 1);
         const firstDow = firstOfMonth.getDay();
 
-        let lead = firstDow - root.firstDayOfWeek;
+        let lead = firstDow - firstDayOfWeek;
         if (lead < 0)
             lead += 7;
 
-        const gridStart = new Date(root.year, root.month, 1 - lead);
+        const gridStart = new Date(year, month, 1 - lead);
         const today = new Date();
 
-        for (let i = 0; i < root.rowCount * root.columnCount; i++) {
+        for (let i = 0; i < rowCount * columnCount; i++) {
             const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
             cells.push({
                 date: d,

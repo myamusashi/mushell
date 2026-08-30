@@ -44,23 +44,23 @@ Singleton {
     property bool restoringAudioState: false
 
     Component.onCompleted: {
-        if (root.audioConnected && !root.restoringAudioState) {
-            root.wasAudioConnected = true;
+        if (audioConnected && !restoringAudioState) {
+            wasAudioConnected = true;
             restoreTimer.start();
         }
     }
 
     onAudioConnectedChanged: {
-        if (root.audioConnected && !root.wasAudioConnected && !root.restoringAudioState) {
-            root.wasAudioConnected = true;
+        if (audioConnected && !wasAudioConnected && !restoringAudioState) {
+            wasAudioConnected = true;
             restoreTimer.start();
         }
-        if (!root.audioConnected) {
-            root.wasAudioConnected = false;
-            if (root.restoringAudioState) {
+        if (!audioConnected) {
+            wasAudioConnected = false;
+            if (restoringAudioState) {
                 restoreTimer.stop();
                 profileRestoreDelay.stop();
-                root.restoringAudioState = false;
+                restoringAudioState = false;
             }
         }
     }

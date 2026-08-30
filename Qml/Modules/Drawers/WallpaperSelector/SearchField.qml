@@ -19,8 +19,8 @@ StyledTextInput {
     onTextChanged: {
         WallpaperFileModels.searchQuery = text;
         searchDebounceTimer.restart();
-        if (root.carousel && root.carousel.count > 0)
-            root.carousel.currentIndex = 0;
+        if (carousel && carousel.count > 0)
+            carousel.currentIndex = 0;
     }
 
     Component.onCompleted: text = WallpaperFileModels.searchQuery
@@ -30,30 +30,30 @@ StyledTextInput {
     onAccepted: selectCurrentWallpaper()
 
     function selectCurrentWallpaper(): void {
-        if (!root.carousel || root.carousel.count === 0 || !root.controller)
+        if (!carousel || carousel.count === 0 || !controller)
             return;
-        const list = root.controller.visibleWallpapers ?? [];
-        const selectedPath = list[root.carousel.currentIndex];
+        const list = controller.visibleWallpapers ?? [];
+        const selectedPath = list[carousel.currentIndex];
         if (selectedPath !== undefined)
-            root.controller.setWallpaper(selectedPath, root.controller.thumbnailPathFor(selectedPath));
+            controller.setWallpaper(selectedPath, controller.thumbnailPathFor(selectedPath));
     }
 
     Keys.onPressed: event => {
         if (event.key === Qt.Key_Down) {
-            root.carousel.moveCurrentIndex(1);
+            carousel.moveCurrentIndex(1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Up) {
-            root.carousel.moveCurrentIndex(-1);
+            carousel.moveCurrentIndex(-1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Right) {
-            root.carousel.moveCurrentIndex(1);
+            carousel.moveCurrentIndex(1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Left) {
-            root.carousel.moveCurrentIndex(-1);
+            carousel.moveCurrentIndex(-1);
             event.accepted = true;
         } else if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
-            root.controller.wallpaperType = (root.controller.wallpaperType + (event.key === Qt.Key_Tab ? 1 : -1) + 2) % 2;
-            Qt.callLater(() => root.carousel.selectCurrentWallpaper());
+            controller.wallpaperType = (controller.wallpaperType + (event.key === Qt.Key_Tab ? 1 : -1) + 2) % 2;
+            Qt.callLater(() => carousel.selectCurrentWallpaper());
             event.accepted = true;
         }
     }

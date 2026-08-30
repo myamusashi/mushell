@@ -33,7 +33,7 @@ Scope {
     signal notify(string summary, string body, string urgency, string icon, string app, var actions)
 
     function notifySaved(path): void {
-        root.notify("Screenshot Saved", path, "normal", path, "Screenshot", [
+        notify("Screenshot Saved", path, "normal", path, "Screenshot", [
             {
                 "id": "open",
                 "label": qsTr("Open Image")

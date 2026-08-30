@@ -10,7 +10,7 @@ import qs.Services
 Singleton {
     id: root
 
-    readonly property bool available: root.primaryId !== ""
+    readonly property bool available: primaryId !== ""
     readonly property int maxValue: 100
 
     property int value: 0
@@ -19,38 +19,38 @@ Singleton {
 
     function refresh() {
         const list = BrightnessManager.displays();
-        root.displays = list;
-        if (root.primaryId === "") {
+        displays = list;
+        if (primaryId === "") {
             const internal = list.find(d => d.isInternal);
-            root.primaryId = (internal ?? list[0])?.id ?? "";
+            primaryId = (internal ?? list[0])?.id ?? "";
         }
-        const primary = list.find(d => d.id === root.primaryId);
+        const primary = list.find(d => d.id === primaryId);
         if (primary)
-            root.value = primary.brightness;
+            value = primary.brightness;
     }
 
     function setBrightness(newValue: int) {
-        if (!root.available)
+        if (!available)
             return;
-        BrightnessManager.setBrightness(root.primaryId, newValue);
+        BrightnessManager.setBrightness(primaryId, newValue);
     }
 
     function setBrightnessPercent(percent: int) {
-        if (!root.available)
+        if (!available)
             return;
-        BrightnessManager.setBrightness(root.primaryId, percent);
+        BrightnessManager.setBrightness(primaryId, percent);
     }
 
     function increaseBrightness(amount: int) {
-        if (!root.available)
+        if (!available)
             return;
-        BrightnessManager.setBrightness(root.primaryId, Math.min(100, root.value + Math.round(amount)));
+        BrightnessManager.setBrightness(primaryId, Math.min(100, value + Math.round(amount)));
     }
 
     function decreaseBrightness(amount: int) {
-        if (!root.available)
+        if (!available)
             return;
-        BrightnessManager.setBrightness(root.primaryId, Math.max(0, root.value - Math.round(amount)));
+        BrightnessManager.setBrightness(primaryId, Math.max(0, value - Math.round(amount)));
     }
 
     function setBrightnessForDisplay(displayId: string, percent: int) {

@@ -35,8 +35,8 @@ ClippingWrapperRectangle {
     color: GlobalStates.drawerColors
     clip: true
     visible: !Configs.generals.followFocusMonitor || window.modelData.name === Hypr.focusedMonitor.name // qmllint disable
-    implicitWidth: root.selectedTab === 0 ? 300 : 340
-    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, root.maxHeight) : 0 // qmllint disable
+    implicitWidth: selectedTab === 0 ? 300 : 340
+    implicitHeight: GlobalStates.isScreenCapturePanelOpen && loader.item ? Math.min(loader.item.implicitHeight + 20, maxHeight) : 0 // qmllint disable
     radius: Appearance.rounding.normal
 
     Behavior on implicitWidth {

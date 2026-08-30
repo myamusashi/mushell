@@ -235,20 +235,20 @@ Item {
     ]
 
     function runSearch() {
-        if (root.query.length === 0) {
-            root.results = [];
-            root.selectedIndex = -1;
+        if (query.length === 0) {
+            results = [];
+            selectedIndex = -1;
             return;
         }
 
         // fzy scores grow with needle length, so the floor is per query character.
-        const minScore = root.query.length * SearchEngine.appThreshold;
+        const minScore = query.length * SearchEngine.appThreshold;
         const scored = [];
 
-        for (const entry of root.entries) {
+        for (const entry of entries) {
             let best = 0;
             for (const text of [entry.card].concat(entry.terms)) {
-                const s = SearchEngine.score(root.query, text);
+                const s = SearchEngine.score(query, text);
                 if (s > best)
                     best = s;
             }
@@ -257,19 +257,19 @@ Item {
         }
 
         scored.sort((a, b) => b[0] - a[0]);
-        root.results = scored.slice(0, 8).map(item => item[1]);
-        root.selectedIndex = root.results.length > 0 ? 0 : -1;
+        results = scored.slice(0, 8).map(item => item[1]);
+        selectedIndex = results.length > 0 ? 0 : -1;
     }
 
     function clear() {
         searchField.text = "";
-        root.results = [];
-        root.selectedIndex = -1;
+        results = [];
+        selectedIndex = -1;
     }
 
     function activate(entry) {
-        root.activated(entry.page, entry.card);
-        root.clear();
+        activated(entry.page, entry.card);
+        clear();
     }
 
     Timer {

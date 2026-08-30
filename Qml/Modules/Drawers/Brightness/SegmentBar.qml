@@ -21,9 +21,9 @@ Rectangle {
     property real segmentMargins: 0.5
 
     function commitFromX(x: real): void {
-        const usable = root.width - root.segmentMargins * 2;
-        const clamped = Math.max(root.segmentMargins, Math.min(root.width - root.segmentMargins, x));
-        Brightness.setBrightness(Math.round(((clamped - root.segmentMargins) / usable) * Brightness.maxValue));
+        const usable = width - segmentMargins * 2;
+        const clamped = Math.max(segmentMargins, Math.min(width - segmentMargins, x));
+        Brightness.setBrightness(Math.round(((clamped - segmentMargins) / usable) * Brightness.maxValue));
     }
 
     MouseArea {

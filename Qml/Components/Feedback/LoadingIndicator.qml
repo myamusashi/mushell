@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 
-import qs.Core.Configs
 import qs.Services
 
 import M3Shapes

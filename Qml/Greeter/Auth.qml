@@ -49,7 +49,7 @@ Scope {
         messageIsError = false;
         statusMessage = qsTr("Authenticating…");
         unlockInProgress = true;
-        Greetd.createSession(root.currentUser);
+        Greetd.createSession(currentUser);
     }
 
     function launch() {

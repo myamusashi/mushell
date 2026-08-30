@@ -44,6 +44,24 @@ WlSessionLockSurface {
         }
     }
 
+    onInputBufferChanged: {
+        var diff = inputBuffer.length - maskedBuffer.length;
+        var grew = diff > 0;
+        while (diff > 0) {
+            maskedBuffer += maskChars[Math.floor(Math.random() * maskChars.length)];
+            diff--;
+        }
+        while (diff < 0) {
+            maskedBuffer = maskedBuffer.substring(0, maskedBuffer.length - 1);
+            diff++;
+        }
+        isAllSelected = false;
+        if (grew && inputBuffer.length > 0 && !zoomedIn) {
+            zoomedIn = true;
+            zoomInAnimation.start();
+        }
+    }
+
     NAnim {
         id: colorBlendAnim
         target: root
@@ -52,24 +70,6 @@ WlSessionLockSurface {
         to: 1.0
         duration: Appearance.animations.durations.small
         easing.bezierCurve: Appearance.animations.curves.expressiveFastSpatial
-    }
-
-    onInputBufferChanged: {
-        var diff = root.inputBuffer.length - root.maskedBuffer.length;
-        var grew = diff > 0;
-        while (diff > 0) {
-            root.maskedBuffer += root.maskChars[Math.floor(Math.random() * root.maskChars.length)];
-            diff--;
-        }
-        while (diff < 0) {
-            root.maskedBuffer = root.maskedBuffer.substring(0, root.maskedBuffer.length - 1);
-            diff++;
-        }
-        root.isAllSelected = false;
-        if (grew && root.inputBuffer.length > 0 && !root.zoomedIn) {
-            root.zoomedIn = true;
-            zoomInAnimation.start();
-        }
     }
 
     Connections {

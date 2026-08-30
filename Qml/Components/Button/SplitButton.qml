@@ -30,9 +30,9 @@ Item {
     property IconComponent icon: IconComponent {}
 
     readonly property bool hasMenu: {
-        if (root.model === null || root.model === undefined)
+        if (model === null || model === undefined)
             return false;
-        return root.model.length !== undefined ? root.model.length > 0 : true;
+        return model.length !== undefined ? model.length > 0 : true;
     }
 
     property bool menuOpen: false
@@ -42,8 +42,8 @@ Item {
     property bool fillWidth: false
     property bool leadingFillsWidth: false
 
-    readonly property int segmentCount: root.model?.count ?? root.model?.length ?? 0
-    readonly property real distributedSegmentWidth: root.segmentCount > 0 ? (root.width - (root.segmentCount - 1) * 2) / root.segmentCount : root.width
+    readonly property int segmentCount: model?.count ?? model?.length ?? 0
+    readonly property real distributedSegmentWidth: segmentCount > 0 ? (width - (segmentCount - 1) * 2) / segmentCount : width
 
     readonly property int segmentHeight: 40
 
@@ -56,29 +56,29 @@ Item {
     signal menuItemActivated(int index)
 
     function openMenu() {
-        if (root.enabled && root.hasMenu)
+        if (enabled && hasMenu)
             menu.open();
     }
 
-    implicitHeight: root.segmentHeight
+    implicitHeight: segmentHeight
     implicitWidth: {
         let w = mainRow.implicitWidth + 32;
-        if (root.hasMenu)
+        if (hasMenu)
             w += 2 + menuRow.implicitWidth + 16;
         return w;
     }
     opacity: enabled ? 1 : 0.38
 
     Keys.onReturnPressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
 
     Keys.onSpacePressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
@@ -97,7 +97,7 @@ Item {
 
         onActivated: index => {
             root.menuItemActivated(index);
-            menu.close();
+            close();
         }
     }
 

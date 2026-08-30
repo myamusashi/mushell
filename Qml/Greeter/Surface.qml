@@ -32,7 +32,7 @@ WlSessionLockSurface {
     property string greeterThumbnailJob: ""
     readonly property string thumbnailDir: `${Paths.cacheDir}/vast-shell`
     function greeterThumbnailPath() {
-        return `${root.thumbnailDir}/greeter-wallpaper-${Qt.md5(root.greeterThumbnailJob)}.png`;
+        return `${thumbnailDir}/greeter-wallpaper-${Qt.md5(greeterThumbnailJob)}.png`;
     }
     property url effectiveWallpaper: useVideoWallpaper ? "file://" + wallpaperPath : wallpaperPath
     property bool effectiveIsVideo: useVideoWallpaper
@@ -72,14 +72,14 @@ WlSessionLockSurface {
             secondaryContainer: Colours.m3Colors.m3SecondaryContainer,
             onSecondaryContainer: Colours.m3Colors.m3OnSecondaryContainer
         })
-    property var dynColors: root.fallbackColors
+    property var dynColors: fallbackColors
 
     color: "transparent"
 
     Component.onCompleted: {
-        if (!root.effectiveIsVideo)
-            root.colorSource = root.effectiveWallpaper;
-        root.playEntrance();
+        if (!effectiveIsVideo)
+            colorSource = effectiveWallpaper;
+        playEntrance();
     }
 
     function playEntrance() {

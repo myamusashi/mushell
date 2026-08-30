@@ -113,9 +113,9 @@ Singleton {
     }
 
     function updateContentSize() {
-        if (root.currentState === DragAndDropServices.State.Idle) {
-            islandBox.contentWidth = root.dotSize;
-            islandBox.contentHeight = root.dotSize;
+        if (currentState === DragAndDropServices.State.Idle) {
+            islandBox.contentWidth = dotSize;
+            islandBox.contentHeight = dotSize;
             return;
         }
         var children = stackLayout?.children;

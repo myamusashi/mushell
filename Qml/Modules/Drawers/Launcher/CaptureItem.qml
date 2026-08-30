@@ -21,34 +21,34 @@ StyledRect {
     signal indexModel(int newIndex)
     signal closed
 
-    focus: root.isSelected
+    focus: isSelected
 
     function executeAction() {
-        root.forceActiveFocus();
-        root.optionData.action();
-        root.executed();
+        forceActiveFocus();
+        optionData.action();
+        executed();
     }
 
     Keys.onPressed: function (event) {
         switch (event.key) {
         case Qt.Key_Return:
         case Qt.Key_Enter:
-            root.executeAction();
+            executeAction();
             GlobalStates.isScreenCapturePanelOpen = false;
             event.accepted = true;
             break;
         case Qt.Key_Escape:
-            root.closed();
+            closed();
             event.accepted = true;
             break;
         case Qt.Key_Up:
-            if (root.optionIndex > 0)
-                root.indexModel(root.optionIndex - 1);
+            if (optionIndex > 0)
+                indexModel(optionIndex - 1);
             event.accepted = true;
             break;
         case Qt.Key_Down:
-            if (root.optionIndex < root.maxIndex)
-                root.indexModel(root.optionIndex + 1);
+            if (optionIndex < maxIndex)
+                indexModel(optionIndex + 1);
             event.accepted = true;
             break;
         }

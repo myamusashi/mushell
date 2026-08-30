@@ -16,7 +16,7 @@ Popup {
     property var textRole: "text"
     property var isItemEnabled: modelData => true
     property var disabledLabel: modelData => ""
-    property var isItemActive: (modelData, itemIndex) => itemIndex === root.currentIndex
+    property var isItemActive: (modelData, itemIndex) => itemIndex === currentIndex
     property bool showScrollBar: false
 
     signal activated(int index)
@@ -27,12 +27,12 @@ Popup {
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     transformOrigin: Popup.TopLeft
 
-    width: root.anchorItem ? Math.max(menuSurface.minWidth, Math.min(menuSurface.maxWidth, root.anchorItem.width)) : menuSurface.implicitWidth
-    y: root.anchorItem ? root.anchorItem.height + 4 : 0
+    width: anchorItem ? Math.max(menuSurface.minWidth, Math.min(menuSurface.maxWidth, anchorItem.width)) : menuSurface.implicitWidth
+    y: anchorItem ? anchorItem.height + 4 : 0
 
     onAnchorItemChanged: {
-        if (root.anchorItem)
-            root.parent = root.anchorItem;
+        if (anchorItem)
+            parent = anchorItem;
     }
 
     MenuSurface {

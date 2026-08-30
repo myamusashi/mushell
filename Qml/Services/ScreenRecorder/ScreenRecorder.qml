@@ -55,39 +55,39 @@ Singleton {
     onAudioDeviceDescriptionChanged: {}
     onVideoCodecChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.videoCodec = root.videoCodec;
+            Configs.screenRecorder.videoCodec = videoCodec;
     }
     onAudioCodecChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.audioCodec = root.audioCodec;
+            Configs.screenRecorder.audioCodec = audioCodec;
     }
     onDriDeviceChanged: {}
     onEncodeResolutionChanged: {}
     onLowPowerChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.lowPower = root.lowPower;
+            Configs.screenRecorder.lowPower = lowPower;
     }
     onBitrateChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.bitrate = root.bitrate;
+            Configs.screenRecorder.bitrate = bitrate;
     }
     onMaxFpsChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.maxFps = root.maxFps;
+            Configs.screenRecorder.maxFps = maxFps;
     }
     onHistoryModeChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.historyMode = root.historyMode;
+            Configs.screenRecorder.historyMode = historyMode;
     }
     onIncludeAudioChanged: {}
     onShowCursorChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.showCursor = root.showCursor;
+            Configs.screenRecorder.showCursor = showCursor;
     }
     property bool loadingFromConfig: false
     onIsRecordingChanged: {
-        if (root.isRecording) {
-            root.recordingElapsedSeconds = 0;
+        if (isRecording) {
+            recordingElapsedSeconds = 0;
             elapsedTimer.start();
         } else {
             elapsedTimer.stop();
@@ -309,20 +309,20 @@ Singleton {
 
     Component.onCompleted: {
         Quickshell.execDetached({
-            command: ["mkdir", "-p", root.screenshotDir, root.videoDir, root.thumbnailDir]
+            command: ["mkdir", "-p", screenshotDir, videoDir, thumbnailDir]
         });
-        root.checkActiveRecording();
-        root.isRecordingChanged();
-        root.currentOutputFileChanged();
-        root.loadingFromConfig = true;
-        root.maxFps = Configs.screenRecorder.maxFps;
-        root.bitrate = Configs.screenRecorder.bitrate;
-        root.videoCodec = Configs.screenRecorder.videoCodec;
-        root.audioCodec = Configs.screenRecorder.audioCodec;
-        root.lowPower = Configs.screenRecorder.lowPower;
-        root.showCursor = Configs.screenRecorder.showCursor;
-        root.historyMode = Configs.screenRecorder.historyMode;
-        root.loadingFromConfig = false;
+        checkActiveRecording();
+        isRecordingChanged();
+        currentOutputFileChanged();
+        loadingFromConfig = true;
+        maxFps = Configs.screenRecorder.maxFps;
+        bitrate = Configs.screenRecorder.bitrate;
+        videoCodec = Configs.screenRecorder.videoCodec;
+        audioCodec = Configs.screenRecorder.audioCodec;
+        lowPower = Configs.screenRecorder.lowPower;
+        showCursor = Configs.screenRecorder.showCursor;
+        historyMode = Configs.screenRecorder.historyMode;
+        loadingFromConfig = false;
     }
 
     function rebuild() {
@@ -367,27 +367,27 @@ Singleton {
     }
 
     function startRecording(geometry, output) {
-        if (root.isRecording) {
-            root.sendNotification("Recording Active", "A recording is already in progress.", "critical", "dialog-warning", "Screen Record");
+        if (isRecording) {
+            sendNotification("Recording Active", "A recording is already in progress.", "critical", "dialog-warning", "Screen Record");
             return;
         }
 
         const cfg = {
-            videoCodec: root.videoCodec,
-            audioCodec: root.audioCodec,
-            encodeResolution: root.encodeResolution,
-            driDevice: root.driDevice,
-            lowPower: root.lowPower,
-            maxFps: root.maxFps,
-            bitrate: root.bitrate,
-            showCursor: root.showCursor,
-            historyMode: root.historyMode,
-            includeAudio: root.includeAudio,
-            audioDevice: root.audioDevice
+            videoCodec: videoCodec,
+            audioCodec: audioCodec,
+            encodeResolution: encodeResolution,
+            driDevice: driDevice,
+            lowPower: lowPower,
+            maxFps: maxFps,
+            bitrate: bitrate,
+            showCursor: showCursor,
+            historyMode: historyMode,
+            includeAudio: includeAudio,
+            audioDevice: audioDevice
         };
 
-        const path = Utils.videoPath(root.videoDir);
-        root.currentOutputFile = path;
+        const path = Utils.videoPath(videoDir);
+        currentOutputFile = path;
 
         const args = Utils.buildWlScreenrecArgs(cfg, geometry, output);
         args.push("-f", path);
@@ -397,27 +397,27 @@ Singleton {
     }
 
     function startRecordingToplevel(appId) {
-        if (root.isRecording) {
-            root.sendNotification("Recording Active", "A recording is already in progress.", "critical", "dialog-warning", "Screen Record");
+        if (isRecording) {
+            sendNotification("Recording Active", "A recording is already in progress.", "critical", "dialog-warning", "Screen Record");
             return;
         }
 
         const cfg = {
-            videoCodec: root.videoCodec,
-            audioCodec: root.audioCodec,
-            encodeResolution: root.encodeResolution,
-            driDevice: root.driDevice,
-            lowPower: root.lowPower,
-            maxFps: root.maxFps,
-            bitrate: root.bitrate,
-            showCursor: root.showCursor,
-            historyMode: root.historyMode,
-            includeAudio: root.includeAudio,
-            audioDevice: root.audioDevice
+            videoCodec: videoCodec,
+            audioCodec: audioCodec,
+            encodeResolution: encodeResolution,
+            driDevice: driDevice,
+            lowPower: lowPower,
+            maxFps: maxFps,
+            bitrate: bitrate,
+            showCursor: showCursor,
+            historyMode: historyMode,
+            includeAudio: includeAudio,
+            audioDevice: audioDevice
         };
 
-        const path = Utils.videoPath(root.videoDir);
-        root.currentOutputFile = path;
+        const path = Utils.videoPath(videoDir);
+        currentOutputFile = path;
 
         const args = Utils.buildWlScreenrecArgs(cfg, "", "", "app-id=" + appId);
         args.push("-f", path);
@@ -427,7 +427,7 @@ Singleton {
     }
 
     function recordSelection(geometry) {
-        if (root.isRecording) {
+        if (isRecording) {
             stopRecording();
             return;
         }
@@ -435,7 +435,7 @@ Singleton {
     }
 
     function recordToplevel(appId) {
-        if (root.isRecording) {
+        if (isRecording) {
             stopRecording();
             return;
         }
@@ -443,8 +443,8 @@ Singleton {
     }
 
     function stopRecording() {
-        if (!root.isRecording || root.recordingPid <= 0) {
-            root.sendNotification("Recording Failed", "No active recording found.", "critical", "dialog-error", "Screen Record");
+        if (!isRecording || recordingPid <= 0) {
+            sendNotification("Recording Failed", "No active recording found.", "critical", "dialog-error", "Screen Record");
             return;
         }
 
@@ -456,37 +456,37 @@ Singleton {
     }
 
     function saveHistory() {
-        if (root.isRecording && root.recordingPid > 0) {
+        if (isRecording && recordingPid > 0) {
             recordingProcess.signal(10);
-            root.sendNotification("Replay Saved", "History buffer written to disk.", "normal", "", "screenrecord");
+            sendNotification("Replay Saved", "History buffer written to disk.", "normal", "", "screenrecord");
         }
     }
 
     function createThumbnail(videoPath, outputDir) {
-        root.generate(videoPath, outputDir, null);
+        generate(videoPath, outputDir, null);
     }
 
     function generate(videoPath, outputDir, callback) {
-        const active = root.currentThumbnailJob;
+        const active = currentThumbnailJob;
         if (active && active.videoPath === videoPath && active.outputDir === outputDir)
             return;
-        for (const job of root.thumbnailQueue)
+        for (const job of thumbnailQueue)
             if (job.videoPath === videoPath && job.outputDir === outputDir)
                 return;
-        root.thumbnailQueue.push({
+        thumbnailQueue.push({
             videoPath: videoPath,
             outputDir: outputDir,
             callback: callback
         });
-        root.startNextThumbnailJob();
+        startNextThumbnailJob();
     }
 
     function startNextThumbnailJob() {
-        if (root.thumbnailJobBusy || root.thumbnailQueue.length === 0)
+        if (thumbnailJobBusy || thumbnailQueue.length === 0)
             return;
-        const job = root.thumbnailQueue.shift();
-        root.currentThumbnailJob = job;
-        root.thumbnailJobBusy = true;
+        const job = thumbnailQueue.shift();
+        currentThumbnailJob = job;
+        thumbnailJobBusy = true;
         ffprobeProcess.videoPath = job.videoPath;
         ffprobeProcess.outputDir = job.outputDir;
         ffprobeProcess.callback = job.callback;
@@ -494,12 +494,12 @@ Singleton {
     }
 
     function finishThumbnailJob(videoPath, thumbnailPath, callback) {
-        root.thumbnailReady(videoPath, thumbnailPath);
+        thumbnailReady(videoPath, thumbnailPath);
         if (callback)
             callback(videoPath, thumbnailPath);
-        root.currentThumbnailJob = null;
-        root.thumbnailJobBusy = false;
-        root.startNextThumbnailJob();
+        currentThumbnailJob = null;
+        thumbnailJobBusy = false;
+        startNextThumbnailJob();
     }
 
     function screenshotWindow(action) {
@@ -521,7 +521,7 @@ Singleton {
     function screenshotOutput(out, action) {
         screenshotter.getMonitors(monitors => {
             if (monitors.length === 0) {
-                root.sendNotification("Screenshot Failed", "No monitors found.", "critical", "dialog-error", "Screen Capture");
+                sendNotification("Screenshot Failed", "No monitors found.", "critical", "dialog-error", "Screen Capture");
                 return;
             }
             screenshotter.screenshotOutput(out && monitors.includes(out) ? out : monitors[0], action);
@@ -529,12 +529,12 @@ Singleton {
     }
 
     function onRecordingStopped(videoPath) {
-        root.generate(videoPath, root.thumbnailDir, (vp, tp) => {
+        generate(videoPath, thumbnailDir, (vp, tp) => {
             if (tp)
-                root.sendNotification("Recording Stopped", "Video saved to " + vp, "normal", tp, "screenrecord");
+                sendNotification("Recording Stopped", "Video saved to " + vp, "normal", tp, "screenrecord");
             else
-                root.sendNotification("Recording Stopped", "Video saved to " + vp, "normal", "video-x-generic", "screenrecord");
-            root.gotoLink(vp, tp, false);
+                sendNotification("Recording Stopped", "Video saved to " + vp, "normal", "video-x-generic", "screenrecord");
+            gotoLink(vp, tp, false);
         });
     }
 
@@ -561,7 +561,7 @@ Singleton {
         }
 
         // --wait keeps the client alive so action clicks come back on stdout
-        const proc = actionNotifyComponent.createObject(root, {
+        const proc = actionNotifyComponent.createObject({
             filePath: body,
             dirPath: body.substring(0, Math.max(body.lastIndexOf("/"), 0)) || "/"
         });
@@ -571,7 +571,7 @@ Singleton {
 
     function gotoLink(file, thumb, showNotification) {
         if (showNotification)
-            root.sendNotification("Capture Saved", file, "normal", thumb ?? "", "screengrab", [
+            sendNotification("Capture Saved", file, "normal", thumb ?? "", "screengrab", [
                 {
                     "id": "default",
                     "label": qsTr("Open")

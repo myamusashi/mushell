@@ -20,18 +20,18 @@ Popup {
     closePolicy: Popup.CloseOnPressOutside | Popup.CloseOnEscape
     transformOrigin: Popup.Center
 
+    function openAt(x: real, y: real) {
+        x = x;
+        y = y;
+        open();
+    }
+
     MenuSurface {
         id: menuSurface
 
         anchors.fill: parent
         showScrollBar: root.showScrollBar
         implicitWidth: 220
-    }
-
-    function openAt(x: real, y: real) {
-        root.x = x;
-        root.y = y;
-        root.open();
     }
 
     enter: Transition {

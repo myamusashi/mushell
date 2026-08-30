@@ -23,14 +23,14 @@ Singleton {
     property int maxNotificationAge: 604800000
 
     function clearAll() {
-        for (const notif of root.notifications.slice())
+        for (const notif of notifications.slice())
             notif.close();
     }
 
     function forceCleanup() {
         const now = Date.now();
-        for (const notif of root.notifications.slice()) {
-            if (now - notif.time.getTime() > root.maxNotificationAge * 2) {
+        for (const notif of notifications.slice()) {
+            if (now - notif.time.getTime() > maxNotificationAge * 2) {
                 notif.locks.clear();
                 notif.close();
             }
@@ -39,9 +39,9 @@ Singleton {
 
     function cleanupOldNotifications() {
         const now = Date.now();
-        const oldNotifications = root.notifications.filter(notif => {
+        const oldNotifications = notifications.filter(notif => {
             const age = now - notif.time.getTime();
-            return age > root.maxNotificationAge;
+            return age > maxNotificationAge;
         });
 
         if (oldNotifications.length > 0) {
@@ -55,11 +55,11 @@ Singleton {
     function enforceNotificationLimit() {
         cleanupOldNotifications();
 
-        const currentCount = root.notClosed.length;
+        const currentCount = notClosed.length;
 
-        if (currentCount >= root.maxNotifications) {
-            const sortedNotifs = root.notClosed.slice().sort((a, b) => a.time - b.time);
-            const toRemove = currentCount - root.maxNotifications + 1;
+        if (currentCount >= maxNotifications) {
+            const sortedNotifs = notClosed.slice().sort((a, b) => a.time - b.time);
+            const toRemove = currentCount - maxNotifications + 1;
 
             console.log(`Removing ${toRemove} oldest notification(s) to enforce limit`);
             ToastService.show(qsTr("Removing %1 oldest notification(s) to enforce limit").arg(toRemove), qsTr("Notifications"), "dialog-information", 3000);
@@ -452,7 +452,7 @@ Singleton {
 
     Component.onDestruction: {
         cleanupTimer.stop();
-        for (const notif of root.notifications.slice()) {
+        for (const notif of notifications.slice()) {
             try {
                 notif.closeQuiet();
             } catch (e) {

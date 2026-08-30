@@ -17,11 +17,11 @@ Item {
     signal hovered
     signal activated
 
-    readonly property bool isSeparator: root.modelData?.isSeparator ?? false
-    readonly property bool isEnabled: root.modelData?.enabled ?? false
+    readonly property bool isSeparator: modelData?.isSeparator ?? false
+    readonly property bool isEnabled: modelData?.enabled ?? false
 
-    implicitHeight: root.isSeparator ? 1 : 44
-    opacity: root.isSeparator || root.isEnabled ? 1 : 0.4
+    implicitHeight: isSeparator ? 1 : 44
+    opacity: isSeparator || isEnabled ? 1 : 0.4
 
     StyledRect {
         visible: root.isSeparator

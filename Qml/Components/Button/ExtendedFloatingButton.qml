@@ -13,7 +13,7 @@ import Vast.Utils
 Item {
     id: root
 
-    readonly property color backgroundColor: root.enabled || root.color.a === 0 ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: enabled || color.a === 0 ? color : Qt.alpha(color, 0.12)
 
     property alias backgroundRadius: background.radius
     property string text: ""
@@ -27,7 +27,7 @@ Item {
     property color rippleColor: Colours.m3Colors.m3OnPrimary
     property IconComponent icon: IconComponent {}
 
-    readonly property bool keyboardFocused: root.activeFocus
+    readonly property bool keyboardFocused: activeFocus
 
     property bool keyboardFocusable: true
 
@@ -40,21 +40,23 @@ Item {
     signal clicked
 
     Keys.onReturnPressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
 
     Keys.onSpacePressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
 
     implicitWidth: contentRow.implicitWidth + paddingLeft + paddingRight
     implicitHeight: 40
+    hovered: hoverHandler.hovered
+    pressed: tapHandler.pressed
 
     // qmllint disable
     states: [
@@ -254,16 +256,12 @@ Item {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
 
-    hovered: hoverHandler.hovered
-
     TapHandler {
         id: tapHandler
 
         enabled: root.enabled
         onTapped: root.clicked()
     }
-
-    pressed: tapHandler.pressed
 
     component IconComponent: QtObject {
         property color color: Colours.m3Colors.m3OnSurface

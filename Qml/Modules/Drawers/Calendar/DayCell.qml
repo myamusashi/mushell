@@ -26,7 +26,7 @@ Item {
     readonly property date cellDate: modelData.date
     readonly property int dayOfWeek: cellDate.getDay()
     readonly property bool isToday: modelData.today
-    readonly property bool isCurrentMonth: modelData.month === root.currentMonth
+    readonly property bool isCurrentMonth: modelData.month === currentMonth
     readonly property int dayFontWeight: isToday ? 1000 : (isCurrentMonth ? 600 : 100)
     readonly property bool isPopoverOpen: openPopoverDate !== null && new Date(openPopoverDate).toDateString() === cellDate.toDateString()
 
@@ -48,10 +48,10 @@ Item {
         return HolidayModel.nameForDate(cellDate);
     }
 
-    x: gridColumn * root.cellWidth
-    y: gridRow * root.cellHeight
-    width: root.cellWidth
-    height: root.cellHeight
+    x: gridColumn * cellWidth
+    y: gridRow * cellHeight
+    width: cellWidth
+    height: cellHeight
 
     StyledRect {
         id: background

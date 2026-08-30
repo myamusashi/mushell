@@ -13,13 +13,12 @@ import "../Components/Base"
 StyledRect {
     id: root
 
-    // True while a drag hovers the widget and carries file URLs.
     property bool dragHover: false
 
     implicitWidth: kdeIcon.width + Appearance.padding.normal * 2
     implicitHeight: parent.height
     radius: Appearance.rounding.small
-    color: root.dragHover ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
+    color: dragHover ? Qt.alpha(Colours.m3Colors.m3Primary, 0.12) : "transparent"
 
     Behavior on color {
         CAnim {

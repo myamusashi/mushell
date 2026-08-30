@@ -26,16 +26,16 @@ Item {
     function sectionBaseIndex(sectionIndex) {
         let sum = 0;
         for (let i = 0; i < sectionIndex; i++)
-            sum += root.model[i]?.items?.length ?? 0;
+            sum += model[i]?.items?.length ?? 0;
         return sum;
     }
 
     readonly property real compactWidth: 80
     readonly property real expandedWidth: 220
 
-    property real animatedRailWidth: root.expanded ? root.expandedWidth : root.compactWidth
+    property real animatedRailWidth: expanded ? expandedWidth : compactWidth
 
-    implicitWidth: root.animatedRailWidth
+    implicitWidth: animatedRailWidth
     implicitHeight: parent ? parent.height : 480
 
     Behavior on animatedRailWidth {

@@ -14,8 +14,8 @@ RowLayout {
     property string targetId: ""
 
     readonly property bool multiDisplay: Brightness.displays.length > 1
-    readonly property var selectedDisplay: Brightness.displays.find(d => d.id === root.targetId) ?? null
-    readonly property var targets: root.multiDisplay ? [
+    readonly property var selectedDisplay: Brightness.displays.find(d => d.id === targetId) ?? null
+    readonly property var targets: multiDisplay ? [
         {
             display: qsTr("All"),
             value: ""
@@ -24,7 +24,7 @@ RowLayout {
                     display: d.isInternal ? qsTr("Internal") : String(d.name).split(" ")[0],
                     value: d.id
                 }))] : []
-    readonly property int selectedIndex: root.targets.findIndex(t => t.value === root.targetId)
+    readonly property int selectedIndex: targets.findIndex(t => t.value === targetId)
 
     spacing: Appearance.spacing.normal
 

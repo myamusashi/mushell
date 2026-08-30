@@ -15,10 +15,10 @@ DialogBox {
     property WifiNetwork network: null
 
     needKeyboardFocus: true
-    active: root.network !== null
+    active: network !== null
 
     function show(target) {
-        root.network = target;
+        network = target;
     }
 
     header: StyledText {

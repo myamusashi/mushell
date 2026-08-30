@@ -65,29 +65,29 @@ Singleton {
     }
 
     function start() {
-        if (root.status === Hotspot.Status.Active || root.status === Hotspot.Status.Starting)
+        if (status === Hotspot.Status.Active || status === Hotspot.Status.Starting)
             return;
-        if (!root.hotspotInterface) {
+        if (!hotspotInterface) {
             setError("No wireless interface available");
             return;
         }
 
         // Apply defaults at start time, not at bind time
-        const ssid = root.ssid || "Quickshell";
-        const password = root.password || "password123";
-        const band = root.band || "bg";
-        const channel = root.channel || 6;
+        const ssid = ssid || "Quickshell";
+        const password = password || "password123";
+        const band = band || "bg";
+        const channel = channel || 6;
 
-        root.status = Hotspot.Status.Starting;
-        root.errorMessage = "";
-        createHotspot.command = ["bash", "-c", `nmcli con delete "Hotspot" 2>/dev/null; ` + `nmcli con add type wifi ifname ${root.hotspotInterface} ` + `con-name Hotspot autoconnect no ssid "${ssid}" ` + `mode ap ipv4.method shared ` + `wifi-sec.key-mgmt wpa-psk ` + `wifi-sec.psk "${password}" ` + `wifi.band ${band} ` + `wifi.channel ${channel}`];
+        status = Hotspot.Status.Starting;
+        errorMessage = "";
+        createHotspot.command = ["bash", "-c", `nmcli con delete "Hotspot" 2>/dev/null; ` + `nmcli con add type wifi ifname ${hotspotInterface} ` + `con-name Hotspot autoconnect no ssid "${ssid}" ` + `mode ap ipv4.method shared ` + `wifi-sec.key-mgmt wpa-psk ` + `wifi-sec.psk "${password}" ` + `wifi.band ${band} ` + `wifi.channel ${channel}`];
         createHotspot.running = true;
     }
 
     function stop() {
-        if (root.status !== Hotspot.Status.Active)
+        if (status !== Hotspot.Status.Active)
             return;
-        root.status = Hotspot.Status.Stopping;
+        status = Hotspot.Status.Stopping;
         stopHotspot.running = true;
     }
 
@@ -96,8 +96,8 @@ Singleton {
     }
 
     function setError(msg) {
-        root.errorMessage = msg;
-        root.status = Hotspot.Status.ErrorStatus;
+        errorMessage = msg;
+        status = Hotspot.Status.ErrorStatus;
         console.warn("[Hotspot] Error:", msg);
         ToastService.show(qsTr("[Hotspot] Error: %1").arg(msg), qsTr("Hotspot"), "network-wireless-hotspot-symbolic", 3000);
     }

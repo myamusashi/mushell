@@ -13,11 +13,11 @@ Item {
 
     property string size: "medium"
 
-    readonly property int actionButtonSize: root.size === "small" ? 32 : root.size === "regular" ? 40 : root.size === "large" ? 96 : 56
-    readonly property int actionButtonRadius: root.size === "small" ? 12 : root.size === "regular" ? 12 : root.size === "large" ? 28 : 16
-    readonly property int actionButtonIconSize: root.size === "small" ? 16 : root.size === "large" ? 36 : 24
+    readonly property int actionButtonSize: size === "small" ? 32 : size === "regular" ? 40 : size === "large" ? 96 : 56
+    readonly property int actionButtonRadius: size === "small" ? 12 : size === "regular" ? 12 : size === "large" ? 28 : 16
+    readonly property int actionButtonIconSize: size === "small" ? 16 : size === "large" ? 36 : 24
 
-    readonly property color backgroundColor: root.enabled || root.color.a === 0 ? root.color : Qt.alpha(root.color, 0.12)
+    readonly property color backgroundColor: enabled || color.a === 0 ? color : Qt.alpha(color, 0.12)
 
     property alias backgroundRadius: background.radius
     property bool pressed
@@ -25,7 +25,7 @@ Item {
     property color color: Colours.m3Colors.m3PrimaryContainer
     property IconComponent icon: IconComponent {}
 
-    readonly property bool keyboardFocused: root.activeFocus
+    readonly property bool keyboardFocused: activeFocus
 
     property bool keyboardFocusable: true
     property bool spinning: false
@@ -36,21 +36,21 @@ Item {
     signal clicked
 
     Keys.onReturnPressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
 
     Keys.onSpacePressed: event => {
-        if (root.enabled) {
-            root.clicked();
+        if (enabled) {
+            clicked();
             event.accepted = true;
         }
     }
 
-    implicitWidth: root.actionButtonSize
-    implicitHeight: root.actionButtonSize
+    implicitWidth: actionButtonSize
+    implicitHeight: actionButtonSize
 
     // qmllint disable
     states: [

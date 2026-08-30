@@ -24,8 +24,8 @@ Item {
 
     property bool primed: false
 
-    implicitWidth: root.shouldShow && root.onFocusedMonitor ? root.pillWidth : 0
-    implicitHeight: root.pillHeight
+    implicitWidth: shouldShow && onFocusedMonitor ? pillWidth : 0
+    implicitHeight: pillHeight
 
     Behavior on implicitWidth {
         NAnim {

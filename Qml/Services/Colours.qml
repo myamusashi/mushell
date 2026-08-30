@@ -16,7 +16,7 @@ Singleton {
     readonly property M3GeneratedTemplateComponent m3GeneratedColors: M3GeneratedTemplateComponent {}
     readonly property MaterialTemplateComponent materialColors: MaterialTemplateComponent {}
     readonly property StaticColorTemplateComponent staticColors: StaticColorTemplateComponent {}
-    readonly property var materialTemplateColors: root.animatedMaterialColors
+    readonly property var materialTemplateColors: animatedMaterialColors
     readonly property var staticTemplateColors: JSON.parse(staticColorFile.text())
     readonly property M3TemplateColors m3Colors: Configs.colors.useMaterialColor ? materialColors : Configs.colors.useStaticColors ? staticColors : m3GeneratedColors
 
@@ -27,7 +27,7 @@ Singleton {
         return /\.(mp4|mkv|webm|mov|avi|m4v)$/i.test(wp) ? `${Paths.cacheDir}/vast-shell/vast-wallpaper-${Qt.md5(wp)}.png` : wp;
     }
 
-    readonly property var materialPaletteSource: materialColor.ready ? materialColor.colors : root.lastValidPalette
+    readonly property var materialPaletteSource: materialColor.ready ? materialColor.colors : lastValidPalette
     property var lastValidPalette: ({})
 
     readonly property alias animatedMaterialColors: paletteAnimator.currentPalette
@@ -56,15 +56,15 @@ Singleton {
     }
 
     onMaterialPaletteSourceChanged: {
-        if (!root.materialPaletteSource || Object.keys(root.materialPaletteSource).length === 0)
+        if (!materialPaletteSource || Object.keys(materialPaletteSource).length === 0)
             return;
-        root.lastValidPalette = root.materialPaletteSource;
-        paletteAnimator.transitionTo(root.materialPaletteSource);
+        lastValidPalette = materialPaletteSource;
+        paletteAnimator.transitionTo(materialPaletteSource);
     }
 
     Component.onCompleted: {
-        if (root.materialPaletteSource && Object.keys(root.materialPaletteSource).length > 0)
-            paletteAnimator.transitionTo(root.materialPaletteSource);
+        if (materialPaletteSource && Object.keys(materialPaletteSource).length > 0)
+            paletteAnimator.transitionTo(materialPaletteSource);
     }
 
     function clamp01(x) {

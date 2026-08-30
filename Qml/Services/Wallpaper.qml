@@ -25,14 +25,14 @@ Singleton {
         Quickshell.execDetached({
             command: ["sh", "-c", `printf '%s' ${JSON.stringify(path)} > ${JSON.stringify(Paths.currentWallpaperFile)}`]
         });
-        if (colorSource !== "" && root.colorSourceImage)
-            root.colorSourceImage.source = "file://" + colorSource;
+        if (colorSource !== "" && colorSourceImage)
+            colorSourceImage.source = "file://" + colorSource;
     }
 
     function updateWallpaperColors(path) {
-        if (path === "" || !root.colorSourceImage)
+        if (path === "" || !colorSourceImage)
             return;
-        root.colorSourceImage.source = "file://" + root.thumbnailPathFor(path);
+        colorSourceImage.source = "file://" + thumbnailPathFor(path);
     }
 
     function setVideoWallpaper(path) {

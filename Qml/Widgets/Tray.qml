@@ -39,20 +39,20 @@ StyledRect {
     }
 
     onGlideProgressChanged: {
-        if (!root.glidePopup || !root.glideFrom || !root.glideTo)
+        if (!glidePopup || !glideFrom || !glideTo)
             return;
-        const progress = root.glideProgress;
-        root.glidePopup.glideX = (root.glideTo.x - root.glideFrom.x) * progress;
-        root.glidePopup.glideY = (root.glideTo.y - root.glideFrom.y) * progress;
+        const progress = glideProgress;
+        glidePopup.glideX = (glideTo.x - glideFrom.x) * progress;
+        glidePopup.glideY = (glideTo.y - glideFrom.y) * progress;
         if (progress >= 1) {
-            if (root.glidePopup && root.glideItem)
-                root.glidePopup.positionAt(root.glideItem); // qmllint disable
-            root.glidePopup.glideX = 0;
-            root.glidePopup.glideY = 0;
-            root.glidePopup = null;
-            root.glideItem = null;
-            root.glideFrom = null;
-            root.glideTo = null;
+            if (glidePopup && glideItem)
+                glidePopup.positionAt(glideItem); // qmllint disable
+            glidePopup.glideX = 0;
+            glidePopup.glideY = 0;
+            glidePopup = null;
+            glideItem = null;
+            glideFrom = null;
+            glideTo = null;
         }
     }
 

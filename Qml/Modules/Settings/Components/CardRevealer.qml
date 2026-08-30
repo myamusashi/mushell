@@ -21,7 +21,7 @@ Item {
         if (!card || !card.visible)
             return false;
 
-        root.pendingTitle = cardTitle;
+        pendingTitle = cardTitle;
         scrollToCard(card);
 
         if (card.flash)
@@ -32,10 +32,10 @@ Item {
     }
 
     function refreshPending() {
-        if (root.pendingTitle === "")
+        if (pendingTitle === "")
             return;
 
-        const card = findCard(container, root.pendingTitle);
+        const card = findCard(container, pendingTitle);
 
         if (card && card.visible)
             scrollToCard(card);

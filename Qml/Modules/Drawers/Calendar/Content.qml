@@ -24,7 +24,7 @@ ColumnLayout {
     Component.onCompleted: Qt.callLater(() => {
         monthNames = buildMonthNames();
         if (Configs.generals.showHolidays)
-            HolidayModel.ensureYear(root.currentYear);
+            HolidayModel.ensureYear(currentYear);
     })
 
     function buildMonthNames(): var {
@@ -36,7 +36,7 @@ ColumnLayout {
 
     onCurrentYearChanged: {
         if (Configs.generals.showHolidays)
-            HolidayModel.ensureYear(root.currentYear);
+            HolidayModel.ensureYear(currentYear);
     }
 
     Timer {

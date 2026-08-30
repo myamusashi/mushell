@@ -22,11 +22,11 @@ StyledRect {
 
     function updateAudioLabel() {
         if (!ScreenRecorder.includeAudio) {
-            root.audioLabel = qsTr("No Audio");
+            audioLabel = qsTr("No Audio");
         } else if (ScreenRecorder.audioDeviceDescription) {
-            root.audioLabel = ScreenRecorder.audioDeviceDescription;
+            audioLabel = ScreenRecorder.audioDeviceDescription;
         } else {
-            root.audioLabel = qsTr("Choose an audio source...");
+            audioLabel = qsTr("Choose an audio source...");
         }
     }
 

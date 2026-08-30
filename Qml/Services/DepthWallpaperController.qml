@@ -25,21 +25,21 @@ Singleton {
             checkOrGenerate();
         } else {
             Configs.wallpaper.depthWallpaperEnabled = false;
-            root.state = "idle";
+            state = "idle";
         }
     }
 
     function checkOrGenerate() {
         if (currentWallpaperIsVideo) {
             Configs.wallpaper.depthWallpaperEnabled = false;
-            root.state = "idle";
+            state = "idle";
             return;
         }
         if (Configs.wallpaper.depthWallpaperSource !== "" && Configs.wallpaper.depthFgPath !== "") {
             if (!Configs.wallpaper.depthWallpaperEnabled)
                 Configs.wallpaper.depthWallpaperEnabled = true;
-            root.fgPath = Configs.wallpaper.depthFgPath;
-            root.state = "done";
+            fgPath = Configs.wallpaper.depthFgPath;
+            state = "done";
         } else {
             generateFg.running = true;
         }
@@ -48,7 +48,7 @@ Singleton {
     function runRembg() {
         if (currentWallpaperIsVideo)
             return;
-        root.state = "processing";
+        state = "processing";
         ToastService.show(qsTr("Generating depth wallpaper\u2026"), qsTr("Depth Wallpaper"), "image", 0);
         generateFg.running = true;
     }

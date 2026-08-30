@@ -8,16 +8,29 @@ import qs.Services
 ColumnLayout {
     id: root
 
-    property alias passwordInput: passwordInput
-    implicitWidth: parent.width
-
     // AuthFlow state; null-safe because the flow only exists during an active request.
     readonly property string supplementaryMessage: PolAgent.agent?.flow?.supplementaryMessage ?? "" // qmllint disable
     readonly property bool supplementaryIsError: PolAgent.agent?.flow?.supplementaryIsError ?? false // qmllint disable
     readonly property bool authenticationFailed: PolAgent.agent?.flow?.failed ?? false // qmllint disable
     readonly property bool responseVisible: PolAgent.agent?.flow?.responseVisible ?? false // qmllint disable
 
+    property alias passwordInput: passwordInput
+    implicitWidth: parent.width
+
     spacing: Appearance.spacing.small
+
+    function submit() {
+        const response = passwordInput.text;
+
+        passwordInput.text = "";
+        if (response.length > 0)
+            PolAgent.submit(response);
+    }
+
+    function cancel() {
+        passwordInput.text = "";
+        PolAgent.cancel();
+    }
 
     StyledText {
         Layout.fillWidth: true
@@ -29,9 +42,12 @@ ColumnLayout {
         color: Colours.m3Colors.m3OnSurfaceVariant
     }
 
-    InputField {
+    StyledTextInput {
         id: passwordInput
 
+        Layout.fillWidth: true
+        Layout.preferredHeight: 44
+        placeHolderText: qsTr("Enter password")
         passwordMode: !root.responseVisible
         onAccepted: root.submit()
         onKeyPressed: event => {
@@ -58,18 +74,5 @@ ColumnLayout {
         font.pixelSize: Appearance.fonts.size.small
         font.weight: Font.Medium
         color: Colours.m3Colors.m3Error
-    }
-
-    function submit() {
-        const response = passwordInput.text;
-
-        passwordInput.text = "";
-        if (response.length > 0)
-            PolAgent.submit(response);
-    }
-
-    function cancel() {
-        passwordInput.text = "";
-        PolAgent.cancel();
     }
 }

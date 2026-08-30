@@ -14,21 +14,21 @@ Item {
 
     function saveResult(result, action) {
         if (!result || !result.saveToFile) {
-            root.failed("Invalid grab result");
+            failed("Invalid grab result");
             return;
         }
 
-        const path = Utils.screenshotPath(root.screenshotDir);
+        const path = Utils.screenshotPath(screenshotDir);
         if (!result.saveToFile(path)) {
-            root.failed("Failed to save screenshot to " + path);
+            failed("Failed to save screenshot to " + path);
             return;
         }
 
         if (action === "save" || action === "save+copy")
-            root.saved(path);
+            saved(path);
 
         if (action === "copy" || action === "save+copy")
-            root.copyFile(path);
+            copyFile(path);
     }
 
     function copyFile(path) {

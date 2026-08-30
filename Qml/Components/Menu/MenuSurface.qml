@@ -19,8 +19,8 @@ Item {
     readonly property real minWidth: 112
     readonly property real maxWidth: 280
 
-    implicitWidth: Math.max(root.minWidth, Math.min(root.maxWidth, itemColumn.implicitWidth))
-    implicitHeight: Math.min(root.maxHeight, itemColumn.implicitHeight)
+    implicitWidth: Math.max(minWidth, Math.min(maxWidth, itemColumn.implicitWidth))
+    implicitHeight: Math.min(maxHeight, itemColumn.implicitHeight)
 
     Elevation {
         anchors.fill: surfaceBg

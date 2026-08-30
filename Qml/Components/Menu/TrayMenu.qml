@@ -25,8 +25,8 @@ Item {
 
     readonly property real contentHeight: menuColumn.implicitHeight
 
-    width: root.horizontal ? (root.open ? root.menuWidth : 1) : root.menuWidth
-    height: root.open ? Math.min(root.contentHeight, root.maxHeight) : 1
+    width: horizontal ? (open ? menuWidth : 1) : menuWidth
+    height: open ? Math.min(contentHeight, maxHeight) : 1
 
     Behavior on height {
         NAnim {
@@ -88,7 +88,7 @@ Item {
         id: hoverHandler
 
         onHoveredChanged: {
-            if (hoverHandler.hovered)
+            if (hovered)
                 root.entered();
             else
                 root.exited();

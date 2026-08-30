@@ -1,17 +1,15 @@
 pragma ComponentBehavior: Bound
 
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Widgets
+import Vast.ImageCache
+import Vast.Utils
 
 import qs.Core.Configs
 import qs.Core.States
 import qs.Services
-import qs.Components.Base
-import Vast.ImageCache
-import Vast.Utils
 
 ClippingWrapperRectangle {
     id: root
@@ -52,7 +50,7 @@ ClippingWrapperRectangle {
 
     Component.onCompleted: {
         const url = Players.active.trackArtUrl ?? "";
-        url.startsWith("http") ? artDownloader.download(url) : root.cachedArtPath = url;
+        url.startsWith("http") ? artDownloader.download(url) : cachedArtPath = url;
     }
 
     Process {

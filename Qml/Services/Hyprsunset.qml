@@ -10,12 +10,12 @@ Singleton {
     property bool isNightModeOn: false
 
     function up(): void {
-        root.isNightModeOn = true;
+        isNightModeOn = true;
         hyprsunset.running = true;
     }
 
     function down(): void {
-        root.isNightModeOn = false;
+        isNightModeOn = false;
         killHyprsunset.running = true;
     }
 

@@ -8,7 +8,6 @@ import Vast.Utils
 import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
-import qs.Services
 
 Item {
     id: root
@@ -25,18 +24,18 @@ Item {
     signal activateRequested(var modelData)
 
     onIsCurrentChanged: {
-        if (!root.isCurrent)
+        if (!isCurrent)
             return;
-        if (root.controller.isVideo(root.modelData))
-            root.controller.ensureThumbnail(root.modelData);
+        if (controller.isVideo(modelData))
+            controller.ensureThumbnail(modelData);
         else
-            ImageCache.preload(root.modelData, Qt.size(Screen.width, Screen.height));
+            ImageCache.preload(modelData, Qt.size(Screen.width, Screen.height));
     }
 
-    implicitWidth: root.isCurrent ? root.unitWidth * 2 : root.unitWidth
-    implicitHeight: root.carouselHeight
-    z: root.isCurrent ? 100 : 1
-    opacity: root.isCurrent ? 1.0 : 0.92
+    implicitWidth: isCurrent ? unitWidth * 2 : unitWidth
+    implicitHeight: carouselHeight
+    z: isCurrent ? 100 : 1
+    opacity: isCurrent ? 1.0 : 0.92
 
     Behavior on implicitWidth {
         NAnim {
