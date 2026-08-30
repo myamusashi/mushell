@@ -139,8 +139,8 @@ vast-shell/
 - [x] Settings page with polling controls and device management
 
 **Bluetooth**
-- [ ] Device discovery and pairing
-- [ ] Connection management and status in Quick Settings
+- [x] Device discovery and pairing
+- [x] Connection management and status in Quick Settings
 
 **Screen Capture Rework**
 - [x] Redesign the screen recorder

@@ -11,6 +11,7 @@ Rectangle {
     property alias title: titleText.text
     default property alias content: contentLayout.data
 
+
     Layout.fillWidth: true
     implicitHeight: layout.implicitHeight + (Appearance.margin.large * 2)
 

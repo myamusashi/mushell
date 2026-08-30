@@ -122,6 +122,10 @@ LazyLoader {
                                         label: qsTr("Network & Internet")
                                     },
                                     {
+                                        icon: "bluetooth",
+                                        label: qsTr("Bluetooth")
+                                    },
+                                    {
                                         icon: "smartphone",
                                         label: qsTr("KDE Connect")
                                     }
@@ -309,18 +313,25 @@ LazyLoader {
                             active: settingsLoader.currentPage === 12
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: KDEConnectPage {}
+                            sourceComponent: BluetoothPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 13
                             active: settingsLoader.currentPage === 13
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: GreeterPage {}
+                            sourceComponent: KDEConnectPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 14
                             active: settingsLoader.currentPage === 14
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            sourceComponent: GreeterPage {}
+                        }
+                        Loader {
+                            visible: settingsLoader.currentPage === 15
+                            active: settingsLoader.currentPage === 15
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             sourceComponent: IdlePage {}

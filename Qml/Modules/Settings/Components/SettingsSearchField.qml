@@ -192,42 +192,60 @@ Item {
         },
         {
             page: 12,
+            pageLabel: "Bluetooth",
+            card: "Adapter",
+            terms: ["Bluetooth", "Enable Bluetooth", "Discoverable", "Pairable", "Scanning", "Adapter"]
+        },
+        {
+            page: 12,
+            pageLabel: "Bluetooth",
+            card: "Paired devices",
+            terms: ["Paired", "Connected", "Forget", "Blocked"]
+        },
+        {
+            page: 12,
+            pageLabel: "Bluetooth",
+            card: "Available devices",
+            terms: ["Available", "Pair", "Discover"]
+        },
+        {
+            page: 13,
             pageLabel: "KDE Connect",
             card: "Device Discovery",
             terms: ["Enable Polling"]
         },
         {
-            page: 12,
+            page: 13,
             pageLabel: "KDE Connect",
             card: "Local Device",
             terms: ["Device ID"]
         },
         {
-            page: 12,
+            page: 13,
             pageLabel: "KDE Connect",
             card: "Paired Devices",
             terms: []
         },
         {
-            page: 12,
+            page: 13,
             pageLabel: "KDE Connect",
             card: "Available Devices",
             terms: []
         },
         {
-            page: 13,
+            page: 14,
             pageLabel: "Greeter",
             card: "Greeter Wallpaper",
             terms: ["Wallpaper Type", "Upload Wallpaper", "Preview"]
         },
         {
-            page: 14,
+            page: 15,
             pageLabel: "Idle",
             card: "Idle Management",
             terms: ["Enable Idle Detection"]
         },
         {
-            page: 14,
+            page: 15,
             pageLabel: "Idle",
             card: "Timeouts",
             terms: []

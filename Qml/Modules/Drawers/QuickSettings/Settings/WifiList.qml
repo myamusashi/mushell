@@ -75,7 +75,7 @@ WrapperRectangle {
     Loader {
         id: loader
 
-        active: true
+        active: root.isVisible
         asynchronous: true
         sourceComponent: ColumnLayout {
             width: loader.width

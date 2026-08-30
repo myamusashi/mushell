@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Networking
@@ -13,6 +15,7 @@ Item {
 
     property alias wifi: wifi
     property alias ethernet: ethernet
+    property alias bluetooth: bluetooth
     readonly property bool isConnected: SystemUsage.statusWiredInterface === "connected"
     readonly property string wifiConnectedName: {
         const dev = Networking.devices.values.find(d => d.type === DeviceType.Wifi);
@@ -51,7 +54,6 @@ Item {
             Layout.fillHeight: true
         }
     }
-
     WifiList {
         id: wifi
 
@@ -66,9 +68,16 @@ Item {
         z: 99
     }
 
+    BluetoothList {
+        id: bluetooth
+
+        anchors.centerIn: parent
+        z: 99
+    }
+
     StyledRect {
         anchors.fill: parent
-        visible: wifi.isVisible || ethernet.isVisible
+        visible: wifi.isVisible || ethernet.isVisible || bluetooth.isVisible
         color: Qt.alpha(Colours.m3Colors.m3Surface, 0.7)
         z: 98
 
@@ -81,6 +90,9 @@ Item {
                 }
                 if (mouse.x < ethernet.x || mouse.x > ethernet.x + ethernet.width || mouse.y < ethernet.y || mouse.y > ethernet.y + ethernet.height) {
                     ethernet.isVisible = false;
+                }
+                if (mouse.x < bluetooth.x || mouse.x > bluetooth.x + bluetooth.width || mouse.y < bluetooth.y || mouse.y > bluetooth.y + bluetooth.height) {
+                    bluetooth.isVisible = false;
                 }
             }
         }

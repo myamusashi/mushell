@@ -3,20 +3,24 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Networking
-
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
 import qs.Components.Base
 
-RowLayout {
-    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+ColumnLayout {
     Layout.fillWidth: true
-    Layout.fillHeight: true
     spacing: Appearance.spacing.normal
 
-    EthernetCard {}
-    WiFiCard {}
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: Appearance.spacing.normal
+
+        EthernetCard {}
+        WiFiCard {}
+    }
+
+    BluetoothCard {}
 
     component EthernetCard: StyledRect {
         id: ethernetCard
@@ -162,6 +166,69 @@ RowLayout {
 
                 StyledText {
                     text: wifiCard.isConnected ? wifiCard.connectedNetwork.name : qsTr("WiFi Disconnected")
+                    font.pixelSize: Appearance.fonts.size.normal
+                    font.weight: Font.Medium
+                    width: parent.width
+                    elide: Text.ElideRight
+                    color: Colours.m3Colors.m3OnSurface
+                }
+            }
+        }
+    }
+    component BluetoothCard: StyledRect {
+        Layout.fillWidth: true
+        implicitHeight: 70
+        color: Colours.m3Colors.m3SurfaceContainer
+        radius: Appearance.rounding.normal
+
+        readonly property string cardIconName: BluetoothServices.cardIconName
+        readonly property string cardSubtitle: BluetoothServices.cardSubtitle
+        readonly property bool hasConnected: BluetoothServices.hasConnected
+        readonly property bool isPowered: BluetoothServices.isPowered
+
+        MArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: content && content.bluetooth.isVisible ? Qt.ArrowCursor : Qt.PointingHandCursor // qmllint disable
+            enabled: content && !content.bluetooth.isVisible // qmllint disable
+            onClicked: {
+                if (content) // qmllint disable
+                    content.bluetooth.isVisible = !content.bluetooth.isVisible; // qmllint disable
+            }
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.margins: Appearance.margin.normal
+            spacing: Appearance.spacing.normal
+
+            Rectangle {
+                Layout.preferredWidth: 50
+                Layout.preferredHeight: 50
+                color: hasConnected ? Colours.m3Colors.m3Primary : isPowered ? Qt.alpha(Colours.m3Colors.m3Primary, 0.2) : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
+                radius: Appearance.rounding.small
+
+                Icon {
+                    type: Icon.Material
+                    anchors.centerIn: parent
+                    icon: cardIconName
+                    color: hasConnected ? Colours.m3Colors.m3OnPrimary : isPowered ? Colours.m3Colors.m3Primary : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38)
+                    font.pixelSize: Appearance.fonts.size.extraLarge
+                }
+            }
+
+            Column {
+                Layout.fillWidth: true
+                spacing: 2
+
+                StyledText {
+                    text: qsTr("Bluetooth")
+                    font.pixelSize: Appearance.fonts.size.large
+                    color: Colours.m3Colors.m3OnSurfaceVariant
+                }
+
+                StyledText {
+                    text: cardSubtitle
                     font.pixelSize: Appearance.fonts.size.normal
                     font.weight: Font.Medium
                     width: parent.width
