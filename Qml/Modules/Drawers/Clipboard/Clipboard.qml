@@ -34,16 +34,8 @@ WrapperRectangle {
         asynchronous: true
         sourceComponent: FocusCage {
             active: GlobalStates.isClipboardOpen
-            defaultFocus: Configs.clipboard.enableVimKeybinds ? vimFocus : content.searchField
+            defaultFocus: Configs.clipboard.enableVimKeybinds ? content : content.searchField
             anchors.fill: parent
-
-            Item {
-                id: vimFocus
-
-                width: 0
-                height: 0
-                Keys.onPressed: event => content.handleKey(event)
-            }
 
             Content {
                 id: content

@@ -11,6 +11,9 @@ import qs.Services
 ColumnLayout {
     id: root
 
+    focus: true
+    Keys.onPressed: event => handleKey(event)
+
     required property var uiState
 
     readonly property int currentId: {
@@ -28,16 +31,14 @@ ColumnLayout {
         if (!entryGrid || !entryGrid.entryList)
             return;
 
-        const navKeys = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Tab];
-        const isNavKey = navKeys.indexOf(event.key) !== -1;
-
         if (searchBar.searchField.isFocused) {
             if (!searchBar.searchField.hasSelection && event.key === Qt.Key_Escape) {
-                forceActiveFocus();
+                root.forceActiveFocus();
                 event.accepted = true;
                 return;
             }
-            if (!isNavKey)
+            const navKeys = [Qt.Key_Up, Qt.Key_Down, Qt.Key_Left, Qt.Key_Right, Qt.Key_Tab];
+            if (navKeys.indexOf(event.key) === -1)
                 return;
         }
 
