@@ -25,6 +25,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Select a wallpaper image file:")
+            description: qsTr("Browse and set a new wallpaper image or video.")
 
             ExtendedFloatingButton {
                 icon.name: "image"
@@ -166,6 +167,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Enable Wallpaper:")
+                description: qsTr("Show wallpaper.")
 
                 StyledSwitch {
                     checked: Configs.wallpaper.enabledWallpaper
@@ -180,50 +182,51 @@ SettingsPageBase {
                     onCheckedChanged: Configs.wallpaper.livePreview = checked
                 }
             }
+        }
+        SettingRow {
+            label: qsTr("Wallpaper Directory Path:")
+            description: qsTr("Folder scanned for available wallpapers.")
 
-            SettingRow {
-                label: qsTr("Wallpaper Directory Path:")
+            StyledTextInput {
+                id: wallpaperDirField
+                text: Configs.wallpaper.wallpaperDir
+                onTextChanged: Configs.wallpaper.wallpaperDir = text
+                implicitWidth: 350
+                toggleButtonVisible: false
 
-                StyledTextInput {
-                    id: wallpaperDirField
-                    text: Configs.wallpaper.wallpaperDir
-                    onTextChanged: Configs.wallpaper.wallpaperDir = text
-                    implicitWidth: 350
-                    toggleButtonVisible: false
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: {
-                            wallpaperDirField.forceActiveFocus();
-                            fileDialog.openFileDialog();
-                        }
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        wallpaperDirField.forceActiveFocus();
+                        fileDialog.openFileDialog();
                     }
-                }
-
-                FileDialog {
-                    id: fileDialog
-                    foldersOnly: true
-                    selectFolder: true
-                    showHidden: true
-                    onFileSelected: path => Configs.wallpaper.wallpaperDir = path
                 }
             }
 
-            SettingRow {
-                label: qsTr("Loaded Wallpaper Count:")
+            FileDialog {
+                id: fileDialog
+                foldersOnly: true
+                selectFolder: true
+                showHidden: true
+                onFileSelected: path => Configs.wallpaper.wallpaperDir = path
+            }
+        }
 
-                StyledSlide {
-                    from: 1
-                    to: 10
-                    stepSize: 1
-                    snapEnabled: true
-                    showValuePopup: true
-                    value: Configs.wallpaper.visibleWallpaper
-                    onMoved: Configs.wallpaper.visibleWallpaper = value
-                    Layout.preferredWidth: 200
-                }
+        SettingRow {
+            label: qsTr("Loaded Wallpaper Count:")
+            description: qsTr("Number of wallpapers kept in the picker carousel.")
+
+            StyledSlide {
+                from: 1
+                to: 10
+                stepSize: 1
+                snapEnabled: true
+                showValuePopup: true
+                value: Configs.wallpaper.visibleWallpaper
+                onMoved: Configs.wallpaper.visibleWallpaper = value
+                Layout.preferredWidth: 200
             }
         }
     }
@@ -234,6 +237,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Transition Animation Mode:")
+            description: qsTr("Animation used when switching wallpapers.")
 
             SplitButton {
                 readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.wallpaper.transition)
@@ -290,6 +294,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Transition Low Performance Priority:")
+            description: qsTr("Reduce transition quality to improve performance on low-end hardware.")
 
             StyledSwitch {
                 checked: Configs.wallpaper.transitionLowPerfMode
@@ -299,6 +304,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Transition Duration (ms):")
+            description: qsTr("Duration of the wallpaper switch animation in milliseconds.")
 
             StyledSlide {
                 from: 100

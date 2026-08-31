@@ -39,7 +39,7 @@ RowLayout {
             horizontalAlignment: Text.AlignLeft
             Layout.fillWidth: true
             font.pixelSize: Appearance.fonts.size.small
-            color: Colours.m3Colors.m3OnSecondary
+            color: Qt.alpha(Colours.m3Colors.m3OnSurface, 0.5)
             visible: text !== ""
         }
     }

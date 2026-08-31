@@ -30,7 +30,7 @@
     <td align="center"><img src="https://github.com/user-attachments/assets/fd0487de-2fe8-48e8-bcfc-6c7d38242802" width="480"/><br/>Wallpaper selector</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/efda1900-c4dc-40f6-abec-a0db613a07d5" width="480"/><br/>Calendar</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/efda1900-c4dc-40f6-abec-a0db613a07d5" width="480"/><br/>Screen recorder</td>
     <td align="center"><img src="https://github.com/user-attachments/assets/e74342f8-7e6f-4b7b-9c89-a41f86c2c168" width="480"/><br/>Screenshot and history</td>
   </tr>
 </table>

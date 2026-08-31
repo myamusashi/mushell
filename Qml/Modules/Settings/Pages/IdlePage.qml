@@ -62,6 +62,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable Idle Detection:")
+            description: qsTr("Enable automatic actions after periods of inactivity.")
 
             StyledSwitch {
                 checked: Configs.idle.enabled

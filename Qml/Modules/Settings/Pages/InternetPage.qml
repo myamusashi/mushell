@@ -105,6 +105,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Enable hotspot & sharing internet:")
+                        description: qsTr("Toggle Wi-Fi hotspot and internet sharing.")
 
                         StyledSwitch {
                             Layout.alignment: Qt.AlignRight
@@ -119,6 +120,7 @@ Item {
 
                         SettingRow {
                             label: qsTr("User hotspot:")
+                            description: qsTr("SSID broadcast name for the hotspot.")
 
                             StyledTextInput {
                                 text: Hotspot.ssid
@@ -133,6 +135,7 @@ Item {
 
                         SettingRow {
                             label: qsTr("Password hotspot:")
+                            description: qsTr("Password required.")
 
                             StyledTextInput {
                                 text: Hotspot.password
@@ -147,6 +150,7 @@ Item {
 
                         SettingRow {
                             label: qsTr("Hotspot interface:")
+                            description: qsTr("Network interface used for hotspot sharing.")
 
                             StyledTextInput {
                                 text: Hotspot.hotspotInterface
@@ -160,6 +164,7 @@ Item {
 
                         SettingRow {
                             label: qsTr("Bandwidth:")
+                            description: qsTr("Wi-Fi band for the hotspot.")
 
                             SplitButton {
                                 readonly property int selectedIndex: Hotspot.band === "a" ? 1 : 0
@@ -205,6 +210,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Enable Wi-Fi:")
+                        description: qsTr("Turn Wi-Fi scanning and connections.")
 
                         StyledSwitch {
                             Layout.preferredWidth: 52

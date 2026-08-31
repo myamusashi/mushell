@@ -15,6 +15,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable lyrics in media player:")
+            description: qsTr("Fetch and display synchronized lyrics when available.")
 
             StyledSwitch {
                 Layout.preferredWidth: 52
@@ -26,6 +27,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable dynamic colors from cover art:")
+            description: qsTr("Tint the player with colors extracted from the album cover.")
 
             StyledSwitch {
                 Layout.preferredWidth: 52
@@ -37,6 +39,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Slider type:")
+            description: qsTr("Visual style for the playback progress slider.")
 
             SplitButton {
                 readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.mediaPlayer.sliderType)

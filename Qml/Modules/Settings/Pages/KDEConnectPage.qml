@@ -23,6 +23,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable Polling:")
+            description: qsTr("Periodically poll for KDE Connect devices on the network.")
 
             StyledSwitch {
                 checked: Configs.kdeConnect.pollingEnabled
@@ -32,6 +33,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Poll Interval (s):")
+            description: qsTr("How often to scan for devices, in seconds.")
 
             StyledTextInput {
                 text: (Configs.kdeConnect.pollInterval / 1000).toString()
@@ -51,6 +53,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Device ID:")
+            description: qsTr("Unique identifier of this device.")
 
             StyledText {
                 text: KDEConnect.myDeviceId || qsTr("Not detected")

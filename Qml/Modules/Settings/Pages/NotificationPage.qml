@@ -14,6 +14,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Maximum Notifications:")
+            description: qsTr("Maximum number of stored notifications to keep.")
 
             StyledSlide {
                 from: 10
@@ -27,6 +28,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Maximum Notification Age (Days):")
+            description: qsTr("Auto-remove notifications older than this many days.")
 
             StyledSlide {
                 from: 1

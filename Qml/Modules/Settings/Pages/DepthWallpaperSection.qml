@@ -31,6 +31,7 @@ Item {
 
             SettingRow {
                 label: qsTr("Enable Depth Wallpaper")
+                description: qsTr("Enable depth effect (Apple like).")
 
                 StyledSwitch {
                     checked: Configs.wallpaper.depthWallpaperEnabled
@@ -40,6 +41,7 @@ Item {
 
             SettingRow {
                 label: qsTr("Auto-process on wallpaper change:")
+                description: qsTr("Automatically regenerate the depth map whenever the wallpaper changes.")
 
                 StyledSwitch {
                     checked: Configs.wallpaper.autoProcessedDepthWallpaper

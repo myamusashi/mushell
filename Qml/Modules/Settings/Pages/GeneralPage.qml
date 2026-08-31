@@ -23,7 +23,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Follow Focus Monitor:")
-            description: qsTr("Bla bla bla bla bla")
+            description: qsTr("Automatically switch the active drawers to the monitor where cursor in.")
 
             StyledSwitch {
                 checked: Configs.generals.followFocusMonitor
@@ -33,6 +33,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Show Holidays in Calendar:")
+            description: qsTr("Display public holidays inside the calendar widget (NOTE: not every country).")
 
             StyledSwitch {
                 checked: Configs.generals.showHolidays
@@ -42,6 +43,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable Outer Border:")
+            description: qsTr("Draw an outer border around shell.")
 
             StyledSwitch {
                 checked: Configs.generals.enableOuterBorder
@@ -55,6 +57,7 @@ SettingsPageBase {
             // transparency sections
             SettingRow {
                 label: qsTr("Enable Transparent Mode:")
+                description: qsTr("Enable translucent shell.")
 
                 StyledSwitch {
                     checked: Configs.generals.transparent
@@ -64,6 +67,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Transparency Alpha:")
+                description: qsTr("Lower is more transparent.")
 
                 StyledSlide {
                     from: 0.1
@@ -127,7 +131,8 @@ SettingsPageBase {
             }
 
             SettingRow {
-                label: qsTr("How far the charging indicator spreads on the screen edge:")
+                label: qsTr("Charging indicator spreads on the screen edge:")
+                description: qsTr("Thickness of the glowing edge indicator when charging detected.")
 
                 StyledSlide {
                     from: 1
@@ -148,30 +153,35 @@ SettingsPageBase {
 
             AppSettingRow {
                 label: qsTr("Terminal:")
+                description: qsTr("Default terminal emulator for opening shell commands.")
                 categories: ["TerminalEmulator"]
                 configValue: Configs.generals.apps.terminal
                 onConfigChanged: value => Configs.generals.apps.terminal = value
             }
             AppSettingRow {
                 label: qsTr("File Explorer:")
+                description: qsTr("Default file manager for opening folders.")
                 categories: ["FileManager"]
                 configValue: Configs.generals.apps.fileExplorer
                 onConfigChanged: value => Configs.generals.apps.fileExplorer = value
             }
             AppSettingRow {
                 label: qsTr("Image Viewer:")
+                description: qsTr("Default app for viewing images.")
                 categories: ["Viewer"]
                 configValue: Configs.generals.apps.imageViewer
                 onConfigChanged: value => Configs.generals.apps.imageViewer = value
             }
             AppSettingRow {
                 label: qsTr("Video Viewer:")
+                description: qsTr("Default app for playing videos.")
                 categories: ["Video"]
                 configValue: Configs.generals.apps.videoViewer
                 onConfigChanged: value => Configs.generals.apps.videoViewer = value
             }
             AppSettingRow {
                 label: qsTr("Audio Settings:")
+                description: qsTr("Default app for audio and sound configuration.")
                 categories: ["AudioVideo", "Settings"]
                 configValue: Configs.generals.apps.audio
                 onConfigChanged: value => Configs.generals.apps.audio = value

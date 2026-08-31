@@ -15,6 +15,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Always Open Bar:")
+            description: qsTr("Keep the top bar visible.")
 
             StyledSwitch {
                 checked: Configs.bar.alwaysOpenBar
@@ -24,6 +25,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Compact Navigation Bar:")
+            description: qsTr("Use a condensed layout.")
 
             StyledSwitch {
                 checked: Configs.bar.compact
@@ -33,6 +35,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Bar Height:")
+            description: qsTr("Height of the top bar in pixels.")
 
             StyledSlide {
                 from: 20
@@ -50,6 +53,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Workspace Indicator Style:")
+            description: qsTr("Visual style for workspace indicators on the bar.")
 
             SplitButton {
                 readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.bar.workspacesIndicator)
@@ -73,6 +77,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Number of Visible Workspaces:")
+            description: qsTr("How many workspace indicators are shown on the bar.")
 
             StyledSlide {
                 from: 1

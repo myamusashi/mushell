@@ -26,6 +26,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Wallpaper type:")
+            description: qsTr("Choose between video or static image for the login manager.")
 
             SplitButton {
                 id: wallpaperButton
@@ -50,6 +51,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Upload wallpaper:")
+            description: qsTr("Select and upload a new greeter wallpaper file.")
 
             ExtendedFloatingButton {
                 text: qsTr("Upload static")
@@ -84,6 +86,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Preview:")
+            description: qsTr("Live preview of the current greeter wallpaper.")
 
             ClippingRectangle {
                 Layout.preferredWidth: 320

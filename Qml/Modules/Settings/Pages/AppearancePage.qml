@@ -62,6 +62,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Dark Mode:")
+                        description: qsTr("Use a dark color palette for the entire shell.")
                         StyledSwitch {
                             checked: Configs.colors.isDarkMode
                             onCheckedChanged: Configs.colors.isDarkMode = checked
@@ -70,6 +71,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Use Static Colors:")
+                        description: qsTr("Load colors from a custom JSON file instead of the generated palette.")
                         StyledSwitch {
                             checked: Configs.colors.useStaticColors
                             onCheckedChanged: Configs.colors.useStaticColors = checked
@@ -78,6 +80,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Use Material Colors:")
+                        description: qsTr("Generate colors from the Material You dynamic color system.")
                         StyledSwitch {
                             checked: Configs.colors.useMaterialColor
                             onCheckedChanged: Configs.colors.useMaterialColor = checked
@@ -85,14 +88,41 @@ Item {
                     }
                 }
 
-                FilePathRow {
+                SettingRow {
                     label: qsTr("Static Colors Path:")
-                    configValue: Configs.colors.staticColorsPath
-                    onConfigChanged: value => Configs.colors.staticColorsPath = value
+                    description: qsTr("File path to the custom colors JSON when static colors are enabled.")
+
+                    StyledTextInput {
+                        id: staticColorsPathField
+
+                        implicitWidth: 350
+                        text: Configs.colors.staticColorsPath
+                        toggleButtonVisible: false
+                        onEditingFinished: Configs.colors.staticColorsPath = text
+
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                staticColorsPathField.forceActiveFocus();
+                                staticColorsFileDialog.openFileDialog();
+                            }
+                        }
+                    }
+
+                    FileDialog {
+                        id: staticColorsFileDialog
+
+                        nameFilters: ["*.json"]
+                        showHidden: true
+                        onFileSelected: path => Configs.colors.staticColorsPath = path
+                    }
                 }
 
                 SettingRow {
                     label: qsTr("Material Scheme:")
+                    description: qsTr("Material You color scheme variant for palette generation.")
 
                     SplitButton {
                         readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.colors.scheme)
@@ -118,6 +148,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Sans Serif Font:")
+                        description: qsTr("Primary font for UI text and labels.")
                         FontPicker {
                             Layout.preferredWidth: 250
                             searchField: Appearance.fonts.family.sans
@@ -127,6 +158,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Monospace Font:")
+                        description: qsTr("Font for code and monospaced text.")
                         FontPicker {
                             Layout.preferredWidth: 250
                             searchField: Appearance.fonts.family.mono
@@ -136,6 +168,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Material Icon Font:")
+                        description: qsTr("Icon font used for Material Symbols throughout the shell.")
                         FontPicker {
                             Layout.preferredWidth: 250
                             searchField: Appearance.fonts.family.material
@@ -145,6 +178,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Font Size Scale:")
+                        description: qsTr("Global multiplier for all font sizes.")
                         StyledSlide {
                             from: 0.1
                             to: 2.0
@@ -168,6 +202,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("UI Corner Roundness (Normal):")
+                        description: qsTr("Corner radius.")
                         StyledSlide {
                             from: 0
                             to: 50
@@ -180,6 +215,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Element Spacing (Normal):")
+                        description: qsTr("Default spacing between UI elements.")
                         StyledSlide {
                             from: 0
                             to: 50
@@ -192,6 +228,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Padding (Normal):")
+                        description: qsTr("Inner padding.")
                         StyledSlide {
                             from: 0
                             to: 50
@@ -204,6 +241,7 @@ Item {
 
                     SettingRow {
                         label: qsTr("Margin (Normal):")
+                        description: qsTr("Outer margin.")
                         StyledSlide {
                             from: 0
                             to: 50
@@ -221,6 +259,7 @@ Item {
 
                 SettingRow {
                     label: qsTr("Animation Durations Scale:")
+                    description: qsTr("Multiplier for all animation durations. Higher is slower.")
                     StyledSlide {
                         from: 1
                         to: 5

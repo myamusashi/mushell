@@ -15,6 +15,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Latitude:")
+            description: qsTr("Latitude of your location for weather and astronomy data.")
 
             StyledTextInput {
                 text: Configs.weather.latitude
@@ -27,6 +28,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Longitude:")
+            description: qsTr("Longitude of your location for weather and astronomy data.")
 
             StyledTextInput {
                 text: Configs.weather.longitude
@@ -43,6 +45,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("WeatherAPI.com Key:")
+            description: qsTr("API key from WeatherAPI.com for astronomy and forecast data.")
 
             StyledTextInput {
                 text: Configs.weather.astronomyApiKey
@@ -59,6 +62,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Enable Quick Summary Widget:")
+            description: qsTr("Show a compact weather summary in quick settings.")
 
             StyledSwitch {
                 checked: Configs.weather.enableQuickSummary
@@ -66,18 +70,9 @@ SettingsPageBase {
             }
         }
 
-        RowLayout {
-            Layout.fillWidth: true
-
-            StyledText {
-                text: qsTr("Weather Reload Time (s):")
-                font.pixelSize: Appearance.fonts.size.large
-                color: Colours.m3Colors.m3OnSurfaceVariant
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
+        SettingRow {
+            label: qsTr("Weather Reload Time (s):")
+            description: qsTr("Interval for refreshing weather data, in seconds.")
 
             StyledText {
                 text: {

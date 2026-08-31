@@ -15,10 +15,11 @@ SettingsPageBase {
         title: qsTr("Recording")
 
         GridLayout {
-            columns: 3
+            columns: 2
 
             SettingRow {
                 label: qsTr("Frame Rate")
+                description: qsTr("Target frames per second for screen recordings.")
                 SplitButton {
                     readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.maxFps)
 
@@ -50,6 +51,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Bitrate")
+                description: qsTr("Bitrate limit for recordings. Higher values give sharper video but larger files.")
                 SplitButton {
                     readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.bitrate)
 
@@ -85,6 +87,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Video Codec")
+                description: qsTr("Encoder for the video stream.")
                 SplitButton {
                     readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.videoCodec)
 
@@ -128,6 +131,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Audio Codec")
+                description: qsTr("Encoder for the audio stream.")
                 SplitButton {
                     readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.audioCodec)
 
@@ -167,6 +171,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Power Mode")
+                description: qsTr("Power profile for recording. Low saves battery, Normal favors quality.")
                 SplitButton {
                     readonly property int selectedIndex: model.findIndex(entry => entry.value === Configs.screenRecorder.lowPower)
 
@@ -199,6 +204,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Show Cursor")
+            description: qsTr("Include the mouse cursor in the recording.")
             StyledSwitch {
                 checked: Configs.screenRecorder.showCursor
                 onCheckedChanged: {

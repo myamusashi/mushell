@@ -17,6 +17,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Enable Clipboard:")
+                description: qsTr("Turn on clipboard manager.")
 
                 StyledSwitch {
                     checked: Configs.clipboard.enabled
@@ -25,7 +26,8 @@ SettingsPageBase {
             }
 
             SettingRow {
-                label: qsTr("Enable Image Previews:")
+                label: qsTr("Enable Previews:")
+                description: qsTr("Show thumbnail previews in the clipboard.")
 
                 StyledSwitch {
                     checked: Configs.clipboard.enablePreview
@@ -35,6 +37,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Enable Vim Keybinds:")
+                description: qsTr("Use Vim-style navigation inside the clipboard manager.")
 
                 StyledSwitch {
                     checked: Configs.clipboard.enableVimKeybinds
@@ -44,6 +47,7 @@ SettingsPageBase {
 
             SettingRow {
                 label: qsTr("Keep Clipboard Open After Copy:")
+                description: qsTr("Keep the clipboard window open after copying an entry.")
 
                 StyledSwitch {
                     checked: Configs.clipboard.keepOpenAfterCopy
@@ -59,6 +63,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Preview Width:")
+            description: qsTr("Width of the clipboard preview in pixels.")
 
             StyledSlide {
                 from: 100
@@ -72,6 +77,7 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Preview Height:")
+            description: qsTr("Height of the clipboard preview in pixels.")
 
             StyledSlide {
                 from: 100

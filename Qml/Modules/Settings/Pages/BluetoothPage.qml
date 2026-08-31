@@ -35,6 +35,7 @@ SettingsPageBase {
         SettingRow {
             visible: BluetoothServices.adapterAvailable
             label: qsTr("Enable Bluetooth:")
+            description: qsTr("Turn the Bluetooth adapter on or off.")
 
             StyledSwitch {
                 Layout.preferredWidth: 52
@@ -75,6 +76,7 @@ SettingsPageBase {
             SettingRow {
                 visible: BluetoothServices.adapterAvailable
                 label: qsTr("Adapter")
+                description: qsTr("Local Bluetooth adapter.")
 
                 StyledText {
                     text: {
@@ -96,6 +98,7 @@ SettingsPageBase {
             SettingRow {
                 visible: BluetoothServices.adapterAvailable
                 label: qsTr("Address")
+                description: qsTr("Bluetooth device address.")
 
                 StyledText {
                     text: BluetoothServices.adapter ? BluetoothServices.adapter.dbusPath : "—"
@@ -109,6 +112,7 @@ SettingsPageBase {
             SettingRow {
                 visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
                 label: qsTr("Discoverable:")
+                description: qsTr("Allow nearby devices to discover this machine.")
 
                 StyledSwitch {
                     Layout.preferredWidth: 52
@@ -121,6 +125,7 @@ SettingsPageBase {
             SettingRow {
                 visible: BluetoothServices.adapterAvailable && BluetoothServices.adapterEnabled
                 label: qsTr("Pairable:")
+                description: qsTr("Allow nearby devices to request pairing.")
 
                 StyledSwitch {
                     Layout.preferredWidth: 52

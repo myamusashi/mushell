@@ -1,8 +1,7 @@
 import QtQuick
-import QtQuick.Layouts
 
+import qs.Components.Button
 import qs.Core.Configs
-import qs.Components.Base
 
 import "../Components"
 
@@ -14,13 +13,24 @@ SettingsPageBase {
 
         SettingRow {
             label: qsTr("Current Language:")
+            description: qsTr("Locale code used for translations.")
 
-            StyledTextInput {
-                text: Configs.language.language
-                onTextChanged: Configs.language.language = text
-                Layout.preferredWidth: 200
-                placeHolderText: "e.g., id-ID or en-US"
-                toggleButtonVisible: false
+            SplitButton {
+                readonly property int selectedIndex: model.findIndex(entry => entry.display === Configs.language.language)
+
+                model: [
+                    {
+                        display: "id_ID"
+                    },
+                    {
+                        display: "en_US"
+                    }
+                ]
+                textRole: "display"
+                icon.name: "language"
+                currentIndex: selectedIndex
+                text: model[selectedIndex]?.dispaly ?? Configs.language.language
+                onMenuItemActivated: index => Configs.language.language = model[index].display
             }
         }
     }
