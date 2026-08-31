@@ -7,6 +7,7 @@ import QtQuick
 import Quickshell
 
 import qs.Components.Feedback
+import qs.Modules.BluetoothAgent
 import qs.Modules.Drawers
 import qs.Modules.DragAndDrop
 import qs.Modules.Lock
@@ -18,6 +19,7 @@ ShellRoot {
     Lockscreen {}
     Wall {}
     Polkit {}
+    PairingDialog {}
     Drawers {}
     DragAndDrop {}
     Settings {}

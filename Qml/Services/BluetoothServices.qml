@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.Bluetooth
 
 Singleton {
+
     readonly property BluetoothAdapter adapter: Bluetooth.defaultAdapter
     readonly property bool adapterAvailable: adapter !== null
     readonly property bool adapterEnabled: adapter ? adapter.enabled : false
