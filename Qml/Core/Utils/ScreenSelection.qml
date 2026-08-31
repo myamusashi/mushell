@@ -59,6 +59,7 @@ Scope {
             }
             color: "transparent"
             screen: modelData
+            exclusionMode: ExclusionMode.Ignore
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
             WlrLayershell.layer: WlrLayer.Overlay
 
