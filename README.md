@@ -1,27 +1,40 @@
 <h1 align="center">vast-shell</h1>
 
-![Preview](https://github.com/user-attachments/assets/8df0a484-f60b-44e5-831f-255e0cf4df8d)
+![Preview](https://github.com/user-attachments/assets/e717ead0-c68b-4e9b-93dc-e0dbaf2dfb4a)
 
-https://github.com/user-attachments/assets/11651d0e-6929-4404-a24f-7e3dabc95ad1
-
+<details>
+<summary>Showcase feature</summary>
 <table>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/447c0b4a-a5b4-41ec-8f4a-05b57f523edb" width="480"/><br/>Bar &amp; Workspaces</td>
-    <td align="center"><img src="https://github.com/user-attachments/assets/a34f1a9f-f9ed-4f82-991f-e68e79e54fec" width="480"/><br/>Quick Settings</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/c48b556e-767b-450c-b51e-28e2f60018a0" width="480"/><br/>Bar &amp; Workspaces</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/bb89fed8-db20-4539-a072-8c69a5eb7d7e" width="480"/><br/>Quick Settings</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/6283c0b6-6055-4fd0-900a-0dabafac46a3" width="480"/><br/>Launcher</td>
-    <td align="center"><img src="https://github.com/user-attachments/assets/8049ec79-ade0-47d5-b2d8-cb5c5a25e895" width="480"/><br/>Notifications</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/59106117-3678-423b-9695-acf942eafcc5" width="480"/><br/>Launcher</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/cf35ae0a-ae87-4aea-9b21-708596af4b53" width="480"/><br/>Notifications</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/74ddfbbd-269a-48fb-8380-bd11b0bcc82f" width="480"/><br/>Weather</td>
-    <td align="center"><img src="https://github.com/user-attachments/assets/01cd558e-9beb-48a2-930c-bb48cfa493d4" width="480"/><br/>Dashboard</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6c5f0ad0-ccfc-4716-91a0-255a20ee5832" width="360"/><br/>Weather</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/6e148dd1-5e76-4b5c-ab66-3f10ea6842e1" width="480"/><br/>Settings window</td>
   </tr>
   <tr>
-    <td align="center"><img src="https://github.com/user-attachments/assets/9995e862-e6ff-45ee-88d8-68dbb98226e1" width="480"/><br/>Lockscreen</td>
-    <td align="center"><img src="https://github.com/user-attachments/assets/7ba86a61-f957-440d-9aa8-0eb6c84c766c" width="480"/><br/>Settings</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/a1585777-f1e7-4206-9bb9-9b019d2800c3" width="480"/><br/>Lockscreen</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/310fda91-f65c-415b-89b2-4ac09b7c56f7" width="480"/><br/>Clipboard manager</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/0b269d11-92e8-448e-afe9-5e4d5bbdd41b" width="480"/><br/>Calendar</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/0eef394d-ac0f-4b96-b3f3-3b4094b6d707" width="480"/><br/>Drag and drop file</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/adb94613-4f21-49bd-9952-d90470684280" width="480"/><br/>Tray</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/fd0487de-2fe8-48e8-bcfc-6c7d38242802" width="480"/><br/>Wallpaper selector</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="https://github.com/user-attachments/assets/efda1900-c4dc-40f6-abec-a0db613a07d5" width="480"/><br/>Calendar</td>
+    <td align="center"><img src="https://github.com/user-attachments/assets/e74342f8-7e6f-4b7b-9c89-a41f86c2c168" width="480"/><br/>Screenshot and history</td>
   </tr>
 </table>
+</details>
 
 ---
 
