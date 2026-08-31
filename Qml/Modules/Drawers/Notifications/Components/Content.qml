@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 import qs.Components.Base
 import qs.Core.Configs
+import qs.Core.States
 import qs.Core.Utils
 import qs.Components.Button
 import qs.Services
@@ -15,6 +16,22 @@ Column {
     required property var modelData
     property bool isShowMoreBody: false
     readonly property bool replyFocused: replyField.isFocused
+
+    function syncInlineReplyFocus(): void {
+        const hasReply = root.modelData?.hasInlineReply ?? false;
+        if (root.replyFocused && hasReply)
+            GlobalStates.inlineReplyOwner = root;
+        else if (GlobalStates.inlineReplyOwner === root)
+            GlobalStates.inlineReplyOwner = null;
+    }
+
+    onReplyFocusedChanged: syncInlineReplyFocus()
+    onModelDataChanged: syncInlineReplyFocus()
+
+    Component.onDestruction: {
+        if (GlobalStates.inlineReplyOwner === root)
+            GlobalStates.inlineReplyOwner = null;
+    }
 
     function sendReply() {
         const text = replyField.text.trim();

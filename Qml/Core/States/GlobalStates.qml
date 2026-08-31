@@ -50,6 +50,9 @@ Singleton {
     property bool isScreenshotSelectionOpen: false
     property bool isWifiScannerOpen: true
 
+    property var inlineReplyOwner: null
+    readonly property bool hasInlineReply: inlineReplyOwner !== null
+
     property string previewWallpaper: ""
 
     property string scriptPath: `${Paths.projectRoot}/Assets/shell/screen-capture.sh`

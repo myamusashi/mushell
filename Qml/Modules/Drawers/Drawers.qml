@@ -47,6 +47,8 @@ Variants {
                 return true;
             if (GlobalStates.isClipboardOpen)
                 return true;
+            if (GlobalStates.hasInlineReply)
+                return true;
             return false;
         }
 
