@@ -41,7 +41,11 @@ Item {
             id: itemFlickable
 
             clip: true
+            contentWidth: width
             contentHeight: itemColumn.implicitHeight
+            boundsBehavior: Flickable.StopAtBounds
+            interactive: contentHeight > height
+            pressDelay: 0
 
             Column {
                 id: itemColumn

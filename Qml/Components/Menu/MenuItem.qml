@@ -30,12 +30,6 @@ Item {
         visible: root.selected
         radius: Appearance.rounding.small
         color: Colours.m3Colors.m3SecondaryContainer
-
-        MArea {
-            layerRadius: Appearance.rounding.small
-            enabled: root.enabled
-            onClicked: root.triggered()
-        }
     }
 
     RowLayout {
@@ -104,5 +98,12 @@ Item {
                 color: Colours.m3Colors.m3Error
             }
         }
+    }
+
+    MArea {
+        layerRadius: Appearance.rounding.small
+        enabled: root.enabled
+        preventStealing: true
+        onClicked: root.triggered()
     }
 }
