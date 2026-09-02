@@ -157,7 +157,7 @@ Singleton {
 
     IpcHandler {
         target: "audio"
-        function deviceList() {
+        function deviceList(): string {
             const m = AudioDevicesWatcher.devices;
             const r = [];
             for (let i = 0; i < m.count(); i++) {
@@ -174,10 +174,10 @@ Singleton {
             }
             return JSON.stringify(r);
         }
-        function deviceSet(name) {
+        function deviceSet(name: string): void {
             AudioDevicesWatcher.setDefaultSink(name);
         }
-        function profileList() {
+        function profileList(): string {
             const card = root.defaultSinkCard;
             if (!card)
                 return JSON.stringify({
@@ -207,7 +207,7 @@ Singleton {
             }
             return JSON.stringify(r);
         }
-        function profileSet(name) {
+        function profileSet(name: string): void {
             const card = root.defaultSinkCard;
             if (!card)
                 return;

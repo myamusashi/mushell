@@ -14,7 +14,7 @@ var clipboardListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all clipboard history entries",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallPrint("clipboard", "list")
+		return ipcCallPrint("clipboardHistory", "list")
 	},
 }
 
@@ -22,7 +22,7 @@ var clipboardStatusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Show clipboard manager status",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallPrint("clipboard", "status")
+		return ipcCallPrint("clipboardHistory", "status")
 	},
 }
 
@@ -31,7 +31,7 @@ var clipboardRemoveCmd = &cobra.Command{
 	Short: "Remove a history entry",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("clipboard", "remove", args[0])
+		return ipcCallVoid("clipboardHistory", "remove", args[0])
 	},
 }
 
@@ -39,7 +39,7 @@ var clipboardClearCmd = &cobra.Command{
 	Use:   "clear",
 	Short: "Clear the entire clipboard history",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("clipboard", "clear")
+		return ipcCallVoid("clipboardHistory", "clear")
 	},
 }
 
@@ -48,7 +48,7 @@ var clipboardSearchCmd = &cobra.Command{
 	Short: "Search clipboard history",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("clipboard", "search", args[0])
+		return ipcCallVoid("clipboardHistory", "search", args[0])
 	},
 }
 

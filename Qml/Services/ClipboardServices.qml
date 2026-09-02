@@ -21,7 +21,7 @@ Singleton {
     }
 
     IpcHandler {
-        target: "clipboard"
+        target: "clipboardHistory"
 
         function list(): string {
             return JSON.stringify(ClipboardManager.model.entries());

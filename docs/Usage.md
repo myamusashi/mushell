@@ -110,3 +110,4 @@ shell ipc call <target> <function>
 | `idle` | `on()`, `off()`, `status(): bool` |
 | `keylock` | `capslock(): bool`, `numlock(): bool` |
 | `dragAndDrop` | `start()`, `stop()`, `toggle()`, `status(): bool` |
+| `clipboardHistory` | `list(): string`, `status(): string`, `remove(id: int)`, `clear(): bool`, `search(query: string)` |
