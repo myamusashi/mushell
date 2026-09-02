@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 import "../Components/Base"
 
@@ -14,7 +14,7 @@ StyledRect {
     Layout.alignment: Qt.AlignCenter
 
     implicitWidth: row.width
-    visible: ScreenRecorder.isRecording
+    visible: CaptureScreenVideo.isRecording
     color: "transparent"
 
     function formatTime(seconds) {
@@ -108,12 +108,12 @@ StyledRect {
             TapHandler {
                 id: tapHandler
 
-                onTapped: ScreenRecorder.stopRecording()
+                onTapped: CaptureScreenVideo.stopRecording()
             }
         }
 
         StyledText {
-            text: root.formatTime(ScreenRecorder.recordingElapsedSeconds)
+            text: root.formatTime(CaptureScreenVideo.recordingElapsedSeconds)
             color: Colours.m3Colors.m3OnBackground
             font.bold: true
         }

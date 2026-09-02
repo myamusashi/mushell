@@ -10,7 +10,7 @@ import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 StyledRect {
     id: root
@@ -21,17 +21,17 @@ StyledRect {
     property string audioLabel: qsTr("No Audio")
 
     function updateAudioLabel() {
-        if (!ScreenRecorder.includeAudio) {
+        if (!CaptureScreenVideo.includeAudio) {
             audioLabel = qsTr("No Audio");
-        } else if (ScreenRecorder.audioDeviceDescription) {
-            audioLabel = ScreenRecorder.audioDeviceDescription;
+        } else if (CaptureScreenVideo.audioDeviceDescription) {
+            audioLabel = CaptureScreenVideo.audioDeviceDescription;
         } else {
             audioLabel = qsTr("Choose an audio source...");
         }
     }
 
     Connections {
-        target: ScreenRecorder
+        target: CaptureScreenVideo
 
         function onIncludeAudioChanged() {
             root.updateAudioLabel();
@@ -224,8 +224,8 @@ StyledRect {
 
                     Icon {
                         type: Icon.Material
-                        icon: ScreenRecorder.includeAudio ? "mic" : "mic_off"
-                        color: ScreenRecorder.includeAudio ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
+                        icon: CaptureScreenVideo.includeAudio ? "mic" : "mic_off"
+                        color: CaptureScreenVideo.includeAudio ? Colours.m3Colors.m3Primary : Colours.m3Colors.m3OnSurfaceVariant
                         font.pixelSize: Appearance.fonts.size.medium
                     }
 
@@ -367,7 +367,7 @@ StyledRect {
                         Layout.preferredHeight: Appearance.spacing.normal + Appearance.spacing.large
                         implicitWidth: buttonLabel.implicitWidth + Appearance.margin.large + 15
 						// qmlformat off
-						color: ScreenRecorder.isRecording
+						color: CaptureScreenVideo.isRecording
 							? (recordButtonMouseArea.containsMouse
 								? Qt.alpha(Colours.m3Colors.m3Error, 0.3)
 								: Qt.alpha(Colours.m3Colors.m3Error, 0.2))
@@ -376,7 +376,7 @@ StyledRect {
 								: Qt.alpha(Colours.m3Colors.m3Red, 0.2))
 						// qmlformat on
                         radius: Appearance.rounding.full
-                        border.color: ScreenRecorder.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
+                        border.color: CaptureScreenVideo.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
                         border.width: 2
 
                         RowLayout {
@@ -386,8 +386,8 @@ StyledRect {
                             Rectangle {
                                 implicitWidth: Appearance.margin.smaller
                                 implicitHeight: Appearance.margin.smaller
-                                radius: ScreenRecorder.isRecording ? Appearance.padding.small : Appearance.margin.small
-                                color: ScreenRecorder.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
+                                radius: CaptureScreenVideo.isRecording ? Appearance.padding.small : Appearance.margin.small
+                                color: CaptureScreenVideo.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
                                 Behavior on radius {
                                     NAnim {
                                         duration: Appearance.animations.durations.small
@@ -397,8 +397,8 @@ StyledRect {
 
                             StyledText {
                                 id: buttonLabel
-                                text: ScreenRecorder.isRecording ? qsTr("Stop") : qsTr("Start Recording")
-                                color: ScreenRecorder.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
+                                text: CaptureScreenVideo.isRecording ? qsTr("Stop") : qsTr("Start Recording")
+                                color: CaptureScreenVideo.isRecording ? Colours.m3Colors.m3Error : Colours.m3Colors.m3Red
                                 font.weight: Font.DemiBold
                                 font.pixelSize: Appearance.fonts.size.normal
                             }
@@ -410,12 +410,12 @@ StyledRect {
                             cursorShape: Qt.PointingHandCursor
                             hoverEnabled: true
                             onClicked: {
-                                if (ScreenRecorder.isRecording) {
-                                    ScreenRecorder.stopRecording();
+                                if (CaptureScreenVideo.isRecording) {
+                                    CaptureScreenVideo.stopRecording();
                                 } else {
                                     switch (root.sourceMode) {
                                     case 0:
-                                        ScreenRecorder.startRecording("", root.selectedMonitor);
+                                        CaptureScreenVideo.startRecording("", root.selectedMonitor);
                                         GlobalStates.isRecordingPanelOpen = false;
                                         break;
                                     case 1:

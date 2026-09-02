@@ -9,7 +9,7 @@ import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 StyledRect {
     id: root
@@ -97,10 +97,10 @@ StyledRect {
                 color: listView.currentIndex === index ? Qt.alpha(Colours.m3Colors.m3Primary, 0.15) : (delegateMouse.containsMouse ? Qt.alpha(Colours.m3Colors.m3Primary, 0.08) : "transparent")
                 radius: Appearance.rounding.small
 
-                Component.onCompleted: ScreenRecorder.createThumbnail(modelData.path, Paths.cacheDir + "/video-thumbnails")
+                Component.onCompleted: CaptureScreenVideo.createThumbnail(modelData.path, Paths.cacheDir + "/video-thumbnails")
 
                 Connections {
-                    target: ScreenRecorder
+                    target: CaptureScreenVideo
                     function onThumbnailReady(videoPath, thumbnailPath) {
                         if (videoPath !== delegateRoot.modelData.path)
                             return;

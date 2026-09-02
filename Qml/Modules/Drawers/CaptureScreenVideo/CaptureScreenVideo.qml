@@ -11,7 +11,8 @@ import qs.Core.Configs
 import qs.Core.States
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenImage
+import qs.Services.CaptureScreenVideo
 
 Item {
     id: root
@@ -57,31 +58,62 @@ Item {
     }
 
     IpcHandler {
-        target: "capture"
+        target: "captureScreenImage"
         function screen(action: string): void {
-            ScreenRecorder.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
+            CaptureScreenImage.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
         }
         function region(action: string): void {
-            ScreenRecorder.screenshotSelection(action);
+            CaptureScreenImage.screenshotSelection(action);
         }
         function window(action: string): void {
-            ScreenRecorder.screenshotWindow(action);
+            CaptureScreenImage.screenshotWindow(action);
+        }
+    }
+
+    // Compat alias — deprecated, use captureScreenImage
+    IpcHandler {
+        target: "capture"
+        function screen(action: string): void {
+            CaptureScreenImage.screenshotOutput(Quickshell.screens[0]?.name ?? "", action);
+        }
+        function region(action: string): void {
+            CaptureScreenImage.screenshotSelection(action);
+        }
+        function window(action: string): void {
+            CaptureScreenImage.screenshotWindow(action);
         }
     }
 
     IpcHandler {
-        target: "recorder"
+        target: "captureScreenVideo"
         function start(): void {
-            ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
+            CaptureScreenVideo.startRecording("", Quickshell.screens[0]?.name ?? "");
         }
         function stop(): void {
-            ScreenRecorder.stopRecording();
+            CaptureScreenVideo.stopRecording();
         }
         function toggle(): void {
-            ScreenRecorder.isRecording ? ScreenRecorder.stopRecording() : ScreenRecorder.startRecording("", Quickshell.screens[0]?.name ?? "");
+            CaptureScreenVideo.isRecording ? CaptureScreenVideo.stopRecording() : CaptureScreenVideo.startRecording("", Quickshell.screens[0]?.name ?? "");
         }
         function status(): bool {
-            return ScreenRecorder.isRecording;
+            return CaptureScreenVideo.isRecording;
+        }
+    }
+
+    // Compat alias — deprecated, use captureScreenVideo
+    IpcHandler {
+        target: "recorder"
+        function start(): void {
+            CaptureScreenVideo.startRecording("", Quickshell.screens[0]?.name ?? "");
+        }
+        function stop(): void {
+            CaptureScreenVideo.stopRecording();
+        }
+        function toggle(): void {
+            CaptureScreenVideo.isRecording ? CaptureScreenVideo.stopRecording() : CaptureScreenVideo.startRecording("", Quickshell.screens[0]?.name ?? "");
+        }
+        function status(): bool {
+            return CaptureScreenVideo.isRecording;
         }
     }
 
@@ -144,9 +176,9 @@ Item {
                 StyledRect {
                     Layout.fillWidth: true
                     Layout.preferredHeight: Appearance.margin.normal + Appearance.fonts.size.normal
-                    color: ScreenRecorder.isRecording ? Qt.alpha(Colours.m3Colors.m3Red, 0.15) : Colours.m3Colors.m3SurfaceContainerHighest
+                    color: CaptureScreenVideo.isRecording ? Qt.alpha(Colours.m3Colors.m3Red, 0.15) : Colours.m3Colors.m3SurfaceContainerHighest
                     radius: Appearance.rounding.small
-                    visible: ScreenRecorder.isRecording
+                    visible: CaptureScreenVideo.isRecording
 
                     RowLayout {
                         anchors {
@@ -163,7 +195,7 @@ Item {
                             color: Colours.m3Colors.m3Red
 
                             SequentialAnimation on opacity {
-                                running: ScreenRecorder.isRecording
+                                running: CaptureScreenVideo.isRecording
                                 loops: Animation.Infinite
                                 PropertyAnimation {
                                     to: 0.3
@@ -189,7 +221,7 @@ Item {
 
                         StyledText {
                             text: {
-                                const s = ScreenRecorder.recordingElapsedSeconds;
+                                const s = CaptureScreenVideo.recordingElapsedSeconds;
                                 const h = Math.floor(s / 3600);
                                 const m = Math.floor((s % 3600) / 60);
                                 const sec = s % 60;

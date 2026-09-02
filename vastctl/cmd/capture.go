@@ -5,9 +5,10 @@ import (
 )
 
 var captureCmd = &cobra.Command{
-	Use:   "capture",
-	Short: "Take screenshots",
-	Long:  "Capture the screen, a region, or a window via vast-shell's screenshot service.",
+	Use:     "captureScreenImage",
+	Aliases: []string{"capture"},
+	Short:   "Take screenshots",
+	Long:    "Capture the screen, a region, or a window via vast-shell's screenshot service (captureScreenImage).",
 }
 
 var captureScreenCmd = &cobra.Command{
@@ -15,7 +16,7 @@ var captureScreenCmd = &cobra.Command{
 	Short: "Screenshot the active screen",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("capture", "screen", actionOrDefault(args, "copy"))
+		return ipcCallVoid("captureScreenImage", "screen", actionOrDefault(args, "copy"))
 	},
 }
 
@@ -24,7 +25,7 @@ var captureRegionCmd = &cobra.Command{
 	Short: "Screenshot a selected region",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("capture", "region", actionOrDefault(args, "copy"))
+		return ipcCallVoid("captureScreenImage", "region", actionOrDefault(args, "copy"))
 	},
 }
 
@@ -33,7 +34,7 @@ var captureWindowCmd = &cobra.Command{
 	Short: "Screenshot a selected window",
 	Args:  cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		return ipcCallVoid("capture", "window", actionOrDefault(args, "copy"))
+		return ipcCallVoid("captureScreenImage", "window", actionOrDefault(args, "copy"))
 	},
 }
 

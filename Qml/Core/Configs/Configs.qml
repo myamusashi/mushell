@@ -21,7 +21,7 @@ Singleton {
     property alias clipboard: adapter.clipboard
     property alias notification: adapter.notification
     property alias kdeConnect: adapter.kdeConnect
-    property alias screenRecorder: adapter.screenRecorder
+    property alias captureScreenVideo: adapter.captureScreenVideo
     property alias audio: adapter.audio
     property alias idle: adapter.idle
     property alias search: adapter.search
@@ -59,7 +59,7 @@ Singleton {
             property LocalizationConfig language: LocalizationConfig {}
             property MediaPlayerConfig mediaPlayer: MediaPlayerConfig {}
             property KDEConnectConfig kdeConnect: KDEConnectConfig {}
-            property ScreenRecorderConfig screenRecorder: ScreenRecorderConfig {}
+            property CaptureScreenVideoConfig captureScreenVideo: CaptureScreenVideoConfig {}
             property AudioConfig audio: AudioConfig {}
             property IdleConfig idle: IdleConfig {}
             property SearchConfig search: SearchConfig {}

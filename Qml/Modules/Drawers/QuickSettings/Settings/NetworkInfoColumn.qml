@@ -176,6 +176,8 @@ ColumnLayout {
         }
     }
     component BluetoothCard: StyledRect {
+        id: bluetoothCardComopnent
+
         Layout.fillWidth: true
         implicitHeight: 70
         color: Colours.m3Colors.m3SurfaceContainer
@@ -205,14 +207,14 @@ ColumnLayout {
             Rectangle {
                 Layout.preferredWidth: 50
                 Layout.preferredHeight: 50
-                color: hasConnected ? Colours.m3Colors.m3Primary : isPowered ? Qt.alpha(Colours.m3Colors.m3Primary, 0.2) : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
+                color: bluetoothCardComopnent.hasConnected ? Colours.m3Colors.m3Primary : bluetoothCardComopnent.isPowered ? Qt.alpha(Colours.m3Colors.m3Primary, 0.2) : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.1)
                 radius: Appearance.rounding.small
 
                 Icon {
                     type: Icon.Material
                     anchors.centerIn: parent
-                    icon: cardIconName
-                    color: hasConnected ? Colours.m3Colors.m3OnPrimary : isPowered ? Colours.m3Colors.m3Primary : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38)
+                    icon: bluetoothCardComopnent.cardIconName
+                    color: bluetoothCardComopnent.hasConnected ? Colours.m3Colors.m3OnPrimary : bluetoothCardComopnent.isPowered ? Colours.m3Colors.m3Primary : Qt.alpha(Colours.m3Colors.m3OnSurface, 0.38)
                     font.pixelSize: Appearance.fonts.size.extraLarge
                 }
             }
@@ -228,7 +230,7 @@ ColumnLayout {
                 }
 
                 StyledText {
-                    text: cardSubtitle
+                    text: bluetoothCardComopnent.cardSubtitle
                     font.pixelSize: Appearance.fonts.size.normal
                     font.weight: Font.Medium
                     width: parent.width

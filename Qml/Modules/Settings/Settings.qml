@@ -106,7 +106,7 @@ LazyLoader {
                                     },
                                     {
                                         icon: "screen_record",
-                                        label: qsTr("Screen Recorder")
+                                        label: qsTr("Capture Video")
                                     },
                                     {
                                         icon: "volume_up",
@@ -292,7 +292,7 @@ LazyLoader {
                             active: settingsLoader.currentPage === 9
                             Layout.fillWidth: true
                             Layout.fillHeight: true
-                            sourceComponent: ScreenRecorderPage {}
+                            sourceComponent: CaptureScreenVideoPage {}
                         }
                         Loader {
                             visible: settingsLoader.currentPage === 10

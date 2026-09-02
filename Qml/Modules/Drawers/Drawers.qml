@@ -20,7 +20,7 @@ import "OSD"
 import "Bar"
 import "Volume"
 import "Brightness"
-import "ScreenRecorder"
+import "CaptureScreenVideo"
 
 Variants {
     model: Quickshell.screens
@@ -57,7 +57,7 @@ Variants {
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.namespace: "shell:drawers"
         WlrLayershell.keyboardFocus: needFocusKeyboard ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-        HyprlandWindow.visibleMask: childRegions.instances
+        HyprlandWindow.visibleMask: childRegions.instances // qmllint disable
         mask: Region {
             regions: childRegions.instances
             item: cornersArea
@@ -221,7 +221,7 @@ Variants {
 
         Screencapture {}
 
-        ScreenRecorder {}
+        CaptureScreenVideo {}
 
         OSD {
             id: osd

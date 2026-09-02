@@ -8,7 +8,7 @@ import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 StyledRect {
     id: root
@@ -96,18 +96,18 @@ StyledRect {
                 }
 
                 Repeater {
-                    model: ScreenRecorder.sources()
+                    model: CaptureScreenVideo.sources()
                     delegate: AudioDeviceItem {
                         required property var modelData
 
                         audioName: modelData.name
                         audioDescription: modelData.description || modelData.name
                         iconName: "mic"
-                        isSelected: modelData.name === ScreenRecorder.audioDevice
+                        isSelected: modelData.name === CaptureScreenVideo.audioDevice
                         onSelect: name => {
-                            ScreenRecorder.audioDevice = name;
-                            ScreenRecorder.audioDeviceDescription = modelData.description || modelData.name;
-                            ScreenRecorder.includeAudio = true;
+                            CaptureScreenVideo.audioDevice = name;
+                            CaptureScreenVideo.audioDeviceDescription = modelData.description || modelData.name;
+                            CaptureScreenVideo.includeAudio = true;
                             root.goBack();
                         }
                     }
@@ -131,18 +131,18 @@ StyledRect {
                 }
 
                 Repeater {
-                    model: ScreenRecorder.monitors()
+                    model: CaptureScreenVideo.monitors()
                     delegate: AudioDeviceItem {
                         required property var modelData
 
                         audioName: modelData.name
                         audioDescription: modelData.description || modelData.name
                         iconName: "speaker"
-                        isSelected: modelData.name === ScreenRecorder.audioDevice
+                        isSelected: modelData.name === CaptureScreenVideo.audioDevice
                         onSelect: name => {
-                            ScreenRecorder.audioDevice = name;
-                            ScreenRecorder.audioDeviceDescription = modelData.description || modelData.name;
-                            ScreenRecorder.includeAudio = true;
+                            CaptureScreenVideo.audioDevice = name;
+                            CaptureScreenVideo.audioDeviceDescription = modelData.description || modelData.name;
+                            CaptureScreenVideo.includeAudio = true;
                             root.goBack();
                         }
                     }
@@ -160,11 +160,11 @@ StyledRect {
                     audioName: ""
                     audioDescription: qsTr("No Audio")
                     iconName: "mic_off"
-                    isSelected: !ScreenRecorder.includeAudio
+                    isSelected: !CaptureScreenVideo.includeAudio
                     onSelect: {
-                        ScreenRecorder.audioDevice = "";
-                        ScreenRecorder.audioDeviceDescription = "";
-                        ScreenRecorder.includeAudio = false;
+                        CaptureScreenVideo.audioDevice = "";
+                        CaptureScreenVideo.audioDeviceDescription = "";
+                        CaptureScreenVideo.includeAudio = false;
                         root.goBack();
                     }
                 }

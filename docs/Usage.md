@@ -14,8 +14,8 @@ vastctl
 │       device list / set
 ├── volume system get / set [+|-]<%> / mute / unmute / toggle-mute
 │       app list / set <id> [+|-]<%> / mute <id> / unmute <id> / toggle-mute <id>
-├── capture screen / region / window [action]
-├── record start / stop / toggle / status
+├── captureScreenImage screen / region / window [action]  # alias: capture
+├── captureScreenVideo start / stop / toggle / status      # alias: record
 ├── mpris toggle-playing / next / previous / stop / list
 ├── lock lock / unlock / status
 ├── idle on / off / status
@@ -101,9 +101,8 @@ shell ipc call <target> <function>
 | `toast` | `open(header: string, description: string, icon: string, duration: int)` |
 | `img` | `get(): string`, `set(path: string)` |
 | `lock` | `lock()`, `unlock()`, `isLocked(): bool` |
-| `recorder` | `start()`, `stop()`, `toggle()`, `status(): bool` |
-| `capture` | `screen(action: string)`, `region(action: string)`, `window(action: string)` |
-| `brightness` | `get(): string`, `set(percent: int)` |
+| `captureScreenVideo` | `start()`, `stop()`, `toggle()`, `status(): bool`  # alias: `recorder` (compat) |
+| `captureScreenImage` | `screen(action: string)`, `region(action: string)`, `window(action: string)`  # alias: `capture` (compat) |
 | `audio` | `deviceList(): string`, `deviceSet(name: string)`, `profileList(): string`, `profileSet(name: string)` |
 | `volume` | `systemGet(): string`, `systemSet(percent: int)`, `systemMute()`, `systemUnmute()`, `systemToggleMute()`, `appList(): string`, `appSet(id: int, percent: int)`, `appMute(id: int)`, `appUnmute(id: int)`, `appToggleMute(id: int)` |
 | `mpris` | `togglePlaying()`, `next()`, `previous()`, `stop()`, `list(): string` |

@@ -7,7 +7,7 @@ import qs.Components.Feedback
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 Loader {
     id: root
@@ -25,7 +25,7 @@ Loader {
         const videoFormats = ["mkv", "mp4", "webm", "avi"];
 
         if (videoFormats.includes(ext))
-            ScreenRecorder.createThumbnail(modelData.path, Paths.cacheDir + "/video-thumbnails");
+            CaptureScreenVideo.createThumbnail(modelData.path, Paths.cacheDir + "/video-thumbnails");
         else
             thumbnailPath = "file://" + modelData.path;
     }
@@ -39,7 +39,7 @@ Loader {
     }
 
     Connections {
-        target: ScreenRecorder
+        target: CaptureScreenVideo
 
         function onThumbnailReady(videoPath, thumbnailPath) {
             if (videoPath !== root.modelData.path)

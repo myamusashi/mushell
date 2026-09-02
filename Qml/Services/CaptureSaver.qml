@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Io
 
-import "shellUtils.js" as Utils
+import "captureUtils.js" as Utils
 
 Item {
     id: root

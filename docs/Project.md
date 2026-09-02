@@ -13,9 +13,9 @@ vast-shell/
 ├── vastctl/
 │   ├── main.go
 │   ├── go.mod / go.sum
-│   ├── cmd/                    # audio, brightness, capture, daemon,
-│   │                           # hypr, idle, keylock, lock, mpris,
-│   │                           # record, root, volume, wallpaper
+│   ├── cmd/                    # audio, brightness, captureScreenImage,
+│   │                           # captureScreenVideo, daemon, hypr, idle, keylock,
+│   │                           # lock, mpris, root, volume, wallpaper
 │   └── internal/
 │       ├── hypr/dispatch.go    # hyprctl wrapper
 │       └── ipc/client.go       # shell ipc call client + daemon launcher
@@ -52,7 +52,7 @@ vast-shell/
 │   ├── Core/
 │   │   ├── Configs/           # Appearance, Bar, Clipboard, ColorSystem, General,
 │   │   │                      # Idle, KDEConnect, Localization, MediaPlayer,
-│   │   │                      # Notification, ScreenRecorder, Wallpaper, Weather
+│   │   │                      # Notification, CaptureScreenVideo, Wallpaper, Weather
 │   │   ├── States/            # GlobalStates (IPC handlers, OSD, panels),
 │   │   │                      # Workspaces
 │   │   └── Utils/             # DistroAscii, Dots, HighlightText, Icon, Log,
@@ -61,11 +61,11 @@ vast-shell/
 │   ├── Services/              # Audio, Battery, Brightness, CalendarMajorEvents,
 │   │                          # Colours, DepthWallpaperController, Fontlist, Hotspot,
 │   │                          # Hypr, Hyprsunset, KeylockState, Lyrics, Notifs,
-│   │                          # Players, PolAgent, Privacy, Record, ScreenCapture,
-│   │                          # ScreenCaptureHistory, SystemUsage, ToastService,
+│   │                          # Players, PolAgent, Privacy, ScreenCapture,
+│   │                          # ScreenCaptureHistory, CaptureSaver, shellUtils,
 │   │                          # WallpaperFileModels, Weather
-│   │   └── ScreenRecorder/    # ScreenRecorder, ScreenshotSaver, Screenshotter
-│   │
+│   │   ├── CaptureScreenImage/# CaptureScreenImage (image capture)
+│   │   └── CaptureScreenVideo/# CaptureScreenVideo, Screenshotter (video capture)
 │   ├── Modules/
 │   │   ├── Drawers/
 │   │   │   ├── Bar/           # Bar, Left, Middle, Right
@@ -77,7 +77,7 @@ vast-shell/
 │   │   │   ├── Notifications/ # Content, NotifIcon, Wrapper
 │   │   │   ├── OSD/           # CapsLockWidget, NumLockWidget
 │   │   │   ├── QuickSettings/ # PerformancePages, VolumeSettings, WiFi, Network, Battery
-│   │   │   ├── ScreenRecorder/# AudioDeviceItem, PageAudio, PageHistory, PageMain, PageSettings
+│   │   │   ├── CaptureScreenVideo/# AudioDeviceItem, PageAudio, PageHistory, PageMain, PageSettings, CaptureScreenVideo (drawer)
 │   │   │   ├── Session/
 │   │   │   ├── Volume/
 │   │   │   ├── WallpaperSelector/
@@ -90,7 +90,7 @@ vast-shell/
 │   │   │   ├── Components/    # SettingsCard, SettingsPageBase, SidebarItem
 │   │   │   └── Pages/         # Appearance, Bar, Clipboard, DepthWallpaperSection,
 │   │   │                      # General, Idle, Internet, KDEConnect, Language,
-│   │   │                      # MediaPlayer, Notification, ScreenRecorder, Wallpaper, Weather
+│   │   │                      # MediaPlayer, Notification, CaptureScreenVideo, Wallpaper, Weather
 │   │   └── Wallpaper/         # Wall
 │   │
 │   └── Widgets/               # AudioProfiles, Battery, Clock, LyricsView,

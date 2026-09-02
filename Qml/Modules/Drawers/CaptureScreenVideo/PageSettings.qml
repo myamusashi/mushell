@@ -8,7 +8,7 @@ import qs.Components.Base
 import qs.Core.Configs
 import qs.Core.Utils
 import qs.Services
-import qs.Services.ScreenRecorder
+import qs.Services.CaptureScreenVideo
 
 StyledRect {
     id: root
@@ -98,8 +98,8 @@ StyledRect {
                             value: 120
                         }
                     ]
-                    selectedValue: ScreenRecorder.maxFps
-                    onSelected: value => ScreenRecorder.maxFps = value
+                    selectedValue: CaptureScreenVideo.maxFps
+                    onSelected: value => CaptureScreenVideo.maxFps = value
                 }
 
                 SettingSection {
@@ -122,8 +122,8 @@ StyledRect {
                             value: "20 MB"
                         }
                     ]
-                    selectedValue: ScreenRecorder.bitrate
-                    onSelected: value => ScreenRecorder.bitrate = value
+                    selectedValue: CaptureScreenVideo.bitrate
+                    onSelected: value => CaptureScreenVideo.bitrate = value
                 }
 
                 SettingSection {
@@ -154,8 +154,8 @@ StyledRect {
                             value: "av1"
                         }
                     ]
-                    selectedValue: ScreenRecorder.videoCodec
-                    onSelected: value => ScreenRecorder.videoCodec = value
+                    selectedValue: CaptureScreenVideo.videoCodec
+                    onSelected: value => CaptureScreenVideo.videoCodec = value
                 }
 
                 SettingSection {
@@ -182,8 +182,8 @@ StyledRect {
                             value: "opus"
                         }
                     ]
-                    selectedValue: ScreenRecorder.audioCodec
-                    onSelected: value => ScreenRecorder.audioCodec = value
+                    selectedValue: CaptureScreenVideo.audioCodec
+                    onSelected: value => CaptureScreenVideo.audioCodec = value
                 }
 
                 SettingSection {
@@ -202,8 +202,8 @@ StyledRect {
                             value: "off"
                         }
                     ]
-                    selectedValue: ScreenRecorder.lowPower
-                    onSelected: value => ScreenRecorder.lowPower = value
+                    selectedValue: CaptureScreenVideo.lowPower
+                    onSelected: value => CaptureScreenVideo.lowPower = value
                 }
 
                 SettingSection {
@@ -222,9 +222,9 @@ StyledRect {
                     extraActive: item => {
                         switch (item.value) {
                         case "cursor":
-                            return ScreenRecorder.showCursor;
+                            return CaptureScreenVideo.showCursor;
                         case "history":
-                            return ScreenRecorder.historyMode;
+                            return CaptureScreenVideo.historyMode;
                         default:
                             return false;
                         }
@@ -232,10 +232,10 @@ StyledRect {
                     onSelected: value => {
                         switch (value) {
                         case "cursor":
-                            ScreenRecorder.showCursor = !ScreenRecorder.showCursor;
+                            CaptureScreenVideo.showCursor = !CaptureScreenVideo.showCursor;
                             break;
                         case "history":
-                            ScreenRecorder.historyMode = !ScreenRecorder.historyMode;
+                            CaptureScreenVideo.historyMode = !CaptureScreenVideo.historyMode;
                             break;
                         }
                     }

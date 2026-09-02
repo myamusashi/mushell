@@ -11,7 +11,7 @@ import qs.Core.States
 import qs.Core.Configs
 import qs.Components.Base
 import qs.Services
-import "shellUtils.js" as Utils
+import "../captureUtils.js" as Utils
 
 Scope {
     id: root
@@ -26,7 +26,6 @@ Scope {
     property var pickForRecordCallback: null
 
     property var allScreenPaths: []
-    property int captureIndex: 0
     property var captureDoneCallback: null
     property bool isMultiCapturing: false
 
@@ -45,7 +44,7 @@ Scope {
         ]);
     }
 
-    ScreenshotSaver {
+    CaptureSaver {
         id: saver
 
         screenshotDir: root.screenshotDir
@@ -79,12 +78,6 @@ Scope {
         property int targetHeight: 1
 
         activeAsync: false
-
-        onActiveChanged: {
-            if (!active && root.isMultiCapturing) {
-                root.captureNext();
-            }
-        }
 
         component: PanelWindow {
             id: captureWindow
@@ -923,25 +916,6 @@ Scope {
         root.pendingCaptureCount = Quickshell.screens.length;
         root.isMultiCapturing = true;
         multiCaptureWatchdog.restart();
-    }
-
-    function captureNext() {
-        // Legacy sequential path kept for captureLoader.onActiveChanged
-        // compat; multi capture now uses Variants + pendingCaptureCount.
-        if (root.isMultiCapturing)
-            return;
-        const screens = Quickshell.screens;
-        if (root.captureIndex >= screens.length) {
-            root.compositeAllCaptures();
-            return;
-        }
-        const screen = screens[root.captureIndex];
-        root.captureIndex++;
-        captureLoader.targetScreen = screen;
-        captureLoader.targetWidth = screen.width;
-        captureLoader.targetHeight = screen.height;
-        captureLoader.targetToplevel = null;
-        captureLoader.active = true;
     }
 
     function compositeAllCaptures() {

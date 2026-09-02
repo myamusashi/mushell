@@ -6,12 +6,11 @@ import Quickshell.Io
 import Vast.Audio
 
 import qs.Core.Configs
-import "shellUtils.js" as Utils
+import "../captureUtils.js" as Utils
 
 Singleton {
     id: root
 
-    readonly property string screenshotDir: Quickshell.env("HOME") + "/Pictures/screenshot"
     readonly property string videoDir: Quickshell.env("HOME") + "/Videos/Shell"
     readonly property string thumbnailDir: Quickshell.env("HOME") + "/.cache/thumbnails/normal"
 
@@ -55,34 +54,34 @@ Singleton {
     onAudioDeviceDescriptionChanged: {}
     onVideoCodecChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.videoCodec = videoCodec;
+            Configs.captureScreenVideo.videoCodec = videoCodec;
     }
     onAudioCodecChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.audioCodec = audioCodec;
+            Configs.captureScreenVideo.audioCodec = audioCodec;
     }
     onDriDeviceChanged: {}
     onEncodeResolutionChanged: {}
     onLowPowerChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.lowPower = lowPower;
+            Configs.captureScreenVideo.lowPower = lowPower;
     }
     onBitrateChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.bitrate = bitrate;
+            Configs.captureScreenVideo.bitrate = bitrate;
     }
     onMaxFpsChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.maxFps = maxFps;
+            Configs.captureScreenVideo.maxFps = maxFps;
     }
     onHistoryModeChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.historyMode = historyMode;
+            Configs.captureScreenVideo.historyMode = historyMode;
     }
     onIncludeAudioChanged: {}
     onShowCursorChanged: {
         if (!loadingFromConfig)
-            Configs.screenRecorder.showCursor = showCursor;
+            Configs.captureScreenVideo.showCursor = showCursor;
     }
     property bool loadingFromConfig: false
     onIsRecordingChanged: {
@@ -103,16 +102,6 @@ Singleton {
         }
         function onConnectedChanged() {
             root.rebuild();
-        }
-    }
-
-    Screenshotter {
-        id: screenshotter
-
-        screenshotDir: root.screenshotDir
-
-        onNotify: (summary, body, urgency, icon, app, actions) => {
-            root.sendNotification(summary, body, urgency, icon, app, actions);
         }
     }
 
@@ -272,7 +261,6 @@ Singleton {
         property string outputDir
         property var callback: null
 
-        // mkdir -p first: requested output dir may not exist yet (e.g. ~/.cache/video-thumbnails)
         command: ["sh", "-c", "mkdir -p \"$1\" && exec ffmpeg -ss \"$2\" -i \"$3\" -vframes 1 -q:v 2 -vf scale=256:-1 \"$4\" -y -v error", "sh", outputDir, seek, videoPath, thumb]
 
         // qmllint disable
@@ -282,46 +270,40 @@ Singleton {
         }
     }
 
-    // one live instance per actionable notification; collects the chosen
-    // action identifier from `notify-send --wait` and opens the target
-    Component {
-        id: actionNotifyComponent
-
-        Process {
-            id: actionProcess
-
-            property string filePath: ""
-            property string dirPath: ""
-
-            stdout: StdioCollector {
-                onStreamFinished: {
-                    const action = text.trim();
-                    const target = action === "folder" ? actionProcess.dirPath : actionProcess.filePath;
-                    if ((action === "open" || action === "folder" || action === "default") && target)
-                        Quickshell.execDetached({
-                            command: ["xdg-open", target]
-                        });
-                    Qt.callLater(actionProcess.destroy);
-                }
+    Process {
+        id: actionProcess
+        property string filePath: ""
+        property string dirPath: ""
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const action = text.trim();
+                const target = action === "folder" ? actionProcess.dirPath : actionProcess.filePath;
+                if ((action === "open" || action === "folder" || action === "default") && target)
+                    Quickshell.execDetached({
+                        command: ["xdg-open", target]
+                    });
             }
         }
     }
 
     Component.onCompleted: {
         Quickshell.execDetached({
-            command: ["mkdir", "-p", screenshotDir, videoDir, thumbnailDir]
+            command: ["mkdir", "-p", videoDir, thumbnailDir]
         });
         checkActiveRecording();
         isRecordingChanged();
         currentOutputFileChanged();
         loadingFromConfig = true;
-        maxFps = Configs.screenRecorder.maxFps;
-        bitrate = Configs.screenRecorder.bitrate;
-        videoCodec = Configs.screenRecorder.videoCodec;
-        audioCodec = Configs.screenRecorder.audioCodec;
-        lowPower = Configs.screenRecorder.lowPower;
-        showCursor = Configs.screenRecorder.showCursor;
-        historyMode = Configs.screenRecorder.historyMode;
+        const cfg = Configs.captureScreenVideo;
+        if (cfg) {
+            maxFps = cfg.maxFps;
+            bitrate = cfg.bitrate;
+            videoCodec = cfg.videoCodec;
+            audioCodec = cfg.audioCodec;
+            lowPower = cfg.lowPower;
+            showCursor = cfg.showCursor;
+            historyMode = cfg.historyMode;
+        }
         loadingFromConfig = false;
     }
 
@@ -502,32 +484,6 @@ Singleton {
         startNextThumbnailJob();
     }
 
-    function screenshotWindow(action) {
-        screenshotter.screenshotWindow(action);
-    }
-
-    function pickWindowForRecord(callback) {
-        screenshotter.pickWindowForRecord(callback);
-    }
-
-    function screenshotSelection(action) {
-        screenshotter.screenshotSelection(action);
-    }
-
-    function screenshotAllOutputs(action) {
-        screenshotter.screenshotAllOutputs(action);
-    }
-
-    function screenshotOutput(out, action) {
-        screenshotter.getMonitors(monitors => {
-            if (monitors.length === 0) {
-                sendNotification("Screenshot Failed", "No monitors found.", "critical", "dialog-error", "Screen Capture");
-                return;
-            }
-            screenshotter.screenshotOutput(out && monitors.includes(out) ? out : monitors[0], action);
-        });
-    }
-
     function onRecordingStopped(videoPath) {
         generate(videoPath, thumbnailDir, (vp, tp) => {
             if (tp)
@@ -560,13 +516,10 @@ Singleton {
             return;
         }
 
-        // --wait keeps the client alive so action clicks come back on stdout
-        const proc = actionNotifyComponent.createObject({
-            filePath: body,
-            dirPath: body.substring(0, Math.max(body.lastIndexOf("/"), 0)) || "/"
-        });
-        proc.command = args;
-        proc.running = true;
+        actionProcess.filePath = body;
+        actionProcess.dirPath = body.substring(0, Math.max(body.lastIndexOf("/"), 0)) || "/";
+        actionProcess.command = args;
+        actionProcess.running = true;
     }
 
     function gotoLink(file, thumb, showNotification) {
